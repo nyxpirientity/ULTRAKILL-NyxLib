@@ -38,7 +38,7 @@ public static class Cheats
         ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
     }
 
-    private static void OnSceneWasLoaded(int buildINdex, string sceneName)
+    private static void OnSceneWasLoaded(int buildIndex, string sceneName)
     {
         if (CheatsManager.Instance == null)
         {

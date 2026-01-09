@@ -175,7 +175,7 @@ public class ModoBehaviourManager : MonoBehaviour
     {
         foreach (var mod in Mods)
         {
-            TryLog.Action(() => { mod.Begin(); });
+            mod.Begin();
             TryLog.Action(() => { mod.ModoUpdate(); });
         }
     }

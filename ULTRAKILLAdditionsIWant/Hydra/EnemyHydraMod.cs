@@ -21,10 +21,10 @@ namespace UKAIW
             private static int SharedIDIncrementer = 0;
             private void Awake()
             {
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with prefab '{Prefab}' awakened!");
                 Hydra.SharedDatas.Add(this);
-                SharedIDIncrementer += 1;
                 name = name + SharedIDIncrementer.ToString();
+                SharedIDIncrementer += 1;
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' awakened!");
             }
 
             private void OnDestroy()
@@ -62,6 +62,7 @@ namespace UKAIW
             public bool CountAsKill = false;
             public List<GameObject> PrefabPool = new List<GameObject>(8);
             public GameObject Prefab = null;
+            internal string CreatorName = "";
         }
 
         public bool CanDuplicate 
@@ -103,12 +104,13 @@ namespace UKAIW
             {
                 Shared.InstanceCount -= 1;
                 ContributesToInstanceCount = false;
-                MusicManager.Instance.PlayCleanMusic();
 
                 if (Shared.InstanceCount == 0)
                 {
                     Destroy(Shared);
                 }
+                
+                MusicManager.Instance?.PlayCleanMusic();
             }
         }
 
@@ -126,6 +128,11 @@ namespace UKAIW
 
         public override void ModoUpdate()
         {
+            if (Eid.Dead)
+            {
+                return;
+            }
+
             if (NoDupeTime >= 0.0f)
             {
                 NoDupeTime -= Time.deltaTime / Mathf.Max(1.0f, (Shared.InstanceCount * 0.3f) + 0.667f);
@@ -142,14 +149,19 @@ namespace UKAIW
         }
 
         protected override void ModoStart()
-        {
-            Assert.IsTrue(Depth >= 0, $"For object by name {Mono.gameObject.name}");
-            Assert.IsNotNull(Shared, $"For object by name {Mono.gameObject.name}");
-            
+        {   
             Eid = Mono.GetComponent<EnemyIdentifier>();
             Assert.IsNotNull(Eid, $"For object by name {Mono.gameObject.name}");
 
-            MusicManager.Instance.PlayBattleMusic();
+            if (Eid.dead)
+            {
+                return;
+            }
+
+            Assert.IsTrue(Depth >= 0, $"For object by name {Mono.gameObject.name}");
+            Assert.IsNotNull(Shared, $"For object by name {Mono.gameObject.name}");
+         
+            MusicManager.Instance?.PlayBattleMusic();
 
             if (Depth > 0)
             {
@@ -302,6 +314,7 @@ namespace UKAIW
             Shared.InstanceCount += 1;
             ContributesToInstanceCount = true;
             Depth = 0;
+            Shared.CreatorName = Mono.gameObject.name;
         }
 
         public void PassPrefabToShared()
@@ -314,6 +327,11 @@ namespace UKAIW
 
         public override void OnClonedFrom(ModoBehaviour ClonedFrom)
         {
+        }
+
+        internal void DuringDeath()
+        {
+            TryDecrementInstanceCount();
         }
     }
 }

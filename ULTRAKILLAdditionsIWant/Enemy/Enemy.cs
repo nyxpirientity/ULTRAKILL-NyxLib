@@ -159,7 +159,17 @@ namespace UKAIW
 
     public static class EnemyEvents
     {
-        public static Action<EnemyIdentifier, GameObject> OnEnemyDisabledPrefix = null;
+        public static Action<EnemyIdentifier, GameObject> PreStart = null;
+        public static Action<EnemyIdentifier, GameObject> PostStart = null;
+        public static Action<EnemyIdentifier, GameObject> PreDisabled = null;
+        public static Action<EnemyIdentifier, GameObject> PreDestroy = null;
+        
+        // pre death that doesn't include instakill
+        public static Action<EnemyIdentifier> PreNoIKDeath = null;
+        // post death that doesn't include instakill
+        public static Action<EnemyIdentifier> PostNoIKDeath = null;
+
+        public static Action<EnemyIdentifier> DuringDeath = null;
     }
 
     [HarmonyPatch(typeof(EnemyIdentifier), "Awake")]
@@ -201,12 +211,16 @@ namespace UKAIW
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
+
+            TryLog.Action(() => {EnemyEvents.PreStart?.Invoke(enemy, enemyGo);});
         }
 
         public static void Postfix(EnemyIdentifier __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
+
+            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(enemy, enemyGo);});
         }
     }
 
@@ -218,7 +232,25 @@ namespace UKAIW
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            EnemyEvents.OnEnemyDisabledPrefix?.Invoke(enemy, enemyGo);
+            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(enemy, enemyGo);});
+        }
+
+        public static void Postfix(EnemyIdentifier __instance)
+        {
+            var enemy = __instance;
+            var enemyGo = enemy.gameObject;
+        }
+    }
+
+    [HarmonyPatch(typeof(EnemyAdditions), "OnDestroy")]
+    static class EnemyDestroyPatch
+    {
+        public static void Prefix(EnemyIdentifier __instance)
+        {
+            var enemy = __instance;
+            var enemyGo = enemy.gameObject;
+
+            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(enemy, enemyGo);});
         }
 
         public static void Postfix(EnemyIdentifier __instance)

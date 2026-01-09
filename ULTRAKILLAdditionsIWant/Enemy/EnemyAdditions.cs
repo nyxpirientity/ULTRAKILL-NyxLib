@@ -21,6 +21,12 @@ public class EnemyAdditions : ModoBehaviourManager
         FindAndCacheMods(true);      
     }
 
+    /* to allow patching lol */
+    private new void OnDestroy()
+    {
+        base.OnDestroy();
+    }
+
     public void SetupMods()
     {
         //Log.ExpectedInfo($"{name}.EnemyAdditions is setting up new modules...");

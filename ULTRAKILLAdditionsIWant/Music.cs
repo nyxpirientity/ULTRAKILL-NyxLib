@@ -5,7 +5,9 @@ namespace UKAIW
 {
     public static class MusicAdditions
     {
-        public static void Initialize()
+        public static int PlayBattleWithCleanVotes { get; set; } = 0;
+
+        internal static void Initialize()
         {
             ScenesEvents.OnSceneWasUnloaded += OnSceneUnload;
             ScenesEvents.OnSceneWasLoaded += OnSceneLoad;
@@ -14,6 +16,8 @@ namespace UKAIW
 
         private static void OnSceneLoad(int arg1, string arg2)
         {
+            PlayBattleWithCleanVotes = 0;
+            HasVotedForBattleMusic = false;
         }
 
         private static void OnSceneUnload(int arg1, string arg2)
@@ -21,7 +25,8 @@ namespace UKAIW
         }
 
         private static bool HasVotedForBattleMusic = false;
-        public static void VoteForBattleMusic()
+
+        private static void VoteForBattleMusic()
         {
             if (MusicManager.Instance.battleTheme != null)
             {
@@ -30,7 +35,7 @@ namespace UKAIW
             }
         }
 
-        public static void UnvoteForBattleMusic()
+        private static void UnvoteForBattleMusic()
         {
             if (HasVotedForBattleMusic)
             {
@@ -39,6 +44,7 @@ namespace UKAIW
             }
         }
 
+        private static bool WasPlayCleanWithBattle = false;
         private static void Update()
         {
             if (CheatsManager.Instance == null)
@@ -55,7 +61,9 @@ namespace UKAIW
                 UnvoteForBattleMusic();
             }
 
-            if (Cheats.IsCheatEnabled(Cheats.PlayCleanMusicWithBattle))
+            bool playCleanWithBattle = Cheats.IsCheatEnabled(Cheats.PlayCleanMusicWithBattle) || PlayBattleWithCleanVotes > 0;
+
+            if (playCleanWithBattle)
             {
                 if (MusicManager.Instance.targetTheme == MusicManager.Instance.bossTheme)
                 {
@@ -63,11 +71,20 @@ namespace UKAIW
                 }
                 else if (MusicManager.Instance.targetTheme == MusicManager.Instance.battleTheme)
                 {
-                    MusicManager.Instance.cleanTheme.volume = MusicManager.Instance.battleTheme.volume;
+                    MusicManager.Instance.cleanTheme.volume = Mathf.Max(MusicManager.Instance.battleTheme.volume, MusicManager.Instance.cleanTheme.volume);
+                    if (Mathf.Abs(MusicManager.Instance.cleanTheme.time - MusicManager.Instance.battleTheme.time) > 0.1f)
+                    {
+                        MusicManager.Instance.cleanTheme.time = MusicManager.Instance.battleTheme.time;
+                        
+                        if (!MusicManager.Instance.cleanTheme.isPlaying)
+                        {
+                            MusicManager.Instance.cleanTheme.Play();
+                        }
+                    }
                 }
                 else if (MusicManager.Instance.targetTheme == MusicManager.Instance.cleanTheme)
                 {
-                    
+                    MusicManager.Instance.battleTheme.volume = Mathf.MoveTowards(MusicManager.Instance.battleTheme.volume, 0f, MusicManager.Instance.fadeSpeed * Time.deltaTime);
                 }
             }
             else if (MusicManager.Instance.off || MusicManager.Instance.targetTheme.volume == MusicManager.Instance.volume) 
@@ -82,9 +99,11 @@ namespace UKAIW
                 }
                 else if (MusicManager.Instance.targetTheme == MusicManager.Instance.cleanTheme)
                 {
-                    
+                    MusicManager.Instance.battleTheme.volume = Mathf.MoveTowards(MusicManager.Instance.battleTheme.volume, 0f, MusicManager.Instance.fadeSpeed * Time.deltaTime);
                 }
             }
+
+            WasPlayCleanWithBattle = playCleanWithBattle;
         }
     }
 }

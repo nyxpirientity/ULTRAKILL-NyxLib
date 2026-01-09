@@ -25,12 +25,13 @@ namespace UKAIW
 
         public static void Initialize()
         {
-            EnemyDeathEvents.PreDeath += PreEnemyDeath;
-            EnemyDeathEvents.PostDeath += PostEnemyDeath;
+            EnemyEvents.PreNoIKDeath += PreEnemyDeath;
+            EnemyEvents.DuringDeath += DuringEnemyDeath;
+            EnemyEvents.PostNoIKDeath += PostEnemyDeath;
             UpdateEvents.OnLateUpdate += LateUpdate;
             UpdateEvents.OnFixedUpdate += FixedUpdate;
         }
-        
+
         private static int RemainingHydraBloodFxThisTick = 0;
         private static bool BloodDisabledByUs = false;
         public static void DecrementRemainingHydraBloodFxThisTick()
@@ -116,6 +117,15 @@ namespace UKAIW
             {
                 Hydra.DecrementRemainingHydraBloodFxThisTick();
             }
+        }
+
+        private static void DuringEnemyDeath(EnemyIdentifier eid)
+        {
+            var go = eid.gameObject;
+            var eadd = go.GetComponent<EnemyAdditions>();
+            var ehm = eadd.GetMod<EnemyHydraMod>();
+
+            ehm.DuringDeath();
         }
 
         private static Queue<QueuedDupeInfo> DupeQueue = new Queue<QueuedDupeInfo>(256);

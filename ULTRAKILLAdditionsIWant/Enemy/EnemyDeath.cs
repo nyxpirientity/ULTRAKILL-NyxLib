@@ -11,12 +11,6 @@ using UnityEngine.UI;
 
 namespace UKAIW
 {   
-    public static class EnemyDeathEvents
-    {
-        public static Action<EnemyIdentifier> PreDeath = null;
-        public static Action<EnemyIdentifier> PostDeath = null;
-    }
-
     [HarmonyPatch(typeof(SpiderBody), "Die", new Type[]{})]
     static class SpiderDiePatch
     {
@@ -118,7 +112,7 @@ namespace UKAIW
 
             try
             {
-                EnemyDeathEvents.PreDeath?.Invoke(eid);
+                EnemyEvents.PreNoIKDeath?.Invoke(eid);
             }
             catch (System.Exception e)
             {
@@ -136,7 +130,7 @@ namespace UKAIW
             
             try
             {
-                EnemyDeathEvents.PostDeath?.Invoke(eid);
+                EnemyEvents.PostNoIKDeath?.Invoke(eid);
             }
             catch (System.Exception e)
             {
@@ -152,6 +146,7 @@ namespace UKAIW
             }
 
             ActivateOnDeath = __instance.activateOnDeath;
+            EnemyEvents.DuringDeath?.Invoke(__instance);
 
             if (Cheats.IsCheatEnabled(Cheats.NoCorpses))
             {
