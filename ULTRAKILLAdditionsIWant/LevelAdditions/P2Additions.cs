@@ -25,16 +25,35 @@ namespace UKAIW
 
         private int NumVirtues = 0;
         private int NumMindflayers = 0;
+        private int NumHideousMasses = 0;
         private bool IsBattleWithClean = false;
         private void OnEnemySpawned(EnemyIdentifier eid, GameObject go)
         {
+            Assert.IsTrue(go.activeInHierarchy);
+            
+            if (eid.Dead)
+            {
+                return;
+            }
+
+            if (!eid.enabled || !eid.isActiveAndEnabled)
+            {
+                return;
+            }
+
             switch (eid.enemyType)
             {
                 case EnemyType.Mindflayer:
+                    Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer spawn!");
                     NumMindflayers += 1;
                     break;
                 case EnemyType.Virtue:
+                    Log.TraceExpectedInfo($"P2Additions Detected a Virtue spawn!");
                     NumVirtues += 1;
+                    break;
+                case EnemyType.HideousMass:
+                    Log.TraceExpectedInfo($"P2Additions Detected a HideousMass spawn!");
+                    NumHideousMasses += 1;
                     break;
                 default:
                     break;
@@ -46,7 +65,7 @@ namespace UKAIW
                 {
                     EnableBattleWithClean();
                 }
-                else if (NumVirtues >= 3)
+                else if (NumVirtues >= 3 && NumHideousMasses >= 1)
                 {
                     EnableBattleWithClean();
                 }
@@ -82,10 +101,16 @@ namespace UKAIW
             switch (eid.enemyType)
             {
                 case EnemyType.Mindflayer:
+                    Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer death!");
                     NumMindflayers -= 1;
                     break;
                 case EnemyType.Virtue:
+                    Log.TraceExpectedInfo($"P2Additions Detected a Virtue death!");
                     NumVirtues -= 1;
+                    break;
+                case EnemyType.HideousMass:
+                    Log.TraceExpectedInfo($"P2Additions Detected a HideousMass death!");
+                    NumHideousMasses -= 1;
                     break;
                 default:
                     break;
@@ -102,10 +127,16 @@ namespace UKAIW
             switch (eid.enemyType)
             {
                 case EnemyType.Mindflayer:
+                    Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer destruction!");
                     NumMindflayers -= 1;
                     break;
                 case EnemyType.Virtue:
+                    Log.TraceExpectedInfo($"P2Additions Detected a Virtue destruction!");
                     NumVirtues -= 1;
+                    break;
+                case EnemyType.HideousMass:
+                    Log.TraceExpectedInfo($"P2Additions Detected a HideousMass destruction!");
+                    NumHideousMasses -= 1;
                     break;
                 default:
                     break;

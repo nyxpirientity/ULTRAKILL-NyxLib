@@ -25,6 +25,8 @@ public static class Options
     static MelonPreferences_Entry<int> HydraMaxPerUpdateEntry = null;
     static MelonPreferences_Entry<int> HydraBloodCapNumUpdatesPerTickEntry = null;
     static MelonPreferences_Entry<int> HydraBloodCapNumBloodPerTickEntry = null;
+    static MelonPreferences_Entry<int> HydraPrefabPoolCapacityEntry = null;
+    static MelonPreferences_Entry<int> HydraPrefabPoolGrowPerUpdateEntry = null;
     static public float HydraHealthDecayScale = 0.5f;
 
     static public float HydraDefaultWaitTime = 0.5f;
@@ -38,6 +40,8 @@ public static class Options
     static public int HydraMaxPerUpdate = 4;
     static public int HydraBloodCapNumUpdatesPerTick = 50;
     static public int HydraBloodCapNumBloodPerTick = 10;
+    static public int HydraPrefabPoolCapacity = 20;
+    static public int HydraPrefabPoolGrowPerUpdate = 3;
 
     static public bool IncludePerformanceLogs = false;
     static public bool IncludeTraceExpectedLogs = false;
@@ -73,6 +77,9 @@ public static class Options
         HydraBloodCapNumUpdatesPerTickEntry = HydraCategory.CreateEntry<int>("HydraBloodCapNumUpdatesPerTick", 50);
         HydraBloodCapNumBloodPerTickEntry = HydraCategory.CreateEntry<int>("HydraBloodCapNumBloodPerTick", 10);
 
+        HydraPrefabPoolCapacityEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolCapacity", 20);
+        HydraPrefabPoolGrowPerUpdateEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolGrowPerUpdate", 3);
+
         Reload();
     }
 
@@ -90,6 +97,9 @@ public static class Options
         HydraMaxFromOne = HydraMaxFromOneEntry.Value;
         HydraMaxPerUpdate = HydraMaxPerUpdateEntry.Value;
         HydraMaxFromOneBoss = HydraMaxFromOneBossEntry.Value;
+
+        HydraPrefabPoolCapacity = HydraPrefabPoolCapacityEntry.Value;
+        HydraPrefabPoolGrowPerUpdate = HydraPrefabPoolGrowPerUpdateEntry.Value;
         
         IncludePerformanceLogs = IncludePerformanceLogsEntry.Value;
         IncludeTraceExpectedLogs = IncludeTraceExpectedLogsEntry.Value;

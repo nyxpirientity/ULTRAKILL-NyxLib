@@ -24,6 +24,7 @@ namespace UKAIW
                 Hydra.SharedDatas.Add(this);
                 name = name + SharedIDIncrementer.ToString();
                 SharedIDIncrementer += 1;
+                PrefabPool.Capacity = Options.HydraPrefabPoolCapacity;
                 Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' awakened!");
             }
 
@@ -60,8 +61,9 @@ namespace UKAIW
 
             public int InstanceCount = 0;
             public bool CountAsKill = false;
-            public List<GameObject> PrefabPool = new List<GameObject>(8);
+            public List<GameObject> PrefabPool = new List<GameObject>();
             public GameObject Prefab = null;
+            public Bounds Bounds = new Bounds();
             internal string CreatorName = "";
         }
 
@@ -256,8 +258,8 @@ namespace UKAIW
                     ContributeToActivateNextWave();
                 }
 
-                TryEnqueueDupe();
-                TryEnqueueDupe();
+                TryEnqueueDupe(false);
+                TryEnqueueDupe(true);
                 
                 TryDecrementInstanceCount();
                 if (!CanDuplicate && Shared.InstanceCount == 0)
@@ -283,7 +285,7 @@ namespace UKAIW
             componentInParent?.AddDeadEnemy();
         }
 
-        private void TryEnqueueDupe()
+        private void TryEnqueueDupe(bool isB)
         {
             if (!CanDuplicate)
             {
@@ -296,12 +298,34 @@ namespace UKAIW
             Assert.IsNotNull(((EnemyAdditions)Mono).PrefabMod.Prefab, $"For object by name {Mono.gameObject.name}");
 
             Hydra.QueuedDupeInfo dupeInfo = new Hydra.QueuedDupeInfo();
-            dupeInfo.Position = Transform.position;
+            
+            if (Eid.enemyType == EnemyType.Drone)
+            {
+                dupeInfo.Position = Eid.drone.GetComponent<Rigidbody>().transform.position;
+            }
+            else
+            {
+                dupeInfo.Position = Transform.position;
+            }
+            
             dupeInfo.Rotation = Transform.rotation;
             dupeInfo.LocalScale = Transform.localScale;
             dupeInfo.SharedData = Shared;
             dupeInfo.Depth = Depth + 1;
             dupeInfo.EnemyType = Eid.enemyType;
+            
+
+            if (Eid.enemyType == EnemyType.Sisyphus)
+            {
+                dupeInfo.Position += (dupeInfo.Rotation * Vector3.right) * (isB ? -4.25f : 4.25f);
+            }
+            else
+            {
+                //dupeInfo.Position += (dupeInfo.Rotation * Vector3.Normalize(Vector3.Lerp(Vector3.right, Vector3.forward, UnityEngine.Random.Range(0.0f, 1.0f))))
+                //                     * (isB ? -1.0f : 1.0f);
+                dupeInfo.Position += Vector3.Project(dupeInfo.SharedData.Bounds.size, dupeInfo.Rotation * Vector3.right) * (isB ? -1.0f : 1.0f) * 0.3f;
+            }
+
 
             //Hydra.EnqueueDupe(dupeInfo);
             Hydra.EnqueueDupe(dupeInfo);
@@ -312,6 +336,7 @@ namespace UKAIW
         {
             Shared = ScriptableObject.CreateInstance<SharedData>();
             Shared.InstanceCount += 1;
+            Shared.Bounds = EnemyUtils.SolveEnemyBounds(GameObject);
             ContributesToInstanceCount = true;
             Depth = 0;
             Shared.CreatorName = Mono.gameObject.name;

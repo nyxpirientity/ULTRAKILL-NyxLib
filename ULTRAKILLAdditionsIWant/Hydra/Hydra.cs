@@ -135,13 +135,19 @@ namespace UKAIW
         {
             if (SharedDatas.Count > 0)
             {
-                SharedDataForPrefabCacheIdx = (SharedDataForPrefabCacheIdx + 1) % SharedDatas.Count;
-                var sharedData = SharedDatas[SharedDataForPrefabCacheIdx];
-                if (sharedData.PrefabPool.Count < sharedData.PrefabPool.Capacity)
+                for (int i = 0, j = 0; i < 16 && j < Options.HydraPrefabPoolGrowPerUpdate; i++)
                 {
-                    sharedData.InstantiatePrefabToPool();
+                    SharedDataForPrefabCacheIdx = (SharedDataForPrefabCacheIdx + 1) % SharedDatas.Count;
+                    var sharedData = SharedDatas[SharedDataForPrefabCacheIdx];
+                    if (sharedData.PrefabPool.Count < sharedData.PrefabPool.Capacity)
+                    {
+                        sharedData.InstantiatePrefabToPool();
+                        j++;
+                    }
                 }
             }
+            
+
 
             while (ImmediatelyDupeStack.Count > 0)
             {
@@ -170,6 +176,10 @@ namespace UKAIW
                 eadd = dupeGo.GetComponent<EnemyAdditions>();
             }
 
+            dupeGo.transform.position = dupeInfo.Position;
+            dupeGo.transform.rotation = dupeInfo.Rotation;
+            dupeGo.transform.localScale = dupeInfo.LocalScale;
+
             dupeGo.SetActive(true);
             malFaceDupeGo?.SetActive(true);
             var eid = dupeGo.GetComponent<EnemyIdentifier>();
@@ -183,10 +193,6 @@ namespace UKAIW
             Assert.IsNotNull(eadd);
             Assert.IsNotNull(eadd.HydraMod);
             Assert.IsNotNull(eadd.HydraMod.Shared);
-
-            dupeGo.transform.position = dupeInfo.Position;
-            dupeGo.transform.rotation = dupeInfo.Rotation;
-            dupeGo.transform.localScale = dupeInfo.LocalScale;
 
             eadd.HydraMod.Depth = dupeInfo.Depth;
         }
