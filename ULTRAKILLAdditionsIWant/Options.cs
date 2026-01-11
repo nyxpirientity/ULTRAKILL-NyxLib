@@ -31,6 +31,10 @@ public static class Options
     static MelonPreferences_Category FriendsCategory = null;
     static MelonPreferences_Entry<int> NumFriendsToSpawnEntry = null;
 
+    static MelonPreferences_Category BloodFuelEnemiesCategory = null;
+    static MelonPreferences_Entry<float> BloodFuelEnemiesHealScalarEntry = null;
+    static MelonPreferences_Entry<float> BloodFuelEnemiesDistDivisorEntry = null;
+
     static public float HydraHealthDecayScale = 0.5f;
 
     static public float HydraDefaultWaitTime = 0.5f;
@@ -55,6 +59,9 @@ public static class Options
     static public bool IncludeUnexpectedLogs = false;
 
     static public int NumFriendsToSpawn = 1;
+
+    static public float BloodFuelEnemiesHealScalar = 0.2f;
+    static public float BloodFuelEnemiesDistDivisor = 8.0f;
 
     public static void Initialize()
     {
@@ -90,6 +97,10 @@ public static class Options
         FriendsCategory = MelonPreferences.CreateCategory("UKAIW-Friends");
         NumFriendsToSpawnEntry = FriendsCategory.CreateEntry<int>("NumFriendsToSpawn", 1);
 
+        BloodFuelEnemiesCategory = MelonPreferences.CreateCategory("UKAIW-BloodFueledEnemies");
+        BloodFuelEnemiesHealScalarEntry = BloodFuelEnemiesCategory.CreateEntry<float>("BloodFuelEnemiesHealScalar", 0.4f);
+        BloodFuelEnemiesDistDivisorEntry = BloodFuelEnemiesCategory.CreateEntry<float>("BloodFuelEnemiesDistDivisor", 8.0f);
+
         Reload();
     }
 
@@ -122,5 +133,8 @@ public static class Options
         HydraBloodCapNumBloodPerTick = HydraBloodCapNumBloodPerTickEntry.Value;
 
         NumFriendsToSpawn = NumFriendsToSpawnEntry.Value;
+
+        BloodFuelEnemiesHealScalar = BloodFuelEnemiesHealScalarEntry.Value;
+        BloodFuelEnemiesDistDivisor = BloodFuelEnemiesDistDivisorEntry.Value;
     }
 }

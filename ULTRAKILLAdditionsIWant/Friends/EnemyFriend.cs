@@ -17,6 +17,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
     public override void ModoFixedUpdate()
     {
+        
     }
 
     public override void ModoLateUpdate()
@@ -25,7 +26,19 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
     public override void ModoOnDestroy()
     {
-        
+        if (IsLeader && !Eid.Dead && Friends != null)
+        {
+            foreach (var friend in Friends)
+            {
+                if (friend == null)
+                {
+                    continue;
+                }
+
+                // evil...
+                Destroy(friend);
+            }
+        }
     }
 
     public override void ModoOnDisable()
@@ -63,7 +76,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 
                 var totalEnemyNum = Options.NumFriendsToSpawn + 1;
                 Bounds bounds = EnemyUtils.SolveEnemyBounds(GameObject);
-                Vector3 offset = Vector3.Project((bounds.size) * 0.5f, (Transform.rotation * Vector3.right));
+                Vector3 offset = Vector3.Project((bounds.size), (Transform.rotation * Vector3.right));
                 Vector3 initialOrigin = Transform.position;
                 
                 bool useRotaryPositioning = false;
@@ -71,6 +84,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 if (Eid.enemyType == EnemyType.Idol)
                 {
                     useRotaryPositioning = true;
+                    offset *= 0.5f;
                 }
                 else if (Eid.enemyType == EnemyType.HideousMass && totalEnemyNum >= 3)
                 {

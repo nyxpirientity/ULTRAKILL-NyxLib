@@ -25,6 +25,7 @@ public static class Cheats
     public const string HitstopOnHeavyHydraLoad = "ukaiw.hitstop-on-heavy-hydra-load";
     public const string PlayCleanMusicWithBattle = "ukaiw.clean-music-with-battle";
     public const string AlwaysBattleMusic = "ukaiw.always-battle-music";
+    public const string BloodFueledEnemies = "ukaiw.blood-fueled-enemies";
 
     public static int FriendCount = 0;
 
@@ -105,6 +106,19 @@ public static class Cheats
                 
             }
         ), "CYBERGRIND");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Enemies are Fueled with Blood", 
+            Cheats.BloodFueledEnemies,
+            onDisable: (cheat) =>
+            {
+                
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "FAIRNESS AND EQUALITY");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Give Enemies Friend(s)", 

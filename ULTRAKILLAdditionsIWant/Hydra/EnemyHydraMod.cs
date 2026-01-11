@@ -244,6 +244,11 @@ namespace UKAIW
                 return;
             }
 
+            if (!Cheats.IsCheatEnabled(Cheats.HydraMode))
+            {
+                return;
+            }
+
             Eid.dontCountAsKills = true;
 
             if (Cheats.IsHydraModeOn)
