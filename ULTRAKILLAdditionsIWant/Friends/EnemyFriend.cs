@@ -17,7 +17,10 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
     public override void ModoFixedUpdate()
     {
-        
+        if (Eid.enemyType == EnemyType.Idol || !IsLeader)
+        {
+            IdolFindRightTarget();
+        }
     }
 
     public override void ModoLateUpdate()
@@ -25,6 +28,11 @@ public class EnemyFriendIdentifier : ModoBehaviour
     }
 
     public override void ModoOnDestroy()
+    {
+
+    }
+
+    public override void ModoOnDisable()
     {
         if (IsLeader && !Eid.Dead && Friends != null)
         {
@@ -36,13 +44,9 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 }
 
                 // evil...
-                Destroy(friend);
+                Destroy(friend.GameObject);
             }
         }
-    }
-
-    public override void ModoOnDisable()
-    {
     }
 
     public override void ModoOnEnable()
@@ -70,7 +74,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
     {
         if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends))
         {
-            if (IsLeader)
+            if (IsLeader && !Eid.Dead)
             {
                 Friends = new EnemyFriendIdentifier[Options.NumFriendsToSpawn];
                 
@@ -102,7 +106,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
                 if (!useRotaryPositioning)
                 {
-                    Transform.position += offset * -(totalEnemyNum / 2);
+                    Transform.position += (offset) * -((float)(totalEnemyNum / 2) + -0.5f);
                 }
 
                 for (int i = 0; i < Options.NumFriendsToSpawn; i++)
@@ -111,11 +115,10 @@ public class EnemyFriendIdentifier : ModoBehaviour
                     
                     if (useRotaryPositioning)
                     {
-                        currentOffset = (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)i + 1) / totalEnemyNum), 0.0f)) * (offset));   
+                        currentOffset = (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)(i + 1) + -0.5f) / totalEnemyNum), 0.0f)) * (offset));   
                     }
 
                     Friends[i] = SpawnFriend(currentOffset, i);
-                    Friends[i].Leader = this;
                 }
                 
                 if (useRotaryPositioning)
@@ -132,14 +135,31 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
     private void NonLeaderStart()
     {
-        if (Eid.enemyType == EnemyType.Idol)
-        {
-            IdolFindRightTarget();
-        }
+
     }
 
     private void IdolFindRightTarget()
     {
+        //Assert.IsNotNull(Leader);
+        
+        if (Leader == null)
+        {
+            return;
+        }
+
+        if (Leader.Eid == null)
+        {
+            return;
+        }
+
+        if (Leader.Eid.idol == null)
+        {
+            return;
+        }
+
+        //Assert.IsNotNull(Leader.Eid);
+        //Assert.IsNotNull(Leader.Eid.idol);
+
         var leaderTarget = Leader.Eid.idol.target;
         
         if (leaderTarget == null)
@@ -171,6 +191,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
         friend.transform.position = Transform.position + offset;
         friendEadd.FindAndCacheMods();
         friendEadd.HydraMod.InitializeAsNew();
+        friendEadd.EnemyFriend.Leader = this;
         friendEadd.PrefabMod.StorePrefab(force: true);
         friendEadd.HydraMod.PassPrefabToShared();
         friendEadd.EnemyFriend.FriendIdx = idx;

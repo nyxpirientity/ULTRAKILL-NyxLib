@@ -83,6 +83,8 @@ namespace UKAIW
         public EnemyGameplayRank GameplayRank = EnemyGameplayRank.Ultraboss;
         public bool ContributesToInstanceCount = false;
 
+        private bool ExcludedFromHydraCheat = false;
+
         private float NoDupeTime = 0.0f;
         public override void ModoFixedUpdate()
         {
@@ -102,6 +104,11 @@ namespace UKAIW
 
         private void TryDecrementInstanceCount()
         {
+            if (ExcludedFromHydraCheat)
+            {
+                return;
+            }
+            
             if (ContributesToInstanceCount)
             {
                 Shared.InstanceCount -= 1;
@@ -130,6 +137,11 @@ namespace UKAIW
 
         public override void ModoUpdate()
         {
+            if (ExcludedFromHydraCheat)
+            {
+                return;
+            }
+            
             if (Eid.Dead)
             {
                 return;
@@ -153,6 +165,13 @@ namespace UKAIW
         protected override void ModoStart()
         {   
             Eid = Mono.GetComponent<EnemyIdentifier>();
+
+            if (Eid.enemyType == EnemyType.Idol)
+            {
+                ExcludedFromHydraCheat = true;
+                return;
+            }
+
             Assert.IsNotNull(Eid, $"For object by name {Mono.gameObject.name}");
 
             if (Eid.dead)
@@ -229,6 +248,11 @@ namespace UKAIW
 
         public void OnDeath()
         {
+            if (ExcludedFromHydraCheat)
+            {
+                return;
+            }
+
             if (Eid == null)
             {
                 Eid = Mono.GetComponent<EnemyIdentifier>();
@@ -292,6 +316,11 @@ namespace UKAIW
 
         private void TryEnqueueDupe(bool isB)
         {
+            if (ExcludedFromHydraCheat)
+            {
+                return;
+            }
+            
             if (!CanDuplicate)
             {
                 return;
