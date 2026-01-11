@@ -321,9 +321,22 @@ namespace UKAIW
             }
             else
             {
+                float additionalOffsetScalar = 1.0f;
+
+                switch (Eid.enemyType)
+                {
+                    case EnemyType.HideousMass:
+                        additionalOffsetScalar = 0.0f;
+                        break;
+                    case EnemyType.Minos:
+                        additionalOffsetScalar = 0.0f;
+                        break;
+                    default:
+                        break;
+                }
                 //dupeInfo.Position += (dupeInfo.Rotation * Vector3.Normalize(Vector3.Lerp(Vector3.right, Vector3.forward, UnityEngine.Random.Range(0.0f, 1.0f))))
                 //                     * (isB ? -1.0f : 1.0f);
-                dupeInfo.Position += Vector3.Project(dupeInfo.SharedData.Bounds.size, dupeInfo.Rotation * Vector3.right) * (isB ? -1.0f : 1.0f) * 0.3f;
+                dupeInfo.Position += Vector3.Project(dupeInfo.SharedData.Bounds.size, dupeInfo.Rotation * Vector3.right) * (isB ? -1.0f : 1.0f) * 0.3f * additionalOffsetScalar;
             }
 
 

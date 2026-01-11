@@ -128,6 +128,7 @@ public class ModoBehaviourManager : MonoBehaviour
             Log.Error($"{name}.ModoBehaviourManager awake failed!\n {e}");            
         }
     }
+    
     protected void UnsafeAwake()
     {
         List<ModoBehaviour> cloneMods = new List<ModoBehaviour>(_Mods.Count);

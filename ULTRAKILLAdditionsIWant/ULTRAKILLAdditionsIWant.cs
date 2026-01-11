@@ -66,6 +66,7 @@ namespace UKAIW
 
         public override void OnGUI() // Can run multiple times per frame. Mostly used for Unity's IMGUI.
         {
+            TryLog.Action(() => { UpdateEvents.OnGUI?.Invoke(); });
         }
 
         public override void OnApplicationQuit() // Runs when the Game is told to Close.
@@ -79,6 +80,7 @@ namespace UKAIW
 
         public override void OnPreferencesLoaded() // Runs when Melon Preferences get loaded.
         {
+            Options.Reload();
         }
     }
 }

@@ -36,6 +36,12 @@ public static class Cheats
     public static void Initialize()
     {
         ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+        UpdateEvents.OnGUI += OnGUI;
+    }
+
+    
+    private static void OnGUI()
+    {
     }
 
     private static void OnSceneWasLoaded(int buildIndex, string sceneName)
@@ -68,7 +74,6 @@ public static class Cheats
         CheatsManager.Instance.RegisterCheat(new HideCheatsStatus(), "meta");
 
         RegisterCheats();
-        FriendCheat.Reset();
     }
 
     public static bool IsHydraModeOn { get; private set; } = false;
@@ -76,213 +81,225 @@ public static class Cheats
     private static void RegisterCheats()
     {
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Override Cybergrind Starting Wave", 
-        Cheats.OverrideCybergrindStartingWaveID,
-        onDisable: (cheat) =>
-        {
-            
-        },
-        onEnable: (cheat, manager) =>
-        {
-            
-        }
-    ), "CYBERGRIND");
+            "Override Cybergrind Starting Wave", 
+            Cheats.OverrideCybergrindStartingWaveID,
+            onDisable: (cheat) =>
+            {
+                
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "CYBERGRIND");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Cybergrind Quick Restart", 
-        Cheats.CybergrindQuickRestartID,
-        onDisable: (cheat) =>
-        {
-            
-        },
-        onEnable: (cheat, manager) =>
-        {
-            
-        }
-    ), "CYBERGRIND");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Cybergrind Quick Restart", 
+            Cheats.CybergrindQuickRestartID,
+            onDisable: (cheat) =>
+            {
+                
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "CYBERGRIND");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Radiant All Enemies", 
-        Cheats.RadiantAllEnemiesID,
-        onDisable: (cheat) =>
-        {
-            OptionsManager.forceRadiance = false;
-        },
-        onEnable: (cheat, manager) =>
-        {
-            OptionsManager.forceRadiance = false;
-        }
-    ), "SELF SABOTAGE");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Give Enemies Friend(s)", 
+            Cheats.GiveEnemiesFriends,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "THOUGHTFULNESS AND CARING");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Sand All Enemies", 
-        Cheats.SandAllEnemiesID,
-        onDisable: (cheat) =>
-        {
-            OptionsManager.forceSand = false;
-        },
-        onEnable: (cheat, manager) =>
-        {
-            OptionsManager.forceSand = true;
-        }
-    ), "SELF SABOTAGE");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Radiant All Enemies", 
+            Cheats.RadiantAllEnemiesID,
+            onDisable: (cheat) =>
+            {
+                OptionsManager.forceRadiance = false;
+            },
+            onEnable: (cheat, manager) =>
+            {
+                OptionsManager.forceRadiance = false;
+            }
+        ), "SELF SABOTAGE");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Give all Enemies Boss Bar", 
-        Cheats.BossBarAllEnemiesID,
-        onDisable: (cheat) =>
-        {
-            OptionsManager.forceBossBars = false;
-        },
-        onEnable: (cheat, manager) =>
-        {
-            OptionsManager.forceBossBars = true;
-        }
-    ), "SELF SABOTAGE");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Sand All Enemies", 
+            Cheats.SandAllEnemiesID,
+            onDisable: (cheat) =>
+            {
+                OptionsManager.forceSand = false;
+            },
+            onEnable: (cheat, manager) =>
+            {
+                OptionsManager.forceSand = true;
+            }
+        ), "SELF SABOTAGE");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Radiance For Thyself", 
-        Cheats.GiveSelfRadiance,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "SELF CARE");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Give all Enemies Boss Bar", 
+            Cheats.BossBarAllEnemiesID,
+            onDisable: (cheat) =>
+            {
+                OptionsManager.forceBossBars = false;
+            },
+            onEnable: (cheat, manager) =>
+            {
+                OptionsManager.forceBossBars = true;
+            }
+        ), "SELF SABOTAGE");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Hard Damage Rebalance", 
-        Cheats.HardDamageRebalance,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "EXPERIMENTATION");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Radiance For Thyself", 
+            Cheats.GiveSelfRadiance,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "SELF CARE");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Disable Stops", 
-        Cheats.DisableStops,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "misc");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Hard Damage Rebalance", 
+            Cheats.HardDamageRebalance,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "EXPERIMENTATION");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Disable Slowdown", 
-        Cheats.DisableSlowdown,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "misc");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Disable Stops", 
+            Cheats.DisableStops,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "misc");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Immortality", 
-        Cheats.Immortality,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "SELF HATRED");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Disable Slowdown", 
+            Cheats.DisableSlowdown,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "misc");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "ULTRASTOP", 
-        Cheats.UltraStop,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "???");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Immortality", 
+            Cheats.Immortality,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "SELF HATRED");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Shortened Hitstop", 
-        Cheats.ShortHitStop,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "misc");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "ULTRASTOP", 
+            Cheats.UltraStop,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "???");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Always Play Battle Music", 
-        Cheats.AlwaysBattleMusic,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "music");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Shortened Hitstop", 
+            Cheats.ShortHitStop,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "misc");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Play Clean Music with Battle Music", 
-        Cheats.PlayCleanMusicWithBattle,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "music");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Always Play Battle Music", 
+            Cheats.AlwaysBattleMusic,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "music");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "mundanemurder Mode", 
-        Cheats.MundaneMurder,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "???");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Play Clean Music with Battle Music", 
+            Cheats.PlayCleanMusicWithBattle,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "music");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "No Corpses", 
-        Cheats.NoCorpses,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "???");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "mundanemurder Mode", 
+            Cheats.MundaneMurder,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "???");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Hydra Mode", 
-        Cheats.HydraMode,
-        onDisable: (cheat) =>
-        {
-            IsHydraModeOn = false;
-        },
-        onEnable: (cheat, manager) =>
-        {
-            IsHydraModeOn = true;
-        }
-    ), "???");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "No Corpses", 
+            Cheats.NoCorpses,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "???");
 
-    CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-        "Hitstop On Heavy Hydra Load", 
-        Cheats.HitstopOnHeavyHydraLoad,
-        onDisable: (cheat) =>
-        {
-        },
-        onEnable: (cheat, manager) =>
-        {
-        }
-    ), "???");
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Hydra Mode", 
+            Cheats.HydraMode,
+            onDisable: (cheat) =>
+            {
+                IsHydraModeOn = false;
+            },
+            onEnable: (cheat, manager) =>
+            {
+                IsHydraModeOn = true;
+            }
+        ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Hitstop On Heavy Hydra Load", 
+            Cheats.HitstopOnHeavyHydraLoad,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "???");
     }
 }

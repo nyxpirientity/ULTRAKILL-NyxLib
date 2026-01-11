@@ -8,6 +8,7 @@ public class EnemyAdditions : ModoBehaviourManager
 {
     public EnemyHydraMod HydraMod { get; private set; }
     public EnemyPrefabMod PrefabMod { get; private set; }
+    public EnemyFriend EnemyFriend { get; private set; } = null;
 
     private new void Awake()
     {
@@ -27,20 +28,26 @@ public class EnemyAdditions : ModoBehaviourManager
         base.OnDestroy();
     }
 
+    /* if called we were instantiated by the game, most likely */
     public void SetupMods()
     {
         //Log.ExpectedInfo($"{name}.EnemyAdditions is setting up new modules...");
         HydraMod = AddMod<EnemyHydraMod>();
         HydraMod.InitializeAsNew();
+        EnemyFriend = AddMod<EnemyFriend>();
+        EnemyFriend.Leader = false;
         PrefabMod = AddMod<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
+        EnemyFriend.Leader = true;
     }
 
+    /* If called then we were instantiated by the mod most likely. */
     public void FindAndCacheMods(bool nullAcceptable = false)
     {
         //Log.ExpectedInfo($"{name}.EnemyAdditions is finding and caching modules...");
         HydraMod = GetMod<EnemyHydraMod>();   
         PrefabMod = GetMod<EnemyPrefabMod>();   
+        EnemyFriend = GetMod<EnemyFriend>();
         
         if (nullAcceptable)
         {

@@ -107,5 +107,8 @@ public static class Options
         IncludeLikelyLogs = IncludeLikelyLogsEntry.Value;
         IncludeUnlikelyLogs = IncludeUnlikelyLogsEntry.Value;
         IncludeUnexpectedLogs = IncludeUnexpectedLogsEntry.Value;
+
+        HydraBloodCapNumUpdatesPerTick = HydraBloodCapNumUpdatesPerTickEntry.Value;
+        HydraBloodCapNumBloodPerTick = HydraBloodCapNumBloodPerTickEntry.Value;
     }
 }

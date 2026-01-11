@@ -53,14 +53,14 @@ public class EnemyPrefabMod : ModoBehaviour
         }
     }
 
-    public void StorePrefab()
+    public void StorePrefab(bool force = false)
     {
         if (IsStoringPrefab)
         {
             return;
         }
 
-        if (Prefab != null)
+        if (Prefab != null && !force)
         {
             //Log.ExpectedInfo($"EnemyPrefabMod found that {Mono.name} already had a prefab, no need to make a new one");
             return;
@@ -97,6 +97,28 @@ public class EnemyPrefabMod : ModoBehaviour
         }
         Prefab = UnityEngine.Object.Instantiate(templateGo);
         Prefab.SetActive(false);
+        
+        var prefabEid = Prefab.GetComponent<EnemyIdentifier>() ?? Prefab.GetComponentInChildren<EnemyIdentifier>();
+
+        if (prefabEid.machine != null)
+        {
+            prefabEid.machine.musicRequested = false;
+        }
+        
+        if (prefabEid.zombie != null)
+        {
+            prefabEid.zombie.musicRequested = false;
+        }
+
+        if (prefabEid.statue != null)
+        {
+            prefabEid.statue.musicRequested = false;
+        }
+
+        if (prefabEid.drone != null)
+        {
+            prefabEid.drone.musicRequested = false;
+        }
 
         if (eid.enemyType != EnemyType.MaliciousFace)
         {

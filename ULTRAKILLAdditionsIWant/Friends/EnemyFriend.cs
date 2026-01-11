@@ -1,120 +1,68 @@
-using System.Reflection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
 using MelonLoader;
+using UKAIW;
+using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
-[RegisterTypeInIl2Cpp]
-public class EnemyFriend : MonoBehaviour
+public class EnemyFriend : ModoBehaviour
 {
-    EnemyIdentifier Enemy = null;
-    public LeaderFriend Leader = null;
-    public int Idx = -1;
+    public bool Leader = false;
 
-    private void Start()
+    public override void ModoFixedUpdate()
     {
-        try
-        {
-            UnsafeStart();
-        }
-        catch (System.Exception e)
-        {
-            MelonLogger.Error(e.ToString());
-        }
     }
 
-    private void UnsafeStart()
+    public override void ModoLateUpdate()
     {
-        Enemy = gameObject.GetComponent<EnemyIdentifier>();
-        
-        if (Enemy.enemyType == EnemyType.Idol)
-        {
-            Enemy.idol.target = null;
-        }
-
-        FieldInfo blessingsFI = typeof(EnemyIdentifier).GetField("blessings", BindingFlags.NonPublic | BindingFlags.Instance);
-        blessingsFI.SetValue(Enemy, 1);
-        Enemy.Unbless();            
-
-        Leader.OnEnabled += () =>
-        {
-            gameObject.SetActive(true);
-        };
-        
-        Leader.OnDisabled += () =>
-        {            
-            if (Leader.Enemy.Dead)
-            {
-                return;
-            }
-
-            gameObject.SetActive(false);
-
-            Destroy(gameObject);
-        };
-
-        Leader.OnDestroyed += () =>
-        {
-            if (Leader.Enemy.Dead)
-            {
-                return;
-            }
-            
-            Destroy(gameObject);
-        };
-
-        Leader.OnIdolTargetChanged += (idolTarget) =>
-        {
-            UpdateIdolTarget();
-        };
     }
 
-    private void Update()
+    public override void ModoOnDestroy()
     {
-        try
-        {
-            UnsafeUpdate();
-        }
-        catch (System.Exception e)
-        {
-            MelonLogger.Error(e.ToString());
-        }
     }
 
-    int TicksAlive = 0;
-    private void UnsafeUpdate()
+    public override void ModoOnDisable()
     {
-        if (Enemy == null)
-        {
-            Enemy = GetComponent<EnemyIdentifier>();
-        }
-
-        if (Enemy == null)
-        {
-            return;
-        }
-
-        UpdateIdolTarget();
     }
 
-    private void UpdateIdolTarget()
+    public override void ModoOnEnable()
     {
-        if (Enemy.enemyType == EnemyType.Idol)
-        {
-            LeaderFriend leaderTargetLeader = Leader.IdolTargetLeaderFriend;
+    }
 
-            if (leaderTargetLeader != null)
+    public override void ModoUpdate()
+    {
+    }
+
+    public override void OnClonedFrom(ModoBehaviour ClonedFrom)
+    {
+    }
+
+    public override void OnModRemoved()
+    {
+    }
+
+    protected override void ModoAwake()
+    {
+    }
+
+    protected override void ModoStart()
+    {
+        if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends))
+        {
+            if (Leader)
             {
-                if (leaderTargetLeader.Friends.Count > Idx)
-                {
-                    Enemy.idol.ChangeOverrideTarget(leaderTargetLeader.Friends[Idx].Enemy);
-                }
-                else
-                {
-                    Enemy.idol.PickNewTarget();
-                }
-            }
-            else
-            {
-                Enemy.idol.PickNewTarget();
+                EnemyAdditions eadd = (EnemyAdditions)Mono;
+                var prefab = eadd.PrefabMod.Prefab;
+                var friend = Instantiate(prefab);
+                friend.transform.position = Transform.position;
+                EnemyAdditions friendEadd = friend.GetComponent<EnemyAdditions>();
+                friend.SetActive(true);
+                friendEadd.FindAndCacheMods();
+                friendEadd.HydraMod.InitializeAsNew();
+                friendEadd.PrefabMod.StorePrefab(force: true);
+                friendEadd.HydraMod.PassPrefabToShared();
             }
         }
     }
