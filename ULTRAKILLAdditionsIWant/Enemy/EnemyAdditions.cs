@@ -8,18 +8,20 @@ public class EnemyAdditions : ModoBehaviourManager
 {
     public EnemyHydraMod HydraMod { get; private set; }
     public EnemyPrefabMod PrefabMod { get; private set; }
-    public EnemyFriend EnemyFriend { get; private set; } = null;
+    public EnemyFriendIdentifier EnemyFriend { get; private set; } = null;
+    [NonSerialized] public EnemyIdentifier Eid = null;
 
     private new void Awake()
     {
+        Eid = GetComponent<EnemyIdentifier>() ?? GetComponentInChildren<EnemyIdentifier>();
         base.Awake();
-        FindAndCacheMods(true);      
+        FindAndCacheMods(true);
     }
 
     private new void Start()
     {
         base.Start();
-        FindAndCacheMods(true);      
+        FindAndCacheMods(true);
     }
 
     /* to allow patching lol */
@@ -34,11 +36,11 @@ public class EnemyAdditions : ModoBehaviourManager
         //Log.ExpectedInfo($"{name}.EnemyAdditions is setting up new modules...");
         HydraMod = AddMod<EnemyHydraMod>();
         HydraMod.InitializeAsNew();
-        EnemyFriend = AddMod<EnemyFriend>();
-        EnemyFriend.Leader = false;
+        EnemyFriend = AddMod<EnemyFriendIdentifier>();
+        EnemyFriend.IsLeader = false;
         PrefabMod = AddMod<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
-        EnemyFriend.Leader = true;
+        EnemyFriend.IsLeader = true;
     }
 
     /* If called then we were instantiated by the mod most likely. */
@@ -47,7 +49,7 @@ public class EnemyAdditions : ModoBehaviourManager
         //Log.ExpectedInfo($"{name}.EnemyAdditions is finding and caching modules...");
         HydraMod = GetMod<EnemyHydraMod>();   
         PrefabMod = GetMod<EnemyPrefabMod>();   
-        EnemyFriend = GetMod<EnemyFriend>();
+        EnemyFriend = GetMod<EnemyFriendIdentifier>();
         
         if (nullAcceptable)
         {

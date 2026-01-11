@@ -7,9 +7,13 @@ using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
-public class EnemyFriend : ModoBehaviour
+public class EnemyFriendIdentifier : ModoBehaviour
 {
-    public bool Leader = false;
+    public bool IsLeader = false;
+    public EnemyFriendIdentifier Leader = null;
+    public EnemyFriendIdentifier[] Friends = null;
+    public int FriendIdx = -1;
+    public EnemyIdentifier Eid = null;
 
     public override void ModoFixedUpdate()
     {
@@ -21,6 +25,7 @@ public class EnemyFriend : ModoBehaviour
 
     public override void ModoOnDestroy()
     {
+        
     }
 
     public override void ModoOnDisable()
@@ -45,25 +50,117 @@ public class EnemyFriend : ModoBehaviour
 
     protected override void ModoAwake()
     {
+        Eid = ((EnemyAdditions)Mono).Eid;
     }
 
     protected override void ModoStart()
     {
         if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends))
         {
-            if (Leader)
+            if (IsLeader)
             {
-                EnemyAdditions eadd = (EnemyAdditions)Mono;
-                var prefab = eadd.PrefabMod.Prefab;
-                var friend = Instantiate(prefab);
-                friend.transform.position = Transform.position;
-                EnemyAdditions friendEadd = friend.GetComponent<EnemyAdditions>();
-                friend.SetActive(true);
-                friendEadd.FindAndCacheMods();
-                friendEadd.HydraMod.InitializeAsNew();
-                friendEadd.PrefabMod.StorePrefab(force: true);
-                friendEadd.HydraMod.PassPrefabToShared();
+                Friends = new EnemyFriendIdentifier[Options.NumFriendsToSpawn];
+                
+                var totalEnemyNum = Options.NumFriendsToSpawn + 1;
+                Bounds bounds = EnemyUtils.SolveEnemyBounds(GameObject);
+                Vector3 offset = Vector3.Project((bounds.size) * 0.5f, (Transform.rotation * Vector3.right));
+                Vector3 initialOrigin = Transform.position;
+                
+                bool useRotaryPositioning = false;
+
+                if (Eid.enemyType == EnemyType.Idol)
+                {
+                    useRotaryPositioning = true;
+                }
+                else if (Eid.enemyType == EnemyType.HideousMass && totalEnemyNum >= 3)
+                {
+                    useRotaryPositioning = true;
+                    offset *= 0.2f;
+                }
+                else if (Eid.enemyType == EnemyType.Minos)
+                {
+                    offset *= 0.0f;
+                }
+                else if (Eid.enemyType == EnemyType.FleshPanopticon || Eid.enemyType == EnemyType.FleshPrison)
+                {
+                    useRotaryPositioning = true;
+                }
+
+                if (!useRotaryPositioning)
+                {
+                    Transform.position += offset * -(totalEnemyNum / 2);
+                }
+
+                for (int i = 0; i < Options.NumFriendsToSpawn; i++)
+                {
+                    Vector3 currentOffset = offset * (i + 1);
+                    
+                    if (useRotaryPositioning)
+                    {
+                        currentOffset = (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)i + 1) / totalEnemyNum), 0.0f)) * (offset));   
+                    }
+
+                    Friends[i] = SpawnFriend(currentOffset, i);
+                    Friends[i].Leader = this;
+                }
+                
+                if (useRotaryPositioning)
+                {
+                    Transform.position = initialOrigin + (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, 0), 0.0f)) * (offset));   
+                }
+            }
+            else
+            {
+                NonLeaderStart();
             }
         }
+    }
+
+    private void NonLeaderStart()
+    {
+        if (Eid.enemyType == EnemyType.Idol)
+        {
+            IdolFindRightTarget();
+        }
+    }
+
+    private void IdolFindRightTarget()
+    {
+        var leaderTarget = Leader.Eid.idol.target;
+        
+        if (leaderTarget == null)
+        {
+            return;
+        }
+
+        var leaderTargetEadd = leaderTarget.gameObject.GetComponent<EnemyAdditions>();
+        var leaderTargetFriends = leaderTargetEadd.EnemyFriend.Friends;
+        var target = leaderTargetFriends[FriendIdx];
+        
+        if (leaderTargetFriends.Length <= FriendIdx)
+        {
+            return;
+        }
+
+        Eid.idol.ChangeOverrideTarget(target.Eid);
+    }
+
+    private EnemyFriendIdentifier SpawnFriend(Vector3 offset, int idx)
+    {
+        EnemyAdditions eadd = (EnemyAdditions)Mono;
+        var prefab = eadd.PrefabMod.Prefab;
+        var friend = Instantiate(prefab);
+        EnemyAdditions friendEadd = friend.GetComponent<EnemyAdditions>() ?? friend.GetComponentInChildren<EnemyAdditions>();
+        friend.SetActive(true);
+        friend = friendEadd.gameObject;
+        friend.SetActive(true);
+        friend.transform.position = Transform.position + offset;
+        friendEadd.FindAndCacheMods();
+        friendEadd.HydraMod.InitializeAsNew();
+        friendEadd.PrefabMod.StorePrefab(force: true);
+        friendEadd.HydraMod.PassPrefabToShared();
+        friendEadd.EnemyFriend.FriendIdx = idx;
+
+        return friendEadd.EnemyFriend;
     }
 }

@@ -27,6 +27,10 @@ public static class Options
     static MelonPreferences_Entry<int> HydraBloodCapNumBloodPerTickEntry = null;
     static MelonPreferences_Entry<int> HydraPrefabPoolCapacityEntry = null;
     static MelonPreferences_Entry<int> HydraPrefabPoolGrowPerUpdateEntry = null;
+
+    static MelonPreferences_Category FriendsCategory = null;
+    static MelonPreferences_Entry<int> NumFriendsToSpawnEntry = null;
+
     static public float HydraHealthDecayScale = 0.5f;
 
     static public float HydraDefaultWaitTime = 0.5f;
@@ -50,9 +54,12 @@ public static class Options
     static public bool IncludeUnlikelyLogs = false;
     static public bool IncludeUnexpectedLogs = false;
 
+    static public int NumFriendsToSpawn = 1;
+
     public static void Initialize()
     {
         LoggingCategory = MelonPreferences.CreateCategory("UKAIW-Logging");
+        
         IncludePerformanceLogsEntry = LoggingCategory.CreateEntry<bool>("IncludePerformanceLogs", false);
         IncludeTraceExpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeTraceExpectedLogs", false);
         IncludeExpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeExpectedLogs", false);
@@ -79,6 +86,9 @@ public static class Options
 
         HydraPrefabPoolCapacityEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolCapacity", 20);
         HydraPrefabPoolGrowPerUpdateEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolGrowPerUpdate", 3);
+
+        FriendsCategory = MelonPreferences.CreateCategory("UKAIW-Friends");
+        NumFriendsToSpawnEntry = FriendsCategory.CreateEntry<int>("NumFriendsToSpawn", 1);
 
         Reload();
     }
@@ -110,5 +120,7 @@ public static class Options
 
         HydraBloodCapNumUpdatesPerTick = HydraBloodCapNumUpdatesPerTickEntry.Value;
         HydraBloodCapNumBloodPerTick = HydraBloodCapNumBloodPerTickEntry.Value;
+
+        NumFriendsToSpawn = NumFriendsToSpawnEntry.Value;
     }
 }
