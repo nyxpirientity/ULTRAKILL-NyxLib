@@ -241,7 +241,7 @@ namespace UKAIW
             Player.PreDeath += DestroySelf;
         }
 
-        private void DestroySelf(NewMovement movement)
+        private void DestroySelf(NewMovement movement, int damage)
         {
             Destroy(GameObject);
         }

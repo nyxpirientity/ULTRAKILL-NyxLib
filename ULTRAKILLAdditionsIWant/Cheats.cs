@@ -6,7 +6,7 @@ using ULTRAKILL.Cheats;
 public static class Cheats
 {
     public const string OverrideCybergrindStartingWaveID = "ukaiw.cybergrind-start-wave-override";
-    public const string CybergrindQuickRestartID = "ukaiw.cybergrind-quick-restart";
+    public const string CybergrindQuickRestart = "ukaiw.cybergrind-quick-restart";
     public const string RadiantAllEnemiesID = "ukaiw.radiant-all-enemies";
     public const string SandAllEnemiesID = "ukaiw.sand-all-enemies";
     public const string BossBarAllEnemiesID = "ukaiw.boss-bar-all";
@@ -96,7 +96,7 @@ public static class Cheats
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Cybergrind Quick Restart", 
-            Cheats.CybergrindQuickRestartID,
+            Cheats.CybergrindQuickRestart,
             onDisable: (cheat) =>
             {
                 

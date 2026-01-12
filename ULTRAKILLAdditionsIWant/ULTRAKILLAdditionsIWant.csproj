@@ -68,6 +68,7 @@
 	</ItemGroup>
 	<Target Name="PostBuildUnix" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Unix'">
 	  <Exec Command="cp &quot;$(OutDir)/ULTRAKILLAdditionsIWant.dll&quot; &quot;$ULTRAKILL_DIR/Mods&quot;" />
+	  <Exec Command="cp &quot;resources/ukaiw_assets&quot; &quot;$ULTRAKILL_DIR/Mods&quot; -r" />
 	</Target>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
 	  <Exec Command="copy &quot;$(OutDir)\ULTRAKILLAdditionsIWant.dll&quot; &quot;%25ULTRAKILL_DIR%25\Mods&quot;" />

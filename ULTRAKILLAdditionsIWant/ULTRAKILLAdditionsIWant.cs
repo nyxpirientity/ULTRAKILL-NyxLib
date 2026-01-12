@@ -32,6 +32,7 @@ namespace UKAIW
             Hydra.Initialize();
             MusicAdditions.Initialize();
             LevelAdditionsManager.Initialize();
+            CybergrindAdditions.Initialize();
         }
 
         public override void OnSceneWasLoaded(int buildindex, string sceneName) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.

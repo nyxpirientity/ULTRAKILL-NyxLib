@@ -10,7 +10,7 @@ namespace UKAIW
 {
     public static class Player
     {
-        public static Action<NewMovement> PreDeath = null;
+        public static Action<NewMovement, int> PreDeath = null;
         public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PreHurt = null;
         public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PostHurt = null;
 
@@ -22,8 +22,6 @@ namespace UKAIW
 
         private static void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            PreDeath = null;
-            
             var player = MonoSingleton<NewMovement>.Instance;
             
             player?.gameObject.AddComponent<PlayerAdditions>();
@@ -68,7 +66,7 @@ namespace UKAIW
 
             if (newMovement.hp - damage <= 0 && mortal)
             {
-                Player.PreDeath?.Invoke(newMovement);
+                Player.PreDeath?.Invoke(newMovement, damage);
             }
         }
 

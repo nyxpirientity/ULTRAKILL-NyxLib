@@ -72,23 +72,9 @@ namespace UKAIW
                     return EnemyGameplayRank.Ultraboss;
                 case EnemyType.Soldier:
                 /*
-                * Likely an unexpected decision, but my reasoning is that they appear in layer 2, in which you can only have nail guns, slab revolvers, and shotguns
-                * and they're explosion proof. Furthermore, unlike malicious faces, they immediately start running around rapidly upon instantiating.
-                * As it is if they're considered normal, your only real counters is to parry them with a *direct* hit, 
-                * to slowly pick them off with the punch, revolver shot, punch combo,
-                * to slowly pick all of the clones off with nails, or to hope one somehow ends up off of the ground and them you can hit them with any explosion 
-                * and it'll get them.
-                * For that reason, it seems like a disproportionate difficulty increase.
-                * Also, you can knock them off the ground with explosions... but only if it's non-damaging, for some ridiculous reason. 
-                * Whilst it would be cool if that weren't the case, it is indeed the case unfortunately. 
-                * So you cannot do a 'blast off of the ground with a proj boost then hit them with another explosive' move.
-                * You *might* be able to get them all with a red explosion? Not sure though. Either way, I'd say that's both boring and a disproportionate 
-                * difficulty increase.
-                * And upon further testing, a regular shotgun fire at close range *sometimes* gets them all, alternatively, a close range shotgun parry
-                * works fairly consistently. Still seems disproportionate, you get swarmed by these on the second layer so it seems unfun.
-                * And I mean, the second layer also just is bad. So like, whatever it takes to make it last less time.
+                * the second layer also just is bad. So like, whatever it takes to make it last less time.
                 */
-                    return EnemyGameplayRank.Miniboss;
+                    return EnemyGameplayRank.Normal;
                 case EnemyType.Stalker:
                     return EnemyGameplayRank.Normal;
                 case EnemyType.Stray:
