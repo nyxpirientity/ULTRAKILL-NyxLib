@@ -10,6 +10,8 @@ public class EnemyAdditions : ModoBehaviourManager
     public EnemyPrefabMod PrefabMod { get; private set; }
     public EnemyFriendIdentifier EnemyFriend { get; private set; } = null;
     public EnemyBloodFuel EnemyBloodFuel { get; private set; } = null;
+    public SaltyEnemy SaltyEnemy { get; private set; } = null;
+    
     [NonSerialized] public EnemyIdentifier Eid = null;
 
     private new void Awake()
@@ -39,6 +41,7 @@ public class EnemyAdditions : ModoBehaviourManager
         HydraMod.InitializeAsNew();
         EnemyFriend = AddMod<EnemyFriendIdentifier>();
         EnemyBloodFuel = AddMod<EnemyBloodFuel>();
+        SaltyEnemy = AddMod<SaltyEnemy>();
         EnemyFriend.IsLeader = false;
         PrefabMod = AddMod<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();

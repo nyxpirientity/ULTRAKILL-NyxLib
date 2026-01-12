@@ -17,7 +17,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
     public override void ModoFixedUpdate()
     {
-        if (Eid.enemyType == EnemyType.Idol || !IsLeader)
+        if (Eid.enemyType == EnemyType.Idol || !IsLeader && Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends))
         {
             IdolFindRightTarget();
         }

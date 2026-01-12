@@ -45,7 +45,7 @@ namespace UKAIW
             {
                 damage = Mathf.RoundToInt((float)damage * newMovement.asscon.damageTaken);
             }
-
+            
             if (Invincibility.Enabled)
             {
                 damage = 0;

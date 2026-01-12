@@ -41,6 +41,7 @@ namespace UKAIW
                 }
             }
 
+            Log.ExpectedInfo($"Seemingly successfully loaded asset at '{path}'");
             return texture;
         }
 

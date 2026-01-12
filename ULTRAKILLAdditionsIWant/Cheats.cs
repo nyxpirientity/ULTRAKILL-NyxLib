@@ -26,6 +26,7 @@ public static class Cheats
     public const string PlayCleanMusicWithBattle = "ukaiw.clean-music-with-battle";
     public const string AlwaysBattleMusic = "ukaiw.always-battle-music";
     public const string BloodFueledEnemies = "ukaiw.blood-fueled-enemies";
+    public const string SaltyEnemies = "ukaiw.salty-enemies";
 
     public static int FriendCount = 0;
 
@@ -308,6 +309,17 @@ public static class Cheats
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Hitstop On Heavy Hydra Load", 
             Cheats.HitstopOnHeavyHydraLoad,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Salty Enemies", 
+            Cheats.SaltyEnemies,
             onDisable: (cheat) =>
             {
             },

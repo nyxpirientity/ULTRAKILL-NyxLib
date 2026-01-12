@@ -35,6 +35,16 @@ public static class Options
     static MelonPreferences_Entry<float> BloodFuelEnemiesHealScalarEntry = null;
     static MelonPreferences_Entry<float> BloodFuelEnemiesDistDivisorEntry = null;
 
+    static MelonPreferences_Category SaltCategory = null;
+    static MelonPreferences_Entry<float> DestructiveRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> ChaoticRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> BrutalRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> AnarchicRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> SupremeRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> SSadisticRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> SSSensoredStormRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> ULTRAKILLRadianceTierEntry = null;
+
     static public float HydraHealthDecayScale = 0.5f;
 
     static public float HydraDefaultWaitTime = 0.5f;
@@ -62,6 +72,15 @@ public static class Options
 
     static public float BloodFuelEnemiesHealScalar = 0.2f;
     static public float BloodFuelEnemiesDistDivisor = 8.0f;
+
+    static public float DestructiveRadianceTier = 0.2f;
+    static public float ChaoticRadianceTier = 8.0f;
+    static public float BrutalRadianceTier = 8.0f;
+    static public float AnarchicRadianceTier = 8.0f;
+    static public float SupremeRadianceTier = 8.0f;
+    static public float SSadisticRadianceTier = 8.0f;
+    static public float SSSensoredStormRadianceTier = 8.0f;
+    static public float ULTRAKILLRadianceTier = 8.0f;
 
     public static void Initialize()
     {
@@ -101,6 +120,16 @@ public static class Options
         BloodFuelEnemiesHealScalarEntry = BloodFuelEnemiesCategory.CreateEntry<float>("BloodFuelEnemiesHealScalar", 0.4f);
         BloodFuelEnemiesDistDivisorEntry = BloodFuelEnemiesCategory.CreateEntry<float>("BloodFuelEnemiesDistDivisor", 8.0f);
 
+        SaltCategory = MelonPreferences.CreateCategory("UKAIW-Salt");
+        DestructiveRadianceTierEntry = SaltCategory.CreateEntry<float>("DestructiveRadianceTier", 0.0f);
+        ChaoticRadianceTierEntry = SaltCategory.CreateEntry<float>("ChaoticRadianceTier", 0.0f);
+        BrutalRadianceTierEntry = SaltCategory.CreateEntry<float>("BrutalRadianceTier", 0.5f);
+        AnarchicRadianceTierEntry = SaltCategory.CreateEntry<float>("AnarchicRadianceTier", 1.0f);
+        SupremeRadianceTierEntry = SaltCategory.CreateEntry<float>("SupremeRadianceTier", 1.25f);
+        SSadisticRadianceTierEntry = SaltCategory.CreateEntry<float>("SSadisticRadianceTier", 1.5f);
+        SSSensoredStormRadianceTierEntry = SaltCategory.CreateEntry<float>("SSSensoredStormRadianceTier", 2.0f);
+        ULTRAKILLRadianceTierEntry = SaltCategory.CreateEntry<float>("ULTRAKILLRadianceTier", 3.0f);
+        
         Reload();
     }
 
@@ -136,5 +165,14 @@ public static class Options
 
         BloodFuelEnemiesHealScalar = BloodFuelEnemiesHealScalarEntry.Value;
         BloodFuelEnemiesDistDivisor = BloodFuelEnemiesDistDivisorEntry.Value;
+
+        DestructiveRadianceTier = DestructiveRadianceTierEntry.Value;
+        ChaoticRadianceTier = ChaoticRadianceTierEntry.Value;
+        BrutalRadianceTier = BrutalRadianceTierEntry.Value;
+        AnarchicRadianceTier = AnarchicRadianceTierEntry.Value;
+        SupremeRadianceTier = SupremeRadianceTierEntry.Value;
+        SSadisticRadianceTier = SSadisticRadianceTierEntry.Value;
+        SSSensoredStormRadianceTier = SSSensoredStormRadianceTierEntry.Value;
+        ULTRAKILLRadianceTier = ULTRAKILLRadianceTierEntry.Value;
     }
 }

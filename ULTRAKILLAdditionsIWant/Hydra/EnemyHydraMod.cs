@@ -97,8 +97,11 @@ namespace UKAIW
 
         public override void ModoOnDestroy()
         {
-            Player.PreDeath -= DestroySelf;
-
+            if (Depth > 0)
+            {
+                Player.PreDeath -= DestroySelf;
+            }
+            
             TryDecrementInstanceCount();
         }
 
@@ -237,8 +240,11 @@ namespace UKAIW
             {
                 Eid.statue.health = newHealth;
             }
-
-            Player.PreDeath += DestroySelf;
+            
+            if (Depth > 0)
+            {
+                Player.PreDeath += DestroySelf;
+            }
         }
 
         private void DestroySelf(NewMovement movement, int damage)
