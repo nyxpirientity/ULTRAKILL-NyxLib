@@ -8,34 +8,44 @@ namespace UKAIW
     public class SaltyEnemy : ModoBehaviour
     {
         EnemyIdentifier Eid = null;
+        EnemyAdditions Eadd = null;
         bool RequestedBuffs = false;
 
         public override void ModoFixedUpdate()
         {
-            int rankIndex = StyleHUD.Instance.rankIndex;
-            StyleRanks rank = (StyleRanks)(rankIndex);
-            var radienceTier = rank switch
+            if (Cheats.IsCheatEnabled(Cheats.SaltyEnemies))
             {
-                StyleRanks.Destructive => Options.DestructiveRadianceTier,
-                StyleRanks.Chaotic => Options.ChaoticRadianceTier,
-                StyleRanks.Brutal => Options.BrutalRadianceTier,
-                StyleRanks.Anarchic => Options.AnarchicRadianceTier,
-                StyleRanks.Supreme => Options.SupremeRadianceTier,
-                StyleRanks.SSadistic => Options.SSadisticRadianceTier,
-                StyleRanks.SSSensoredStorm => Options.SSSensoredStormRadianceTier,
-                StyleRanks.ULTRAKILL => Options.ULTRAKILLRadianceTier,
-                _ => throw new Exception("A great sadness has struck the city."),
-            };
-            
-            if (radienceTier <= 0.01f)
+                var prefabEid = Eadd.PrefabMod.Prefab.GetComponent<EnemyIdentifier>();
+                var radienceTier = prefabEid.hasRadianceEffected ? prefabEid.radianceTier : 0.0f;
+                int rankIndex = StyleHUD.Instance.rankIndex;
+                StyleRanks rank = (StyleRanks)(rankIndex);
+                radienceTier += rank switch
+                {
+                    StyleRanks.Destructive => Options.DestructiveRadianceTier,
+                    StyleRanks.Chaotic => Options.ChaoticRadianceTier,
+                    StyleRanks.Brutal => Options.BrutalRadianceTier,
+                    StyleRanks.Anarchic => Options.AnarchicRadianceTier,
+                    StyleRanks.Supreme => Options.SupremeRadianceTier,
+                    StyleRanks.SSadistic => Options.SSadisticRadianceTier,
+                    StyleRanks.SSSensoredStorm => Options.SSSensoredStormRadianceTier,
+                    StyleRanks.ULTRAKILL => Options.ULTRAKILLRadianceTier,
+                    _ => throw new Exception("A great sadness has struck the city."),
+                };
+
+                if (radienceTier <= 0.01f)
+                {
+                    UnrequestBuffs();
+                    return;
+                }
+                
+                RequestBuffs();
+
+                Eid.radianceTier = radienceTier;
+            }
+            else
             {
                 UnrequestBuffs();
-                return;
             }
-            
-            RequestBuffs();
-
-            Eid.radianceTier = radienceTier;
         }
 
         private void RequestBuffs()
@@ -94,7 +104,8 @@ namespace UKAIW
 
         protected override void ModoStart()
         {
-            Eid = ((EnemyAdditions)Mono).Eid;
+            Eadd = ((EnemyAdditions)Mono);
+            Eid = Eadd.Eid;
         }
     }
 }
