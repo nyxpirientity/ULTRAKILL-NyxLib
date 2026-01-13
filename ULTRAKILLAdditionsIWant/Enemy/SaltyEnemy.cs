@@ -180,13 +180,6 @@ namespace UKAIW
 
         protected override void ModoStart()
         {
-            Eadd = ((EnemyAdditions)Mono);
-            Eid = Eadd.Eid;
-            var thing = Mono.GetComponents<Component>();
-            foreach (var component in thing)
-            {
-                MelonLogger.Msg($"{component.GetType().FullName}");
-            }
         }
     }
 }
