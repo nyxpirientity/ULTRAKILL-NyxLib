@@ -80,7 +80,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 
                 var totalEnemyNum = Options.NumFriendsToSpawn + 1;
                 Bounds bounds = EnemyUtils.SolveEnemyBounds(GameObject);
-                Vector3 offset = Vector3.Project((bounds.size), (Transform.rotation * Vector3.right));
+                Vector3 offset = (Transform.rotation * Vector3.right) * bounds.size.x;
                 Vector3 initialOrigin = Transform.position;
                 
                 bool useRotaryPositioning = false;
@@ -88,7 +88,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 if (Eid.enemyType == EnemyType.Idol)
                 {
                     useRotaryPositioning = true;
-                    offset *= 0.5f;
+                    offset *= 0.3f;
                 }
                 else if (Eid.enemyType == EnemyType.HideousMass && totalEnemyNum >= 3)
                 {
@@ -99,7 +99,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 {
                     offset *= 0.0f;
                 }
-                else if (Eid.enemyType == EnemyType.FleshPanopticon || Eid.enemyType == EnemyType.FleshPrison)
+                else if ((Eid.enemyType == EnemyType.FleshPanopticon || Eid.enemyType == EnemyType.FleshPrison) && totalEnemyNum >= 3)
                 {
                     useRotaryPositioning = true;
                 }
@@ -123,7 +123,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 
                 if (useRotaryPositioning)
                 {
-                    Transform.position = initialOrigin + (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, 0), 0.0f)) * (offset));   
+                    Transform.position = initialOrigin + (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)(0) + -0.5f) / totalEnemyNum), 0.0f)) * (offset)); ;   
                 }
             }
             else
