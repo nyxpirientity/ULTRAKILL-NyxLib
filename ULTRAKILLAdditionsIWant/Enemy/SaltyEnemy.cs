@@ -141,7 +141,8 @@ namespace UKAIW
 
             if (Options.SaltEffectDamage && RequestedDamageBuff)
             {
-                Eid.DamageUnbuff();                
+                Eid.DamageUnbuff();          
+      
                 RequestedDamageBuff = false;
             }
         }
@@ -180,6 +181,8 @@ namespace UKAIW
 
         protected override void ModoStart()
         {
+            Eadd = ((EnemyAdditions)Mono);
+            Eid = Eadd.Eid;
         }
     }
 }
