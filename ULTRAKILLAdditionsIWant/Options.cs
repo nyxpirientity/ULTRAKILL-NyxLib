@@ -44,6 +44,9 @@ public static class Options
     static MelonPreferences_Entry<float> SSadisticRadianceTierEntry = null;
     static MelonPreferences_Entry<float> SSSensoredStormRadianceTierEntry = null;
     static MelonPreferences_Entry<float> ULTRAKILLRadianceTierEntry = null;
+    static MelonPreferences_Entry<bool> SaltEffectHealthEntry = null;
+    static MelonPreferences_Entry<bool> SaltEffectSpeedEntry = null;
+    static MelonPreferences_Entry<bool> SaltEffectDamageEntry = null;
 
     static public float HydraHealthDecayScale = 0.5f;
 
@@ -81,6 +84,10 @@ public static class Options
     static public float SSadisticRadianceTier = 8.0f;
     static public float SSSensoredStormRadianceTier = 8.0f;
     static public float ULTRAKILLRadianceTier = 8.0f;
+
+    static public bool SaltEffectSpeed = false;
+    static public bool SaltEffectHealth = false;
+    static public bool SaltEffectDamage = false;
 
     public static void Initialize()
     {
@@ -129,6 +136,11 @@ public static class Options
         SSadisticRadianceTierEntry = SaltCategory.CreateEntry<float>("SSadisticRadianceTier", 1.5f);
         SSSensoredStormRadianceTierEntry = SaltCategory.CreateEntry<float>("SSSensoredStormRadianceTier", 2.0f);
         ULTRAKILLRadianceTierEntry = SaltCategory.CreateEntry<float>("ULTRAKILLRadianceTier", 3.0f);
+
+        SaltEffectSpeedEntry = SaltCategory.CreateEntry<bool>("SaltEffectSpeed", true);
+        SaltEffectHealthEntry = SaltCategory.CreateEntry<bool>("SaltEffectHealth", false);
+        SaltEffectDamageEntry = SaltCategory.CreateEntry<bool>("SaltEffectDamage", false);
+        
         
         Reload();
     }
@@ -174,5 +186,9 @@ public static class Options
         SSadisticRadianceTier = SSadisticRadianceTierEntry.Value;
         SSSensoredStormRadianceTier = SSSensoredStormRadianceTierEntry.Value;
         ULTRAKILLRadianceTier = ULTRAKILLRadianceTierEntry.Value;
+
+        SaltEffectDamage = SaltEffectDamageEntry.Value;
+        SaltEffectHealth = SaltEffectHealthEntry.Value;
+        SaltEffectSpeed = SaltEffectSpeedEntry.Value;
     }
 }

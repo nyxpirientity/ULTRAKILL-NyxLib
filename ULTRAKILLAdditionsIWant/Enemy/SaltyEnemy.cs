@@ -1,5 +1,7 @@
 using System;
+using System.Reflection;
 using MelonLoader;
+using Sandbox;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
@@ -9,13 +11,15 @@ namespace UKAIW
     {
         EnemyIdentifier Eid = null;
         EnemyAdditions Eadd = null;
-        bool RequestedBuffs = false;
+        bool RequestedSpeedBuff = false;
+        bool RequestedHealthBuff = false;
+        bool RequestedDamageBuff = false;
 
         public override void ModoFixedUpdate()
         {
             if (Cheats.IsCheatEnabled(Cheats.SaltyEnemies))
             {
-                var prefabEid = Eadd.PrefabMod.Prefab.GetComponent<EnemyIdentifier>();
+                var prefabEid = Eadd.PrefabMod.Prefab.GetComponent<EnemyIdentifier>() ?? Eadd.PrefabMod.Prefab.GetComponentInChildren<EnemyIdentifier>();
                 var radienceTier = prefabEid.hasRadianceEffected ? prefabEid.radianceTier : 0.0f;
                 int rankIndex = StyleHUD.Instance.rankIndex;
                 StyleRanks rank = (StyleRanks)(rankIndex);
@@ -38,9 +42,42 @@ namespace UKAIW
                     return;
                 }
                 
-                RequestBuffs();
-
-                Eid.radianceTier = radienceTier;
+                RequestBuffs(radienceTier);
+                
+                if (rank is StyleRanks.ULTRAKILL)
+                {
+                    switch (Eid.enemyType)
+                    {
+                        case EnemyType.Swordsmachine:
+                            Eid.GetComponent<SwordsMachine>()?.Enrage();
+                            break;
+                        case EnemyType.Cerberus:
+                            Eid.GetComponent<StatueBoss>()?.Enrage();
+                            break;
+                        case EnemyType.Virtue:
+                        case EnemyType.Drone:
+                            Eid.GetComponent<Drone>()?.Enrage();
+                            break;
+                        case EnemyType.V2:
+                            Eid.GetComponent<V2>()?.Enrage();
+                            break;
+                        case EnemyType.Mindflayer:
+                            Eid.GetComponent<Mindflayer>()?.Enrage();
+                            break;
+                        case EnemyType.HideousMass:
+                            if (!(Eid.GetComponent<Mass>()?.GetComponentInChildren<EnemySimplifier>()?.enraged).GetValueOrDefault(true))
+                            {
+                                Eid.GetComponent<Mass>()?.Enrage();
+                            }
+                            break;
+                        case EnemyType.MaliciousFace:
+                            Eid.GetComponent<SpiderBody>()?.Enrage();
+                            break;
+                        case EnemyType.Gutterman:
+                            Eid.GetComponent<Gutterman>()?.Enrage();
+                            break;
+                    }
+                }
             }
             else
             {
@@ -48,26 +85,65 @@ namespace UKAIW
             }
         }
 
-        private void RequestBuffs()
+        private void RequestBuffs(float radienceTier)
         {
-            if (RequestedBuffs)
+            if (Options.SaltEffectSpeed)
             {
-                return;
+                Eid.speedBuffModifier = radienceTier;
             }
 
-            Eid.BuffAll();
-            RequestedBuffs = true;
+            if (Options.SaltEffectDamage)
+            {
+                Eid.damageBuffModifier = radienceTier;
+            }
+
+            if (Options.SaltEffectHealth)
+            {
+                Eid.healthBuffModifier = radienceTier;
+            }
+
+            if (Options.SaltEffectSpeed && !RequestedSpeedBuff)
+            {
+                Eid.SpeedBuff(radienceTier);                
+                RequestedSpeedBuff = true;
+            }
+
+            if (Options.SaltEffectHealth && !RequestedHealthBuff)
+            {
+                Eid.HealthBuff(radienceTier);                
+                RequestedHealthBuff = true;
+            }
+
+            if (Options.SaltEffectDamage && !RequestedDamageBuff)
+            {
+                Eid.DamageBuff(radienceTier);                
+                RequestedDamageBuff = true;
+            }
+
+            Eid.UpdateBuffs();
+            MethodInfo updateModifiersFI = typeof(EnemyIdentifier).GetMethod("UpdateModifiers", BindingFlags.NonPublic | BindingFlags.Instance);
+            updateModifiersFI.Invoke(Eid, null);
         }
 
         private void UnrequestBuffs()
         {
-            if (!RequestedBuffs)
+            if (Options.SaltEffectSpeed && RequestedSpeedBuff)
             {
-                return;
+                Eid.SpeedUnbuff();                
+                RequestedSpeedBuff = false;
             }
 
-            Eid.UnbuffAll();
-            RequestedBuffs = false;
+            if (Options.SaltEffectHealth && RequestedHealthBuff)
+            {
+                Eid.HealthUnbuff();                
+                RequestedHealthBuff = false;
+            }
+
+            if (Options.SaltEffectDamage && RequestedDamageBuff)
+            {
+                Eid.DamageUnbuff();                
+                RequestedDamageBuff = false;
+            }
         }
 
         public override void ModoLateUpdate()
@@ -106,6 +182,11 @@ namespace UKAIW
         {
             Eadd = ((EnemyAdditions)Mono);
             Eid = Eadd.Eid;
+            var thing = Mono.GetComponents<Component>();
+            foreach (var component in thing)
+            {
+                MelonLogger.Msg($"{component.GetType().FullName}");
+            }
         }
     }
 }
