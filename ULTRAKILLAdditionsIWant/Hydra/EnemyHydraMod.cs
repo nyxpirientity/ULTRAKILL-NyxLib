@@ -10,7 +10,7 @@ using UnityEngine.Assertions;
 namespace UKAIW
 {
     [Serializable]
-    public class EnemyHydraMod : ModoBehaviour
+    public class EnemyHydraMod : MonoBehaviour
     {
         public class SharedData : ScriptableObject
         {
@@ -86,16 +86,8 @@ namespace UKAIW
         private bool ExcludedFromHydraCheat = false;
 
         private float NoDupeTime = 0.0f;
-        public override void ModoFixedUpdate()
-        {
 
-        }
-
-        public override void ModoLateUpdate()
-        {
-        }
-
-        public override void ModoOnDestroy()
+        protected void OnDestroy()
         {
             if (Depth > 0)
             {
@@ -126,19 +118,7 @@ namespace UKAIW
             }
         }
 
-        public override void ModoOnDisable()
-        {
-        }
-
-        public override void ModoOnEnable()
-        {
-        }
-
-        public override void OnModRemoved()
-        {
-        }
-
-        public override void ModoUpdate()
+        protected void Update()
         {
             if (ExcludedFromHydraCheat)
             {
@@ -161,13 +141,13 @@ namespace UKAIW
             }
         }
 
-        protected override void ModoAwake()
+        protected void Awake()
         {
         }
 
-        protected override void ModoStart()
+        protected void Start()
         {   
-            Eid = Mono.GetComponent<EnemyIdentifier>();
+            Eid = GetComponent<EnemyIdentifier>();
 
             if (Eid.enemyType == EnemyType.Idol)
             {
@@ -175,15 +155,15 @@ namespace UKAIW
                 return;
             }
 
-            Assert.IsNotNull(Eid, $"For object by name {Mono.gameObject.name}");
+            Assert.IsNotNull(Eid, $"For object by name {gameObject.name}");
 
             if (Eid.dead)
             {
                 return;
             }
 
-            Assert.IsTrue(Depth >= 0, $"For object by name {Mono.gameObject.name}");
-            Assert.IsNotNull(Shared, $"For object by name {Mono.gameObject.name}");
+            Assert.IsTrue(Depth >= 0, $"For object by name {gameObject.name}");
+            Assert.IsNotNull(Shared, $"For object by name {gameObject.name}");
          
             MusicManager.Instance?.PlayBattleMusic();
 
@@ -249,7 +229,7 @@ namespace UKAIW
 
         private void DestroySelf(NewMovement movement, int damage)
         {
-            Destroy(GameObject);
+            Destroy(gameObject);
         }
 
         public void OnDeath()
@@ -261,7 +241,7 @@ namespace UKAIW
 
             if (Eid == null)
             {
-                Eid = Mono.GetComponent<EnemyIdentifier>();
+                Eid = GetComponent<EnemyIdentifier>();
             }
 
             if (Eid.Dead)
@@ -332,10 +312,9 @@ namespace UKAIW
                 return;
             }
 
-            Assert.IsNotNull(Mono, $"For object by name {Mono.gameObject.name}");
-            Assert.IsTrue(Mono is EnemyAdditions, $"For object by name {Mono.gameObject.name}");
-            Assert.IsNotNull(((EnemyAdditions)Mono).PrefabMod, $"For object by name {Mono.gameObject.name}");
-            Assert.IsNotNull(((EnemyAdditions)Mono).PrefabMod.Prefab, $"For object by name {Mono.gameObject.name}");
+            Assert.IsNotNull(GetComponent<EnemyAdditions>(), $"For object by name {gameObject.name}");
+            Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod, $"For object by name {gameObject.name}");
+            Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod.Prefab, $"For object by name {gameObject.name}");
 
             Hydra.QueuedDupeInfo dupeInfo = new Hydra.QueuedDupeInfo();
             
@@ -345,11 +324,11 @@ namespace UKAIW
             }
             else
             {
-                dupeInfo.Position = Transform.position;
+                dupeInfo.Position = transform.position;
             }
             
-            dupeInfo.Rotation = Transform.rotation;
-            dupeInfo.LocalScale = Transform.localScale;
+            dupeInfo.Rotation = transform.rotation;
+            dupeInfo.LocalScale = transform.localScale;
             dupeInfo.SharedData = Shared;
             dupeInfo.Depth = Depth + 1;
             dupeInfo.EnemyType = Eid.enemyType;
@@ -389,22 +368,18 @@ namespace UKAIW
         {
             Shared = ScriptableObject.CreateInstance<SharedData>();
             Shared.InstanceCount += 1;
-            Shared.Bounds = EnemyUtils.SolveEnemyBounds(GameObject);
+            Shared.Bounds = EnemyUtils.SolveEnemyBounds(gameObject);
             ContributesToInstanceCount = true;
             Depth = 0;
-            Shared.CreatorName = Mono.gameObject.name;
+            Shared.CreatorName = gameObject.name;
         }
 
         public void PassPrefabToShared()
         {
             if (Shared.Prefab == null)
             {
-                Shared.Prefab = ((EnemyAdditions)Mono).PrefabMod.Prefab;
+                Shared.Prefab = GetComponent<EnemyAdditions>().PrefabMod.Prefab;
             }
-        }
-
-        public override void OnClonedFrom(ModoBehaviour ClonedFrom)
-        {
         }
 
         internal void DuringDeath()

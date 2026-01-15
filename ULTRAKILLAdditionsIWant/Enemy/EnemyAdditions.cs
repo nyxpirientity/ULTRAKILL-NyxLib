@@ -4,7 +4,7 @@ using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 [Serializable]
-public class EnemyAdditions : ModoBehaviourManager
+public class EnemyAdditions : MonoBehaviour
 {
     public EnemyHydraMod HydraMod { get; private set; }
     public EnemyPrefabMod PrefabMod { get; private set; }
@@ -17,33 +17,30 @@ public class EnemyAdditions : ModoBehaviourManager
     private new void Awake()
     {
         Eid = GetComponent<EnemyIdentifier>() ?? GetComponentInChildren<EnemyIdentifier>();
-        base.Awake();
         FindAndCacheMods(true);
     }
 
     private new void Start()
     {
-        base.Start();
         FindAndCacheMods(true);
     }
 
     /* to allow patching lol */
     private new void OnDestroy()
     {
-        base.OnDestroy();
     }
 
     /* if called we were instantiated by the game, most likely */
     public void SetupMods()
     {
         //Log.ExpectedInfo($"{name}.EnemyAdditions is setting up new modules...");
-        HydraMod = AddMod<EnemyHydraMod>();
+        HydraMod = gameObject.AddComponent<EnemyHydraMod>();
         HydraMod.InitializeAsNew();
-        EnemyFriend = AddMod<EnemyFriendIdentifier>();
-        EnemyBloodFuel = AddMod<EnemyBloodFuel>();
-        SaltyEnemy = AddMod<SaltyEnemy>();
+        EnemyFriend = gameObject.AddComponent<EnemyFriendIdentifier>();
+        EnemyBloodFuel = gameObject.AddComponent<EnemyBloodFuel>();
+        SaltyEnemy = gameObject.AddComponent<SaltyEnemy>();
         EnemyFriend.IsLeader = false;
-        PrefabMod = AddMod<EnemyPrefabMod>();
+        PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
         EnemyFriend.IsLeader = true;
     }
@@ -52,9 +49,11 @@ public class EnemyAdditions : ModoBehaviourManager
     public void FindAndCacheMods(bool nullAcceptable = false)
     {
         //Log.ExpectedInfo($"{name}.EnemyAdditions is finding and caching modules...");
-        HydraMod = GetMod<EnemyHydraMod>();   
-        PrefabMod = GetMod<EnemyPrefabMod>();   
-        EnemyFriend = GetMod<EnemyFriendIdentifier>();
+        HydraMod = GetComponent<EnemyHydraMod>();   
+        PrefabMod = GetComponent<EnemyPrefabMod>();   
+        EnemyFriend = GetComponent<EnemyFriendIdentifier>();
+        SaltyEnemy = GetComponent<SaltyEnemy>();
+        EnemyBloodFuel = GetComponent<EnemyBloodFuel>();
         
         if (nullAcceptable)
         {

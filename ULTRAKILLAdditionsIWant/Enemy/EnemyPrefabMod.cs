@@ -4,48 +4,20 @@ using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 [Serializable]
-public class EnemyPrefabMod : ModoBehaviour
+public class EnemyPrefabMod : MonoBehaviour
 {
     public GameObject Prefab = null;
     private EnemyIdentifier Eid = null;
 
-    public override void ModoFixedUpdate()
-    {
-    }
-
-    public override void ModoLateUpdate()
-    {
-    }
-
-    public override void ModoOnDestroy()
-    {
-    }
-
-    public override void ModoOnDisable()
-    {
-    }
-
-    public override void ModoOnEnable()
-    {
-    }
-
-    public override void OnModRemoved()
-    {
-    }
-
-    public override void ModoUpdate()
-    {
-    }
-
     private static bool IsStoringPrefab = false;
-    protected override void ModoAwake()
+    protected void Awake()
     {
         Eid = GetComponent<EnemyIdentifier>();
 
         StorePrefab();
     }
 
-    protected override void ModoStart()
+    protected void Start()
     {
         if (Prefab == null)
         {
@@ -79,13 +51,13 @@ public class EnemyPrefabMod : ModoBehaviour
         
         if (eid.enemyType == EnemyType.MaliciousFace)
         {
-            templateGo = GameObject.transform.parent.gameObject;
+            templateGo = gameObject.transform.parent.gameObject;
         }
         else
         {
-            templateGo = GameObject;
-            Assert.IsNotNull(templateGo.GetComponent<EnemyAdditions>().GetMod<EnemyHydraMod>());
-            Assert.IsNotNull(templateGo.GetComponent<EnemyAdditions>().GetMod<EnemyPrefabMod>());
+            templateGo = gameObject;
+            Assert.IsNotNull(templateGo.GetComponent<EnemyHydraMod>());
+            Assert.IsNotNull(templateGo.GetComponent<EnemyPrefabMod>());
         }
         
         IsStoringPrefab = true;
@@ -122,12 +94,12 @@ public class EnemyPrefabMod : ModoBehaviour
 
         if (eid.enemyType != EnemyType.MaliciousFace)
         {
-            Assert.IsNotNull(Prefab.GetComponent<EnemyAdditions>().GetMod<EnemyHydraMod>());
-            Assert.IsNotNull(Prefab.GetComponent<EnemyAdditions>().GetMod<EnemyPrefabMod>());
+            Assert.IsNotNull(Prefab.GetComponent<EnemyHydraMod>());
+            Assert.IsNotNull(Prefab.GetComponent<EnemyPrefabMod>());
         }
         else
         {
-            Prefab.GetComponentInChildren<EnemyAdditions>().GetMod<EnemyPrefabMod>().Prefab = Prefab;            
+            Prefab.GetComponentInChildren<EnemyPrefabMod>().Prefab = Prefab;            
         }
 
         IsStoringPrefab = false;
@@ -135,12 +107,5 @@ public class EnemyPrefabMod : ModoBehaviour
         {
             //templateGo.SetActive(true);
         }
-    }
-
-    public override void OnClonedFrom(ModoBehaviour ClonedFrom)
-    {
-        var other = (EnemyPrefabMod)ClonedFrom;
-
-        //Prefab = other.Prefab;
     }
 }

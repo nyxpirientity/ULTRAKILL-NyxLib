@@ -4,46 +4,14 @@ using UnityEngine;
 
 namespace UKAIW
 {
-    public class EnemyBloodFuel : ModoBehaviour
+    public class EnemyBloodFuel : MonoBehaviour
     {
-        public override void ModoFixedUpdate()
-        {
-        }
-
-        public override void ModoLateUpdate()
-        {
-        }
-
-        public override void ModoOnDestroy()
+        protected void OnDestroy()
         {
             Player.PreHurt -= PlayerPreHurt;
         }
 
-        public override void ModoOnDisable()
-        {
-        }
-
-        public override void ModoOnEnable()
-        {
-        }
-
-        public override void ModoUpdate()
-        {
-        }
-
-        public override void OnClonedFrom(ModoBehaviour ClonedFrom)
-        {
-        }
-
-        public override void OnModRemoved()
-        {
-        }
-
-        protected override void ModoAwake()
-        {
-        }
-
-        protected override void ModoStart()
+        protected void Start()
         {
             Player.PreHurt += PlayerPreHurt;
         }
@@ -53,14 +21,14 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.BloodFueledEnemies))
             {
                 var playerPos = player.rb.transform.position;
-                var pos = Transform.position;
+                var pos = transform.position;
 
                 var dist = Vector3.Distance(playerPos, pos);
 
                 float maxDist = damage / Options.BloodFuelEnemiesDistDivisor;
 
                 float normalizedDist = 1.0f - Mathf.Min(1.0f, dist / maxDist);
-                var eadd = (EnemyAdditions)Mono;
+                var eadd = GetComponent<EnemyAdditions>();
                 var eid = eadd.Eid;
                 float heal = (damage * normalizedDist);
                 heal *= Options.BloodFuelEnemiesHealScalar;

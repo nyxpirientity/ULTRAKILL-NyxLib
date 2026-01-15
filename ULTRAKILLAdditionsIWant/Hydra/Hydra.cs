@@ -106,7 +106,7 @@ namespace UKAIW
         {
             var go = eid.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
-            var ehm = eadd.GetMod<EnemyHydraMod>();
+            var ehm = eadd.HydraMod;
             
             ehm.OnDeath();
         }
@@ -123,7 +123,7 @@ namespace UKAIW
         {
             var go = eid.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
-            var ehm = eadd.GetMod<EnemyHydraMod>();
+            var ehm = eadd.HydraMod;
 
             ehm.DuringDeath();
         }
