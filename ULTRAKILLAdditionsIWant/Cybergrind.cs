@@ -49,7 +49,7 @@ public static class CybergrindAdditions
             MonoSingleton<TimeController>.Instance.SlowDown(0.0f);
             MonoSingleton<TimeController>.Instance.ParryFlash();
             newMovement.antiHpFlash.Flash(1.0f);
-
+            
             if (!CheatsManager.Instance.GetCheatInstance<Invincibility>().IsActive)
             {
                 CheatsManager.Instance.ToggleCheat(CheatsManager.Instance.GetCheatInstance<Invincibility>());
@@ -59,9 +59,6 @@ public static class CybergrindAdditions
             var endlessGrid = MonoSingleton<EndlessGrid>.Instance;
             endlessGrid.enemyAmount = 0;
             FieldInfo maxPointsFieldInfo = endlessGrid.GetType().GetField("maxPoints", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo usedMeleeFieldInfo = endlessGrid.GetType().GetField("usedMeleePositions", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo usedProjectileFieldInfo = endlessGrid.GetType().GetField("usedProjectilePositions", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo nextWaveMethodInfo = endlessGrid.GetType().GetMethod("NextWave", BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (damage >= 99)
             {
