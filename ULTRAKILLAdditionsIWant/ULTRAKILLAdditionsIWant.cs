@@ -38,16 +38,19 @@ namespace UKAIW
 
         public override void OnSceneWasLoaded(int buildindex, string sceneName) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
         {
+            Log.TraceExpectedInfo($"------------- New Scene Loaded {sceneName}:{buildindex} -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasLoaded?.Invoke(buildindex, sceneName); });
         }
 
         public override void OnSceneWasInitialized(int buildindex, string sceneName) // Runs when a Scene has Initialized and is passed the Scene's Build Index and Name.
         {
+            Log.TraceExpectedInfo($"------------- Scene Initialized {sceneName}:{buildindex} -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasInitialized?.Invoke(buildindex, sceneName); });
         }
 
         public override void OnSceneWasUnloaded(int buildIndex, string sceneName)
         {
+            Log.TraceExpectedInfo($"------------- Scene Unloaded {sceneName}:{buildIndex} -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(buildIndex, sceneName); });
         }
 
