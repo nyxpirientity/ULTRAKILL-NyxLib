@@ -20,9 +20,9 @@ namespace UKAIW
         {
             if (Cheats.IsCheatEnabled(Cheats.DisableStops) || TimeDilation.ModDisableHitstop)
             {
-                FieldInfo currentMeterFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo currentStopFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                currentMeterFI.SetValue(__instance, length + 100.0f);
+                currentStopFI.SetValue(__instance, length + 100.0f);
             }
         }
 
@@ -30,9 +30,9 @@ namespace UKAIW
         {
             if (Cheats.IsCheatEnabled(Cheats.DisableStops)  || TimeDilation.ModDisableHitstop)
             {
-                FieldInfo currentMeterFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo currentStopFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                currentMeterFI.SetValue(__instance, 0.0f);
+                currentStopFI.SetValue(__instance, 0.0f);
             }
         }
     }

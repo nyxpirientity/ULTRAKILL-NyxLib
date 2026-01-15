@@ -51,6 +51,11 @@ namespace UKAIW
         public static ulong NumFixedUpdates = 0;
         private static void FixedUpdate()
         {
+            if (!Cheats.IsHydraModeOn)
+            {
+                return;
+            }
+
             if ((NumFixedUpdates % (ulong)Options.HydraBloodCapNumUpdatesPerTick) == 0)
             {
                 RemainingHydraBloodFxThisTick = Options.HydraBloodCapNumBloodPerTick;
@@ -133,6 +138,11 @@ namespace UKAIW
 
         private static void LateUpdate()
         {
+            if (!Cheats.IsHydraModeOn)
+            {
+                return;
+            }
+
             if (SharedDatas.Count > 0)
             {
                 for (int i = 0, j = 0; i < 16 && j < Options.HydraPrefabPoolGrowPerUpdate; i++)

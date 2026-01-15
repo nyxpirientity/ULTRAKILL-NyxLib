@@ -11,6 +11,8 @@ public class EnemyAdditions : MonoBehaviour
     public EnemyFriendIdentifier EnemyFriend { get; private set; } = null;
     public EnemyBloodFuel EnemyBloodFuel { get; private set; } = null;
     public SaltyEnemy SaltyEnemy { get; private set; } = null;
+
+    public bool QueuedForDestruction = false;
     
     [NonSerialized] public EnemyIdentifier Eid = null;
 
@@ -33,9 +35,24 @@ public class EnemyAdditions : MonoBehaviour
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets instantaneously obliterated (destroyed)...");
     }
 
+    protected void Update()
+    {
+        if (QueuedForDestruction)
+        {
+            Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' was queued for destruction, so its time has come.");
+            Destroy(gameObject);
+        }
+    }
+
     private void OnDisable()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets disabled...");
+        
+        if (QueuedForDestruction)
+        {
+            Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' was queued for destruction, so its time has come.");
+            Destroy(this);
+        }
     }
 
     private void OnEnable()

@@ -30,8 +30,12 @@ namespace UKAIW
 
             private void OnDestroy()
             {
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with prefab '{Prefab}' destroyed!");
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' destroyed!");
                 Hydra.SharedDatas.Remove(this);
+                foreach (var prefab in PrefabPool)
+                {
+                    Destroy(prefab);
+                }
             }
 
             public void InstantiatePrefabToPool()
@@ -78,7 +82,8 @@ namespace UKAIW
         public SharedData Shared = null;
         public int Depth = -1;
 
-        public EnemyIdentifier Eid = null;
+        [NonSerialized] public EnemyIdentifier Eid = null;
+        [NonSerialized] public EnemyAdditions Eadd = null;
 
         public EnemyGameplayRank GameplayRank = EnemyGameplayRank.Ultraboss;
         public bool ContributesToInstanceCount = false;
@@ -143,12 +148,12 @@ namespace UKAIW
 
         protected void Awake()
         {
+            Eid = GetComponent<EnemyIdentifier>();
+            Eadd = GetComponent<EnemyAdditions>();
         }
 
         protected void Start()
         {   
-            Eid = GetComponent<EnemyIdentifier>();
-
             if (Eid.enemyType == EnemyType.Idol)
             {
                 ExcludedFromHydraCheat = true;
@@ -291,6 +296,10 @@ namespace UKAIW
                     Hydra.Hitstop(-1.0);
                     TimeDilation.ModDisableHitstop = false;
                 }
+                else
+                {
+                    Eadd.QueuedForDestruction = true;
+                }
             }
         }
 
@@ -312,10 +321,10 @@ namespace UKAIW
                 return;
             }
 
-            Assert.IsNotNull(GetComponent<EnemyAdditions>(), $"For object by name {gameObject.name}");
+            /*Assert.IsNotNull(GetComponent<EnemyAdditions>(), $"For object by name {gameObject.name}");
             Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod, $"For object by name {gameObject.name}");
             Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod.Prefab, $"For object by name {gameObject.name}");
-
+            */
             Hydra.QueuedDupeInfo dupeInfo = new Hydra.QueuedDupeInfo();
             
             if (Eid.enemyType == EnemyType.Drone)
@@ -358,8 +367,6 @@ namespace UKAIW
                 dupeInfo.Position += Vector3.Project(dupeInfo.SharedData.Bounds.size, dupeInfo.Rotation * Vector3.right) * (isB ? -1.0f : 1.0f) * 0.3f * additionalOffsetScalar;
             }
 
-
-            //Hydra.EnqueueDupe(dupeInfo);
             Hydra.EnqueueDupe(dupeInfo);
             Shared.InstanceCount += 1;
         }

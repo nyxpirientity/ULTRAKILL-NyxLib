@@ -55,7 +55,7 @@ public class EnemyFriendIdentifier : MonoBehaviour
                 
                 var totalEnemyNum = Options.NumFriendsToSpawn + 1;
                 Bounds bounds = EnemyUtils.SolveEnemyBounds(gameObject);
-                Vector3 offset = (transform.rotation * Vector3.right) * bounds.size.x;
+                Vector3 offset = Vector3.Project(bounds.size, transform.rotation * Vector3.right) * 0.3f;
                 Vector3 initialOrigin = transform.position;
                 
                 bool useRotaryPositioning = false;
@@ -98,7 +98,7 @@ public class EnemyFriendIdentifier : MonoBehaviour
                 
                 if (useRotaryPositioning)
                 {
-                    transform.position = initialOrigin + (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)(0) + -0.5f) / totalEnemyNum), 0.0f)) * (offset)); ;   
+                    //transform.position = initialOrigin + (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)(0) + -0.5f) / totalEnemyNum), 0.0f)) * (offset)); ;   
                 }
             }
             else
@@ -153,6 +153,11 @@ public class EnemyFriendIdentifier : MonoBehaviour
         var target = leaderTargetFriends[FriendIdx];
         
         if (leaderTargetFriends.Length <= FriendIdx)
+        {
+            return;
+        }
+        
+        if (target.Eid == Eid.idol.target)
         {
             return;
         }
