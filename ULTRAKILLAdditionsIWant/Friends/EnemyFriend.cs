@@ -166,9 +166,15 @@ public class EnemyFriendIdentifier : ModoBehaviour
         {
             return;
         }
-
+        
         var leaderTargetEadd = leaderTarget.gameObject.GetComponent<EnemyAdditions>();
         var leaderTargetFriends = leaderTargetEadd.EnemyFriend.Friends;
+
+        if (leaderTargetFriends.Length <= FriendIdx)
+        {
+            return;
+        }
+
         var target = leaderTargetFriends[FriendIdx];
         
         if (leaderTargetFriends.Length <= FriendIdx)
