@@ -14,20 +14,33 @@ public class EnemyAdditions : MonoBehaviour
     
     [NonSerialized] public EnemyIdentifier Eid = null;
 
-    private new void Awake()
+    private void Awake()
     {
         Eid = GetComponent<EnemyIdentifier>() ?? GetComponentInChildren<EnemyIdentifier>();
         FindAndCacheMods(true);
+        Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' awakens...");
     }
 
-    private new void Start()
+    private void Start()
     {
         FindAndCacheMods(true);
+        Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
     }
 
     /* to allow patching lol */
-    private new void OnDestroy()
+    private void OnDestroy()
     {
+        Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets instantaneously obliterated (destroyed)...");
+    }
+
+    private void OnDisable()
+    {
+        Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets disabled...");
+    }
+
+    private void OnEnable()
+    {
+        Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets enabled...");
     }
 
     /* if called we were instantiated by the game, most likely */
