@@ -7,7 +7,7 @@ using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
-public class EnemyFriendIdentifier : ModoBehaviour
+public class EnemyFriendIdentifier : MonoBehaviour
 {
     public bool IsLeader = false;
     public EnemyFriendIdentifier Leader = null;
@@ -15,7 +15,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
     public int FriendIdx = -1;
     public EnemyIdentifier Eid = null;
 
-    public override void ModoFixedUpdate()
+    protected void FixedUpdate()
     {
         if (Eid.enemyType == EnemyType.Idol || !IsLeader && Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends))
         {
@@ -23,16 +23,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
         }
     }
 
-    public override void ModoLateUpdate()
-    {
-    }
-
-    public override void ModoOnDestroy()
-    {
-
-    }
-
-    public override void ModoOnDisable()
+    protected void OnDisable()
     {
         if (IsLeader && !Eid.Dead && Friends != null)
         {
@@ -44,33 +35,17 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 }
 
                 // evil...
-                Destroy(friend.GameObject);
+                Destroy(friend.gameObject);
             }
         }
     }
 
-    public override void ModoOnEnable()
+    protected void Awake()
     {
+        Eid = GetComponent<EnemyAdditions>().Eid;
     }
 
-    public override void ModoUpdate()
-    {
-    }
-
-    public override void OnClonedFrom(ModoBehaviour ClonedFrom)
-    {
-    }
-
-    public override void OnModRemoved()
-    {
-    }
-
-    protected override void ModoAwake()
-    {
-        Eid = ((EnemyAdditions)Mono).Eid;
-    }
-
-    protected override void ModoStart()
+    protected void Start()
     {
         if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends))
         {
@@ -79,9 +54,9 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 Friends = new EnemyFriendIdentifier[Options.NumFriendsToSpawn];
                 
                 var totalEnemyNum = Options.NumFriendsToSpawn + 1;
-                Bounds bounds = EnemyUtils.SolveEnemyBounds(GameObject);
-                Vector3 offset = (Transform.rotation * Vector3.right) * bounds.size.x;
-                Vector3 initialOrigin = Transform.position;
+                Bounds bounds = EnemyUtils.SolveEnemyBounds(gameObject);
+                Vector3 offset = (transform.rotation * Vector3.right) * bounds.size.x;
+                Vector3 initialOrigin = transform.position;
                 
                 bool useRotaryPositioning = false;
 
@@ -106,7 +81,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
                 if (!useRotaryPositioning)
                 {
-                    Transform.position += (offset) * -((float)(totalEnemyNum / 2) + -0.5f);
+                    transform.position += (offset) * -((float)(totalEnemyNum / 2) + -0.5f);
                 }
 
                 for (int i = 0; i < Options.NumFriendsToSpawn; i++)
@@ -123,7 +98,7 @@ public class EnemyFriendIdentifier : ModoBehaviour
                 
                 if (useRotaryPositioning)
                 {
-                    Transform.position = initialOrigin + (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)(0) + -0.5f) / totalEnemyNum), 0.0f)) * (offset)); ;   
+                    transform.position = initialOrigin + (Quaternion.Euler(new Vector3(0.0f, Mathf.Lerp(0.0f, 360.0f, ((float)(0) + -0.5f) / totalEnemyNum), 0.0f)) * (offset)); ;   
                 }
             }
             else
@@ -187,14 +162,14 @@ public class EnemyFriendIdentifier : ModoBehaviour
 
     private EnemyFriendIdentifier SpawnFriend(Vector3 offset, int idx)
     {
-        EnemyAdditions eadd = (EnemyAdditions)Mono;
+        EnemyAdditions eadd = GetComponent<EnemyAdditions>();
         var prefab = eadd.PrefabMod.Prefab;
         var friend = Instantiate(prefab);
         EnemyAdditions friendEadd = friend.GetComponent<EnemyAdditions>() ?? friend.GetComponentInChildren<EnemyAdditions>();
         friend.SetActive(true);
         friend = friendEadd.gameObject;
         friend.SetActive(true);
-        friend.transform.position = Transform.position + offset;
+        friend.transform.position = transform.position + offset;
         friendEadd.FindAndCacheMods();
         friendEadd.HydraMod.InitializeAsNew();
         friendEadd.EnemyFriend.Leader = this;

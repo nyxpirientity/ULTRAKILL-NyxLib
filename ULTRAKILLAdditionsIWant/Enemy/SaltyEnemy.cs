@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UKAIW
 {
-    public class SaltyEnemy : ModoBehaviour
+    public class SaltyEnemy : MonoBehaviour
     {
         EnemyIdentifier Eid = null;
         EnemyAdditions Eadd = null;
@@ -15,7 +15,7 @@ namespace UKAIW
         bool RequestedHealthBuff = false;
         bool RequestedDamageBuff = false;
 
-        public override void ModoFixedUpdate()
+        protected void FixedUpdate()
         {
             if (Cheats.IsCheatEnabled(Cheats.SaltyEnemies))
             {
@@ -147,41 +147,9 @@ namespace UKAIW
             }
         }
 
-        public override void ModoLateUpdate()
+        protected void Start()
         {
-        }
-
-        public override void ModoOnDestroy()
-        {
-        }
-
-        public override void ModoOnDisable()
-        {
-        }
-
-        public override void ModoOnEnable()
-        {
-        }
-
-        public override void ModoUpdate()
-        {
-        }
-
-        public override void OnClonedFrom(ModoBehaviour ClonedFrom)
-        {
-        }
-
-        public override void OnModRemoved()
-        {
-        }
-
-        protected override void ModoAwake()
-        {
-        }
-
-        protected override void ModoStart()
-        {
-            Eadd = ((EnemyAdditions)Mono);
+            Eadd = GetComponent<EnemyAdditions>();
             Eid = Eadd.Eid;
         }
     }
