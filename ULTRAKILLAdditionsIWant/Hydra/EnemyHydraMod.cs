@@ -125,6 +125,11 @@ namespace UKAIW
 
         protected void Update()
         {
+            if (!Cheats.IsHydraModeOn)
+            {
+                return;
+            }
+
             if (ExcludedFromHydraCheat)
             {
                 return;
@@ -154,7 +159,7 @@ namespace UKAIW
 
         protected void Start()
         {   
-            if (Eid.enemyType == EnemyType.Idol)
+            if (Eid.enemyType == EnemyType.Idol || Eid.enemyType == EnemyType.Centaur)
             {
                 ExcludedFromHydraCheat = true;
                 return;

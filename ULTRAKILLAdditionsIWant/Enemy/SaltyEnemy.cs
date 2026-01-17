@@ -88,7 +88,10 @@ namespace UKAIW
                     return;
                 }
                 
-                RequestBuffs(radienceTier);
+                if (!Eid.dead)
+                {
+                    RequestBuffs(radienceTier);
+                }
             }
             else
             {
