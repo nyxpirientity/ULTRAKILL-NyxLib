@@ -27,6 +27,10 @@ public static class Options
     static MelonPreferences_Entry<int> HydraBloodCapNumBloodPerTickEntry = null;
     static MelonPreferences_Entry<int> HydraPrefabPoolCapacityEntry = null;
     static MelonPreferences_Entry<int> HydraPrefabPoolGrowPerUpdateEntry = null;
+    static MelonPreferences_Entry<int> HydraKillBonusEntry = null;
+    static MelonPreferences_Entry<int> HydraMiniBossKillBonusEntry = null;
+    static MelonPreferences_Entry<int> HydraBossKillBonusEntry = null;
+    static MelonPreferences_Entry<int> HydraUltraBossKillBonusEntry = null;
 
     static MelonPreferences_Category FriendsCategory = null;
     static MelonPreferences_Entry<int> NumFriendsToSpawnEntry = null;
@@ -43,6 +47,7 @@ public static class Options
     static MelonPreferences_Entry<float> SupremeRadianceTierEntry = null;
     static MelonPreferences_Entry<float> SSadisticRadianceTierEntry = null;
     static MelonPreferences_Entry<float> SSSensoredStormRadianceTierEntry = null;
+    static MelonPreferences_Entry<float> ULTRAKILLNoEnrageRadianceTierEntry = null;
     static MelonPreferences_Entry<float> ULTRAKILLRadianceTierEntry = null;
     static MelonPreferences_Entry<bool> SaltEffectHealthEntry = null;
     static MelonPreferences_Entry<bool> SaltEffectSpeedEntry = null;
@@ -63,6 +68,10 @@ public static class Options
     static public int HydraBloodCapNumBloodPerTick = 10;
     static public int HydraPrefabPoolCapacity = 20;
     static public int HydraPrefabPoolGrowPerUpdate = 3;
+    static public int HydraKillBonus = 0;
+    static public int HydraMiniBossKillBonus = 0;
+    static public int HydraBossKillBonus = 0;
+    static public int HydraUltraBossKillBonus = 0;
 
     static public bool IncludePerformanceLogs = false;
     static public bool IncludeTraceExpectedLogs = false;
@@ -83,6 +92,7 @@ public static class Options
     static public float SupremeRadianceTier = 8.0f;
     static public float SSadisticRadianceTier = 8.0f;
     static public float SSSensoredStormRadianceTier = 8.0f;
+    static public float ULTRAKILLNoEnrageRadianceTier = 8.0f;
     static public float ULTRAKILLRadianceTier = 8.0f;
 
     static public bool SaltEffectSpeed = false;
@@ -120,6 +130,11 @@ public static class Options
         HydraPrefabPoolCapacityEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolCapacity", 20);
         HydraPrefabPoolGrowPerUpdateEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolGrowPerUpdate", 3);
 
+        HydraKillBonusEntry = HydraCategory.CreateEntry<int>("HydraKillBonus", 10);
+        HydraMiniBossKillBonusEntry = HydraCategory.CreateEntry<int>("HydraMiniBossKillBonus", 50);
+        HydraBossKillBonusEntry = HydraCategory.CreateEntry<int>("HydraBossKillBonus", 100);
+        HydraUltraBossKillBonusEntry = HydraCategory.CreateEntry<int>("HydraUltraBossKillBonus", 1000);
+
         FriendsCategory = MelonPreferences.CreateCategory("UKAIW-Friends");
         NumFriendsToSpawnEntry = FriendsCategory.CreateEntry<int>("NumFriendsToSpawn", 1);
 
@@ -130,12 +145,13 @@ public static class Options
         SaltCategory = MelonPreferences.CreateCategory("UKAIW-Salt");
         DestructiveRadianceTierEntry = SaltCategory.CreateEntry<float>("DestructiveRadianceTier", 0.0f);
         ChaoticRadianceTierEntry = SaltCategory.CreateEntry<float>("ChaoticRadianceTier", 0.0f);
-        BrutalRadianceTierEntry = SaltCategory.CreateEntry<float>("BrutalRadianceTier", 0.5f);
-        AnarchicRadianceTierEntry = SaltCategory.CreateEntry<float>("AnarchicRadianceTier", 1.0f);
+        BrutalRadianceTierEntry = SaltCategory.CreateEntry<float>("BrutalRadianceTier", 1.0f);
+        AnarchicRadianceTierEntry = SaltCategory.CreateEntry<float>("AnarchicRadianceTier", 1.1f);
         SupremeRadianceTierEntry = SaltCategory.CreateEntry<float>("SupremeRadianceTier", 1.25f);
-        SSadisticRadianceTierEntry = SaltCategory.CreateEntry<float>("SSadisticRadianceTier", 1.5f);
-        SSSensoredStormRadianceTierEntry = SaltCategory.CreateEntry<float>("SSSensoredStormRadianceTier", 2.0f);
-        ULTRAKILLRadianceTierEntry = SaltCategory.CreateEntry<float>("ULTRAKILLRadianceTier", 3.0f);
+        SSadisticRadianceTierEntry = SaltCategory.CreateEntry<float>("SSadisticRadianceTier", 1.4f);
+        SSSensoredStormRadianceTierEntry = SaltCategory.CreateEntry<float>("SSSensoredStormRadianceTier", 1.6f);
+        ULTRAKILLNoEnrageRadianceTierEntry = SaltCategory.CreateEntry<float>("ULTRAKILLNoEnrageRadianceTier", 2.0f);
+        ULTRAKILLRadianceTierEntry = SaltCategory.CreateEntry<float>("ULTRAKILLRadianceTier", 1.8f);
 
         SaltEffectSpeedEntry = SaltCategory.CreateEntry<bool>("SaltEffectSpeed", true);
         SaltEffectHealthEntry = SaltCategory.CreateEntry<bool>("SaltEffectHealth", false);
@@ -162,6 +178,14 @@ public static class Options
 
         HydraPrefabPoolCapacity = HydraPrefabPoolCapacityEntry.Value;
         HydraPrefabPoolGrowPerUpdate = HydraPrefabPoolGrowPerUpdateEntry.Value;
+
+        HydraBloodCapNumUpdatesPerTick = HydraBloodCapNumUpdatesPerTickEntry.Value;
+        HydraBloodCapNumBloodPerTick = HydraBloodCapNumBloodPerTickEntry.Value;
+
+        HydraKillBonus = HydraKillBonusEntry.Value;
+        HydraMiniBossKillBonus = HydraMiniBossKillBonusEntry.Value;
+        HydraBossKillBonus = HydraBossKillBonusEntry.Value;
+        HydraUltraBossKillBonus = HydraUltraBossKillBonusEntry.Value;
         
         IncludePerformanceLogs = IncludePerformanceLogsEntry.Value;
         IncludeTraceExpectedLogs = IncludeTraceExpectedLogsEntry.Value;
@@ -169,9 +193,6 @@ public static class Options
         IncludeLikelyLogs = IncludeLikelyLogsEntry.Value;
         IncludeUnlikelyLogs = IncludeUnlikelyLogsEntry.Value;
         IncludeUnexpectedLogs = IncludeUnexpectedLogsEntry.Value;
-
-        HydraBloodCapNumUpdatesPerTick = HydraBloodCapNumUpdatesPerTickEntry.Value;
-        HydraBloodCapNumBloodPerTick = HydraBloodCapNumBloodPerTickEntry.Value;
 
         NumFriendsToSpawn = NumFriendsToSpawnEntry.Value;
 
@@ -185,6 +206,7 @@ public static class Options
         SupremeRadianceTier = SupremeRadianceTierEntry.Value;
         SSadisticRadianceTier = SSadisticRadianceTierEntry.Value;
         SSSensoredStormRadianceTier = SSSensoredStormRadianceTierEntry.Value;
+        ULTRAKILLNoEnrageRadianceTier = ULTRAKILLNoEnrageRadianceTierEntry.Value;
         ULTRAKILLRadianceTier = ULTRAKILLRadianceTierEntry.Value;
 
         SaltEffectDamage = SaltEffectDamageEntry.Value;

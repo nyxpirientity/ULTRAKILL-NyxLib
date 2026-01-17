@@ -295,6 +295,22 @@ namespace UKAIW
                     Hydra.Hitstop(-1.0);
                     Hydra.Hitstop(-1.0);
                     TimeDilation.ModDisableHitstop = false;
+                    switch (GameplayRank)
+                    {
+                        case EnemyGameplayRank.Normal:
+                            StyleHUD.Instance.AddPoints(Options.HydraKillBonus, "<color=#a2beff>HYDRA KILL</color>", null, Eid);
+                            break;
+                        case EnemyGameplayRank.Miniboss:
+                            StyleHUD.Instance.AddPoints(Options.HydraMiniBossKillBonus, "<color=#8d96fe>KINDA BIG HYDRA KILL</color>", null, Eid);
+                            break;
+                        case EnemyGameplayRank.Boss:
+                            StyleHUD.Instance.AddPoints(Options.HydraBossKillBonus, "<color=#8a2af7>BIG HYDRA KILL</color>", null, Eid);
+                            break;
+                        case EnemyGameplayRank.Ultraboss:
+                            StyleHUD.Instance.AddPoints(Options.HydraUltraBossKillBonus, "<color=#ffdb00>?? ULTRA HYDRA KILL ??</color>", null, Eid);
+                            StyleHUD.Instance.AddPoints(0, "<color=#ffdb00>?? HOW ??</color>", null, Eid);
+                            break;
+                    }
                 }
                 else
                 {
@@ -357,6 +373,10 @@ namespace UKAIW
                         additionalOffsetScalar = 0.0f;
                         break;
                     case EnemyType.Minos:
+                        additionalOffsetScalar = 0.0f;
+                        break;
+                    case EnemyType.FleshPanopticon:
+                    case EnemyType.FleshPrison:
                         additionalOffsetScalar = 0.0f;
                         break;
                     default:

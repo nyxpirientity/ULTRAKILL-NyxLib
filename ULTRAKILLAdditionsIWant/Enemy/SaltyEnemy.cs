@@ -14,6 +14,8 @@ namespace UKAIW
         bool RequestedSpeedBuff = false;
         bool RequestedHealthBuff = false;
         bool RequestedDamageBuff = false;
+        bool PlayedEnrageSound = false;
+        float enrageSoundTimer = -1.0f;
 
         protected void FixedUpdate()
         {
@@ -35,14 +37,6 @@ namespace UKAIW
                     StyleRanks.ULTRAKILL => Options.ULTRAKILLRadianceTier,
                     _ => throw new Exception("A great sadness has struck the city."),
                 };
-
-                if (radienceTier <= 0.01f)
-                {
-                    UnrequestBuffs();
-                    return;
-                }
-                
-                RequestBuffs(radienceTier);
                 
                 if (rank is StyleRanks.ULTRAKILL)
                 {
@@ -76,14 +70,95 @@ namespace UKAIW
                         case EnemyType.Gutterman:
                             Eid.GetComponent<Gutterman>()?.Enrage();
                             break;
+                        default:
+                            radienceTier = Options.ULTRAKILLNoEnrageRadianceTier;
+                            enrageSoundTimer = UnityEngine.Random.value % 0.3f;
+                            break;
                     }
                 }
+                else
+                {
+                    PlayedEnrageSound = false;
+                    enrageSoundTimer = -1.0f;
+                }
+
+                if (radienceTier <= 0.01f)
+                {
+                    UnrequestBuffs();
+                    return;
+                }
+                
+                RequestBuffs(radienceTier);
             }
             else
             {
                 UnrequestBuffs();
             }
         }
+
+        private void TryPlayHuskEnrageSound(float pitch = 1.0f, float volume = 1.0f)
+        {
+            if (PlayedEnrageSound)
+            {
+                return;
+            }
+
+            if (Assets.HuskEnrageSound_0 != null)
+            {
+                Log.TraceExpectedInfo($"'[SaltyEnemy] playing husk enrage sound!");
+                var audioGo = GameObject.Instantiate(Assets.HuskEnrageSound_0, transform);
+                audioGo.GetComponent<AudioSource>().volume *= volume;
+                audioGo.GetComponent<AudioSource>().pitch = 0.3f * pitch;
+                audioGo.GetComponent<AudioDistortionFilter>().distortionLevel = 0.5f;
+                audioGo.SetActive(true);
+                PlayedEnrageSound = true;
+            }
+            else
+            {
+                Log.UnlikelyInfo($"'[SaltyEnemy] Tried to play husk enrage sound but we haven't cached it yet");
+            }
+        }
+
+        private void TryPlayMachineEnrageSound(float pitch = 1.0f, float volume = 1.0f)
+        {
+            if (PlayedEnrageSound)
+            {
+                return;
+            }
+            
+            if (Assets.MachineEnrageSound_0 != null)
+            {
+                Log.TraceExpectedInfo($"'[SaltyEnemy] playing machine enrage sound!");
+                var audioGo = GameObject.Instantiate(Assets.MachineEnrageSound_0, transform);
+                var audioSource = audioGo.GetComponent<AudioSource>();
+                audioSource.volume *= volume;
+                switch (Eid.enemyType)
+                {
+                    case EnemyType.Streetcleaner:
+                    audioSource.clip = Eid.machine.scream;
+                    break;
+                    default:
+                    var randVal = (int)(UnityEngine.Random.value * 100.0f) % 2;
+                    if (randVal == 0)
+                    {
+                        audioSource.pitch = 2f * pitch;
+                    }
+                    else if (randVal == 1)
+                    {
+                        audioSource.clip = Eid.machine.scream;
+                        audioSource.pitch = pitch;
+                    }
+                    break;
+                }
+                audioGo.SetActive(true);
+                PlayedEnrageSound = true;
+            }
+            else
+            {
+                Log.UnlikelyInfo($"'[SaltyEnemy] Tried to play machine enrage sound but we haven't cached it yet");
+            }
+        }
+
 
         private void RequestBuffs(float radienceTier)
         {
@@ -151,6 +226,35 @@ namespace UKAIW
         {
             Eadd = GetComponent<EnemyAdditions>();
             Eid = Eadd.Eid;
+        }
+
+        protected void Update()
+        {
+            if (enrageSoundTimer > 0.0f)
+            {
+                enrageSoundTimer -= Time.deltaTime;
+
+                if (enrageSoundTimer <= 0.0f)
+                {
+                    enrageSoundTimer = -1.0f;
+                    switch (Eid.enemyClass)
+                    {
+                        case EnemyClass.Husk:
+                            TryPlayHuskEnrageSound(1.05f, Eid.bigEnemy ? 0.7f : 0.6f);
+                            break;
+                        case EnemyClass.Machine:
+                            TryPlayMachineEnrageSound(1.05f, Eid.bigEnemy ? 1.1f : 0.9f);
+                            break;
+                        case EnemyClass.Demon:
+                            TryPlayHuskEnrageSound(1.0f, Eid.bigEnemy ? 0.85f : 0.5f);
+                            break;
+                        case EnemyClass.Divine:
+                            break;
+                        case EnemyClass.Other:
+                            break;
+                    }
+                }
+            }
         }
     }
 }

@@ -55,7 +55,7 @@ public class EnemyFriendIdentifier : MonoBehaviour
                 
                 var totalEnemyNum = Options.NumFriendsToSpawn + 1;
                 Bounds bounds = EnemyUtils.SolveEnemyBounds(gameObject);
-                Vector3 offset = Vector3.Project(bounds.size, transform.rotation * Vector3.right) * 0.3f;
+                Vector3 offset = Vector3.Project(bounds.size, transform.rotation * Vector3.right);
                 Vector3 initialOrigin = transform.position;
                 
                 bool useRotaryPositioning = false;
