@@ -67,7 +67,10 @@ namespace UKAIW
                             Eid.GetComponent<SpiderBody>()?.Enrage();
                             break;
                         case EnemyType.Gutterman:
-                            Eid.GetComponent<Gutterman>()?.Enrage();
+                            if (!Eid.dead)
+                            {
+                                Eid.GetComponent<Gutterman>()?.Enrage();
+                            }
                             break;
                         default:
                             radienceTier = Options.ULTRAKILLNoEnrageRadianceTier;
@@ -81,7 +84,7 @@ namespace UKAIW
                     enrageSoundTimer = -1.0f;
                 }
 
-                if (radienceTier <= 0.01f)
+                if (radienceTier <= 0.001f)
                 {
                     UnrequestBuffs();
                     return;
@@ -184,7 +187,7 @@ namespace UKAIW
             RadianceModifier.HealthEnabled = Options.SaltEffectHealth;
             RadianceModifier.DamageEnabled = Options.SaltEffectDamage;
 
-            RadianceModifier.BaseMod = 1.0f;
+            RadianceModifier.BaseMod = 0.0f;
             RadianceModifier.DamageMod = radienceTier;
             RadianceModifier.SpeedMod = radienceTier;
             RadianceModifier.HealthMod = radienceTier;
@@ -206,7 +209,7 @@ namespace UKAIW
             RadianceModifier.SpeedEnabled = false;
             RadianceModifier.HealthEnabled = false;
             RadianceModifier.DamageEnabled = false;
-            RadianceModifier.Multiplier = true;
+            RadianceModifier.Multiplier = false;
         }
 
         protected void Update()

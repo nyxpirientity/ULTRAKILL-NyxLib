@@ -43,6 +43,16 @@ namespace UKAIW
 
         protected void FixedUpdate()
         {
+            if (Eid.Dead)
+            {
+                return;
+            }
+            
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+
             if (Cheats.IsCheatEnabled(Cheats.RadiantAllEnemies))
             {
                 RadiantAllModifier.SpeedEnabled = Options.RadianceAllSpeedTier >= 0.0f;
@@ -152,9 +162,14 @@ namespace UKAIW
                 Eid.healthBuffModifier = healthValue;
             }
             
-            Eid.UpdateBuffs();
-            MethodInfo updateModifiersFI = typeof(EnemyIdentifier).GetMethod("UpdateModifiers", BindingFlags.NonPublic | BindingFlags.Instance);
-            updateModifiersFI.Invoke(Eid, null);
+
+
+            /*if (Eid.GetComponent<V2>() == null)
+            {
+                Eid.UpdateBuffs();
+                MethodInfo updateModifiersFI = typeof(EnemyIdentifier).GetMethod("UpdateModifiers", BindingFlags.NonPublic | BindingFlags.Instance);
+                updateModifiersFI.Invoke(Eid, null);
+            }*/
         }
 
         private void Start()

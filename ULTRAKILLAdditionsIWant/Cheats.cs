@@ -32,6 +32,11 @@ public static class Cheats
 
     public static bool IsCheatEnabled(string cheatID)
     {
+        if (!Enabled)
+        {
+            return false;
+        }
+        
         return CheatsManager.Instance.GetCheatState(cheatID);
     }
 
@@ -79,6 +84,7 @@ public static class Cheats
     }
 
     public static bool IsHydraModeOn { get; private set; } = false;
+    public static bool Enabled { get => CheatsController.Instance.cheatsEnabled; }
 
     private static void RegisterCheats()
     {

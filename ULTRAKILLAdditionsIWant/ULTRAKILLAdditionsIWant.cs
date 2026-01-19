@@ -36,21 +36,21 @@ namespace UKAIW
             MundaneMurder.Initialize();
         }
 
-        public override void OnSceneWasLoaded(int buildindex, string sceneName) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
+        public override void OnSceneWasLoaded(int buildIndex, string sceneName) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
         {
-            Log.TraceExpectedInfo($"------------- New Scene Loaded {sceneName}:{buildindex} -------------");
-            TryLog.Action(() => { ScenesEvents.OnSceneWasLoaded?.Invoke(buildindex, sceneName); });
+            Log.TraceExpectedInfo($"------------- New Scene Loaded '{SceneHelper.CurrentScene}:{sceneName}:{buildIndex}' -------------");
+            TryLog.Action(() => { ScenesEvents.OnSceneWasLoaded?.Invoke(buildIndex, sceneName); });
         }
 
-        public override void OnSceneWasInitialized(int buildindex, string sceneName) // Runs when a Scene has Initialized and is passed the Scene's Build Index and Name.
+        public override void OnSceneWasInitialized(int buildIndex, string sceneName) // Runs when a Scene has Initialized and is passed the Scene's Build Index and Name.
         {
-            Log.TraceExpectedInfo($"------------- Scene Initialized {sceneName}:{buildindex} -------------");
-            TryLog.Action(() => { ScenesEvents.OnSceneWasInitialized?.Invoke(buildindex, sceneName); });
+            Log.TraceExpectedInfo($"------------- Scene Initialized '{SceneHelper.CurrentScene}:{sceneName}:{buildIndex}' -------------");
+            TryLog.Action(() => { ScenesEvents.OnSceneWasInitialized?.Invoke(buildIndex, sceneName); });
         }
 
         public override void OnSceneWasUnloaded(int buildIndex, string sceneName)
         {
-            Log.TraceExpectedInfo($"------------- Scene Unloaded {sceneName}:{buildIndex} -------------");
+            Log.TraceExpectedInfo($"------------- Scene Unloaded '{SceneHelper.CurrentScene}:{sceneName}:{buildIndex}' -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(buildIndex, sceneName); });
         }
 
