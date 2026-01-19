@@ -48,10 +48,11 @@ namespace UKAIW
                 RadiantAllModifier.SpeedEnabled = Options.RadianceAllSpeedTier >= 0.0f;
                 RadiantAllModifier.DamageEnabled = Options.RadianceAllDamageTier >= 0.0f;
                 RadiantAllModifier.HealthEnabled = Options.RadianceAllHealthTier >= 0.0f;
-                RadiantAllModifier.BaseMod = Options.RadianceAllTier;
-                RadiantAllModifier.SpeedMod = Options.RadianceAllSpeedTier;
-                RadiantAllModifier.HealthMod = Options.RadianceAllHealthTier;
-                RadiantAllModifier.DamageMod = Options.RadianceAllDamageTier;
+                RadiantAllModifier.BaseMod = Options.RadianceAllTier - 1.0f;
+                RadiantAllModifier.SpeedMod = Options.RadianceAllSpeedTier - 1.0f;
+                RadiantAllModifier.HealthMod = Options.RadianceAllHealthTier - 1.0f;
+                RadiantAllModifier.DamageMod = Options.RadianceAllDamageTier - 1.0f;
+                // we start with 1.0f so subtract that for simplicity (maybe simpler?)
             }
             else
             {
