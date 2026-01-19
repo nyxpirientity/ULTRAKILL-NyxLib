@@ -11,11 +11,10 @@ namespace UKAIW
     {
         EnemyIdentifier Eid = null;
         EnemyAdditions Eadd = null;
-        bool RequestedSpeedBuff = false;
-        bool RequestedHealthBuff = false;
-        bool RequestedDamageBuff = false;
+        Radiance.Modifier RadianceModifier = new Radiance.Modifier();
         bool PlayedEnrageSound = false;
         float enrageSoundTimer = -1.0f;
+        float EnrageSoundCooldown = -1.0f;
 
         protected void FixedUpdate()
         {
@@ -106,6 +105,12 @@ namespace UKAIW
                 return;
             }
 
+            if (EnrageSoundCooldown >= 0.0f)
+            {
+                PlayedEnrageSound = true;
+                return;
+            }
+
             if (Assets.HuskEnrageSound_0 != null)
             {
                 Log.TraceExpectedInfo($"'[SaltyEnemy] playing husk enrage sound!");
@@ -115,6 +120,8 @@ namespace UKAIW
                 audioGo.GetComponent<AudioDistortionFilter>().distortionLevel = 0.5f;
                 audioGo.SetActive(true);
                 PlayedEnrageSound = true;
+
+                EnrageSoundCooldown = 10.0f;
             }
             else
             {
@@ -126,6 +133,12 @@ namespace UKAIW
         {
             if (PlayedEnrageSound)
             {
+                return;
+            }
+
+            if (EnrageSoundCooldown >= 0.0f)
+            {
+                PlayedEnrageSound = true;
                 return;
             }
             
@@ -155,6 +168,7 @@ namespace UKAIW
                 }
                 audioGo.SetActive(true);
                 PlayedEnrageSound = true;
+                EnrageSoundCooldown = 10.0f;
             }
             else
             {
@@ -165,74 +179,40 @@ namespace UKAIW
 
         private void RequestBuffs(float radienceTier)
         {
-            if (Options.SaltEffectSpeed)
-            {
-                Eid.speedBuffModifier = radienceTier;
-            }
+            RadianceModifier.BaseEnabled = true;
+            RadianceModifier.SpeedEnabled = Options.SaltEffectSpeed;
+            RadianceModifier.HealthEnabled = Options.SaltEffectHealth;
+            RadianceModifier.DamageEnabled = Options.SaltEffectDamage;
 
-            if (Options.SaltEffectDamage)
-            {
-                Eid.damageBuffModifier = radienceTier;
-            }
-
-            if (Options.SaltEffectHealth)
-            {
-                Eid.healthBuffModifier = radienceTier;
-            }
-
-            if (Options.SaltEffectSpeed && !RequestedSpeedBuff)
-            {
-                Eid.SpeedBuff(radienceTier);                
-                RequestedSpeedBuff = true;
-            }
-
-            if (Options.SaltEffectHealth && !RequestedHealthBuff)
-            {
-                Eid.HealthBuff(radienceTier);                
-                RequestedHealthBuff = true;
-            }
-
-            if (Options.SaltEffectDamage && !RequestedDamageBuff)
-            {
-                Eid.DamageBuff(radienceTier);                
-                RequestedDamageBuff = true;
-            }
-
-            Eid.UpdateBuffs();
-            MethodInfo updateModifiersFI = typeof(EnemyIdentifier).GetMethod("UpdateModifiers", BindingFlags.NonPublic | BindingFlags.Instance);
-            updateModifiersFI.Invoke(Eid, null);
+            RadianceModifier.BaseMod = 0.0f;
+            RadianceModifier.DamageMod = radienceTier;
+            RadianceModifier.SpeedMod = radienceTier;
+            RadianceModifier.HealthMod = radienceTier;
         }
 
         private void UnrequestBuffs()
         {
-            if (Options.SaltEffectSpeed && RequestedSpeedBuff)
-            {
-                Eid.SpeedUnbuff();                
-                RequestedSpeedBuff = false;
-            }
-
-            if (Options.SaltEffectHealth && RequestedHealthBuff)
-            {
-                Eid.HealthUnbuff();                
-                RequestedHealthBuff = false;
-            }
-
-            if (Options.SaltEffectDamage && RequestedDamageBuff)
-            {
-                Eid.DamageUnbuff();          
-      
-                RequestedDamageBuff = false;
-            }
+            RadianceModifier.BaseEnabled = false;
+            RadianceModifier.SpeedEnabled = false;
+            RadianceModifier.HealthEnabled = false;
+            RadianceModifier.DamageEnabled = false;
         }
 
         protected void Start()
         {
             Eadd = GetComponent<EnemyAdditions>();
             Eid = Eadd.Eid;
+            Eadd.EnemyRadiance.AddModifier(RadianceModifier);
+            RadianceModifier.SpeedEnabled = false;
+            RadianceModifier.HealthEnabled = false;
+            RadianceModifier.DamageEnabled = false;
+            RadianceModifier.Multiplier = false;
         }
 
         protected void Update()
         {
+            EnrageSoundCooldown -= Time.deltaTime;
+
             if (enrageSoundTimer > 0.0f)
             {
                 enrageSoundTimer -= Time.deltaTime;
@@ -240,16 +220,17 @@ namespace UKAIW
                 if (enrageSoundTimer <= 0.0f)
                 {
                     enrageSoundTimer = -1.0f;
+                    
                     switch (Eid.enemyClass)
                     {
                         case EnemyClass.Husk:
-                            TryPlayHuskEnrageSound(1.05f, Eid.bigEnemy ? 0.7f : 0.6f);
+                            TryPlayHuskEnrageSound((UnityEngine.Random.value % 0.3f) + 0.9f, Eid.bigEnemy ? 0.8f : 0.6f);
                             break;
                         case EnemyClass.Machine:
-                            TryPlayMachineEnrageSound(1.05f, Eid.bigEnemy ? 1.1f : 0.9f);
+                            TryPlayMachineEnrageSound(Eid.bigEnemy ? 1.05f : 1.3f, Eid.bigEnemy ? 1.4f : 1.1f);
                             break;
                         case EnemyClass.Demon:
-                            TryPlayHuskEnrageSound(1.0f, Eid.bigEnemy ? 0.85f : 0.5f);
+                            TryPlayHuskEnrageSound((UnityEngine.Random.value % 0.3f) + 0.9f, Eid.bigEnemy ? 0.85f : 0.7f);
                             break;
                         case EnemyClass.Divine:
                             break;

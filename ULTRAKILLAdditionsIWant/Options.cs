@@ -52,6 +52,12 @@ public static class Options
     static MelonPreferences_Entry<bool> SaltEffectHealthEntry = null;
     static MelonPreferences_Entry<bool> SaltEffectSpeedEntry = null;
     static MelonPreferences_Entry<bool> SaltEffectDamageEntry = null;
+    
+    static MelonPreferences_Category RadianceAllCategory = null;
+    static MelonPreferences_Entry<float> RadianceAllTierEntry = null;
+    static MelonPreferences_Entry<float> RadianceAllSpeedTierEntry = null;
+    static MelonPreferences_Entry<float> RadianceAllDamageTierEntry = null;
+    static MelonPreferences_Entry<float> RadianceAllHealthTierEntry = null;
 
     static public float HydraHealthDecayScale = 0.5f;
 
@@ -98,6 +104,11 @@ public static class Options
     static public bool SaltEffectSpeed = false;
     static public bool SaltEffectHealth = false;
     static public bool SaltEffectDamage = false;
+
+    static public float RadianceAllTier = 1.0f;
+    static public float RadianceAllSpeedTier = 1.0f;
+    static public float RadianceAllDamageTier = 1.0f;
+    static public float RadianceAllHealthTier = 1.0f;
 
     public static void Initialize()
     {
@@ -157,7 +168,12 @@ public static class Options
         SaltEffectHealthEntry = SaltCategory.CreateEntry<bool>("SaltEffectHealth", false);
         SaltEffectDamageEntry = SaltCategory.CreateEntry<bool>("SaltEffectDamage", false);
         
-        
+        RadianceAllCategory = MelonPreferences.CreateCategory("UKAIW-RadianceAll");
+        RadianceAllTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllTier", 1.0f);
+        RadianceAllSpeedTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllSpeedTier", 1.5f);
+        RadianceAllDamageTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllDamageTier", 1.5f);
+        RadianceAllHealthTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllHealthTier", 1.5f);
+
         Reload();
     }
 

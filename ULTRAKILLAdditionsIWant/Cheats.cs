@@ -7,7 +7,7 @@ public static class Cheats
 {
     public const string OverrideCybergrindStartingWaveID = "ukaiw.cybergrind-start-wave-override";
     public const string CybergrindQuickRestart = "ukaiw.cybergrind-quick-restart";
-    public const string RadiantAllEnemiesID = "ukaiw.radiant-all-enemies";
+    public const string RadiantAllEnemies = "ukaiw.radiant-all-enemies";
     public const string SandAllEnemiesID = "ukaiw.sand-all-enemies";
     public const string BossBarAllEnemiesID = "ukaiw.boss-bar-all";
     public const string GiveEnemiesFriends = "ukaiw.give-enemies-friends";
@@ -53,7 +53,7 @@ public static class Cheats
             return;
         }
 
-        if (CheatsManager.Instance.GetCheatState(Cheats.RadiantAllEnemiesID))
+        if (CheatsManager.Instance.GetCheatState(Cheats.RadiantAllEnemies))
         {
             OptionsManager.forceRadiance = true;
         }
@@ -135,14 +135,12 @@ public static class Cheats
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Radiant All Enemies", 
-            Cheats.RadiantAllEnemiesID,
+            Cheats.RadiantAllEnemies,
             onDisable: (cheat) =>
             {
-                OptionsManager.forceRadiance = false;
             },
             onEnable: (cheat, manager) =>
             {
-                OptionsManager.forceRadiance = false;
             }
         ), "SELF SABOTAGE");
 

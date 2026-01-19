@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class EnemyAdditions : MonoBehaviour
     public EnemyFriendIdentifier EnemyFriend { get; private set; } = null;
     public EnemyBloodFuel EnemyBloodFuel { get; private set; } = null;
     public SaltyEnemy SaltyEnemy { get; private set; } = null;
+    public Radiance EnemyRadiance { get; private set; } = null;
 
     public bool QueuedForDestruction = false;
     
@@ -43,7 +45,7 @@ public class EnemyAdditions : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    
     private void OnDisable()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets disabled...");
@@ -69,6 +71,7 @@ public class EnemyAdditions : MonoBehaviour
         EnemyFriend = gameObject.AddComponent<EnemyFriendIdentifier>();
         EnemyBloodFuel = gameObject.AddComponent<EnemyBloodFuel>();
         SaltyEnemy = gameObject.AddComponent<SaltyEnemy>();
+        EnemyRadiance = gameObject.AddComponent<Radiance>();
         EnemyFriend.IsLeader = false;
         PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
@@ -84,6 +87,7 @@ public class EnemyAdditions : MonoBehaviour
         EnemyFriend = GetComponent<EnemyFriendIdentifier>();
         SaltyEnemy = GetComponent<SaltyEnemy>();
         EnemyBloodFuel = GetComponent<EnemyBloodFuel>();
+        EnemyRadiance = GetComponent<Radiance>();
         
         if (nullAcceptable)
         {
