@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using MelonLoader;
 using UnityEngine;
 
 namespace UKAIW
@@ -59,10 +60,10 @@ namespace UKAIW
                 RadiantAllModifier.HealthEnabled = false;
             }
 
-            float radianceTier = 0.0f;
-            float healthValue = 0.0f;
-            float speedValue = 0.0f;
-            float damageValue = 0.0f;
+            float radianceTier = 1.0f;
+            float healthValue = 1.0f;
+            float speedValue = 1.0f;
+            float damageValue = 1.0f;
 
             BuffsDamage = false;
             BuffsHealth = false;

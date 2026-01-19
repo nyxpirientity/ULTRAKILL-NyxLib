@@ -228,5 +228,10 @@ public static class Options
         SaltEffectDamage = SaltEffectDamageEntry.Value;
         SaltEffectHealth = SaltEffectHealthEntry.Value;
         SaltEffectSpeed = SaltEffectSpeedEntry.Value;
+
+        RadianceAllTier = RadianceAllTierEntry.Value;
+        RadianceAllSpeedTier = RadianceAllSpeedTierEntry.Value;
+        RadianceAllHealthTier = RadianceAllHealthTierEntry.Value;
+        RadianceAllDamageTier = RadianceAllDamageTierEntry.Value;
     }
 }

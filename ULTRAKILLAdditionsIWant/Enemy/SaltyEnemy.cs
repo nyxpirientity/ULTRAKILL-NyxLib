@@ -184,7 +184,7 @@ namespace UKAIW
             RadianceModifier.HealthEnabled = Options.SaltEffectHealth;
             RadianceModifier.DamageEnabled = Options.SaltEffectDamage;
 
-            RadianceModifier.BaseMod = 0.0f;
+            RadianceModifier.BaseMod = 1.0f;
             RadianceModifier.DamageMod = radienceTier;
             RadianceModifier.SpeedMod = radienceTier;
             RadianceModifier.HealthMod = radienceTier;
@@ -206,7 +206,7 @@ namespace UKAIW
             RadianceModifier.SpeedEnabled = false;
             RadianceModifier.HealthEnabled = false;
             RadianceModifier.DamageEnabled = false;
-            RadianceModifier.Multiplier = false;
+            RadianceModifier.Multiplier = true;
         }
 
         protected void Update()
