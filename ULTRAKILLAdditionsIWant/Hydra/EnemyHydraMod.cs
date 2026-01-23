@@ -36,7 +36,7 @@ namespace UKAIW
                 {
                     Destroy(prefab);
                 }
-
+                
                 OnDestroyed?.Invoke();
             }
 
@@ -99,7 +99,7 @@ namespace UKAIW
         {
             if (Depth > 0)
             {
-                Player.PreDeath -= DestroySelf;
+                //Player.PreDeath -= DestroySelf;
             }
             
             TryDecrementInstanceCount();
@@ -236,7 +236,8 @@ namespace UKAIW
             
             if (Depth > 0)
             {
-                Player.PreDeath += DestroySelf;
+                //Player.PreDeath += DestroySelf;
+                gameObject.AddComponent<DestroyOnCheckpointRestart>();
             }
         }
 
