@@ -188,7 +188,6 @@ namespace UKAIW
 
             dupeGo.transform.position = dupeInfo.Position;
             dupeGo.transform.rotation = dupeInfo.Rotation;
-            dupeGo.transform.localScale = dupeInfo.LocalScale;
 
             dupeGo.SetActive(true);
             malFaceDupeGo?.SetActive(true);
