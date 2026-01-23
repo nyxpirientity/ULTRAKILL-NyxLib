@@ -36,6 +36,8 @@ namespace UKAIW
                 {
                     Destroy(prefab);
                 }
+
+                OnDestroyed?.Invoke();
             }
 
             public void InstantiatePrefabToPool()
@@ -68,6 +70,7 @@ namespace UKAIW
             public List<GameObject> PrefabPool = new List<GameObject>();
             public GameObject Prefab = null;
             public Bounds Bounds = new Bounds();
+            public Action OnDestroyed = null;
             internal string CreatorName = "";
         }
 

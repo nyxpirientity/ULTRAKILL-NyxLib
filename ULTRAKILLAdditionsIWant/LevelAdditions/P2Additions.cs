@@ -1,9 +1,44 @@
 using System;
+using HarmonyLib;
+using MelonLoader;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 namespace UKAIW
 {
+    [HarmonyPatch(typeof(SisyphusPrimeIntro), "OnCollisionEnter")]
+    static class SisyphusPrimeIntroOnCollisionEnterPatch
+    {
+        public static void Prefix(SisyphusPrimeIntro __instance, Collider col)
+        {
+        }
+        
+        public static void Postfix(SisyphusPrimeIntro __instance, Collider col)
+        {   
+            var hasHitGround = new FieldPublisher<SisyphusPrimeIntro, bool>(__instance, "hasHitGround");
+            if (hasHitGround.Value)
+            {
+                if (Cheats.IsHydraModeOn)
+                {
+                    __instance.gameObject.GetComponent<Collider>().enabled = false;
+                    __instance.GetComponent<Rigidbody>().detectCollisions = false;
+                    var rbs = __instance.GetComponentsInChildren<Rigidbody>();
+                    var cols = __instance.GetComponentsInChildren<Collider>();
+
+                    foreach (var ccol in cols)
+                    {
+                        ccol.enabled = false;
+                    }
+
+                    foreach (var rb in rbs)
+                    {
+                        rb.detectCollisions = false;
+                    }
+                }
+            }
+        }
+    }
+
     public class P2Additions : LevelAdditions
     {
         internal override void OnSceneLoad()
@@ -12,13 +47,41 @@ namespace UKAIW
             EnemyEvents.PostStart += OnEnemySpawned;
             EnemyEvents.DuringDeath += OnEnemyDie;
             EnemyEvents.PreDestroy += OnEnemyDestroy;
+            UpdateEvents.OnUpdate += Update;
+        }
+
+        private void Update()
+        {
+            createPanopticonRadioQueued -= 1;
+            if (createPanopticonRadioQueued == 1 && PanopticonRadio == null)
+            {
+                createPanopticonRadioQueued = 0;
+                var bossMusics = GameObject.Find("BossMusics");
+                var audioSources = bossMusics.GetComponentsInChildren<AudioSource>();
+
+                foreach (var audioSource in audioSources)
+                {
+                    if (audioSource.clip == null)
+                    {
+                        continue;
+                    }
+
+                    if (audioSource.clip.name.Contains("panopticon"))
+                    {
+                        PanopticonRadio = GameObject.Instantiate(audioSource.gameObject);
+                        PanopticonRadio.SetActive(false);
+                        audioSource.maxDistance = 400.0f;
+                    }
+                }
+            }
         }
 
         internal override void OnSceneUnload()
         {
-            EnemyEvents.PreStart -= OnEnemySpawned;
+            EnemyEvents.PostStart -= OnEnemySpawned;
             EnemyEvents.DuringDeath -= OnEnemyDie;
             EnemyEvents.PreDestroy -= OnEnemyDestroy;
+            UpdateEvents.OnUpdate -= Update;
 
             DisableBattleWithClean();
         }
@@ -27,6 +90,9 @@ namespace UKAIW
         private int NumMindflayers = 0;
         private int NumHideousMasses = 0;
         private bool IsBattleWithClean = false;
+
+        private GameObject PanopticonRadio = null;
+
         private void OnEnemySpawned(EnemyIdentifier eid, GameObject go)
         {
             Assert.IsTrue(go.activeInHierarchy);
@@ -74,7 +140,14 @@ namespace UKAIW
             {
                 DisableBattleWithClean();
             }
+
+            if (eid.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
+            {
+                createPanopticonRadioQueued = PanopticonRadio == null ? 20 : -1;
+            }
         }
+
+        long createPanopticonRadioQueued = 0;
 
         private void EnableBattleWithClean()
         {
@@ -112,6 +185,21 @@ namespace UKAIW
                     Log.TraceExpectedInfo($"P2Additions Detected a HideousMass death!");
                     NumHideousMasses -= 1;
                     break;
+                case EnemyType.FleshPanopticon:
+                if (Cheats.IsHydraModeOn)
+                {
+                    if (!PanopticonRadio.activeSelf)
+                    {
+                        eid.GetComponent<EnemyHydraMod>().Shared.OnDestroyed += () =>
+                        {
+                            PanopticonRadio?.SetActive(false);  
+                        };
+                        PanopticonRadio.GetComponent<AudioSource>().time = 22.0f;
+                        PanopticonRadio.GetComponent<AudioSource>().volume += 0.1f;
+                        PanopticonRadio?.SetActive(true);
+                    }
+                }
+                break;
                 default:
                     break;
             }
