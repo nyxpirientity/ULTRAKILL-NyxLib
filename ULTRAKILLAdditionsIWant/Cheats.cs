@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using UKAIW;
 using ULTRAKILL.Cheats;
+using UnityEngine;
 
 public static class Cheats
 {
@@ -331,5 +333,22 @@ public static class Cheats
             {
             }
         ), "???");
+    }
+
+    [HarmonyPatch(typeof(TeleportCheat), "Teleport")]
+    static class TeleportCheatTeleportPatch
+    {
+        public static void Prefix(TeleportCheat __instance, Transform target)
+        {       
+            var activator = GameObject.FindAnyObjectByType<PlayerActivator>();
+            if (activator != null)
+            {
+                activator.transform.position = target.position;
+            }
+        }
+        
+        public static void Postfix(TeleportCheat __instance, Transform target)
+        {
+        }
     }
 }
