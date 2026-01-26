@@ -406,7 +406,7 @@ namespace UKAIW
             dupeInfo.SharedData = Shared;
             dupeInfo.Depth = Depth + 1;
             dupeInfo.EnemyType = Eid.enemyType;
-            
+            dupeInfo.BossBar = GetComponent<BossHealthBar>() != null;
 
             if (Eid.enemyType == EnemyType.Sisyphus)
             {

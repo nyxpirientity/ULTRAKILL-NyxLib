@@ -21,6 +21,7 @@ namespace UKAIW
             public EnemyHydraMod.SharedData SharedData;
             public int Depth;
             public EnemyType EnemyType;
+            public bool BossBar;
         }
 
         public static void Initialize()
@@ -202,6 +203,11 @@ namespace UKAIW
             Assert.IsNotNull(eadd.HydraMod.Shared);
 
             eadd.HydraMod.Depth = dupeInfo.Depth;
+
+            if (dupeInfo.BossBar)
+            {
+                eid.BossBar(true);
+            }
         }
     }
 }
