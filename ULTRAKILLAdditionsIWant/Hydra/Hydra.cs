@@ -191,7 +191,7 @@ namespace UKAIW
             dupeGo.SetActive(true);
             malFaceDupeGo?.SetActive(true);
             var eid = dupeGo.GetComponent<EnemyIdentifier>();
-
+            
             eid.spawnIn = false;
             eid.timeSinceSpawned = 0.0f;
 

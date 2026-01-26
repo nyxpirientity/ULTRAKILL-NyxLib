@@ -182,7 +182,7 @@ namespace UKAIW
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
-
+            
             if (enemyGo.GetComponent<EnemyAdditions>() != null)
             {
                 return;

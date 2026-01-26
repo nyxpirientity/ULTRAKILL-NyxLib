@@ -20,6 +20,11 @@ namespace UKAIW
         {
             if (Cheats.IsCheatEnabled(Cheats.SaltyEnemies))
             {
+                if (Eid.enemyType == EnemyType.Puppet && Eid.Dead)
+                {
+                    return;
+                }
+                
                 var prefabEid = Eadd.PrefabMod.Prefab.GetComponent<EnemyIdentifier>() ?? Eadd.PrefabMod.Prefab.GetComponentInChildren<EnemyIdentifier>();
                 var radienceTier = prefabEid.hasRadianceEffected ? prefabEid.radianceTier : 0.0f;
                 int rankIndex = StyleHUD.Instance.rankIndex;

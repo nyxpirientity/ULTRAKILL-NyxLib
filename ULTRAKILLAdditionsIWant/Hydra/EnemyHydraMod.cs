@@ -113,14 +113,19 @@ namespace UKAIW
             {
                 return;
             }
-            
-            if (!Eid.dead)
-            {
-                PreDeath?.Invoke();
-            }
 
             if (ContributesToInstanceCount)
-            {
+            {            
+                if (!Eid.dead)
+                {
+                    PreDeath?.Invoke();
+                }
+
+                if (Depth != 0)
+                {
+                    Destroy(gameObject);
+                }
+
                 Shared.InstanceCount -= 1;
                 ContributesToInstanceCount = false;
 
