@@ -72,13 +72,14 @@ namespace UKAIW
             public Bounds Bounds = new Bounds();
             public Action OnDestroyed = null;
             internal string CreatorName = "";
+            public ScriptableObject EnemySpecificShared = null;
         }
 
         public bool CanDuplicate 
         { 
             get
             {
-                return Shared.InstanceCount < Options.HydraMaxFromOne && NoDupeTime < 0.0f;
+                return Shared.InstanceCount < Options.HydraMaxFromOne && (NoDupeTime < 0.0f || Depth == 0);
             }
         }
 
@@ -90,6 +91,7 @@ namespace UKAIW
 
         public EnemyGameplayRank GameplayRank = EnemyGameplayRank.Ultraboss;
         public bool ContributesToInstanceCount = false;
+        public Action PreDeath = null;
 
         private bool ExcludedFromHydraCheat = false;
 
@@ -112,6 +114,11 @@ namespace UKAIW
                 return;
             }
             
+            if (!Eid.dead)
+            {
+                PreDeath?.Invoke();
+            }
+
             if (ContributesToInstanceCount)
             {
                 Shared.InstanceCount -= 1;
@@ -142,7 +149,7 @@ namespace UKAIW
             {
                 return;
             }
-
+            
             if (NoDupeTime >= 0.0f)
             {
                 NoDupeTime -= Time.deltaTime / Mathf.Max(1.0f, (Shared.InstanceCount * 0.3f) + 0.667f);
@@ -239,6 +246,41 @@ namespace UKAIW
                 //Player.PreDeath += DestroySelf;
                 gameObject.AddComponent<DestroyOnCheckpointRestart>();
             }
+
+            DroneFlesh droneFlesh = Eid.GetComponent<DroneFlesh>();
+            if (Depth > 0 && (droneFlesh != null))
+            {
+                var mainLight = GetComponent<Light>();
+                if (mainLight != null)
+                {
+                    mainLight.enabled = false;
+                }
+                var lights = GetComponentsInChildren<Light>();
+                foreach (var light in lights)
+                {
+                    light.enabled = false;
+                }
+  
+            }
+
+            if (droneFlesh != null)
+            {
+                gameObject.AddComponent<FleshDroneHydra>();
+            }
+
+            switch (Eid.enemyType)
+            {
+                case EnemyType.FleshPanopticon:
+                    gameObject.AddComponent<FleshPanopticonHydra>();
+                break;
+                case EnemyType.Drone:
+ 
+                break;
+
+                default:
+                break;
+            }
+            
         }
 
         private void DestroySelf(NewMovement movement, int damage)
@@ -246,7 +288,7 @@ namespace UKAIW
             Destroy(gameObject);
         }
 
-        public void OnDeath()
+        public void NotifyOfDeath()
         {
             if (ExcludedFromHydraCheat)
             {
@@ -274,57 +316,55 @@ namespace UKAIW
             }
 
             Eid.dontCountAsKills = true;
+            PreDeath?.Invoke();
 
-            if (Cheats.IsHydraModeOn)
+            if (Eid.enemyType != EnemyType.SisyphusPrime && Eid.enemyType != EnemyType.MinosPrime)
             {
-                if (Eid.enemyType != EnemyType.SisyphusPrime && Eid.enemyType != EnemyType.MinosPrime)
+                Eid.puppet = true;
+            }
+            
+            if (Depth == 0 && Shared.CountAsKill)
+            {
+                ContributeToActivateNextWave();
+            }
+
+            TryEnqueueDupe(false);
+            TryEnqueueDupe(true);
+            
+            TryDecrementInstanceCount();
+            if (!CanDuplicate && Shared.InstanceCount == 0)
+            {
+                Eid.puppet = false;
+
+                if (Shared.CountAsKill)
                 {
-                    Eid.puppet = true;
-                }
-                
-                if (Depth == 0 && Shared.CountAsKill)
-                {
-                    ContributeToActivateNextWave();
+                    StatsManager.Instance.kills += 1;
                 }
 
-                TryEnqueueDupe(false);
-                TryEnqueueDupe(true);
-                
-                TryDecrementInstanceCount();
-                if (!CanDuplicate && Shared.InstanceCount == 0)
+                TimeDilation.ModDisableHitstop = true;
+                Hydra.Hitstop(-1.0);
+                Hydra.Hitstop(-1.0);
+                TimeDilation.ModDisableHitstop = false;
+                switch (GameplayRank)
                 {
-                    Eid.puppet = false;
-
-                    if (Shared.CountAsKill)
-                    {
-                        StatsManager.Instance.kills += 1;
-                    }
-
-                    TimeDilation.ModDisableHitstop = true;
-                    Hydra.Hitstop(-1.0);
-                    Hydra.Hitstop(-1.0);
-                    TimeDilation.ModDisableHitstop = false;
-                    switch (GameplayRank)
-                    {
-                        case EnemyGameplayRank.Normal:
-                            StyleHUD.Instance.AddPoints(Options.HydraKillBonus, "<color=#a2beff>HYDRA KILL</color>", null, Eid);
-                            break;
-                        case EnemyGameplayRank.Miniboss:
-                            StyleHUD.Instance.AddPoints(Options.HydraMiniBossKillBonus, "<color=#8d96fe>KINDA BIG HYDRA KILL</color>", null, Eid);
-                            break;
-                        case EnemyGameplayRank.Boss:
-                            StyleHUD.Instance.AddPoints(Options.HydraBossKillBonus, "<color=#8a2af7>BIG HYDRA KILL</color>", null, Eid);
-                            break;
-                        case EnemyGameplayRank.Ultraboss:
-                            StyleHUD.Instance.AddPoints(Options.HydraUltraBossKillBonus, "<color=#ffdb00>?? ULTRA HYDRA KILL ??</color>", null, Eid);
-                            StyleHUD.Instance.AddPoints(0, "<color=#ffdb00>?? HOW ??</color>", null, Eid);
-                            break;
-                    }
+                    case EnemyGameplayRank.Normal:
+                        StyleHUD.Instance.AddPoints(Options.HydraKillBonus, "<color=#a2beff>HYDRA KILL</color>", null, Eid);
+                        break;
+                    case EnemyGameplayRank.Miniboss:
+                        StyleHUD.Instance.AddPoints(Options.HydraMiniBossKillBonus, "<color=#8d96fe>KINDA BIG HYDRA KILL</color>", null, Eid);
+                        break;
+                    case EnemyGameplayRank.Boss:
+                        StyleHUD.Instance.AddPoints(Options.HydraBossKillBonus, "<color=#8a2af7>BIG HYDRA KILL</color>", null, Eid);
+                        break;
+                    case EnemyGameplayRank.Ultraboss:
+                        StyleHUD.Instance.AddPoints(Options.HydraUltraBossKillBonus, "<color=#ffdb00>?? ULTRA HYDRA KILL ??</color>", null, Eid);
+                        StyleHUD.Instance.AddPoints(0, "<color=#ffdb00>?? HOW ??</color>", null, Eid);
+                        break;
                 }
-                else
-                {
-                    Eadd.QueuedForDestruction = true;
-                }
+            }
+            else
+            {
+                Eadd.QueuedForDestruction = true;
             }
         }
 
@@ -405,6 +445,22 @@ namespace UKAIW
             Shared = ScriptableObject.CreateInstance<SharedData>();
             Shared.InstanceCount += 1;
             Shared.Bounds = EnemyUtils.SolveEnemyBounds(gameObject);
+                    
+            if (GetComponent<DroneFlesh>() != null)
+            {
+                Shared.EnemySpecificShared = new FleshDroneHydra.SharedData();
+            }
+
+            switch (Eid.enemyType)
+            {
+                case EnemyType.FleshPanopticon:
+                    Shared.EnemySpecificShared = new FleshPanopticonHydra.SharedData();
+                break;
+                default:
+                break;
+            }
+            
+
             ContributesToInstanceCount = true;
             Depth = 0;
             Shared.CreatorName = gameObject.name;

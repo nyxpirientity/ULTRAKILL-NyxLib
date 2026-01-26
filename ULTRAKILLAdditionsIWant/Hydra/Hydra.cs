@@ -113,7 +113,7 @@ namespace UKAIW
             var eadd = go.GetComponent<EnemyAdditions>();
             var ehm = eadd.HydraMod;
             
-            ehm.OnDeath();
+            ehm.NotifyOfDeath();
         }
 
         private static void PostEnemyDeath(EnemyIdentifier eid)
@@ -157,8 +157,6 @@ namespace UKAIW
                 }
             }
             
-
-
             while (ImmediatelyDupeStack.Count > 0)
             {
                 InstantiateDupe(ImmediatelyDupeStack.Pop());
@@ -185,7 +183,7 @@ namespace UKAIW
             {
                 eadd = dupeGo.GetComponent<EnemyAdditions>();
             }
-
+            
             dupeGo.transform.position = dupeInfo.Position;
             dupeGo.transform.rotation = dupeInfo.Rotation;
 
