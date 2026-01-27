@@ -96,6 +96,8 @@ namespace UKAIW
         private bool ExcludedFromHydraCheat = false;
 
         private float NoDupeTime = 0.0f;
+        public bool HydraKilled { get; private set; } = false;
+        public bool HydraDuped { get; private set; } = false;
 
         protected void OnDestroy()
         {
@@ -174,7 +176,7 @@ namespace UKAIW
 
         protected void Start()
         {   
-            if (Eid.enemyType == EnemyType.Idol || Eid.enemyType == EnemyType.Centaur)
+            if (Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second)
             {
                 ExcludedFromHydraCheat = true;
                 return;
@@ -340,6 +342,7 @@ namespace UKAIW
             if (!CanDuplicate && Shared.InstanceCount == 0)
             {
                 Eid.puppet = false;
+                HydraKilled = true;
 
                 if (Shared.CountAsKill)
                 {
@@ -395,6 +398,7 @@ namespace UKAIW
             Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod, $"For object by name {gameObject.name}");
             Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod.Prefab, $"For object by name {gameObject.name}");
             */
+            HydraDuped = true;
             Hydra.QueuedDupeInfo dupeInfo = new Hydra.QueuedDupeInfo();
             
             if (Eid.enemyType == EnemyType.Drone)
