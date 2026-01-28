@@ -13,6 +13,14 @@ namespace UKAIW
             }
         }
 
+        public static void IsFalse(bool condition, string additionalMsg = "")
+        {
+            if (condition)
+            {
+                throw new AssertionException($"Assertion Failed: Condition was false :c; {additionalMsg}", $"Assertion Failed: Condition was false :c; {additionalMsg}");
+            }
+        }
+
         public static void IsNotNull(object obj, string additionalMsg = "")
         {
             if (obj == null)

@@ -19,35 +19,18 @@ namespace UKAIW
             {
             }
 
-            private static int SharedIDIncrementer = 0;
-            private void Awake()
-            {
-                Hydra.SharedDatas.Add(this);
-                name = name + SharedIDIncrementer.ToString();
-                SharedIDIncrementer += 1;
-                PrefabPool.Capacity = Options.HydraPrefabPoolCapacity;
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' awakened!");
-            }
-
-            private void OnDestroy()
-            {
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' destroyed!");
-                Hydra.SharedDatas.Remove(this);
-                foreach (var prefab in PrefabPool)
-                {
-                    Destroy(prefab);
-                }
-                
-                OnDestroyed?.Invoke();
-            }
-
             public void InstantiatePrefabToPool()
             {
                 Assert.IsNotNull(Prefab);
 
+                if (PrefabPoolFull)
+                {
+                    return;
+                }
+
                 var newGo = Instantiate(Prefab);
 
-                PrefabPool.Add(newGo);
+                PrefabPool.Push(newGo);
 
                 newGo.SetActive(false);
             }
@@ -58,22 +41,92 @@ namespace UKAIW
 
                 if (PrefabPool.Count > 0)
                 {
-                    var go = PrefabPool[PrefabPool.Count - 1];
-                    PrefabPool.RemoveAt(PrefabPool.Count - 1);
-                    return go;
+                    return PrefabPool.Pop();
                 }
 
                 return Instantiate(Prefab);
             }
 
-            public int InstanceCount = 0;
+            private ReserveList<GameObject> Instances = new ReserveList<GameObject>(16);
             public bool CountAsKill = false;
-            public List<GameObject> PrefabPool = new List<GameObject>();
+            private Stack<GameObject> PrefabPool = new Stack<GameObject>(32);
             public GameObject Prefab = null;
             public Bounds Bounds = new Bounds();
-            public Action OnDestroyed = null;
+            public Action OnDeactivated = null;
             internal string CreatorName = "";
+            public bool PrefabPoolFull { get => PrefabPool.Count >= Options.HydraPrefabPoolCapacity; }
             public ScriptableObject EnemySpecificShared = null;
+            public int InstanceCount { get => Instances.Count; }
+            public int GlobalIdx { get; private set; } = -1;
+            public bool Active { get; private set; } = false;
+
+            internal void UnregisterInstance(int sharedIdx)
+            {
+                Instances.RemoveAt(sharedIdx);
+
+                if (InstanceCount == 0)
+                {
+                    Deactivate();
+                }
+            }
+
+            internal int RegisterInstance(GameObject gameObject)
+            {
+                int idx = Instances.Add(gameObject);
+
+                if (!Active)
+                {
+                    Activate();
+                }
+
+                return idx;
+            }
+
+            private void Deactivate()
+            {
+                Assert.IsTrue(Active);
+                
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' deactivated!");
+
+                Hydra.SharedDatas.RemoveAt(GlobalIdx);
+                
+                OnDeactivated?.Invoke();
+
+                Active = false;
+            }
+            
+            private void Activate()
+            {
+                Assert.IsFalse(Active);
+
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' activated!");
+
+                GlobalIdx = Hydra.SharedDatas.Add(this);
+
+                Active = true;
+            }
+
+            private static int SharedIDIncrementer = 0;
+            private void Awake()
+            {
+                Hydra.SharedDatas.Add(this);
+                name = name + SharedIDIncrementer.ToString();
+                SharedIDIncrementer += 1;
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' awakened!");
+            }
+
+            private void OnDestroy()
+            {
+                foreach (var prefab in PrefabPool)
+                {
+                    Destroy(prefab);
+                }
+
+                if (Active)
+                {
+                    Deactivate();
+                }
+            }
         }
 
         public bool CanDuplicate 
@@ -91,14 +144,15 @@ namespace UKAIW
         [NonSerialized] public EnemyAdditions Eadd = null;
 
         public EnemyGameplayRank GameplayRank = EnemyGameplayRank.Ultraboss;
-        public bool ContributesToInstanceCount = false;
-        public Action PreDeath = null;
+        [NonSerialized] public bool ContributesToInstanceCount = false;
+        [NonSerialized] public Action PreDeath = null;
 
         private bool ExcludedFromHydraCheat = false;
 
         private float NoDupeTime = 0.0f;
         public bool HydraKilled { get; private set; } = false;
         public bool HydraDuped { get; private set; } = false;
+        public int SharedIdx { get; private set; } = -1;
 
         protected void OnDestroy()
         {
@@ -107,10 +161,20 @@ namespace UKAIW
                 //Player.PreDeath -= DestroySelf;
             }
             
-            TryDecrementInstanceCount();
+            TryUnregisterWithShared();
+        }
+                
+        protected void OnEnable()
+        {
+            TryRegisterWithShared();
         }
 
-        private void TryDecrementInstanceCount()
+        protected void OnDisable()
+        {
+            TryUnregisterWithShared();
+        }
+
+        private void TryUnregisterWithShared()
         {
             if (ExcludedFromHydraCheat)
             {
@@ -124,18 +188,19 @@ namespace UKAIW
                     PreDeath?.Invoke();
                 }
 
+                Shared.UnregisterInstance(SharedIdx);
+                SharedIdx = -1;
+                ContributesToInstanceCount = false;
+
                 if (Depth != 0)
                 {
                     Destroy(gameObject);
                 }
 
-                Shared.InstanceCount -= 1;
-                ContributesToInstanceCount = false;
-
-                if (Shared.InstanceCount == 0)
+                /*if (Shared.InstanceCount == 0)
                 {
                     Destroy(Shared);
-                }
+                }*/
                 
                 MusicManager.Instance?.PlayCleanMusic();
             }
@@ -176,7 +241,7 @@ namespace UKAIW
         }
 
         protected void Start()
-        {   
+        {
             if (Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second)
             {
                 ExcludedFromHydraCheat = true;
@@ -192,7 +257,7 @@ namespace UKAIW
 
             Assert.IsTrue(Depth >= 0, $"For object by name {gameObject.name}");
             Assert.IsNotNull(Shared, $"For object by name {gameObject.name}");
-         
+
             MusicManager.Instance?.PlayBattleMusic();
 
             if (Depth > 0)
@@ -243,12 +308,12 @@ namespace UKAIW
             else if (Eid.drone)
             {
                 Eid.drone.health = newHealth;
-            } 
+            }
             else if (Eid.statue)
             {
                 Eid.statue.health = newHealth;
             }
-            
+
             if (Depth > 0)
             {
                 //Player.PreDeath += DestroySelf;
@@ -268,7 +333,7 @@ namespace UKAIW
                 {
                     light.enabled = false;
                 }
-  
+
             }
 
             if (droneFlesh != null)
@@ -280,16 +345,27 @@ namespace UKAIW
             {
                 case EnemyType.FleshPanopticon:
                     gameObject.AddComponent<FleshPanopticonHydra>();
-                break;
+                    break;
                 case EnemyType.Drone:
- 
-                break;
+
+                    break;
 
                 default:
-                break;
+                    break;
             }
+
+            TryRegisterWithShared();
         }
 
+        private void TryRegisterWithShared()
+        {
+            if (!ContributesToInstanceCount)
+            {
+                SharedIdx = Shared.RegisterInstance(gameObject);
+                ContributesToInstanceCount = true;
+            }
+        }
+        
         private void DestroySelf(NewMovement movement, int damage)
         {
             Destroy(gameObject);
@@ -338,8 +414,9 @@ namespace UKAIW
             TryEnqueueDupe(false);
             TryEnqueueDupe(true);
             
-            TryDecrementInstanceCount();
-            if (!CanDuplicate && Shared.InstanceCount == 0)
+            TryUnregisterWithShared();
+
+            if (!HydraDuped && Shared.InstanceCount == 0)
             {
                 Eid.puppet = false;
                 HydraKilled = true;
@@ -446,13 +523,12 @@ namespace UKAIW
             }
 
             Hydra.EnqueueDupe(dupeInfo);
-            Shared.InstanceCount += 1;
         }
 
         public void InitializeAsNew()
         {
             Shared = ScriptableObject.CreateInstance<SharedData>();
-            Shared.InstanceCount += 1;
+            TryRegisterWithShared();
             Shared.Bounds = EnemyUtils.SolveEnemyBounds(gameObject);
                     
             if (GetComponent<DroneFlesh>() != null)
@@ -469,8 +545,6 @@ namespace UKAIW
                 break;
             }
             
-
-            ContributesToInstanceCount = true;
             Depth = 0;
             Shared.CreatorName = gameObject.name;
         }
@@ -485,7 +559,7 @@ namespace UKAIW
 
         internal void DuringDeath()
         {
-            TryDecrementInstanceCount();
+            TryUnregisterWithShared();
         }
     }
 }

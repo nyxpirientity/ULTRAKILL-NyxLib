@@ -145,11 +145,17 @@ namespace UKAIW
 
             if (SharedDatas.Count > 0)
             {
-                for (int i = 0, j = 0; i < 16 && j < Options.HydraPrefabPoolGrowPerUpdate; i++)
+                for (int i = 0, j = 0; i < Options.HydraPrefabPoolGrowPerUpdate * 2 && j < Options.HydraPrefabPoolGrowPerUpdate; i++)
                 {
                     SharedDataForPrefabCacheIdx = (SharedDataForPrefabCacheIdx + 1) % SharedDatas.Count;
+
+                    if (!SharedDatas.IsIndexValid(SharedDataForPrefabCacheIdx))
+                    {
+                        continue;
+                    }
+
                     var sharedData = SharedDatas[SharedDataForPrefabCacheIdx];
-                    if (sharedData.PrefabPool.Count < sharedData.PrefabPool.Capacity)
+                    if (!sharedData.PrefabPoolFull)
                     {
                         sharedData.InstantiatePrefabToPool();
                         j++;
@@ -163,7 +169,7 @@ namespace UKAIW
             }
         }
         private static int SharedDataForPrefabCacheIdx = 0;
-        public static List<EnemyHydraMod.SharedData> SharedDatas = new List<EnemyHydraMod.SharedData>(256);
+        public static ReserveList<EnemyHydraMod.SharedData> SharedDatas = new ReserveList<EnemyHydraMod.SharedData>(256);
 
         public static void InstantiateDupe(QueuedDupeInfo dupeInfo)
         {
@@ -196,7 +202,6 @@ namespace UKAIW
             eid.timeSinceSpawned = 0.0f;
 
             eadd.FindAndCacheMods();
-            eadd.HydraMod.ContributesToInstanceCount = true;
 
             Assert.IsNotNull(eadd);
             Assert.IsNotNull(eadd.HydraMod);

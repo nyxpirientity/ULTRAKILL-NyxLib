@@ -190,7 +190,7 @@ namespace UKAIW
                 {
                     if (!PanopticonRadio.activeSelf)
                     {
-                        eid.GetComponent<EnemyHydraMod>().Shared.OnDestroyed += () =>
+                        eid.GetComponent<EnemyHydraMod>().Shared.OnDeactivated += () =>
                         {
                             PanopticonRadio?.SetActive(false);  
                         };
