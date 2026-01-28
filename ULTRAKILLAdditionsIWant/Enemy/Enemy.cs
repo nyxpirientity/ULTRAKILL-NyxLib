@@ -14,90 +14,51 @@ namespace UKAIW
     {
         public static EnemyGameplayRank GetEnemyGameplayRank(EnemyIdentifier eid)
         {
-            switch (eid.enemyType)
+            return eid.enemyType switch
             {
-                case EnemyType.BigJohnator:
-                    return EnemyGameplayRank.Ultraboss;
-                case EnemyType.CancerousRodent:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Centaur:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.Cerberus:
-                    return eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal;
-                case EnemyType.Drone:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Ferryman:
-                    return EnemyGameplayRank.Miniboss;
-                case EnemyType.Filth:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.FleshPanopticon:
-                    return EnemyGameplayRank.Ultraboss;
-                case EnemyType.FleshPrison:
-                    return EnemyGameplayRank.Ultraboss;
-                case EnemyType.Gabriel:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.GabrielSecond:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.Gutterman:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Guttertank:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.HideousMass:
-                    return eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss;
-                case EnemyType.Idol:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Leviathan:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.MaliciousFace:
-                    return eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal;
-                case EnemyType.Mandalore:
-                    return EnemyGameplayRank.Ultraboss;
-                case EnemyType.Mannequin:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Mindflayer:
-                    return eid.isBoss ? EnemyGameplayRank.Ultraboss : EnemyGameplayRank.Boss;
-                case EnemyType.Minos:
-                    return EnemyGameplayRank.Ultraboss;
-                case EnemyType.MinosPrime:
-                    return EnemyGameplayRank.Ultraboss;
-                case EnemyType.Minotaur:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.Puppet:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Schism:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Sisyphus:
-                    return EnemyGameplayRank.Miniboss;
-                case EnemyType.SisyphusPrime:
-                    return EnemyGameplayRank.Ultraboss;
-                case EnemyType.Soldier:
+                EnemyType.BigJohnator => EnemyGameplayRank.Ultraboss,
+                EnemyType.CancerousRodent => EnemyGameplayRank.Normal,
+                EnemyType.Centaur => EnemyGameplayRank.Boss,
+                EnemyType.Cerberus => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal,
+                EnemyType.Drone => EnemyGameplayRank.Normal,
+                EnemyType.Ferryman => EnemyGameplayRank.Miniboss,
+                EnemyType.Filth => EnemyGameplayRank.Normal,
+                EnemyType.FleshPanopticon => EnemyGameplayRank.Ultraboss,
+                EnemyType.FleshPrison => EnemyGameplayRank.Ultraboss,
+                EnemyType.Gabriel => EnemyGameplayRank.Boss,
+                EnemyType.GabrielSecond => EnemyGameplayRank.Boss,
+                EnemyType.Gutterman => EnemyGameplayRank.Normal,
+                EnemyType.Guttertank => EnemyGameplayRank.Normal,
+                EnemyType.HideousMass => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
+                EnemyType.Idol => EnemyGameplayRank.Normal,
+                EnemyType.Leviathan => EnemyGameplayRank.Boss,
+                EnemyType.MaliciousFace => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal,
+                EnemyType.Mandalore => EnemyGameplayRank.Ultraboss,
+                EnemyType.Mannequin => EnemyGameplayRank.Normal,
+                EnemyType.Mindflayer => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
+                EnemyType.Minos => EnemyGameplayRank.Ultraboss,
+                EnemyType.MinosPrime => EnemyGameplayRank.Ultraboss,
+                EnemyType.Minotaur => EnemyGameplayRank.Boss,
+                EnemyType.Puppet => EnemyGameplayRank.Normal,
+                EnemyType.Schism => EnemyGameplayRank.Normal,
+                EnemyType.Sisyphus => EnemyGameplayRank.Miniboss,
+                EnemyType.SisyphusPrime => EnemyGameplayRank.Ultraboss,
                 /*
                 * the second layer also just is bad. So like, whatever it takes to make it last less time.
                 */
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Stalker:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Stray:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Streetcleaner:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Swordsmachine:
-                    return eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss;
-                case EnemyType.Turret:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.V2:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.V2Second:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.VeryCancerousRodent:
-                    return EnemyGameplayRank.Boss;
-                case EnemyType.Virtue:
-                    return EnemyGameplayRank.Normal;
-                case EnemyType.Wicked:
-                    return EnemyGameplayRank.Ultraboss;
-            }
-
-            throw new NotImplementedException();
+                EnemyType.Soldier => EnemyGameplayRank.Normal,
+                EnemyType.Stalker => EnemyGameplayRank.Normal,
+                EnemyType.Stray => EnemyGameplayRank.Normal,
+                EnemyType.Streetcleaner => EnemyGameplayRank.Normal,
+                EnemyType.Swordsmachine => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
+                EnemyType.Turret => EnemyGameplayRank.Normal,
+                EnemyType.V2 => EnemyGameplayRank.Boss,
+                EnemyType.V2Second => EnemyGameplayRank.Boss,
+                EnemyType.VeryCancerousRodent => EnemyGameplayRank.Boss,
+                EnemyType.Virtue => EnemyGameplayRank.Normal,
+                EnemyType.Wicked => EnemyGameplayRank.Ultraboss,
+                _ => throw new NotImplementedException(),
+            };
         }
 
         public static Bounds SolveEnemyBounds(this GameObject enemyGo)

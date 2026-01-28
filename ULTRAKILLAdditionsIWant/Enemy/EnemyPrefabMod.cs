@@ -102,6 +102,17 @@ public class EnemyPrefabMod : MonoBehaviour
             Prefab.GetComponentInChildren<EnemyPrefabMod>().Prefab = Prefab;            
         }
 
+        if (prefabEid.enemyType == EnemyType.Swordsmachine)
+        {
+            var swordsMachine = prefabEid.GetComponent<SwordsMachine>();
+            swordsMachine.secondPhasePosTarget = null;
+            swordsMachine.firstPhase = false;
+            swordsMachine.GetComponent<EnemyIdentifier>().spawnIn = true;
+            swordsMachine.inAction = false;
+            swordsMachine.inSemiAction = false;
+            swordsMachine.moveAtTarget = false;
+        }
+
         IsStoringPrefab = false;
         if (wasActive)
         {

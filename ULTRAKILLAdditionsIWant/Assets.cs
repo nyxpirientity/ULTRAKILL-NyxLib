@@ -37,13 +37,16 @@ namespace UKAIW
                 }
                 break;
                 case EnemyType.Cerberus:
-                if (HuskEnrageSound_0 == null)
+                if (HuskEnrageSound_0 == null && eid.GetComponent<StatueBoss>() != null)
                 {
-                    HuskEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<StatueBoss>().statueChargeSound2, null, false);
-                    HuskEnrageSound_0.SetActive(false);
-                    if (HuskEnrageSound_0 != null)
+                    if (eid.GetComponent<StatueBoss>().statueChargeSound2 != null)
                     {
-                        Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<StatueBoss>().statueChargeSound2, null, false);
+                        HuskEnrageSound_0.SetActive(false);
+                        if (HuskEnrageSound_0 != null)
+                        {
+                            Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                        }
                     }
                 }
                 break;

@@ -130,7 +130,6 @@ namespace UKAIW
             var go = eid.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
             var ehm = eadd.HydraMod;
-
             ehm.DuringDeath();
         }
 
@@ -182,6 +181,7 @@ namespace UKAIW
             }
             else
             {
+                Assert.IsNotNull(dupeGo);
                 eadd = dupeGo.GetComponent<EnemyAdditions>();
             }
             
