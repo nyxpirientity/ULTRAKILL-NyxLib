@@ -109,7 +109,6 @@ namespace UKAIW
             private static int SharedIDIncrementer = 0;
             private void Awake()
             {
-                Hydra.SharedDatas.Add(this);
                 name = name + SharedIDIncrementer.ToString();
                 SharedIDIncrementer += 1;
                 Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' awakened!");
@@ -117,6 +116,8 @@ namespace UKAIW
 
             private void OnDestroy()
             {
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' destroyed!");
+
                 foreach (var prefab in PrefabPool)
                 {
                     Destroy(prefab);
@@ -152,7 +153,8 @@ namespace UKAIW
         private float NoDupeTime = 0.0f;
         public bool HydraKilled { get; private set; } = false;
         public bool HydraDuped { get; private set; } = false;
-        public int SharedIdx { get; private set; } = -1;
+        public int SharedIdx {get; private set; } = -1;
+        public string SharedName { get; private set; } = null;
 
         protected void OnDestroy()
         {
@@ -166,20 +168,32 @@ namespace UKAIW
                 
         protected void OnEnable()
         {
+            if (SharedName == null)
+            {
+                return;
+            }
+
             TryRegisterWithShared();
         }
 
         protected void OnDisable()
         {
+            if (SharedName == null)
+            {
+                return;
+            }
+            
             TryUnregisterWithShared();
         }
 
         private void TryUnregisterWithShared()
-        {
+        {            
             if (ExcludedFromHydraCheat)
             {
                 return;
             }
+
+            Assert.IsNotNull(Shared, $"Shared was null! Shared Name: '{SharedName}'");
 
             if (ContributesToInstanceCount)
             {            
@@ -256,7 +270,7 @@ namespace UKAIW
             }
 
             Assert.IsTrue(Depth >= 0, $"For object by name {gameObject.name}");
-            Assert.IsNotNull(Shared, $"For object by name {gameObject.name}");
+            Assert.IsNotNull(Shared, $"For object by name {gameObject.name} shared was null! Shared Name: '{SharedName}'");
 
             MusicManager.Instance?.PlayBattleMusic();
 
@@ -317,7 +331,14 @@ namespace UKAIW
             if (Depth > 0)
             {
                 //Player.PreDeath += DestroySelf;
-                gameObject.AddComponent<DestroyOnCheckpointRestart>();
+                if (Eid.enemyType == EnemyType.MaliciousFace)
+                {
+                    gameObject.transform.parent.gameObject.AddComponent<DestroyOnCheckpointRestart>();
+                }
+                else
+                {
+                    gameObject.AddComponent<DestroyOnCheckpointRestart>();                    
+                }
             }
 
             DroneFlesh droneFlesh = Eid.GetComponent<DroneFlesh>();
@@ -359,6 +380,8 @@ namespace UKAIW
 
         private void TryRegisterWithShared()
         {
+            Assert.IsNotNull(Shared, $"Shared was null! Shared Name: '{SharedName}'");
+
             if (!ContributesToInstanceCount)
             {
                 SharedIdx = Shared.RegisterInstance(gameObject);
@@ -514,6 +537,9 @@ namespace UKAIW
                     case EnemyType.FleshPrison:
                         additionalOffsetScalar = 0.0f;
                         break;
+                    case EnemyType.CancerousRodent:
+                        additionalOffsetScalar = 0.05f;
+                        break;
                     default:
                         break;
                 }
@@ -547,6 +573,7 @@ namespace UKAIW
             
             Depth = 0;
             Shared.CreatorName = gameObject.name;
+            SharedName = Shared.name;
         }
 
         public void PassPrefabToShared()

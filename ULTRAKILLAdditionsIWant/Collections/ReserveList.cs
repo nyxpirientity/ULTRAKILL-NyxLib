@@ -101,6 +101,11 @@ public class ReserveList<T>
 
     public bool IsIndexValid(int idx)
     {
+        if (idx < 0)
+        {
+            return false;
+        }
+        
         if (_List.Count <= idx)
         {
             return false;

@@ -31,6 +31,20 @@ namespace UKAIW
             EnemyEvents.PostNoIKDeath += PostEnemyDeath;
             UpdateEvents.OnLateUpdate += LateUpdate;
             UpdateEvents.OnFixedUpdate += FixedUpdate;
+            ScenesEvents.OnSceneWasUnloaded += OnSceneUnload;
+        }
+
+        private static void OnSceneUnload(int buildIndex, string sceneName)
+        {
+            for (int i = 0; i < SharedDatas.Count; i++)
+            {
+                if (!SharedDatas.IsIndexValid(i))
+                {
+                    continue;
+                }
+
+                SharedDatas.RemoveAt(i);
+            }
         }
 
         private static int RemainingHydraBloodFxThisTick = 0;
@@ -157,6 +171,7 @@ namespace UKAIW
                     var sharedData = SharedDatas[SharedDataForPrefabCacheIdx];
                     if (!sharedData.PrefabPoolFull)
                     {
+                        Assert.IsNotNull(sharedData);
                         sharedData.InstantiatePrefabToPool();
                         j++;
                     }
