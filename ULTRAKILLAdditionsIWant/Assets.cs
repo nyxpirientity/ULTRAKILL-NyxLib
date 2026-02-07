@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using HarmonyLib;
 using MelonLoader;
 using MelonLoader.Utils;
 using UKAIW.Diagnostics.Debug;
@@ -16,6 +17,7 @@ namespace UKAIW
         public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
 
         public static GameObject HeatResistancePrefab { get; private set; } = null;
+        public static GameObject ExplosionPrefab { get; private set; } = null;
 
         public static void Load()
         {
@@ -114,6 +116,49 @@ namespace UKAIW
 
             Log.ExpectedInfo($"Seemingly successfully loaded asset at '{path}'");
             return texture;
+        }
+
+        [HarmonyPatch(typeof(ExplosionController), "Start")]
+        static class ExplosionAwakePatch
+        {
+            public static void Prefix(ExplosionController __instance)
+            {
+     
+            }
+
+            public static void Postfix(ExplosionController __instance)
+            {
+                if (ExplosionPrefab == null)
+                {
+                    Log.TraceExpectedInfo($"Yoinking (instantiating/cloning) explosion prefab {__instance.gameObject.name} thats about to start, as we needed an ExplosionPrefab!");
+                    ExplosionPrefab = UnityEngine.GameObject.Instantiate(__instance.gameObject, null, false);
+                    ExplosionPrefab.SetActive(false);
+                    Explosion explosion = ExplosionPrefab.GetComponentInChildren<Explosion>();
+                    ExplosionPrefab.GetComponentInChildren<ExplosionController>().enabled = true;
+                    explosion.damage = 0;
+                    explosion.enemy = false;
+                    explosion.harmless = true;
+                    explosion.lowQuality = false;
+                    explosion.speed = 1.0f;
+                    explosion.maxSize = 1.0f;
+                    explosion.enemyDamageMultiplier = 1.0f;
+                    explosion.playerDamageOverride = -1;
+                    explosion.ignite = true;
+                    explosion.friendlyFire = false;
+                    explosion.isFup = false;
+                    explosion.hitterWeapon = "";
+                    explosion.halved = false;
+                    explosion.canHit = AffectedSubjects.All;
+                    explosion.originEnemy = null;
+                    explosion.rocketExplosion = false;
+                    explosion.toIgnore = new System.Collections.Generic.List<EnemyType>();
+                    explosion.ultrabooster = false;
+                    explosion.unblockable = false;
+                    explosion.electric = false;
+                    explosion.enabled = true;
+                    UnityEngine.Object.DontDestroyOnLoad(ExplosionPrefab);
+                }
+            }
         }
     }
 }
