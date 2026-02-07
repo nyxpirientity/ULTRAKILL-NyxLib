@@ -9,6 +9,14 @@ namespace UKAIW
 {
     public static class Assets
     {
+        public static Texture2D MundaneMurderIcon { get; private set; } = null;
+
+        public static GameObject HuskEnrageSound_0 { get; private set; } = null;
+        public static GameObject MachineEnrageSound_0 { get; private set; } = null;
+        public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
+
+        public static GameObject HeatResistancePrefab { get; private set; } = null;
+
         public static void Load()
         {
             Log.TraceExpectedInfo($"Assets.Load called!");
@@ -19,6 +27,26 @@ namespace UKAIW
             MundaneMurderIcon = LoadTexture($"{assetsDir}/mundane_murder.png");
 
             EnemyEvents.PostStart += EnemyStart;
+            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+        }
+
+        private static void OnSceneWasLoaded(int sceneIdx, string sceneName)
+        {
+            if (HeatResistancePrefab == null)
+            {
+                var possibleHeatResistance = UnityEngine.Object.FindAnyObjectByType<HeatResistance>(FindObjectsInactive.Include);
+                if (possibleHeatResistance != null)
+                {
+                    Log.ExpectedInfo($"Heat Resistance object found in scene \"{SceneHelper.CurrentScene}\" yoinking it (instantiating/cloning it) as a prefab!");
+                    HeatResistancePrefab = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
+                    HeatResistancePrefab.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefab);
+                }
+                else
+                {
+                    Log.ExpectedInfo($"We'd like a heat resistence prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
         }
 
         private static void EnemyStart(EnemyIdentifier eid, GameObject go)
@@ -30,6 +58,7 @@ namespace UKAIW
                 {
                     MachineEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<SwordsMachine>().bigPainSound, null, false);
                     MachineEnrageSound_0.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(MachineEnrageSound_0);
                     if (MachineEnrageSound_0 != null)
                     {
                         Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
@@ -43,6 +72,7 @@ namespace UKAIW
                     {
                         HuskEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<StatueBoss>().statueChargeSound2, null, false);
                         HuskEnrageSound_0.SetActive(false);
+                        UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
                         if (HuskEnrageSound_0 != null)
                         {
                             Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
@@ -85,11 +115,5 @@ namespace UKAIW
             Log.ExpectedInfo($"Seemingly successfully loaded asset at '{path}'");
             return texture;
         }
-
-        public static Texture2D MundaneMurderIcon { get; private set; } = null;
-
-        public static GameObject HuskEnrageSound_0 { get; private set; } = null;
-        public static GameObject MachineEnrageSound_0 { get; private set; } = null;
-        public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
     }
 }

@@ -91,6 +91,7 @@ namespace UKAIW
         private void Start()
         {
             Player = gameObject.GetComponent<NewMovement>();
+            gameObject.AddComponent<DemandingHell>();
 
             Difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");
         }

@@ -125,7 +125,7 @@ namespace UKAIW
                 }
 
                 sman.Value.stylePoints += Mathf.RoundToInt(num);
-                currentMeter.Value -= num;
+                currentMeter.Value = Mathf.Max(currentMeter.Value - num, -0.01f);
                 rankScale.Value = 0.2f;
             }
 

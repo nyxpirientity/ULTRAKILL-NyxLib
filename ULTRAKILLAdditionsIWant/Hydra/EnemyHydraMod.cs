@@ -538,11 +538,20 @@ namespace UKAIW
                         additionalOffsetScalar = 0.0f;
                         break;
                     case EnemyType.CancerousRodent:
-                        additionalOffsetScalar = 0.05f;
+                        additionalOffsetScalar = 0.00f;
+                        break;
+                    case EnemyType.VeryCancerousRodent:
+                        additionalOffsetScalar = 0.00f;
                         break;
                     default:
                         break;
                 }
+                
+                if (GetComponent<CancerousRodent>() != null)
+                {
+                    additionalOffsetScalar = 0.01f;
+                }
+
                 //dupeInfo.Position += (dupeInfo.Rotation * Vector3.Normalize(Vector3.Lerp(Vector3.right, Vector3.forward, UnityEngine.Random.Range(0.0f, 1.0f))))
                 //                     * (isB ? -1.0f : 1.0f);
                 dupeInfo.Position += Vector3.Project(dupeInfo.SharedData.Bounds.size, dupeInfo.Rotation * Vector3.right) * (isB ? -1.0f : 1.0f) * 0.3f * additionalOffsetScalar;

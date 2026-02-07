@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using HarmonyLib;
+using MelonLoader;
 using UKAIW;
+using UKAIW.Diagnostics.Debug;
 using ULTRAKILL.Cheats;
 using UnityEngine;
 
@@ -29,6 +32,8 @@ public static class Cheats
     public const string AlwaysBattleMusic = "ukaiw.always-battle-music";
     public const string BloodFueledEnemies = "ukaiw.blood-fueled-enemies";
     public const string SaltyEnemies = "ukaiw.salty-enemies";
+    public const string DemandingHell = "ukaiw.demanding-hell";
+    public const string SelfConscience = "ukaiw.self-conscious-v1";
 
     public static int FriendCount = 0;
 
@@ -91,7 +96,7 @@ public static class Cheats
     private static void RegisterCheats()
     {
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Override Cybergrind Starting Wave", 
+            "Override Cybergrind Starting Wave (unimplemented)", 
             Cheats.OverrideCybergrindStartingWaveID,
             onDisable: (cheat) =>
             {
@@ -190,7 +195,7 @@ public static class Cheats
         ), "SELF CARE");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Hard Damage Rebalance", 
+            "Hard Damage Rebalance (unimplemented)", 
             Cheats.HardDamageRebalance,
             onDisable: (cheat) =>
             {
@@ -223,7 +228,7 @@ public static class Cheats
         ), "misc");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Immortality", 
+            "Immortality (unimplemented)", 
             Cheats.Immortality,
             onDisable: (cheat) =>
             {
@@ -333,13 +338,41 @@ public static class Cheats
             {
             }
         ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Demanding Hell", 
+            Cheats.DemandingHell,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Self Conscience", 
+            Cheats.SelfConscience,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "???");
     }
 
     [HarmonyPatch(typeof(TeleportCheat), "Teleport")]
     static class TeleportCheatTeleportPatch
     {
         public static void Prefix(TeleportCheat __instance, Transform target)
-        {       
+        {
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+
             var activator = GameObject.FindAnyObjectByType<PlayerActivator>();
             if (activator != null)
             {
@@ -348,6 +381,20 @@ public static class Cheats
         }
         
         public static void Postfix(TeleportCheat __instance, Transform target)
+        {
+        }
+    }
+
+    [HarmonyPatch(typeof(HeatResistance), "Awake")]
+    static class APatch
+    {
+        public static void Prefix(HeatResistance __instance)
+        {
+            //StackTrace trace = new StackTrace(false);
+            //MelonLogger.Msg($"{trace}");
+        }
+        
+        public static void Postfix(HeatResistance __instance)
         {
         }
     }

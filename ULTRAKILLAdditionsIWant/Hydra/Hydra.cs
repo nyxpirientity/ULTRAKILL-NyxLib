@@ -161,7 +161,7 @@ namespace UKAIW
             {
                 for (int i = 0, j = 0; i < Options.HydraPrefabPoolGrowPerUpdate * 2 && j < Options.HydraPrefabPoolGrowPerUpdate; i++)
                 {
-                    SharedDataForPrefabCacheIdx = (SharedDataForPrefabCacheIdx + 1) % SharedDatas.Count;
+                    SharedDataForPrefabCacheIdx = (SharedDataForPrefabCacheIdx + 1) % SharedDatas.SoftCapacity;
 
                     if (!SharedDatas.IsIndexValid(SharedDataForPrefabCacheIdx))
                     {

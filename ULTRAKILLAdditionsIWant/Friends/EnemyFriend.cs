@@ -171,10 +171,10 @@ public class EnemyFriendIdentifier : MonoBehaviour
         var prefab = eadd.PrefabMod.Prefab;
         var friend = Instantiate(prefab);
         EnemyAdditions friendEadd = friend.GetComponent<EnemyAdditions>() ?? friend.GetComponentInChildren<EnemyAdditions>();
+        friend.transform.position = transform.position + offset;
         friend.SetActive(true);
         friend = friendEadd.gameObject;
         friend.SetActive(true);
-        friend.transform.position = transform.position + offset;
         friendEadd.FindAndCacheMods();
         friendEadd.HydraMod.InitializeAsNew();
         friendEadd.EnemyFriend.Leader = this;
