@@ -64,43 +64,67 @@ public static class Options
 
     public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResDrainEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellDestructiveHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResDrainEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellChaoticHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResRecoveryEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellBrutalHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResDrainEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellAnarchicHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResDrainEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellSupremeHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResDrainEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellSSadisticHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResDrainEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellSSSensoredStormHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResDrainEntry { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveSizeScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveSizeBase { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveSizeNormMax { get; private set; } = null;
     public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static MelonPreferences_Entry<bool> DemandingHellULTRAKILLHeatResExplosiveDmgPlayer { get; private set; } = null;
 
     static public float HydraHealthDecayScale { get => HydraHealthDecayScaleEntry.Value; } 
 
@@ -221,42 +245,66 @@ public static class Options
 
         DemandingHellDestructiveHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResDrain", -1.0f);
         DemandingHellDestructiveHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("DestructHeatResRecovery", 100.0f);
-        DemandingHellDestructiveHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveSizeScalar", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveSizeBase", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveSizeNormMax", -1.0f);
         DemandingHellDestructiveHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("DestructiveHeatResExplosiveDmgPlayer", false);
 
         DemandingHellChaoticHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResDrain", -1.0f);
         DemandingHellChaoticHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResRecovery", 100.0f);
-        DemandingHellChaoticHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveSizeScalar", -1.0f);
+        DemandingHellChaoticHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveSizeBase", -1.0f);
+        DemandingHellChaoticHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellChaoticHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveSizeNormMax", -1.0f);
         DemandingHellChaoticHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellChaoticHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("ChaoticHeatResExplosiveDmgPlayer", false);
 
         DemandingHellBrutalHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("BrutalHeatResDrain", -1.0f);
         DemandingHellBrutalHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("BrutalHeatResRecovery", 100.0f);
-        DemandingHellBrutalHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveSizeScalar", -1.0f);
+        DemandingHellBrutalHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveSizeBase", -1.0f);
+        DemandingHellBrutalHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellBrutalHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveSizeNormMax", -1.0f);
         DemandingHellBrutalHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellBrutalHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("BrutalHeatResExplosiveDmgPlayer", false);
 
-        DemandingHellAnarchicHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResDrain", -1.0f);
-        DemandingHellAnarchicHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResRecovery", 100.0f);
-        DemandingHellAnarchicHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveSizeScalar", -1.0f);
+        DemandingHellAnarchicHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResDrain", 30.0f);
+        DemandingHellAnarchicHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResRecovery", 1.6f);
+        DemandingHellAnarchicHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveSizeBase", -1.0f);
+        DemandingHellAnarchicHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellAnarchicHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveSizeNormMax", -1.0f);
         DemandingHellAnarchicHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellAnarchicHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("AnarchicHeatResExplosiveDmgPlayer", false);
 
-        DemandingHellSupremeHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SupremeHeatResDrain", 30.0f);
-        DemandingHellSupremeHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SupremeHeatResRecovery", 1.0f);
-        DemandingHellSupremeHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveSizeScalar", -1.0f);
+        DemandingHellSupremeHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SupremeHeatResDrain", 40.0f);
+        DemandingHellSupremeHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SupremeHeatResRecovery", 1.55f);
+        DemandingHellSupremeHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveSizeBase", -1.0f);
+        DemandingHellSupremeHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellSupremeHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveSizeNormMax", -1.0f);
         DemandingHellSupremeHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellSupremeHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SupremeHeatResExplosiveDmgPlayer", false);
 
-        DemandingHellSSadisticHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResDrain", 40.0f);
-        DemandingHellSSadisticHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SSadistricHeatResRecovery", 1.33333f);
-        DemandingHellSSadisticHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeScalar", 2.5f);
-        DemandingHellSSadisticHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellSSadisticHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResDrain", 50.0f);
+        DemandingHellSSadisticHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SSadistricHeatResRecovery", 1.65f);
+        DemandingHellSSadisticHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeBase", 12.0f);
+        DemandingHellSSadisticHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeNormMin", 2.5f);
+        DemandingHellSSadisticHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeNormMax", 7.0f);
+        DemandingHellSSadisticHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveDmgScalar", -0.25f);
+        DemandingHellSSadisticHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SSadisticHeatResExplosiveDmgPlayer", true);
 
         DemandingHellSSSensoredStormHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatStormResDrain", 75.0f);
-        DemandingHellSSSensoredStormHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatStormResRecovery", 2.1f);
-        DemandingHellSSSensoredStormHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeScalar", 3.5f);
-        DemandingHellSSSensoredStormHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveDmgScalar", 0.1f);
-        
-        DemandingHellULTRAKILLHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResRecovery", 2.2f);
+        DemandingHellSSSensoredStormHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatStormResRecovery", 2.35f);
+        DemandingHellSSSensoredStormHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeBase", 14.0f);
+        DemandingHellSSSensoredStormHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeNormMin", 0.15f);
+        DemandingHellSSSensoredStormHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeNormMax", 8.5f);
+        DemandingHellSSSensoredStormHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveDmgScalar", 0.4f);
+        DemandingHellSSSensoredStormHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SSSensoredStormHeatResExplosiveDmgPlayer", true);
+
+        DemandingHellULTRAKILLHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResRecovery", 2.6f);
         DemandingHellULTRAKILLHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResDrain", 100.0f);
-        DemandingHellULTRAKILLHeatResExplosiveSizeScalar = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeScalar", 7.5f);
-        DemandingHellULTRAKILLHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveDmgScalar", 0.5f);
+        DemandingHellULTRAKILLHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeBase", 20.0f);
+        DemandingHellULTRAKILLHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeNormMin", 0.15f);
+        DemandingHellULTRAKILLHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeNormMax", 6.5f);
+        DemandingHellULTRAKILLHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveDmgScalar", 0.65f);
+        DemandingHellULTRAKILLHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("ULTRAKILLHeatResExplosiveDmgPlayer", true);
     }
 }

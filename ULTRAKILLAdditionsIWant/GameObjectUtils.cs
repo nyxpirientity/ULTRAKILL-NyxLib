@@ -41,6 +41,10 @@ namespace UKAIW
             {
                 DebugPrintChildren(go.transform.GetChild(i).gameObject, logFunc, includeComponents, depth + 1);
             }
+            if (go.transform.childCount == 0)
+            {
+                logFunc($"{indent}  ![NO CHILDREN]!");
+            }
         }
     }
 }
