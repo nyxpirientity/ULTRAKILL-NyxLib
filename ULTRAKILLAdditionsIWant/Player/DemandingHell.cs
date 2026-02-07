@@ -332,31 +332,37 @@ namespace UKAIW
                 if (CurrentHeatResistance < -95.0f)
                 {
                     HeatResAntiHpCooldown += Time.fixedDeltaTime * 4.0f;
-                    player.ForceAntiHP((float)12.5f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
+                    player.ForceAntiHP((float)15.0f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch + 0.4f + UnityEngine.Random.Range(0.0f, 0.1f);
                     HeatResFlashingText.text = $"E{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}O{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}";
-                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -2.0f;
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -3.0f;
                 }
                 else if (CurrentHeatResistance < -50.0f)
                 {
                     HeatResAntiHpCooldown += Time.fixedDeltaTime * 2.5f;
-                    player.ForceAntiHP((float)5f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
+                    player.ForceAntiHP((float)10.0f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch + 0.1f;
                     HeatResFlashingText.text = "CRITICAL";
-                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -0.75f;
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -1.75f;
                 }
                 else if (CurrentHeatResistance <= 0.0f)
                 {
                     HeatResAntiHpCooldown += Time.fixedDeltaTime * 1.0f;
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch;
                     HeatResFlashingText.text = "WARNING:";
-                    HeatResRankDescensionTimer += Time.fixedDeltaTime * 0.75f;
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -0.5f;
+                }
+                else if (CurrentHeatResistance <= 50.0f)
+                {
+                    hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch;
+                    HeatResFlashingText.text = "WARNING:";
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * 1.25f;
                 }
                 else
                 {
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch;
                     HeatResFlashingText.text = "WARNING:";
-                    HeatResRankDescensionTimer += Time.fixedDeltaTime * 1.5f;
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * 2.5f;
                 }
 
                 HeatResRankDescensionTimer = Mathf.Min(HeatResRankDescensionTimer, HeatResRankDescensionTimerMax);
@@ -365,6 +371,7 @@ namespace UKAIW
                 {
                     Shud.DescendRank();
                     ResetHeatRestRankDescensionTimer();
+                    CurrentHeatResistance = Mathf.Max(CurrentHeatResistance, 0.0f);
                 }
             }
         }
@@ -405,7 +412,7 @@ namespace UKAIW
                 if (CurrentHeatResistance <= -10.0f)
                 {
                     HeatResExplosion(damage * 0.25f, player.rb.transform.position, true, out float explosiveSize);
-                    player.GetHurt(Mathf.RoundToInt(damage * 0.35f), false, 0.0f, true, false, 0.35f, true);
+                    player.GetHurt(Mathf.RoundToInt(damage * 0.3f), false, 0.0f, true, false, 0.35f, true);
                     player.Launch(Vector3.up, explosiveSize * 2.5f, true);
                 }
             }
