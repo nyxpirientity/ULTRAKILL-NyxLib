@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MelonLoader;
 using UKAIW;
 using UnityEngine;
@@ -59,56 +60,58 @@ public static class Options
     static MelonPreferences_Entry<float> RadianceAllDamageTierEntry = null;
     static MelonPreferences_Entry<float> RadianceAllHealthTierEntry = null;
 
-    static public float HydraHealthDecayScale = 0.5f;
+    static MelonPreferences_Category BrutalHellCategory = null;
 
-    static public float HydraDefaultWaitTime = 0.5f;
-    static public float HydraMiniBossWaitTime = 0.5f;
-    static public float HydraBossWaitTime = 0.5f;
-    static public float HydraUltraBossWaitTime = 0.5f;
+    static public float HydraHealthDecayScale { get => HydraHealthDecayScaleEntry.Value; } 
 
-    static public int HydraMaxDepth = 16;
-    static public int HydraMaxFromOne = 12;
-    static public int HydraMaxFromOneBoss = 6;
-    static public int HydraMaxPerUpdate = 4;
-    static public int HydraBloodCapNumUpdatesPerTick = 50;
-    static public int HydraBloodCapNumBloodPerTick = 10;
-    static public int HydraPrefabPoolCapacity = 20;
-    static public int HydraPrefabPoolGrowPerUpdate = 3;
-    static public int HydraKillBonus = 0;
-    static public int HydraMiniBossKillBonus = 0;
-    static public int HydraBossKillBonus = 0;
-    static public int HydraUltraBossKillBonus = 0;
+    static public float HydraDefaultWaitTime { get => HydraDefaultWaitTimeEntry.Value; }
+    static public float HydraMiniBossWaitTime { get => HydraMiniBossWaitTimeEntry.Value; }
+    static public float HydraBossWaitTime { get => HydraBossWaitTimeEntry.Value; }
+    static public float HydraUltraBossWaitTime { get => HydraUltraBossWaitTimeEntry.Value; }
 
-    static public bool IncludePerformanceLogs = false;
-    static public bool IncludeTraceExpectedLogs = false;
-    static public bool IncludeExpectedLogs = false;
-    static public bool IncludeLikelyLogs = false;
-    static public bool IncludeUnlikelyLogs = false;
-    static public bool IncludeUnexpectedLogs = false;
+    static public int HydraMaxDepth { get => HydraMaxDepthEntry.Value; }
+    static public int HydraMaxFromOne { get => HydraMaxFromOneEntry.Value; }
+    static public int HydraMaxFromOneBoss { get => HydraMaxFromOneBossEntry.Value; }
+    static public int HydraMaxPerUpdate { get => HydraMaxPerUpdateEntry.Value; }
+    static public int HydraBloodCapNumUpdatesPerTick { get => HydraBloodCapNumUpdatesPerTickEntry.Value; }
+    static public int HydraBloodCapNumBloodPerTick { get => HydraBloodCapNumBloodPerTickEntry.Value; }
+    static public int HydraPrefabPoolCapacity { get => HydraPrefabPoolCapacityEntry.Value; }
+    static public int HydraPrefabPoolGrowPerUpdate { get => HydraPrefabPoolGrowPerUpdateEntry.Value; }
+    static public int HydraKillBonus { get => HydraKillBonusEntry.Value; }
+    static public int HydraMiniBossKillBonus { get => HydraMiniBossKillBonusEntry.Value; }
+    static public int HydraBossKillBonus { get => HydraBossKillBonusEntry.Value; }
+    static public int HydraUltraBossKillBonus { get => HydraUltraBossKillBonusEntry.Value; }
 
-    static public int NumFriendsToSpawn = 1;
+    static public bool IncludePerformanceLogs { get => IncludePerformanceLogsEntry.Value; }
+    static public bool IncludeTraceExpectedLogs { get => IncludeTraceExpectedLogsEntry.Value; }
+    static public bool IncludeExpectedLogs { get => IncludeExpectedLogsEntry.Value; }
+    static public bool IncludeLikelyLogs { get => IncludeLikelyLogsEntry.Value; }
+    static public bool IncludeUnlikelyLogs { get => IncludeUnlikelyLogsEntry.Value; }
+    static public bool IncludeUnexpectedLogs { get => IncludeUnexpectedLogsEntry.Value; }
 
-    static public float BloodFuelEnemiesHealScalar = 0.2f;
-    static public float BloodFuelEnemiesDistDivisor = 8.0f;
+    static public int NumFriendsToSpawn { get => NumFriendsToSpawnEntry.Value; }
 
-    static public float DestructiveRadianceTier = 0.2f;
-    static public float ChaoticRadianceTier = 8.0f;
-    static public float BrutalRadianceTier = 8.0f;
-    static public float AnarchicRadianceTier = 8.0f;
-    static public float SupremeRadianceTier = 8.0f;
-    static public float SSadisticRadianceTier = 8.0f;
-    static public float SSSensoredStormRadianceTier = 8.0f;
-    static public float ULTRAKILLNoEnrageRadianceTier = 8.0f;
-    static public float ULTRAKILLRadianceTier = 8.0f;
+    static public float BloodFuelEnemiesHealScalar { get => BloodFuelEnemiesHealScalarEntry.Value; }
+    static public float BloodFuelEnemiesDistDivisor { get => BloodFuelEnemiesDistDivisorEntry.Value; }
 
-    static public bool SaltEffectSpeed = false;
-    static public bool SaltEffectHealth = false;
-    static public bool SaltEffectDamage = false;
+    static public float DestructiveRadianceTier { get => DestructiveRadianceTierEntry.Value; }
+    static public float ChaoticRadianceTier { get => ChaoticRadianceTierEntry.Value; }
+    static public float BrutalRadianceTier { get => BrutalRadianceTierEntry.Value; }
+    static public float AnarchicRadianceTier { get => AnarchicRadianceTierEntry.Value; }
+    static public float SupremeRadianceTier { get => SupremeRadianceTierEntry.Value; }
+    static public float SSadisticRadianceTier { get => SSadisticRadianceTierEntry.Value; }
+    static public float SSSensoredStormRadianceTier { get => SSSensoredStormRadianceTierEntry.Value; }
+    static public float ULTRAKILLNoEnrageRadianceTier { get => ULTRAKILLNoEnrageRadianceTierEntry.Value; }
+    static public float ULTRAKILLRadianceTier { get => ULTRAKILLRadianceTierEntry.Value; }
 
-    static public float RadianceAllTier = 1.0f;
-    static public float RadianceAllSpeedTier = 1.0f;
-    static public float RadianceAllDamageTier = 1.0f;
-    static public float RadianceAllHealthTier = 1.0f;
+    static public bool SaltEffectSpeed { get => SaltEffectSpeedEntry.Value; }
+    static public bool SaltEffectHealth { get => SaltEffectHealthEntry.Value; }
+    static public bool SaltEffectDamage { get => SaltEffectDamageEntry.Value; }
+
+    static public float RadianceAllTier { get => RadianceAllTierEntry.Value; }
+    static public float RadianceAllSpeedTier { get => RadianceAllSpeedTierEntry.Value; }
+    static public float RadianceAllDamageTier { get => RadianceAllDamageTierEntry.Value; }
+    static public float RadianceAllHealthTier { get => RadianceAllHealthTierEntry.Value; }
 
     public static void Initialize()
     {
@@ -174,64 +177,6 @@ public static class Options
         RadianceAllDamageTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllDamageTier", 1.5f);
         RadianceAllHealthTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllHealthTier", 1.5f);
 
-        Reload();
-    }
-
-    public static void Reload()
-    {
-        HydraHealthDecayScale = HydraHealthDecayScaleEntry.Value;
-
-        HydraDefaultWaitTime = HydraDefaultWaitTimeEntry.Value;
-        HydraMiniBossWaitTime = HydraMiniBossWaitTimeEntry.Value;
-        HydraBossWaitTime = HydraBossWaitTimeEntry.Value;
-        HydraUltraBossWaitTime = HydraUltraBossWaitTimeEntry.Value;
-
-        HydraMaxDepth = HydraMaxDepthEntry.Value;
-
-        HydraMaxFromOne = HydraMaxFromOneEntry.Value;
-        HydraMaxPerUpdate = HydraMaxPerUpdateEntry.Value;
-        HydraMaxFromOneBoss = HydraMaxFromOneBossEntry.Value;
-
-        HydraPrefabPoolCapacity = HydraPrefabPoolCapacityEntry.Value;
-        HydraPrefabPoolGrowPerUpdate = HydraPrefabPoolGrowPerUpdateEntry.Value;
-
-        HydraBloodCapNumUpdatesPerTick = HydraBloodCapNumUpdatesPerTickEntry.Value;
-        HydraBloodCapNumBloodPerTick = HydraBloodCapNumBloodPerTickEntry.Value;
-
-        HydraKillBonus = HydraKillBonusEntry.Value;
-        HydraMiniBossKillBonus = HydraMiniBossKillBonusEntry.Value;
-        HydraBossKillBonus = HydraBossKillBonusEntry.Value;
-        HydraUltraBossKillBonus = HydraUltraBossKillBonusEntry.Value;
-        
-        IncludePerformanceLogs = IncludePerformanceLogsEntry.Value;
-        IncludeTraceExpectedLogs = IncludeTraceExpectedLogsEntry.Value;
-        IncludeExpectedLogs = IncludeExpectedLogsEntry.Value;
-        IncludeLikelyLogs = IncludeLikelyLogsEntry.Value;
-        IncludeUnlikelyLogs = IncludeUnlikelyLogsEntry.Value;
-        IncludeUnexpectedLogs = IncludeUnexpectedLogsEntry.Value;
-
-        NumFriendsToSpawn = NumFriendsToSpawnEntry.Value;
-
-        BloodFuelEnemiesHealScalar = BloodFuelEnemiesHealScalarEntry.Value;
-        BloodFuelEnemiesDistDivisor = BloodFuelEnemiesDistDivisorEntry.Value;
-
-        DestructiveRadianceTier = DestructiveRadianceTierEntry.Value;
-        ChaoticRadianceTier = ChaoticRadianceTierEntry.Value;
-        BrutalRadianceTier = BrutalRadianceTierEntry.Value;
-        AnarchicRadianceTier = AnarchicRadianceTierEntry.Value;
-        SupremeRadianceTier = SupremeRadianceTierEntry.Value;
-        SSadisticRadianceTier = SSadisticRadianceTierEntry.Value;
-        SSSensoredStormRadianceTier = SSSensoredStormRadianceTierEntry.Value;
-        ULTRAKILLNoEnrageRadianceTier = ULTRAKILLNoEnrageRadianceTierEntry.Value;
-        ULTRAKILLRadianceTier = ULTRAKILLRadianceTierEntry.Value;
-
-        SaltEffectDamage = SaltEffectDamageEntry.Value;
-        SaltEffectHealth = SaltEffectHealthEntry.Value;
-        SaltEffectSpeed = SaltEffectSpeedEntry.Value;
-
-        RadianceAllTier = RadianceAllTierEntry.Value;
-        RadianceAllSpeedTier = RadianceAllSpeedTierEntry.Value;
-        RadianceAllHealthTier = RadianceAllHealthTierEntry.Value;
-        RadianceAllDamageTier = RadianceAllDamageTierEntry.Value;
+        RadianceAllCategory = MelonPreferences.CreateCategory("UKAIW-RadianceAll");
     }
 }
