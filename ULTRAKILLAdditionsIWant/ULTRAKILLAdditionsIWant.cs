@@ -142,7 +142,6 @@ namespace UKAIW
 
         public override void OnPreferencesLoaded() // Runs when Melon Preferences get loaded.
         {
-            Options.Reload();
         }
     }
 }
