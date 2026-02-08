@@ -298,16 +298,16 @@ namespace UKAIW
 
                     if (TimeSinceLastHeatResActivation > 5.0f)
                     {
-                        Shud.AddPoints(250, "<color = #ff9b31>ON FIRE</color>", null, null, -1, "", "");
+                        Shud.AddPoints(250, "<color=#ff9b31>ON FIRE</color>", null, null, -1, "", "");
                     }
 
                     TimeSinceLastHeatResActivation = 0.0f;
                     CurrentHeatResistance = 100.0f;
                 }
 
-                if (TimeSinceLastHeatResActivation > 5.0f && TimeSinceLastHeatResActivation % 10.0f < Time.fixedDeltaTime * 4.0f)
+                if (TimeSinceLastHeatResActivation > 5.0f && TimeSinceLastHeatResActivation % 10.0f < Time.fixedDeltaTime * 4.0f && OurHeatResistance.isActiveAndEnabled)
                 {
-                    Shud.AddPoints(75, "<color = #ffc131>HEATED AND UNBOTHERED</color>");
+                    Shud.AddPoints(75, "<color=#ffc131>HEATED AND UNBOTHERED</color>");
                 }
 
                 int heatResHurtDmg = 6;
