@@ -126,6 +126,18 @@ public static class Options
     public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveDmgScalar { get; private set; } = null;
     public static MelonPreferences_Entry<bool> DemandingHellULTRAKILLHeatResExplosiveDmgPlayer { get; private set; } = null;
 
+    static MelonPreferences_Category SelfConscienceCategory = null;
+    public static MelonPreferences_Entry<float> SelfConscienceDestructiveDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienceChaoticDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienceBrutalDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienceAnarchicDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienceSupremeDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienceSSadisticDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienceSSSensoredStormDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienceULTRAKILLDashCostScale { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienseDashCostIncreaseInterpRate { get; private set; } = null;
+    public static MelonPreferences_Entry<float> SelfConscienseDashCostDecreaseInterpRate { get; private set; } = null;
+
     static public float HydraHealthDecayScale { get => HydraHealthDecayScaleEntry.Value; } 
 
     static public float HydraDefaultWaitTime { get => HydraDefaultWaitTimeEntry.Value; }
@@ -288,7 +300,7 @@ public static class Options
         DemandingHellSSadisticHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeBase", 12.0f);
         DemandingHellSSadisticHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeNormMin", 2.5f);
         DemandingHellSSadisticHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeNormMax", 7.0f);
-        DemandingHellSSadisticHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveDmgScalar", 0.25f);
+        DemandingHellSSadisticHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveDmgScalar", 0.35f);
         DemandingHellSSadisticHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SSadisticHeatResExplosiveDmgPlayer", true);
 
         DemandingHellSSSensoredStormHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatStormResDrain", 85.0f);
@@ -296,7 +308,7 @@ public static class Options
         DemandingHellSSSensoredStormHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeBase", 14.0f);
         DemandingHellSSSensoredStormHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeNormMin", 0.15f);
         DemandingHellSSSensoredStormHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeNormMax", 8.5f);
-        DemandingHellSSSensoredStormHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveDmgScalar", 0.4f);
+        DemandingHellSSSensoredStormHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveDmgScalar", 0.5f);
         DemandingHellSSSensoredStormHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SSSensoredStormHeatResExplosiveDmgPlayer", true);
 
         DemandingHellULTRAKILLHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResRecovery", 2.7f);
@@ -304,7 +316,20 @@ public static class Options
         DemandingHellULTRAKILLHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeBase", 20.0f);
         DemandingHellULTRAKILLHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeNormMin", 0.15f);
         DemandingHellULTRAKILLHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeNormMax", 6.5f);
-        DemandingHellULTRAKILLHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveDmgScalar", 0.65f);
+        DemandingHellULTRAKILLHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveDmgScalar", 0.8f);
         DemandingHellULTRAKILLHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("ULTRAKILLHeatResExplosiveDmgPlayer", true);
+
+        SelfConscienceCategory = MelonPreferences.CreateCategory("UKAIW-SelfConscience");
+        SelfConscienceDestructiveDashCostScale = SelfConscienceCategory.CreateEntry<float>("DestructiveDashCostScale", 1.35f);
+        SelfConscienceChaoticDashCostScale = SelfConscienceCategory.CreateEntry<float>("ChaoticDashCostScale", 1.1f);
+        SelfConscienceBrutalDashCostScale = SelfConscienceCategory.CreateEntry<float>("BrutalDashCostScale", 1.05f);
+        SelfConscienceAnarchicDashCostScale = SelfConscienceCategory.CreateEntry<float>("AnarchicDashCostScale", 1.0f);
+        SelfConscienceSupremeDashCostScale = SelfConscienceCategory.CreateEntry<float>("SupremeDashCostScale", 0.9f);
+        SelfConscienceSSadisticDashCostScale = SelfConscienceCategory.CreateEntry<float>("SSadisticDashCostScale", 0.85f);
+        SelfConscienceSSSensoredStormDashCostScale = SelfConscienceCategory.CreateEntry<float>("SSSensoredStormDashCostScale", 0.825f);
+        SelfConscienceULTRAKILLDashCostScale = SelfConscienceCategory.CreateEntry<float>("ULTRAKILLDashCostScale", 0.825f);
+
+        SelfConscienseDashCostIncreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIncreaseInterpRate", 0.3f);
+        SelfConscienseDashCostDecreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIDecreaseInterpRate", 1.0f);
     }
 }

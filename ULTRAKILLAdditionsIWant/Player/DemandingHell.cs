@@ -305,7 +305,7 @@ namespace UKAIW
                     CurrentHeatResistance = 100.0f;
                 }
 
-                if (TimeSinceLastHeatResActivation > 5.0f && TimeSinceLastHeatResActivation % 10.0f < Time.fixedDeltaTime * 4.0f && OurHeatResistance.isActiveAndEnabled)
+                if (TimeSinceLastHeatResActivation > 5.0f && TimeSinceLastHeatResActivation % 15.0f < Time.fixedDeltaTime * 0.75f && OurHeatResistance.isActiveAndEnabled)
                 {
                     Shud.AddPoints(75, "<color=#ffc131>HEATED AND UNBOTHERED</color>");
                 }
@@ -475,7 +475,7 @@ namespace UKAIW
                 {
                     HeatResExplosion(damage * 0.25f, player.rb.transform.position, true, out float explosiveSize);
                     player.GetHurt(Mathf.RoundToInt(damage * 0.3f), false, 0.0f, true, false, 0.35f, true);
-                    player.Launch(Vector3.up, explosiveSize * 2.5f, true);
+                    player.Launch(Vector3.up, explosiveSize * 3.5f, true);
                 }
             }
         }

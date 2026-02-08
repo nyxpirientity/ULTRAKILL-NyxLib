@@ -10,6 +10,10 @@ namespace UKAIW
 {
     public static class Player
     {
+        public static Action<NewMovement> PreUpdate = null;
+        public static Action<NewMovement> PostUpdate = null;
+        public static Action<NewMovement> PreFullStamina = null;
+        public static Action<NewMovement> PostFullStamina = null;
         public static Action<NewMovement, int> PreDeath = null;
         public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PreHurt = null;
         public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PostHurt = null;
@@ -25,6 +29,101 @@ namespace UKAIW
             var player = MonoSingleton<NewMovement>.Instance;
             
             player?.gameObject.AddComponent<PlayerAdditions>();
+        }
+    }
+
+    public class PlayerAdditions : MonoBehaviour
+    {
+        NewMovement player = null;
+        int Difficulty = 0;
+
+        private void Start()
+        {
+            player = gameObject.GetComponent<NewMovement>();
+            gameObject.AddComponent<DemandingHell>();
+            gameObject.AddComponent<SelfConscience>();
+
+            Difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");
+        }
+
+        private void FixedUpdate()
+        {
+        }
+
+        private int PrevStylePoints = MonoSingleton<StatsManager>.Instance.stylePoints;
+        private float PrevAntiHpCooldown = 0.0f;
+        private float PrevAntiHp = 0.0f;
+
+        private void Update()
+        {
+            try
+            {
+                UnsafeUpdate();
+            }
+            catch (System.Exception e)
+            {
+                MelonLogger.Error(e.ToString());
+            }
+        }
+
+        private void UnsafeUpdate()
+        {
+            var stats = MonoSingleton<StatsManager>.Instance;
+            
+            if (MonoSingleton<InputManager>.Instance.InputSource.Dodge.WasPerformedThisFrame && player.activated && !player.slowMode && !GameStateManager.Instance.PlayerInputLocked)
+            {
+                if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
+                {
+                    player.boostCharge += 50.0f;
+                }
+            }
+
+            if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
+            {
+                if (MonoSingleton<FistControl>.Instance.fistCooldown > -1f)
+                {
+                    MonoSingleton<WeaponCharges>.Instance.punchStamina = Mathf.MoveTowards(MonoSingleton<WeaponCharges>.Instance.punchStamina, 2f, Time.deltaTime * 0.625f);
+                }
+            }
+            else
+            {
+            }
+
+            FieldInfo antiHpCooldownFI = typeof(NewMovement).GetField("antiHpCooldown", BindingFlags.NonPublic | BindingFlags.Instance);
+            var antiHpCooldown = (float)antiHpCooldownFI.GetValue(player);
+
+            if (CheatsManager.Instance.GetCheatState(Cheats.HardDamageRebalance)) // OH this is actually in the code still?? yeah this stuff is jank as heck and not balanced btw lol
+            {
+                float spDeltaF = stats.stylePoints - PrevStylePoints;
+                
+                if (spDeltaF > 0.0f)
+                {
+                    int rankIndex = MonoSingleton<StyleHUD>.Instance.rankIndex;
+                    float antiHpHeal = Mathf.Pow(spDeltaF * 0.04f, 1.1f);
+                    float rankMulti = Mathf.Pow((rankIndex + 1.0f) * 0.4f, 1.1f) + 1.0f;
+                    antiHpHeal *= rankMulti;
+                    player.antiHp -= Mathf.Max(player.antiHp, antiHpHeal) * 0.1f;
+                }
+
+                float antiHpDelta = player.antiHp - PrevAntiHp;
+                float antiHpCooldownDelta = antiHpCooldown - PrevAntiHpCooldown;
+                
+                if (antiHpDelta <= 0.0f)
+                {
+                    player.antiHp += Mathf.Max(0.0f, antiHpDelta * -0.7f);
+                }
+                else
+                {
+                    player.antiHp += Mathf.Max(0.0f, antiHpDelta * ( 0.9f * ((Difficulty + 1.0f) / 6.5f)));
+                }
+                
+                antiHpCooldown += Mathf.Max(0.0f, antiHpCooldownDelta * -0.65f);
+            }
+            
+            antiHpCooldownFI.SetValue(player, antiHpCooldown);
+            PrevAntiHpCooldown = antiHpCooldown;
+            PrevAntiHp = player.antiHp;
+            PrevStylePoints = stats.stylePoints;
         }
     }
 
@@ -83,98 +182,31 @@ namespace UKAIW
         }
     }
 
-    public class PlayerAdditions : MonoBehaviour
+    [HarmonyPatch(typeof(NewMovement), "FullStamina")]
+    static class PlayerFullStaminaPatch
     {
-        NewMovement Player = null;
-        int Difficulty = 0;
-
-        private void Start()
+        public static void Prefix(NewMovement __instance)
         {
-            Player = gameObject.GetComponent<NewMovement>();
-            gameObject.AddComponent<DemandingHell>();
-
-            Difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");
+            Player.PreFullStamina?.Invoke(__instance);
         }
 
-        private int PrevStylePoints = MonoSingleton<StatsManager>.Instance.stylePoints;
-        private float PrevAntiHpCooldown = 0.0f;
-        private float PrevAntiHp = 0.0f;
-
-        private void Update()
+        public static void Postfix(NewMovement __instance)
         {
-            try
-            {
-                UnsafeUpdate();
-            }
-            catch (System.Exception e)
-            {
-                MelonLogger.Error(e.ToString());
-            }
+            Player.PostFullStamina?.Invoke(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(NewMovement), "Update")]
+    static class PlayerUpdatePatch
+    {
+        public static void Prefix(NewMovement __instance)
+        {
+            Player.PreUpdate?.Invoke(__instance);
         }
 
-        private void UnsafeUpdate()
+        public static void Postfix(NewMovement __instance)
         {
-            var stats = MonoSingleton<StatsManager>.Instance;
-            
-            if (MonoSingleton<InputManager>.Instance.InputSource.Dodge.WasPerformedThisFrame && Player.activated && !Player.slowMode && !GameStateManager.Instance.PlayerInputLocked)
-            {
-                if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
-                {
-                    Player.boostCharge += 50.0f;
-                }
-            }
-
-            if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
-            {
-                if (MonoSingleton<FistControl>.Instance.fistCooldown > -1f)
-                {
-                    MonoSingleton<WeaponCharges>.Instance.punchStamina = Mathf.MoveTowards(MonoSingleton<WeaponCharges>.Instance.punchStamina, 2f, Time.deltaTime * 0.625f);
-                }
-            }
-            else
-            {
-            }
-
-            FieldInfo antiHpCooldownFI = typeof(NewMovement).GetField("antiHpCooldown", BindingFlags.NonPublic | BindingFlags.Instance);
-            var antiHpCooldown = (float)antiHpCooldownFI.GetValue(Player);
-
-            if (CheatsManager.Instance.GetCheatState(Cheats.HardDamageRebalance))
-            {
-                float spDeltaF = stats.stylePoints - PrevStylePoints;
-                
-                if (spDeltaF > 0.0f)
-                {
-                    int rankIndex = MonoSingleton<StyleHUD>.Instance.rankIndex;
-                    float antiHpHeal = Mathf.Pow(spDeltaF * 0.04f, 1.1f);
-                    float rankMulti = Mathf.Pow((rankIndex + 1.0f) * 0.4f, 1.1f) + 1.0f;
-                    antiHpHeal *= rankMulti;
-                    Player.antiHp -= Mathf.Max(Player.antiHp, antiHpHeal) * 0.1f;
-                }
-
-                float antiHpDelta = Player.antiHp - PrevAntiHp;
-                float antiHpCooldownDelta = antiHpCooldown - PrevAntiHpCooldown;
-                
-                if (antiHpDelta <= 0.0f)
-                {
-                    Player.antiHp += Mathf.Max(0.0f, antiHpDelta * -0.7f);
-                }
-                else
-                {
-                    Player.antiHp += Mathf.Max(0.0f, antiHpDelta * ( 0.9f * ((Difficulty + 1.0f) / 6.5f)));
-                }
-                
-                antiHpCooldown += Mathf.Max(0.0f, antiHpCooldownDelta * -0.65f);
-            }
-            
-            if (Cheats.IsCheatEnabled(Cheats.MundaneMurder))
-            {
-                
-            }
-            
-            antiHpCooldownFI.SetValue(Player, antiHpCooldown);
-            PrevAntiHpCooldown = antiHpCooldown;
-            PrevAntiHp = Player.antiHp;
-            PrevStylePoints = stats.stylePoints;
+            Player.PostUpdate?.Invoke(__instance);
         }
     }
 }
