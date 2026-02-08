@@ -177,6 +177,7 @@ namespace UKAIW
         float HeatResistanceDrain = 0.0f;
         float HeatResAntiHpCooldown = 0.0f;
         float HeatResHurtTimer = -1.0f;
+        float TimeSinceLastHeatResDeactivation = 0.0f;
         float TimeSinceLastHeatResActivation = 10.0f;
         float HeatResRankDescensionTimer = 4.0f;
         float HeatResRankDescensionTimerMax = 4.0f;
@@ -237,6 +238,7 @@ namespace UKAIW
             }
             
             TimeSinceLastHeatResActivation += Time.fixedDeltaTime;
+            TimeSinceLastHeatResDeactivation += Time.fixedDeltaTime;
 
             if (OurHeatResistance != null)
             {
@@ -287,6 +289,7 @@ namespace UKAIW
                 if (OurHeatResistance.isActiveAndEnabled && HeatResistanceDrain <= 0.0f)
                 {
                     OurHeatResistance.gameObject.SetActive(false);
+                    TimeSinceLastHeatResDeactivation = 0.0f;
                 }
                 else if (!OurHeatResistance.isActiveAndEnabled && HeatResistanceDrain > 0.0f)
                 {
@@ -295,11 +298,16 @@ namespace UKAIW
 
                     if (TimeSinceLastHeatResActivation > 5.0f)
                     {
-                        Shud.AddPoints(100, "ON FIRE", null, null, -1, "", "");
+                        Shud.AddPoints(250, "<color = #ff9b31>ON FIRE</color>", null, null, -1, "", "");
                     }
 
                     TimeSinceLastHeatResActivation = 0.0f;
                     CurrentHeatResistance = 100.0f;
+                }
+
+                if (TimeSinceLastHeatResActivation > 5.0f && TimeSinceLastHeatResActivation % 10.0f < Time.fixedDeltaTime * 4.0f)
+                {
+                    Shud.AddPoints(75, "<color = #ffc131>HEATED AND UNBOTHERED</color>");
                 }
 
                 int heatResHurtDmg = 6;
