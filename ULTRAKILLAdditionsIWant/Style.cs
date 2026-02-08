@@ -24,6 +24,8 @@ namespace UKAIW
 
     public static class Style
     {
+        public static int NumStyleRanks = 8;
+
         public static Action<StyleHUD, int, string, GameObject, EnemyIdentifier, int, string, string> AddPointsPrefix = null;
         public static Action<StyleHUD, int, string, GameObject, EnemyIdentifier, int, string, string> AddPointsPostfix = null;
 

@@ -12,6 +12,8 @@ namespace UKAIW
 
     public static class EnemyUtils
     {
+        public static int NumGameplayRanks = 4;
+
         public static EnemyGameplayRank GetEnemyGameplayRank(EnemyIdentifier eid)
         {
             return eid.enemyType switch
