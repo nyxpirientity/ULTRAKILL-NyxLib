@@ -33,12 +33,12 @@ namespace UKAIW
             {
                 FieldPublisher<HeatResistance, float> heatResistance = new FieldPublisher<HeatResistance, float>(OurHeatResistance, "heatResistance");
 
-                if (heatResistance.Value <= 20.0f && !fromExplosion)
+                if (heatResistance.Value <= 35.0f && !fromExplosion)
                 {
                     HeatResExplosion(multiplier, hitPoint.GetValueOrDefault(eid.transform.position), false, out _);
                 }
 
-                if (heatResistance.Value <= 35.0f)
+                if (heatResistance.Value <= 60.0f)
                 {
                     eid.StartBurning(3.0f);
                 }
@@ -173,12 +173,13 @@ namespace UKAIW
         }
 
         float CurrentHeatResistance = 0.0f;
+        float HeatResistanceVel = 0.0f;
         float HeatResistanceDrain = 0.0f;
         float HeatResAntiHpCooldown = 0.0f;
         float HeatResHurtTimer = -1.0f;
         float TimeSinceLastHeatResActivation = 10.0f;
-        float HeatResRankDescensionTimer = 5.0f;
-        float HeatResRankDescensionTimerMax = 5.0f;
+        float HeatResRankDescensionTimer = 4.0f;
+        float HeatResRankDescensionTimerMax = 4.0f;
 
         public void ResetHeatRestRankDescensionTimer()
         {
@@ -281,6 +282,8 @@ namespace UKAIW
                         break;
                 }
 
+                HeatResistanceDrain = HeatResistanceDrain * ((player.touchingWaters.Count > 0) ? 0.5f : 1.0f);
+
                 if (OurHeatResistance.isActiveAndEnabled && HeatResistanceDrain <= 0.0f)
                 {
                     OurHeatResistance.gameObject.SetActive(false);
@@ -288,14 +291,15 @@ namespace UKAIW
                 else if (!OurHeatResistance.isActiveAndEnabled && HeatResistanceDrain > 0.0f)
                 {
                     OurHeatResistance.gameObject.SetActive(true);
-                    HeatResHurtTimer = 1.25f;
+                    HeatResHurtTimer = 0.75f;
 
                     if (TimeSinceLastHeatResActivation > 5.0f)
                     {
-                        Shud.AddPoints(75, "ON FIRE", null, null, -1, "", "");
+                        Shud.AddPoints(100, "ON FIRE", null, null, -1, "", "");
                     }
 
                     TimeSinceLastHeatResActivation = 0.0f;
+                    CurrentHeatResistance = 100.0f;
                 }
 
                 int heatResHurtDmg = 6;
@@ -313,17 +317,52 @@ namespace UKAIW
                 
                 if (CurrentHeatResistance <= 0.0f)
                 {
-                    CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, -100.0f, (Time.fixedDeltaTime * (HeatResistanceDrain * 0.5f)));
+                    //CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, -100.0f, (Time.fixedDeltaTime * (CurrentHeatResistanceVel * 0.5f)));
                 }
                 else
                 {
-                    CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, 0.0f, (Time.fixedDeltaTime * (HeatResistanceDrain)));
+                    //CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, 0.0f, (Time.fixedDeltaTime * (CurrentHeatResistanceVel)));
+                }
+                
+                float scaledHeatResistanceDrain = HeatResistanceDrain;
+                
+                if (CurrentHeatResistance < -95.0f)
+                {
+                    scaledHeatResistanceDrain *= 0.7f;
+                }
+                else if (CurrentHeatResistance < -50.0f)
+                {
+                    scaledHeatResistanceDrain *= 0.8f;
+                }
+                else if (CurrentHeatResistance <= 0.0f)
+                {
+                    scaledHeatResistanceDrain *= 0.9f;
+                }                
+                else if (CurrentHeatResistance <= 35.0f)
+                {
+                    scaledHeatResistanceDrain *= 1.0f;
+                }
+                else if (CurrentHeatResistance <= 60.0f)
+                {
+                    scaledHeatResistanceDrain *= 1.1f;
+                }
+                else if (CurrentHeatResistance <= 80.0f)
+                {
+                    scaledHeatResistanceDrain *= 1.2f;
+                }             
+                else if (CurrentHeatResistance <= 100.0f)
+                {
+                    scaledHeatResistanceDrain *= 1.3f;
                 }
 
-                if (CurrentHeatResistance >= 0.1f || heatResistanceRecovery > HeatResistanceDrain)
-                {
-                    CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, 100.0f, (Time.fixedDeltaTime * heatResistanceRecovery));
-                }
+
+                float targetVel = (heatResistanceRecovery - scaledHeatResistanceDrain);
+                HeatResistanceVel = Mathf.MoveTowards(HeatResistanceVel, targetVel, Time.fixedDeltaTime * (HeatResistanceDrain * 6.0f) * (targetVel > HeatResistanceVel ? 1.0f : 0.35f));
+                HeatResistanceVel = Mathf.Clamp(HeatResistanceVel, -HeatResistanceDrain, HeatResistanceDrain * 3.0f);
+
+                CurrentHeatResistance = Mathf.Clamp(CurrentHeatResistance + (HeatResistanceVel * Time.fixedDeltaTime), -100.0f, 100.0f);
+
+                //CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, 100.0f, (Time.fixedDeltaTime * heatResistanceRecovery));
 
                 HeatResLabel.text = $"HEAT RESISTANCE - {CurrentHeatResistance:F1}%";
 
@@ -334,7 +373,22 @@ namespace UKAIW
                     HeatResAntiHpCooldown += Time.fixedDeltaTime * 4.0f;
                     player.ForceAntiHP((float)15.0f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch + 0.4f + UnityEngine.Random.Range(0.0f, 0.1f);
-                    HeatResFlashingText.text = $"E{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}O{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}";
+                    switch (UnityEngine.Random.Range(0, 4))
+                    {
+                        case 0:
+                        HeatResFlashingText.text = $"S{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}T{(char)UnityEngine.Random.Range(33, 96)}O{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}P{(char)UnityEngine.Random.Range(33, 96)}I{(char)UnityEngine.Random.Range(33, 96)}T";
+                        break;
+                        case 1:
+                        HeatResFlashingText.text = $"I{(char)UnityEngine.Random.Range(33, 96)}T{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}B{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}U{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}RN{(char)UnityEngine.Random.Range(33, 96)}S";
+                        break;
+                        case 2:
+                        HeatResFlashingText.text = $"AAAAAAA";
+                        break;
+                        case 3:
+                        default:
+                        HeatResFlashingText.text = $"E{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}O{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}";
+                            break;
+                    }
                     HeatResRankDescensionTimer += Time.fixedDeltaTime * -3.0f;
                 }
                 else if (CurrentHeatResistance < -50.0f)
@@ -375,7 +429,7 @@ namespace UKAIW
                 }
             }
         }
-        
+
         protected void LateUpdate()
         {
             if (!Cheats.IsCheatEnabled(Cheats.DemandingHell))
