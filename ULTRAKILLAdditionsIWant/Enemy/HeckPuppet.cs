@@ -11,6 +11,7 @@ namespace UKAIW
         public HeckPuppetLeader Leader = null;
         public EnemyIdentifier Eid { get; private set; } = null;
         public bool GivePoints { get; private set; } = true;
+        public ulong HeckPuppetID = 0;
 
         public EnemyGameplayRank GameplayRank;
         public StyleRanks StyleRank;
@@ -25,12 +26,13 @@ namespace UKAIW
             Eid = GetComponent<EnemyIdentifier>();
             Eid.dontCountAsKills = true;
             GivePoints = true;
-            Eid.puppet = true;
         }
 
         internal bool PrevDead = false;
         protected void FixedUpdate()
         {
+            Eid.puppet = true;
+            
             if (Leader == null)
             {
                 Eid.InstaKill();
@@ -51,7 +53,7 @@ namespace UKAIW
             
             if (!PrevDead && Eid.Dead)
             {
-                Leader.NotifyPuppetDeath(this);
+                Leader.NotifyPuppetDeath(this, HeckPuppetID);
 
                 TryGivePoints();
             }
@@ -85,7 +87,7 @@ namespace UKAIW
         {
             if (!PrevDead)
             {
-                Leader.NotifyPuppetDeath(this);
+                Leader.NotifyPuppetDeath(this, HeckPuppetID);
                 TryGivePoints();
                 PrevDead = true;
             }

@@ -7,6 +7,8 @@ using UnityEngine;
 public class EnemyPrefabMod : MonoBehaviour
 {
     public GameObject Prefab = null;
+    private GameObject _PrefabParent = null;
+    public GameObject PrefabParent { get => _PrefabParent ?? null; }
     private EnemyIdentifier Eid = null;
 
     private static bool IsStoringPrefab = false;
@@ -26,6 +28,19 @@ public class EnemyPrefabMod : MonoBehaviour
     }
 
     public void StorePrefab(bool force = false)
+    {
+        try
+        {
+            StorePrefabUnsafe(force);
+        }
+        catch (System.Exception)
+        {
+            IsStoringPrefab = false;
+            throw;
+        }
+    }
+
+    private void StorePrefabUnsafe(bool force = false)
     {
         if (IsStoringPrefab)
         {
@@ -67,10 +82,16 @@ public class EnemyPrefabMod : MonoBehaviour
             //templateGo.SetActive(false);
         }
         Prefab = UnityEngine.Object.Instantiate(templateGo);
+        _PrefabParent = templateGo?.transform?.parent?.gameObject;
         Prefab.SetActive(false);
         
         var prefabEid = Prefab.GetComponent<EnemyIdentifier>() ?? Prefab.GetComponentInChildren<EnemyIdentifier>();
-
+        
+        prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
+        prefabEid.activateOnDeath = new GameObject[0];
+        prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
+        prefabEid.stuckMagnets = new System.Collections.Generic.List<Magnet>();
+        
         if (prefabEid.machine != null)
         {
             prefabEid.machine.musicRequested = false;

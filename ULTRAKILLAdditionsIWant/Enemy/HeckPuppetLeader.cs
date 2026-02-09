@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MelonLoader;
 using SettingsMenu.Components.Pages;
 using TMPro;
+using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 namespace UKAIW
@@ -17,6 +18,7 @@ namespace UKAIW
             public GameObject PuppetRootGo { get; private set; } = null;
             public EnemyAdditions PuppetEad { get; private set; } = null;
             public EnemyIdentifier PuppetEid { get; private set; } = null;
+            public ulong HeckPuppetID = 0;
 
             internal void Nullify()
             {
@@ -31,19 +33,24 @@ namespace UKAIW
                 return !((HeckPuppet?.Eid?.Dead).GetValueOrDefault(true));
             }
 
+            private static ulong NextHeckPuppetID = 0;
             internal void Spawn(Vector3 position, Quaternion rotation, HeckPuppetLeader leader, StyleRanks styleRank, Options.HeckPuppetStyleEntry.HeckPuppetOptions options)
-            {
-                PuppetRootGo = UnityEngine.Object.Instantiate(leader.Ead.PrefabMod.Prefab);
+            {   
+                HeckPuppetID = NextHeckPuppetID;
+                PuppetRootGo = UnityEngine.Object.Instantiate(leader.Ead.PrefabMod.Prefab, leader.Ead.RootGameObject.transform.parent);
                 PuppetRootGo.transform.position = position;
                 PuppetRootGo.transform.rotation = rotation;
                 PuppetEad = PuppetRootGo.GetComponent<EnemyAdditions>() ?? PuppetRootGo.GetComponentInChildren<EnemyAdditions>();
                 
                 Assert.IsNotNull(PuppetEad);
                 Assert.IsNotNull(PuppetEad.gameObject);
-
+            
                 PuppetEad.gameObject.GetComponent<HeckPuppetLeader>().enabled = false;
                 PuppetEad.MarkAsUniquelySolo();
+                PuppetEid = PuppetEad.gameObject.GetComponent<EnemyIdentifier>();
+                PuppetEid.spawnIn = false;
                 PuppetRootGo.SetActive(true);
+                PuppetEad.gameObject.SetActive(true);
                 
                 PuppetEad.Health = (Mathf.Min(options.MaxHeckPuppetHealth.Value, leader.Eid.Health * options.HeckPuppetHealthScalar.Value));
                 PuppetEad.EnemyRadiance.AddModifier(new Radiance.Modifier() 
@@ -56,14 +63,14 @@ namespace UKAIW
                     SpeedMod = options.HeckPuppetSpeedBuffScalar.Value,
                     Multiplier = true,
                 });
-
-                PuppetEid = PuppetEad.gameObject.GetComponent<EnemyIdentifier>();
+                
                 HeckPuppet = PuppetEad.gameObject.AddComponent<HeckPuppet>();
                 HeckPuppet.Leader = leader;
                 HeckPuppet.GameplayRank = leader.GameplayRank;
                 HeckPuppet.StyleRank = styleRank;
+                HeckPuppet.HeckPuppetID = NextHeckPuppetID;
                 PuppetEid.dontCountAsKills = true;
-                PuppetEid.puppet = true;
+                PuppetEid.timeSinceSpawned = 0.0f;
             }
         }
 
@@ -102,7 +109,7 @@ namespace UKAIW
             {
                 List<ManagedHeckPuppet> puppets = Puppets[styleRank];
                 
-                if (styleRank > Shud.GetStyleRank() || Eid.Dead)
+                if (styleRank > Shud.GetStyleRank())
                 {
                     foreach (var puppet in puppets)
                     {
@@ -111,6 +118,21 @@ namespace UKAIW
                             puppet.HeckPuppet.PrevDead = true;
                             puppet.HeckPuppet?.Eid.InstaKill();
                             puppet.DeathTimestamp.TimeStamp = 0.0;
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (Eid.Dead)
+                {
+                    foreach (var puppet in puppets)
+                    {
+                        if (puppet.IsAlive())
+                        {
+                            puppet.HeckPuppet.PrevDead = true;
+                            puppet.HeckPuppet?.Eid.InstaKill();
+                            puppet.DeathTimestamp.UpdateToNow();
                         }
                     }
 
@@ -164,10 +186,10 @@ namespace UKAIW
             }
         }
 
-        internal void NotifyPuppetDeath(HeckPuppet puppet)
+        internal void NotifyPuppetDeath(HeckPuppet puppet, ulong heckPuppetID)
         {
             var puppets = Puppets[puppet.StyleRank];
-            ManagedHeckPuppet mHeckPuppet = puppets.Find((a) => puppet == a.HeckPuppet ? true : false );
+            ManagedHeckPuppet mHeckPuppet = puppets.Find((a) => heckPuppetID == a.HeckPuppetID ? true : false );
             mHeckPuppet?.DeathTimestamp.UpdateToNow();
             mHeckPuppet?.Nullify();
         }

@@ -28,7 +28,7 @@ namespace UKAIW
                     return;
                 }
 
-                var newGo = Instantiate(Prefab);
+                var newGo = Instantiate(Prefab, PrefabParent?.transform);
 
                 PrefabPool.Push(newGo);
 
@@ -59,6 +59,7 @@ namespace UKAIW
             public int InstanceCount { get => Instances.Count; }
             public int GlobalIdx { get; private set; } = -1;
             public bool Active { get; private set; } = false;
+            public GameObject PrefabParent = null;
 
             internal void UnregisterInstance(int sharedIdx)
             {
@@ -589,7 +590,9 @@ namespace UKAIW
         {
             if (Shared.Prefab == null)
             {
-                Shared.Prefab = GetComponent<EnemyAdditions>().PrefabMod.Prefab;
+                var prefabMod = GetComponent<EnemyAdditions>().PrefabMod;
+                Shared.Prefab = prefabMod.Prefab;
+                Shared.PrefabParent = prefabMod.PrefabParent;
             }
         }
 
