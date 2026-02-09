@@ -43,6 +43,7 @@ namespace UKAIW
             gameObject.AddComponent<DemandingHell>();
             gameObject.AddComponent<SelfConscience>();
             gameObject.AddComponent<HeckPuppetObserver>();
+            gameObject.AddComponent<BadGyro>();
 
             Difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");
         }

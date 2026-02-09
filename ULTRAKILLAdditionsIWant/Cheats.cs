@@ -35,6 +35,10 @@ public static class Cheats
     public const string DemandingHell = "ukaiw.demanding-hell";
     public const string SelfConscience = "ukaiw.self-conscious-v1";
     public const string HeckPuppets = "ukaiw.heck-puppets";
+    public const string BadGyro = "ukaiw.bad-gyro";
+    public const string StrongerInNumbers = "ukaiw.stronger-in-numbers";
+    public const string Tymitosis = "ukaiw.tymitosis";
+    public const string SoleNemesis = "ukaiw.sole-nemesis";
 
     public static int FriendCount = 0;
 
@@ -128,7 +132,7 @@ public static class Cheats
         ), "CYBERGRIND");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Enemies are Fueled with Blood", 
+            "Blood Fueled Enemies", 
             Cheats.BloodFueledEnemies,
             onDisable: (cheat) =>
             {
@@ -148,7 +152,6 @@ public static class Cheats
             },
             onEnable: (cheat, manager) =>
             {
-                
             }
         ), "THOUGHTFULNESS AND CARING");
 
@@ -245,7 +248,7 @@ public static class Cheats
         ), "SELF HATRED");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "ULTRASTOP", 
+            "ULTRASTOP (possible flashing lights!)", 
             Cheats.UltraStop,
             onDisable: (cheat) =>
             {
@@ -371,6 +374,42 @@ public static class Cheats
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Heck Puppets", 
             Cheats.HeckPuppets,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Bad Gyro", 
+            Cheats.BadGyro,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Tymitosis", 
+            Cheats.Tymitosis,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Stronger in Numbers", 
+            Cheats.StrongerInNumbers,
             onDisable: (cheat) =>
             {
             },

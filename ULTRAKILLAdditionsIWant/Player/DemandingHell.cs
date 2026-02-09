@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using MelonLoader;
 using SettingsMenu.Components.Pages;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UKAIW
 {
@@ -281,21 +284,22 @@ namespace UKAIW
                 }
             }
             
-            if (OurHeatResistance != null && HeatResistance.Instance != null && HeatResistance.Instance != OurHeatResistance)
-            {
-                UnityEngine.Object.Destroy(OurHeatResistanceRootGo);
-                OurHeatResistance = null;
-            }
-            else if (OurHeatResistance == null && HeatResistance.Instance == null)
+            //if (OurHeatResistance != null && HeatResistance.Instance != null && HeatResistance.Instance != OurHeatResistance)
+            //{
+                //UnityEngine.Object.Destroy(OurHeatResistanceRootGo);
+                //OurHeatResistance = null;
+            //}
+            if (OurHeatResistance == null)// && HeatResistance.Instance == null)
             {
                 OurHeatResistanceRootGo = UnityEngine.Object.Instantiate(Assets.HeatResistancePrefab, CanvasController.Instance.gameObject.transform);
                 OurHeatResistance = OurHeatResistanceRootGo.GetComponentInChildren<HeatResistance>(true);
+                OurHeatResistanceStatic = OurHeatResistance;
                 OurHeatResistance.enabled = true;
                 OurHeatResistance.gameObject.SetActive(false);
                 OurHeatResistanceRootGo.SetActive(true);
-                //OurHeatResistanceRootGo.transform.SetAsFirstSibling();
+                OurHeatResistanceRootGo.transform.SetAsFirstSibling();
                 
-                //OurHeatResistance.gameObject.DebugPrintChildren();
+                OurHeatResistance.gameObject.DebugPrintChildren();
                 OurHeatResistanceFlavourText = OurHeatResistance.gameObject.transform.Find("Flavor Text").gameObject.GetComponent<TextMeshProUGUI>();
                 HeatResLabel = OurHeatResistance.gameObject.transform.Find("Meter/Label").gameObject.GetComponent<TextMeshProUGUI>();
                 HeatRestPercentage = OurHeatResistance.gameObject.transform.Find("Meter/Fill Area/Fill/Percentage").gameObject.GetComponent<TextMeshProUGUI>();
@@ -303,7 +307,15 @@ namespace UKAIW
 
                 OurHeatResistanceFlavourText.text = "YOU THINK YOU'RE SO GOOD? WELL YOU'D BETTER KEEP MOVING, BLOOD BUCKET";
                 FieldPublisher<HeatResistance, GameObject> hurtingSound = new FieldPublisher<HeatResistance, GameObject>(OurHeatResistance, "hurtingSound");
+                FieldPublisher<HeatResistance, Image> screenShatter = new FieldPublisher<HeatResistance, Image>(OurHeatResistance, "screenShatter");
+                ScreenShatterImage = screenShatter.Value;
+                ScreenShatterImage.transform.position += Vector3.right * 1400.0f;
                 DefaultHurtingSoundPitch = hurtingSound.Value.GetComponent<AudioSource>().pitch;
+                BasePosition = OurHeatResistance.transform.position;
+                //BaseScale = OurHeatResistance.transform.localScale; WRONG because it does a scale effect when it enables lol
+                
+                FieldInfo heatResInstanceFI = typeof(HeatResistance).GetField("Instance", BindingFlags.Static | BindingFlags.NonPublic);
+                heatResInstanceFI.SetValue(null, null);
             }
             
             float revolverCoolingScalar = 1.0f;
@@ -315,6 +327,45 @@ namespace UKAIW
 
             if (OurHeatResistance != null)
             {
+                FieldPublisher<BossBarManager, Dictionary<int, BossHealthBarTemplate>> bossBars = new FieldPublisher<BossBarManager, Dictionary<int, BossHealthBarTemplate>>(BossBarManager.Instance, "bossBars");
+                
+                float pushDownFactor = 0.0f;
+
+                if (bossBars.Value.Count == 1)
+                {
+                    pushDownFactor += 90.0f;
+                }
+                else if (bossBars.Value.Count == 2)
+                {
+                    pushDownFactor += 170.0f;
+                }
+                else if (bossBars.Value.Count == 3)
+                {
+                    pushDownFactor += bossBars.Value.Count * 55;
+                }
+                else if (bossBars.Value.Count == 4)
+                {
+                    pushDownFactor += bossBars.Value.Count * 45;
+                }
+                else if (bossBars.Value.Count == 5)
+                {
+                    pushDownFactor += bossBars.Value.Count * 35;
+                }
+                else if (bossBars.Value.Count >= 6)
+                {
+                    pushDownFactor += bossBars.Value.Count * 27.5f;
+                }
+
+                bool hasHeatResistanceThatsNotUs = false;
+
+                if (OurHeatResistance != null && LastEnabledHeatRes != null && LastEnabledHeatRes != OurHeatResistance)
+                {
+                    pushDownFactor += 140.0f;
+                    hasHeatResistanceThatsNotUs = true;
+                }
+
+                OurHeatResistance.transform.position = BasePosition + Vector3.down * pushDownFactor;
+                
                 float heatResistanceRecovery = player.rb.velocity.magnitude;
 
                 StyleRanks styleRank = (StyleRanks)(Shud.rankIndex);
@@ -470,6 +521,13 @@ namespace UKAIW
                             break;
                     }
                     HeatResRankDescensionTimer += Time.fixedDeltaTime * -2.0f;
+                    
+                    if (hasHeatResistanceThatsNotUs)
+                    {
+                        var otherHeatRes = LastEnabledHeatRes;
+                        FieldPublisher<HeatResistance, float> otherHeatResistance = new FieldPublisher<HeatResistance, float>(otherHeatRes, "heatResistance");
+                        otherHeatResistance.Value = Mathf.MoveTowards(otherHeatResistance.Value, 0.0f, Time.fixedDeltaTime * otherHeatRes.speed * 1.25f);
+                    }
                 }
                 else if (CurrentHeatResistance < -50.0f)
                 {
@@ -478,6 +536,13 @@ namespace UKAIW
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch + 0.1f;
                     HeatResFlashingText.text = "CRITICAL";
                     HeatResRankDescensionTimer += Time.fixedDeltaTime * -1.25f;
+                    
+                    if (hasHeatResistanceThatsNotUs)
+                    {
+                        var otherHeatRes = LastEnabledHeatRes;
+                        FieldPublisher<HeatResistance, float> otherHeatResistance = new FieldPublisher<HeatResistance, float>(otherHeatRes, "heatResistance");
+                        otherHeatResistance.Value = Mathf.MoveTowards(otherHeatResistance.Value, 0.0f, Time.fixedDeltaTime * otherHeatRes.speed * 0.75f);
+                    }
                 }
                 else if (CurrentHeatResistance <= 0.0f)
                 {
@@ -485,6 +550,13 @@ namespace UKAIW
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch;
                     HeatResFlashingText.text = "WARNING:";
                     HeatResRankDescensionTimer += Time.fixedDeltaTime * -0.5f;
+
+                    if (hasHeatResistanceThatsNotUs)
+                    {
+                        var otherHeatRes = HeatResistance.Instance;
+                        FieldPublisher<HeatResistance, float> otherHeatResistance = new FieldPublisher<HeatResistance, float>(otherHeatRes, "heatResistance");
+                        otherHeatResistance.Value = Mathf.MoveTowards(otherHeatResistance.Value, 0.0f, Time.fixedDeltaTime * otherHeatRes.speed * 0.5f);
+                    }
                 }
                 else if (CurrentHeatResistance <= 50.0f)
                 {
@@ -513,6 +585,11 @@ namespace UKAIW
         protected void LateUpdate()
         {
             if (!Cheats.IsCheatEnabled(Cheats.DemandingHell))
+            {
+                return;
+            }
+
+            if (OurHeatResistance == null)
             {
                 return;
             }
@@ -569,6 +646,30 @@ namespace UKAIW
         public TextMeshProUGUI HeatResLabel { get; private set; }
         public TextMeshProUGUI HeatRestPercentage { get; private set; }
         public TextMeshProUGUI HeatResFlashingText { get; private set; }
+        public Image ScreenShatterImage { get; private set; }
         public float DefaultHurtingSoundPitch { get; private set; }
+        public Vector3 BasePosition { get; private set; }
+        public Vector3 BaseScale { get; private set; }
+        public static HeatResistance OurHeatResistanceStatic = null;
+        public static HeatResistance LastEnabledHeatRes { get; set; } = null;
+    }
+
+    [HarmonyPatch(typeof(HeatResistance), "OnEnable")]
+    static class HeatResistanceEnablePatch
+    {
+        public static void Prefix(HeatResistance __instance)
+        {
+    
+        }
+
+        public static void Postfix(HeatResistance __instance)
+        {
+            if (__instance == DemandingHell.OurHeatResistanceStatic)
+            {
+                return;
+            }
+
+            DemandingHell.LastEnabledHeatRes = __instance;
+        }
     }
 }
