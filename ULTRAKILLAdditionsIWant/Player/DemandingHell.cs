@@ -293,7 +293,7 @@ namespace UKAIW
                 OurHeatResistance.enabled = true;
                 OurHeatResistance.gameObject.SetActive(false);
                 OurHeatResistanceRootGo.SetActive(true);
-                OurHeatResistanceRootGo.transform.SetAsFirstSibling();
+                //OurHeatResistanceRootGo.transform.SetAsFirstSibling();
                 
                 //OurHeatResistance.gameObject.DebugPrintChildren();
                 OurHeatResistanceFlavourText = OurHeatResistance.gameObject.transform.Find("Flavor Text").gameObject.GetComponent<TextMeshProUGUI>();

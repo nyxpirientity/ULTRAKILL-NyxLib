@@ -64,6 +64,8 @@ namespace UKAIW
 
                 TryGivePoints();
             }
+            
+            Eid.BossBar(false);
 
             PrevDead = Eid.Dead;
         }

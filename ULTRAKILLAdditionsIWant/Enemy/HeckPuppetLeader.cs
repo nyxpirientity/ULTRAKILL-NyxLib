@@ -84,7 +84,7 @@ namespace UKAIW
         internal Dictionary<StyleRanks, List<ManagedHeckPuppet>> Puppets = new System.Collections.Generic.Dictionary<StyleRanks, List<ManagedHeckPuppet>>();
 
         private bool _ExcludedFromHeckPuppetCheat = false;
-        public bool ExcludedFromHeckPuppetCheat { get => _ExcludedFromHeckPuppetCheat || (Eid?.puppet).GetValueOrDefault(true); }
+        public bool ExcludedFromHeckPuppetCheat { get => _ExcludedFromHeckPuppetCheat || (Eid?.puppet).GetValueOrDefault(true) || Eid?.enemyType == EnemyType.Wicked; }
 
         protected void Awake()
         {
@@ -94,7 +94,7 @@ namespace UKAIW
 
         protected void Start()
         {
-            if (Eid.enemyType == EnemyType.Idol)
+            if (Eid.enemyType == EnemyType.Idol || Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase) || Eid.enemyType == EnemyType.Wicked)
             {
                 _ExcludedFromHeckPuppetCheat = true;
             }
