@@ -191,7 +191,7 @@ namespace UKAIW
         {
             if (!Cheats.IsCheatEnabled(Cheats.DemandingHell))
             {
-                if (OurHeatResistance.isActiveAndEnabled)
+                if ((OurHeatResistance?.isActiveAndEnabled).GetValueOrDefault(false))
                 {
                     OurHeatResistance.gameObject.SetActive(false);
                 }

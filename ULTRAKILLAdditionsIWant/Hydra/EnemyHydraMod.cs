@@ -256,7 +256,7 @@ namespace UKAIW
 
         protected void Start()
         {
-            if (Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second)
+            if (Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second || Eadd.UniquelySolo)
             {
                 ExcludedFromHydraCheat = true;
                 return;

@@ -12,9 +12,41 @@ public class EnemyAdditions : MonoBehaviour
     public EnemyFriendIdentifier EnemyFriend { get; private set; } = null;
     public EnemyBloodFuel EnemyBloodFuel { get; private set; } = null;
     public SaltyEnemy SaltyEnemy { get; private set; } = null;
+    public HeckPuppet HeckPuppet { get; private set; } = null;
+    public HeckPuppetLeader HeckPuppetLeader { get; private set; } = null;
     public Radiance EnemyRadiance { get; private set; } = null;
+    public bool UniquelySolo { get; private set; } = false;
+    public float Health 
+    { 
+        get => Eid.Health; 
+        set
+        {
+            if (Eid.zombie != null)
+            {
+                Eid.zombie.health = value;
+            }
+            else if (Eid.drone != null)
+            {
+                Eid.drone.health = value;
+            }
+            else if (Eid.machine != null)
+            {
+                Eid.machine.health = value;
+            }
+            else if (Eid.statue != null)
+            {
+                Eid.statue.health = value;
+            }
+            else if (Eid.spider != null)
+            {
+                Eid.spider.health = value;
+            }
 
-    public bool QueuedForDestruction = false;
+            Eid.health = value;
+        } 
+    }
+
+    [NonSerialized] public bool QueuedForDestruction = false;
     
     [NonSerialized] public EnemyIdentifier Eid = null;
 
@@ -71,6 +103,7 @@ public class EnemyAdditions : MonoBehaviour
         EnemyFriend = gameObject.AddComponent<EnemyFriendIdentifier>();
         EnemyBloodFuel = gameObject.AddComponent<EnemyBloodFuel>();
         SaltyEnemy = gameObject.AddComponent<SaltyEnemy>();
+        HeckPuppetLeader = gameObject.AddComponent<HeckPuppetLeader>();
         EnemyRadiance = gameObject.AddComponent<Radiance>();
         EnemyFriend.IsLeader = false;
         PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
@@ -78,16 +111,18 @@ public class EnemyAdditions : MonoBehaviour
         EnemyFriend.IsLeader = true;
     }
 
-    /* If called then we were instantiated by the mod most likely. */
     public void FindAndCacheMods(bool nullAcceptable = false)
     {
         //Log.ExpectedInfo($"{name}.EnemyAdditions is finding and caching modules...");
+        // todo: may be faster to just iterate through components manually 
         HydraMod = GetComponent<EnemyHydraMod>();   
         PrefabMod = GetComponent<EnemyPrefabMod>();   
         EnemyFriend = GetComponent<EnemyFriendIdentifier>();
         SaltyEnemy = GetComponent<SaltyEnemy>();
         EnemyBloodFuel = GetComponent<EnemyBloodFuel>();
         EnemyRadiance = GetComponent<Radiance>();
+        HeckPuppet = GetComponent<HeckPuppet>();
+        HeckPuppetLeader = GetComponent<HeckPuppetLeader>();
         
         if (nullAcceptable)
         {
@@ -96,5 +131,10 @@ public class EnemyAdditions : MonoBehaviour
 
         Assert.IsNotNull(HydraMod);
         Assert.IsNotNull(PrefabMod);
+    }
+
+    public void MarkAsUniquelySolo()
+    {
+        UniquelySolo = true;
     }
 }

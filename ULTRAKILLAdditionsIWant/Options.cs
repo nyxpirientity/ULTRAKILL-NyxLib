@@ -137,6 +137,24 @@ public static class Options
     public static MelonPreferences_Entry<float> SelfConscienceULTRAKILLDashCostScale { get; private set; } = null;
     public static MelonPreferences_Entry<float> SelfConscienseDashCostIncreaseInterpRate { get; private set; } = null;
     public static MelonPreferences_Entry<float> SelfConscienseDashCostDecreaseInterpRate { get; private set; } = null;
+    
+    static MelonPreferences_Category HeckPuppetsCategory = null;
+    public class HeckPuppetStyleEntry
+    {
+        public class HeckPuppetOptions
+        {
+            public MelonPreferences_Entry<int> NumHeckPuppets;
+            public MelonPreferences_Entry<float> HeckPuppetDamageBuffScalar;
+            public MelonPreferences_Entry<float> HeckPuppetSpeedBuffScalar;
+            public MelonPreferences_Entry<float> HeckPuppetHealthBuffScalar;
+            public MelonPreferences_Entry<float> HeckPuppetHealthScalar;
+            public MelonPreferences_Entry<int> MaxHeckPuppetHealth;
+        }
+
+        public Dictionary<EnemyGameplayRank, HeckPuppetOptions> HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetOptions>();
+    }
+
+    public static Dictionary<StyleRanks, HeckPuppetStyleEntry> HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>();
 
     static public float HydraHealthDecayScale { get => HydraHealthDecayScaleEntry.Value; } 
 
@@ -331,5 +349,426 @@ public static class Options
 
         SelfConscienseDashCostIncreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIncreaseInterpRate", 0.3f);
         SelfConscienseDashCostDecreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIDecreaseInterpRate", 1.0f);
+
+         HeckPuppetsCategory = MelonPreferences.CreateCategory("UKAIW-HeckPuppets");
+        HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>()
+        {
+            {
+                StyleRanks.Destructive, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                StyleRanks.Chaotic, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                StyleRanks.Brutal, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                StyleRanks.Anarchic, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                StyleRanks.Supreme, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                StyleRanks.SSadistic, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                StyleRanks.SSSensoredStorm, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+            {
+                StyleRanks.ULTRAKILL, new HeckPuppetStyleEntry()
+                {
+                    HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetStyleEntry.HeckPuppetOptions>
+                    {
+                        {
+                            EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                        {
+                            EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
+                            {
+                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                            }
+                        },
+                    }
+                }
+            },
+        };
     }
 }

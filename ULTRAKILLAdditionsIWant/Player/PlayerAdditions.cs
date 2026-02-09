@@ -42,6 +42,7 @@ namespace UKAIW
             player = gameObject.GetComponent<NewMovement>();
             gameObject.AddComponent<DemandingHell>();
             gameObject.AddComponent<SelfConscience>();
+            gameObject.AddComponent<HeckPuppetObserver>();
 
             Difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");
         }

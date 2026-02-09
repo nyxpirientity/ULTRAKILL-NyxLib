@@ -33,5 +33,18 @@ namespace UKAIW
                 throw new AssertionException($"Assertion Failed: Object equals null but *'is' not* null :c; {additionalMsg}", $"Assertion Failed: Object was null :c; {additionalMsg}");
             }
         }
+        
+        public static void IsNotNull(UnityEngine.Object obj, string additionalMsg = "")
+        {
+            if (obj == null)
+            {
+                if (obj is null)
+                {
+                    throw new AssertionException($"Assertion Failed: Object was null :c; {additionalMsg}", $"Assertion Failed: Object was null :c; {additionalMsg}"); 
+                }
+
+                throw new AssertionException($"Assertion Failed: Object equals null but *'is' not* null :c; {additionalMsg}", $"Assertion Failed: Object was null :c; {additionalMsg}");
+            }
+        }        
     }
 }

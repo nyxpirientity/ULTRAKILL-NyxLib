@@ -32,6 +32,11 @@ namespace UKAIW
         public static Action<StyleHUD, int> RemovePointsPrefix = null;
         public static Action<StyleHUD, int> RemovePointsPostfix = null;
 
+        public static StyleRanks GetStyleRank(this StyleHUD self)
+        {
+            return (StyleRanks)self.rankIndex;
+        }
+
         [HarmonyPatch(typeof(StyleHUD), "AddPoints")]
         static class AddPointsPatch
         {

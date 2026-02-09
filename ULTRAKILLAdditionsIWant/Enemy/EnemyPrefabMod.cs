@@ -51,12 +51,11 @@ public class EnemyPrefabMod : MonoBehaviour
         
         if (eid.enemyType == EnemyType.MaliciousFace)
         {
-            templateGo = gameObject.transform.parent.gameObject;
+            templateGo = transform.parent.gameObject;
         }
         else
         {
             templateGo = gameObject;
-            Assert.IsNotNull(templateGo.GetComponent<EnemyHydraMod>());
             Assert.IsNotNull(templateGo.GetComponent<EnemyPrefabMod>());
         }
         
@@ -96,6 +95,7 @@ public class EnemyPrefabMod : MonoBehaviour
         {
             Assert.IsNotNull(Prefab.GetComponent<EnemyHydraMod>());
             Assert.IsNotNull(Prefab.GetComponent<EnemyPrefabMod>());
+            Prefab.GetComponent<EnemyPrefabMod>().Prefab = Prefab;            
         }
         else
         {

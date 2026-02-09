@@ -14,6 +14,7 @@ public class EnemyFriendIdentifier : MonoBehaviour
     public EnemyFriendIdentifier[] Friends = null;
     public int FriendIdx = -1;
     public EnemyIdentifier Eid = null;
+    public EnemyAdditions Ead = null;
 
     protected void FixedUpdate()
     {
@@ -42,12 +43,14 @@ public class EnemyFriendIdentifier : MonoBehaviour
 
     protected void Awake()
     {
-        Eid = GetComponent<EnemyAdditions>().Eid;
+        Ead = GetComponent<EnemyAdditions>();
+        Eid = Ead.Eid;
+        
     }
 
     protected void Start()
     {
-        if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends))
+        if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends) && !Ead.UniquelySolo)
         {
             if (IsLeader && !Eid.Dead)
             {

@@ -34,6 +34,7 @@ public static class Cheats
     public const string SaltyEnemies = "ukaiw.salty-enemies";
     public const string DemandingHell = "ukaiw.demanding-hell";
     public const string SelfConscience = "ukaiw.self-conscious-v1";
+    public const string HeckPuppets = "ukaiw.heck-puppets";
 
     public static int FriendCount = 0;
 
@@ -45,6 +46,11 @@ public static class Cheats
         }
         
         return CheatsManager.Instance.GetCheatState(cheatID);
+    }
+
+    public static bool IsCheatDisabled(string cheatID)
+    {
+        return !IsCheatEnabled(cheatID);
     }
 
     public static void Initialize()
@@ -353,6 +359,18 @@ public static class Cheats
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Self Conscience", 
             Cheats.SelfConscience,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "???");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Heck Puppets", 
+            Cheats.HeckPuppets,
             onDisable: (cheat) =>
             {
             },
