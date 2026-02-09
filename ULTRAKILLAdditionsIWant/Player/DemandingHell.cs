@@ -1,4 +1,5 @@
 using System;
+using HarmonyLib;
 using MelonLoader;
 using SettingsMenu.Components.Pages;
 using TMPro;
@@ -6,8 +7,23 @@ using UnityEngine;
 
 namespace UKAIW
 {
+    [HarmonyPatch(typeof(Revolver), "Update")]
+    static class DemandingHellPlayerRevolverPatch
+    {
+        public static void Prefix(Revolver __instance)
+        {
+            FieldPublisher<Revolver, float> twirlLevel = new FieldPublisher<Revolver, float>(__instance, "twirlLevel");
+            DemandingHell.RevolverTwirlThisUpdate = Mathf.Max(DemandingHell.RevolverTwirlThisUpdate, twirlLevel.Value);
+        }
+
+        public static void Postfix(Revolver __instance)
+        {
+        }
+    }
+
     public class DemandingHell : MonoBehaviour
     {
+        public static float RevolverTwirlThisUpdate = 0.0f;
         public NewMovement player { get; private set; } = null;
         public StyleHUD Shud { get; private set; } = null;
         public FieldPublisher<NewMovement, float> AntiHpCooldown { get; private set; } = null;
@@ -290,6 +306,10 @@ namespace UKAIW
                 DefaultHurtingSoundPitch = hurtingSound.Value.GetComponent<AudioSource>().pitch;
             }
             
+            float revolverCoolingScalar = 1.0f;
+            revolverCoolingScalar = Mathf.Lerp(1.0f, 0.4f, Mathf.Clamp(NyxMath.NormalizeToRange(RevolverTwirlThisUpdate * (GunControl.Instance.dualWieldCount + 1), 0.1f, 12.0f), 0.0f, 1.0f));
+            RevolverTwirlThisUpdate = 0.0f;
+
             TimeSinceLastHeatResActivation += Time.fixedDeltaTime;
             TimeSinceLastHeatResDeactivation += Time.fixedDeltaTime;
 
@@ -416,6 +436,8 @@ namespace UKAIW
                     scaledHeatResistanceDrain *= 1.3f;
                 }
 
+                scaledHeatResistanceDrain *= revolverCoolingScalar;
+
                 float targetVel = (heatResistanceRecovery - scaledHeatResistanceDrain);
                 HeatResistanceVel = Mathf.MoveTowards(HeatResistanceVel, targetVel, Time.fixedDeltaTime * (HeatResistanceDrain * 6.0f) * (targetVel > HeatResistanceVel ? 1.0f : 0.35f));
                 HeatResistanceVel = Mathf.Clamp(HeatResistanceVel, -HeatResistanceDrain, HeatResistanceDrain * 3.0f);
@@ -425,7 +447,7 @@ namespace UKAIW
                 //CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, 100.0f, (Time.fixedDeltaTime * heatResistanceRecovery));
 
                 appliedHeatResistance.Value = Mathf.Max(CurrentHeatResistance, 0.0f);
-
+                
                 if (CurrentHeatResistance < -95.0f)
                 {
                     HeatResAntiHpCooldown += Time.fixedDeltaTime * 4.0f;
