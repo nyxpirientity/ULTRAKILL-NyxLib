@@ -299,7 +299,7 @@ namespace UKAIW
                 OurHeatResistanceRootGo.SetActive(true);
                 OurHeatResistanceRootGo.transform.SetAsFirstSibling();
                 
-                OurHeatResistance.gameObject.DebugPrintChildren();
+                //OurHeatResistance.gameObject.DebugPrintChildren();
                 OurHeatResistanceFlavourText = OurHeatResistance.gameObject.transform.Find("Flavor Text").gameObject.GetComponent<TextMeshProUGUI>();
                 HeatResLabel = OurHeatResistance.gameObject.transform.Find("Meter/Label").gameObject.GetComponent<TextMeshProUGUI>();
                 HeatRestPercentage = OurHeatResistance.gameObject.transform.Find("Meter/Fill Area/Fill/Percentage").gameObject.GetComponent<TextMeshProUGUI>();
