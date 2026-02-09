@@ -15,6 +15,7 @@ namespace UKAIW
 
         public EnemyGameplayRank GameplayRank;
         public StyleRanks StyleRank;
+        FieldPublisher<EnemyIdentifier, float> EidPuppetSpawnTimer = null;
 
         protected void Start()
         {
@@ -25,14 +26,20 @@ namespace UKAIW
 
             Eid = GetComponent<EnemyIdentifier>();
             Eid.dontCountAsKills = true;
+            Eid.puppet = true;
             GivePoints = true;
+            EidPuppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
+        }
+
+        protected void Update()
+        {
+            FieldPublisher<EnemyIdentifier, float> puppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
+            puppetSpawnTimer.Value = Mathf.Max(puppetSpawnTimer.Value, 0.995f);
         }
 
         internal bool PrevDead = false;
         protected void FixedUpdate()
         {
-            Eid.puppet = true;
-            
             if (Leader == null)
             {
                 Eid.InstaKill();
@@ -63,6 +70,8 @@ namespace UKAIW
 
         private void TryGivePoints()
         {
+            EidPuppetSpawnTimer.Value = 1.0f;
+
             if (GivePoints)
             {
                 switch (GameplayRank)

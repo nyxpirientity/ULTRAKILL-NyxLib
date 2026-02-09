@@ -70,6 +70,7 @@ namespace UKAIW
                 HeckPuppet.StyleRank = styleRank;
                 HeckPuppet.HeckPuppetID = NextHeckPuppetID;
                 PuppetEid.dontCountAsKills = true;
+                PuppetEid.puppet = true;
                 PuppetEid.timeSinceSpawned = 0.0f;
             }
         }
@@ -82,10 +83,21 @@ namespace UKAIW
 
         internal Dictionary<StyleRanks, List<ManagedHeckPuppet>> Puppets = new System.Collections.Generic.Dictionary<StyleRanks, List<ManagedHeckPuppet>>();
 
-        protected void Start()
+        private bool _ExcludedFromHeckPuppetCheat = false;
+        public bool ExcludedFromHeckPuppetCheat { get => _ExcludedFromHeckPuppetCheat || (Eid?.puppet).GetValueOrDefault(true); }
+
+        protected void Awake()
         {
             Ead = GetComponent<EnemyAdditions>();
             Eid = Ead.Eid;
+        }
+
+        protected void Start()
+        {
+            if (Eid.enemyType == EnemyType.Idol)
+            {
+                _ExcludedFromHeckPuppetCheat = true;
+            }
 
             for (StyleRanks styleRank = 0; (int)styleRank < Style.NumStyleRanks; styleRank++)
             {
@@ -100,7 +112,7 @@ namespace UKAIW
 
         protected void FixedUpdate()
         {
-            if (Cheats.IsCheatDisabled(Cheats.HeckPuppets))
+            if (Cheats.IsCheatDisabled(Cheats.HeckPuppets) || ExcludedFromHeckPuppetCheat)
             {
                 return;
             }

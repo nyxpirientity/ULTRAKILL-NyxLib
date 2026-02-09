@@ -33,7 +33,38 @@ namespace UKAIW
             {
                 FieldPublisher<HeatResistance, float> heatResistance = new FieldPublisher<HeatResistance, float>(OurHeatResistance, "heatResistance");
 
-                if (heatResistance.Value <= 35.0f && !fromExplosion)
+                float heatResExplosionLimit = 35.0f;
+                // TODO: configurable-ify this stuffs
+                switch (Shud.GetStyleRank())
+                {
+                    case StyleRanks.Null:
+                    case StyleRanks.Destructive:
+                    heatResExplosionLimit = 35.0f;
+                        break;
+                    case StyleRanks.Chaotic:
+                    heatResExplosionLimit = 35.0f;
+                        break;
+                    case StyleRanks.Brutal:
+                    heatResExplosionLimit = 35.0f;
+                        break;
+                    case StyleRanks.Anarchic:
+                    heatResExplosionLimit = 35.0f;
+                        break;
+                    case StyleRanks.Supreme:
+                    heatResExplosionLimit = 35.0f;
+                        break;
+                    case StyleRanks.SSadistic:
+                    heatResExplosionLimit = 40.0f;
+                        break;
+                    case StyleRanks.SSSensoredStorm:
+                    heatResExplosionLimit = 45.0f;
+                        break;
+                    case StyleRanks.ULTRAKILL:
+                    heatResExplosionLimit = 55.0f;
+                        break;
+                }
+
+                if (heatResistance.Value <= heatResExplosionLimit && !fromExplosion)
                 {
                     HeatResExplosion(multiplier, hitPoint.GetValueOrDefault(eid.transform.position), false, out _);
                 }
@@ -187,6 +218,32 @@ namespace UKAIW
             HeatResRankDescensionTimer = HeatResRankDescensionTimerMax;
         }
 
+        protected void OnCollisionEnter(Collision collision)
+        {
+            if (Cheats.IsCheatDisabled(Cheats.DemandingHell))
+            {
+                return;
+            }
+
+            EnemyIdentifier eid = collision.gameObject.GetComponent<EnemyIdentifier>() ?? collision.gameObject.GetComponentInChildren<EnemyIdentifier>() ?? collision.gameObject.GetComponentInParent<EnemyIdentifier>();
+            
+            if (eid == null)
+            {
+                return;
+            }
+
+            if (!((OurHeatResistance?.isActiveAndEnabled).GetValueOrDefault(false)))
+            {
+                return;
+            }
+
+            if (CurrentHeatResistance <= 35.0f)
+            {
+                float burnStrength = NyxMath.InverseNormalizeToRange(CurrentHeatResistance, -100.0f, 40.0f);
+                eid.ApplyDamage(Vector3.Normalize(eid.transform.position - transform.position) * burnStrength * 10.0f, eid.transform.position, burnStrength * 5.0f, 1.0f, null, false);
+            }
+        }
+
         protected void FixedUpdate()
         {
             if (!Cheats.IsCheatEnabled(Cheats.DemandingHell))
@@ -207,11 +264,6 @@ namespace UKAIW
                     StainVoxelManager.Instance.TryIgniteAt(player.rb.transform.position);
                 }
             }
-
-            if (Time.timeSinceLevelLoad < 1.0f)
-            {
-                return;
-            }
             
             if (OurHeatResistance != null && HeatResistance.Instance != null && HeatResistance.Instance != OurHeatResistance)
             {
@@ -230,6 +282,7 @@ namespace UKAIW
                 //OurHeatResistance.gameObject.DebugPrintChildren();
                 OurHeatResistanceFlavourText = OurHeatResistance.gameObject.transform.Find("Flavor Text").gameObject.GetComponent<TextMeshProUGUI>();
                 HeatResLabel = OurHeatResistance.gameObject.transform.Find("Meter/Label").gameObject.GetComponent<TextMeshProUGUI>();
+                HeatRestPercentage = OurHeatResistance.gameObject.transform.Find("Meter/Fill Area/Fill/Percentage").gameObject.GetComponent<TextMeshProUGUI>();
                 HeatResFlashingText = OurHeatResistance.gameObject.transform.Find("Warning").gameObject.GetComponent<TextMeshProUGUI>();
 
                 OurHeatResistanceFlavourText.text = "YOU THINK YOU'RE SO GOOD? WELL YOU'D BETTER KEEP MOVING, BLOOD BUCKET";
@@ -363,7 +416,6 @@ namespace UKAIW
                     scaledHeatResistanceDrain *= 1.3f;
                 }
 
-
                 float targetVel = (heatResistanceRecovery - scaledHeatResistanceDrain);
                 HeatResistanceVel = Mathf.MoveTowards(HeatResistanceVel, targetVel, Time.fixedDeltaTime * (HeatResistanceDrain * 6.0f) * (targetVel > HeatResistanceVel ? 1.0f : 0.35f));
                 HeatResistanceVel = Mathf.Clamp(HeatResistanceVel, -HeatResistanceDrain, HeatResistanceDrain * 3.0f);
@@ -372,14 +424,12 @@ namespace UKAIW
 
                 //CurrentHeatResistance = Mathf.MoveTowards(CurrentHeatResistance, 100.0f, (Time.fixedDeltaTime * heatResistanceRecovery));
 
-                HeatResLabel.text = $"HEAT RESISTANCE - {CurrentHeatResistance:F1}%";
-
                 appliedHeatResistance.Value = Mathf.Max(CurrentHeatResistance, 0.0f);
 
                 if (CurrentHeatResistance < -95.0f)
                 {
                     HeatResAntiHpCooldown += Time.fixedDeltaTime * 4.0f;
-                    player.ForceAntiHP((float)15.0f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
+                    player.ForceAntiHP((float)20.0f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch + 0.4f + UnityEngine.Random.Range(0.0f, 0.1f);
                     switch (UnityEngine.Random.Range(0, 4))
                     {
@@ -397,15 +447,15 @@ namespace UKAIW
                         HeatResFlashingText.text = $"E{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}O{(char)UnityEngine.Random.Range(33, 96)}{(char)UnityEngine.Random.Range(33, 96)}R{(char)UnityEngine.Random.Range(33, 96)}";
                             break;
                     }
-                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -3.0f;
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -2.0f;
                 }
                 else if (CurrentHeatResistance < -50.0f)
                 {
                     HeatResAntiHpCooldown += Time.fixedDeltaTime * 2.5f;
-                    player.ForceAntiHP((float)10.0f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
+                    player.ForceAntiHP((float)15.0f * Time.fixedDeltaTime, silent: true, dontOverwriteHp: false, addToCooldown: true, stopInstaHeal: true);
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch + 0.1f;
                     HeatResFlashingText.text = "CRITICAL";
-                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -1.75f;
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * -1.25f;
                 }
                 else if (CurrentHeatResistance <= 0.0f)
                 {
@@ -424,7 +474,7 @@ namespace UKAIW
                 {
                     hurtingSound.Value.GetComponent<AudioSource>().pitch = DefaultHurtingSoundPitch;
                     HeatResFlashingText.text = "WARNING:";
-                    HeatResRankDescensionTimer += Time.fixedDeltaTime * 2.5f;
+                    HeatResRankDescensionTimer += Time.fixedDeltaTime * 2.0f;
                 }
 
                 HeatResRankDescensionTimer = Mathf.Min(HeatResRankDescensionTimer, HeatResRankDescensionTimerMax);
@@ -444,6 +494,10 @@ namespace UKAIW
             {
                 return;
             }
+
+            float temperature = Mathf.Lerp(60.0f, 140.0f, NyxMath.InverseNormalizeToRange(CurrentHeatResistance, -100.0f, 100.0f));
+            HeatResLabel.text = $"INTERNAL TEMPERATURE - {temperature:F1}°C";
+            HeatRestPercentage.text = $"{temperature:F2}°C";
 
             if (OurHeatResistance != null)
             {
@@ -471,11 +525,17 @@ namespace UKAIW
 
             if (OurHeatResistance != null && !explosion && scoreLossMultiplier > 0.0f)
             {
-                if (CurrentHeatResistance <= -10.0f)
+                if (CurrentHeatResistance <= -50.0f)
                 {
                     HeatResExplosion(damage * 0.25f, player.rb.transform.position, true, out float explosiveSize);
                     player.GetHurt(Mathf.RoundToInt(damage * 0.3f), false, 0.0f, true, false, 0.35f, true);
-                    player.Launch(Vector3.up, explosiveSize * 3.5f, true);
+                    player.Launch(Vector3.up, explosiveSize * 3.0f, true);
+                }
+                else if (CurrentHeatResistance <= -10.0f)
+                {
+                    HeatResExplosion(damage * 0.25f, player.rb.transform.position, true, out float explosiveSize);
+                    player.GetHurt(Mathf.RoundToInt(damage * 0.2f), false, 0.0f, true, false, 0.35f, true);
+                    player.Launch(Vector3.up, explosiveSize * 2.0f, true);
                 }
             }
         }
@@ -485,6 +545,7 @@ namespace UKAIW
 
         public TextMeshProUGUI OurHeatResistanceFlavourText { get; private set; }
         public TextMeshProUGUI HeatResLabel { get; private set; }
+        public TextMeshProUGUI HeatRestPercentage { get; private set; }
         public TextMeshProUGUI HeatResFlashingText { get; private set; }
         public float DefaultHurtingSoundPitch { get; private set; }
     }

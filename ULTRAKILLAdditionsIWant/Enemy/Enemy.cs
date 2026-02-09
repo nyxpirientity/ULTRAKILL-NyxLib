@@ -14,6 +14,31 @@ namespace UKAIW
     {
         public static int NumGameplayRanks = 4;
 
+        /* GetHurt would be more consistent but JUST incase they add GetHurt, I'll go with what I usually call it.*/
+        public static void ApplyDamage(this EnemyIdentifier eid, Vector3 force, Vector3 hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool fromExplosion)
+        {
+            if (eid.zombie != null)
+            {
+                eid.zombie.GetHurt(eid.gameObject, force, multiplier, critMultiplier, sourceWeapon, fromExplosion);
+            }
+            else if (eid.drone != null)
+            {
+                eid.drone.GetHurt(force, multiplier, sourceWeapon, fromExplosion);
+            }
+            else if (eid.machine != null)
+            {
+                eid.machine.GetHurt(eid.gameObject, force, multiplier, critMultiplier, sourceWeapon, fromExplosion);
+            }
+            else if (eid.statue != null)
+            {
+                eid.statue.GetHurt(eid.gameObject, force, multiplier, critMultiplier, hitPoint, sourceWeapon, fromExplosion);
+            }
+            else if (eid.spider != null)
+            {
+                eid.spider.GetHurt(eid.gameObject, force, hitPoint, multiplier, sourceWeapon);
+            }
+        }
+
         public static EnemyGameplayRank GetEnemyGameplayRank(EnemyIdentifier eid)
         {
             return eid.enemyType switch
