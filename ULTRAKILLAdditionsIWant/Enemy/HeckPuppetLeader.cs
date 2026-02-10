@@ -140,7 +140,7 @@ namespace UKAIW
                         if (puppet.IsAlive())
                         {
                             puppet.HeckPuppet.PrevDead = true;
-                            puppet.HeckPuppet?.Eid.InstaKill();
+                            puppet.HeckPuppet?.InstaKill();
                             puppet.DeathTimestamp.TimeStamp = 0.0;
                         }
                     }
@@ -155,7 +155,7 @@ namespace UKAIW
                         if (puppet.IsAlive())
                         {
                             puppet.HeckPuppet.PrevDead = true;
-                            puppet.HeckPuppet?.Eid.InstaKill();
+                            puppet.HeckPuppet?.InstaKill();
                             puppet.DeathTimestamp.UpdateToNow();
                         }
                     }
@@ -182,7 +182,7 @@ namespace UKAIW
                         {
                             var puppet = puppets[i];
                             puppet.HeckPuppet.PrevDead = true;
-                            puppet.HeckPuppet.Eid.InstaKill();
+                            puppet.HeckPuppet.InstaKill();
                             puppet.DeathTimestamp.UpdateToNow();
                         }
                     }

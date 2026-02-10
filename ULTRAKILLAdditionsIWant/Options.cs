@@ -24,8 +24,6 @@ public static class Options
     static MelonPreferences_Entry<int> HydraMaxFromOneBossEntry = null;
     static MelonPreferences_Entry<int> HydraMaxFromOneEntry = null;
     static MelonPreferences_Entry<int> HydraMaxPerUpdateEntry = null;
-    static MelonPreferences_Entry<int> HydraBloodCapNumUpdatesPerTickEntry = null;
-    static MelonPreferences_Entry<int> HydraBloodCapNumBloodPerTickEntry = null;
     static MelonPreferences_Entry<int> HydraPrefabPoolCapacityEntry = null;
     static MelonPreferences_Entry<int> HydraPrefabPoolGrowPerUpdateEntry = null;
     static MelonPreferences_Entry<int> HydraKillBonusEntry = null;
@@ -154,6 +152,10 @@ public static class Options
         public Dictionary<EnemyGameplayRank, HeckPuppetOptions> HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetOptions>();
     }
 
+    public static MelonPreferences_Category BloodOptimizer = null;
+    public static MelonPreferences_Entry<int> BloodOptimizerCapNumUpdatesPerTick = null;
+    public static MelonPreferences_Entry<int> BloodHeavyModdedEnemiesCapNumBloodPerTick = null;
+
     public static Dictionary<StyleRanks, HeckPuppetStyleEntry> HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>();
 
     static public float HydraHealthDecayScale { get => HydraHealthDecayScaleEntry.Value; } 
@@ -167,8 +169,6 @@ public static class Options
     static public int HydraMaxFromOne { get => HydraMaxFromOneEntry.Value; }
     static public int HydraMaxFromOneBoss { get => HydraMaxFromOneBossEntry.Value; }
     static public int HydraMaxPerUpdate { get => HydraMaxPerUpdateEntry.Value; }
-    static public int HydraBloodCapNumUpdatesPerTick { get => HydraBloodCapNumUpdatesPerTickEntry.Value; }
-    static public int HydraBloodCapNumBloodPerTick { get => HydraBloodCapNumBloodPerTickEntry.Value; }
     static public int HydraPrefabPoolCapacity { get => HydraPrefabPoolCapacityEntry.Value; }
     static public int HydraPrefabPoolGrowPerUpdate { get => HydraPrefabPoolGrowPerUpdateEntry.Value; }
     static public int HydraKillBonus { get => HydraKillBonusEntry.Value; }
@@ -231,9 +231,6 @@ public static class Options
         HydraMaxDepthEntry = HydraCategory.CreateEntry<int>("HydraMaxDepth", 16);
         HydraMaxFromOneEntry = HydraCategory.CreateEntry<int>("HydraMaxFromOne", 12);
         HydraMaxPerUpdateEntry = HydraCategory.CreateEntry<int>("HydraMaxPerFrame", 4);
-
-        HydraBloodCapNumUpdatesPerTickEntry = HydraCategory.CreateEntry<int>("HydraBloodCapNumUpdatesPerTick", 50);
-        HydraBloodCapNumBloodPerTickEntry = HydraCategory.CreateEntry<int>("HydraBloodCapNumBloodPerTick", 10);
 
         HydraPrefabPoolCapacityEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolCapacity", 20);
         HydraPrefabPoolGrowPerUpdateEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolGrowPerUpdate", 3);
@@ -350,7 +347,11 @@ public static class Options
         SelfConscienseDashCostIncreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIncreaseInterpRate", 0.3f);
         SelfConscienseDashCostDecreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIDecreaseInterpRate", 1.0f);
 
-         HeckPuppetsCategory = MelonPreferences.CreateCategory("UKAIW-HeckPuppets");
+        BloodOptimizer = MelonPreferences.CreateCategory("UKAIW-BloodOptimizer");
+        BloodOptimizerCapNumUpdatesPerTick = BloodOptimizer.CreateEntry<int>("BloodOptimizerCapNumUpdatesPerTick", 90);
+        BloodHeavyModdedEnemiesCapNumBloodPerTick = BloodOptimizer.CreateEntry<int>("BloodHeavyModdedEnemiesCapNumBloodPerTick", 2);
+
+        HeckPuppetsCategory = MelonPreferences.CreateCategory("UKAIW-HeckPuppets");
         HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>()
         {
             {

@@ -47,19 +47,9 @@ namespace UKAIW
             }
         }
 
-        private static int RemainingHydraBloodFxThisTick = 0;
-        private static bool BloodDisabledByUs = false;
         public static void DecrementRemainingHydraBloodFxThisTick()
         {
-            RemainingHydraBloodFxThisTick -= 1;
-            
-            bool wasBloodEnabled = MonoSingleton<PrefsManager>.Instance.GetBoolLocal("bloodEnabled");
-
-            if (RemainingHydraBloodFxThisTick <= 0 && wasBloodEnabled)
-            {
-                MonoSingleton<PrefsManager>.Instance.SetBoolLocal("bloodEnabled", false);
-                BloodDisabledByUs = true;
-            }
+            BloodOptimizer.DecrementRemainingBloodFxThisTick();
         }
 
         public static int InstantiatedThisTick = 0;
@@ -69,17 +59,6 @@ namespace UKAIW
             if (!Cheats.IsHydraModeOn)
             {
                 return;
-            }
-
-            if ((NumFixedUpdates % (ulong)Options.HydraBloodCapNumUpdatesPerTick) == 0)
-            {
-                RemainingHydraBloodFxThisTick = Options.HydraBloodCapNumBloodPerTick;
-                
-                if (BloodDisabledByUs)
-                {
-                    MonoSingleton<PrefsManager>.Instance.SetBoolLocal("bloodEnabled", true);
-                    BloodDisabledByUs = false;
-                }
             }
 
             for (int i = InstantiatedThisTick; (i < Options.HydraMaxPerUpdate) && (DupeQueue.Count != 0); i++)

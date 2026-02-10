@@ -37,24 +37,36 @@ namespace UKAIW
             puppetSpawnTimer.Value = Mathf.Max(puppetSpawnTimer.Value, 0.995f);
         }
 
+        bool HasDecrementedBlood = false;
+        public void TryDecrementRemainingBlood()
+        {
+            if (HasDecrementedBlood)
+            {
+                return;
+            }
+
+            HasDecrementedBlood = true;
+            BloodOptimizer.DecrementRemainingBloodFxThisTick();
+        }
+
         internal bool PrevDead = false;
         protected void FixedUpdate()
         {
             if (Leader == null)
             {
-                Eid.InstaKill();
+                InstaKill();
                 GivePoints = false;
             }
 
             if (Leader.Eid.Dead)
             {
-                Eid.InstaKill();
+                InstaKill();
                 GivePoints = false;
             }
 
             if (Cheats.IsCheatDisabled(Cheats.HeckPuppets))
             {
-                Eid.InstaKill();
+                InstaKill();
                 GivePoints = false;
             }
             
@@ -68,6 +80,17 @@ namespace UKAIW
             Eid.BossBar(false);
 
             PrevDead = Eid.Dead;
+        }
+
+        public void InstaKill()
+        {
+            if ((Eid?.Dead).GetValueOrDefault(true))
+            {
+                return;
+            }
+
+            Eid.InstaKill();
+            TryDecrementRemainingBlood();
         }
 
         private void TryGivePoints()
