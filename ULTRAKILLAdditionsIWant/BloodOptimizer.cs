@@ -35,7 +35,6 @@ namespace UKAIW
         }
 
         public static int InstantiatedThisTick = 0;
-        public static ulong NumFixedUpdates = 0;
         public static GlobalTimeStamp LastRefreshTimeStamp; 
         private static void Update()
         {
@@ -47,7 +46,7 @@ namespace UKAIW
             if ((LastRefreshTimeStamp.TimeSince > (Time.fixedDeltaTime * Options.BloodOptimizerCapNumUpdatesPerTick.Value)))
             {
                 RemainingBloodFxThisTick = Options.BloodHeavyModdedEnemiesCapNumBloodPerTick.Value;
-                
+                LastRefreshTimeStamp.UpdateToNow();
                 if (BloodDisabledByUs)
                 {
                     MonoSingleton<PrefsManager>.Instance.SetBoolLocal("bloodEnabled", true);

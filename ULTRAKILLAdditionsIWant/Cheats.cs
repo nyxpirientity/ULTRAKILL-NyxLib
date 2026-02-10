@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using HarmonyLib;
 using MelonLoader;
+using TMPro;
 using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using ULTRAKILL.Cheats;
@@ -418,6 +419,53 @@ public static class Cheats
                 
             }
         ), "???");
+
+        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Print the ALL!!!!", 
+            "ukaiw.dev.print-all-children",
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                CheatsManager.Instance.DisableCheat("ukaiw.dev.print-all-children");
+                var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                var roots = scene.GetRootGameObjects();
+                foreach (var root in roots)
+                {
+                    root.DebugPrintChildren();
+                }
+            }
+        ), "dev stuff");*/
+
+        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "dev-button-0", 
+            "ukaiw.dev.button-0",
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                CheatsManager.Instance.DisableCheat("ukaiw.dev.button-0");
+                var objects = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>();
+                HashSet<GameObject> printedObjects = new HashSet<GameObject>(256);
+                foreach (var obj in objects)
+                {
+                    if (!obj.text.Contains("INTRUDER"))
+                    {
+                        continue;
+                    }
+                    
+                    MelonLogger.Msg($"Found {obj.gameObject}!");
+                    if (printedObjects.Contains(obj.gameObject.transform.root.gameObject))
+                    {
+                        continue;
+                    }
+                    obj.gameObject.transform.root.gameObject.DebugPrintChildren();
+                    printedObjects.Add(obj.gameObject.transform.root.gameObject);
+                }
+            }
+        ), "dev stuff");*/
     }
 
     [HarmonyPatch(typeof(TeleportCheat), "Teleport")]

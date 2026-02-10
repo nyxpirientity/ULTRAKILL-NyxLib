@@ -38,7 +38,7 @@ namespace UKAIW
             {   
                 HeckPuppetID = NextHeckPuppetID;
                 PuppetRootGo = UnityEngine.Object.Instantiate(leader.Ead.PrefabMod.Prefab, leader.Ead.RootGameObject.transform.parent);
-                PuppetRootGo.transform.position = position;
+                PuppetRootGo.transform.position = position + UnityEngine.Random.onUnitSphere * 5.0f;
                 PuppetRootGo.transform.rotation = rotation;
                 PuppetEad = PuppetRootGo.GetComponent<EnemyAdditions>() ?? PuppetRootGo.GetComponentInChildren<EnemyAdditions>();
                 
@@ -80,9 +80,9 @@ namespace UKAIW
                 PuppetEid.puppet = true;
                 PuppetEid.timeSinceSpawned = 0.0f;
 
-                if (leader.Eid.enemyType == EnemyType.Virtue)
+                if (PuppetEid.GetComponent<Collider>() != null && leader.GetComponent<Collider>() != null)
                 {
-                    Physics.IgnoreCollision(PuppetEid.drone.GetComponent<Collider>(), leader.Eid.GetComponent<Collider>());
+                    Physics.IgnoreCollision(PuppetEid.GetComponent<Collider>(), leader.GetComponent<Collider>());
                 }
             }
         }

@@ -211,10 +211,40 @@ namespace UKAIW
         {
             Player.PostHurt += PlayerPostHurt;
             EnemyEvents.PostHurt += EnemyPostHurt;
+            TextMeshProUGUIEvents.PostEnable += TextMeshProEnabled;
+            TextMeshProUGUIEvents.PostDisable += TextMeshProDisabled;
             player = NewMovement.Instance;
             Shud = StyleHUD.Instance;
             AntiHpCooldown = new FieldPublisher<NewMovement, float>(player, "antiHpCooldown");
             LastContactDamageReset.UpdateToNow();
+        }
+
+        private void TextMeshProEnabled(TextMeshProUGUI mesh)
+        {
+            var text = mesh.text;
+            if (text.Contains("CRITICAL FAILURE"))
+            {
+                EarthMoverCritFailureSpawned = true;
+            }
+
+            if (text.Contains("INTRUDER DETECTED"))
+            {
+                EarthMoverFlushWarningSpawned = true;
+            }
+        }
+
+        private void TextMeshProDisabled(TextMeshProUGUI mesh)
+        {
+            var text = mesh.text;
+            if (text.Contains("CRITICAL FAILURE"))
+            {
+                EarthMoverCritFailureSpawned = false;
+            }
+
+            if (text.Contains("INTRUDER DETECTED"))
+            {
+                EarthMoverFlushWarningSpawned = false;
+            }
         }
 
         protected void OnDestroy()
@@ -232,6 +262,9 @@ namespace UKAIW
         float TimeSinceLastHeatResActivation = 10.0f;
         float HeatResRankDescensionTimer = 4.0f;
         float HeatResRankDescensionTimerMax = 4.0f;
+
+        bool EarthMoverCritFailureSpawned = false;
+        bool EarthMoverFlushWarningSpawned = false;
 
         public void ResetHeatRestRankDescensionTimer()
         {
@@ -429,6 +462,16 @@ namespace UKAIW
                 {
                     pushDownFactor += 140.0f;
                     hasHeatResistanceThatsNotUs = true;
+                }
+
+                if (EarthMoverCritFailureSpawned)
+                {
+                    pushDownFactor += 225.0f;
+                }
+
+                if (EarthMoverFlushWarningSpawned)
+                {
+                    pushDownFactor += 110.0f;
                 }
 
                 OurHeatResistance.transform.position = NyxMath.EaseInterpTo(OurHeatResistance.transform.position, BasePosition + Vector3.down * pushDownFactor, 10.0f, Time.fixedDeltaTime);
