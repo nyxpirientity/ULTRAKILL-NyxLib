@@ -15,7 +15,8 @@ namespace UKAIW
     {
         public static void Initialize()
         {
-            UpdateEvents.OnFixedUpdate += FixedUpdate;
+            UpdateEvents.OnUpdate += Update;
+            LastRefreshTimeStamp.UpdateToNow();
         }
 
         private static int RemainingBloodFxThisTick = 0;
@@ -35,14 +36,15 @@ namespace UKAIW
 
         public static int InstantiatedThisTick = 0;
         public static ulong NumFixedUpdates = 0;
-        private static void FixedUpdate()
+        public static GlobalTimeStamp LastRefreshTimeStamp; 
+        private static void Update()
         {
             if (!Cheats.Enabled)
             {
                 return;
             }
 
-            if ((NumFixedUpdates % (ulong)Options.BloodOptimizerCapNumUpdatesPerTick.Value) == 0)
+            if ((LastRefreshTimeStamp.TimeSince > (Time.fixedDeltaTime * Options.BloodOptimizerCapNumUpdatesPerTick.Value)))
             {
                 RemainingBloodFxThisTick = Options.BloodHeavyModdedEnemiesCapNumBloodPerTick.Value;
                 

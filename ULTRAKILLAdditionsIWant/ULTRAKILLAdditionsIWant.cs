@@ -42,7 +42,7 @@ namespace UKAIW
             LevelAdditionsManager.Initialize();
             CybergrindAdditions.Initialize();
             MundaneMurder.Initialize();
-
+            BloodOptimizer.Initialize();
         }
 
 
