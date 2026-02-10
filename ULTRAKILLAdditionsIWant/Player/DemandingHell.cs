@@ -265,6 +265,16 @@ namespace UKAIW
                 return;
             }
 
+            if (SafeFromContactDamage.Contains(eid.gameObject))
+            {
+                return;
+            }
+
+            if (eid.Dead)
+            {
+                return;
+            }
+
             if (CurrentHeatResistance <= 35.0f)
             {
                 float burnStrength = NyxMath.InverseNormalizeToRange(CurrentHeatResistance, -100.0f, 40.0f);
@@ -303,17 +313,23 @@ namespace UKAIW
                 return;
             }
             
-            if (LastContactDamageReset.TimeSince > 0.5)
+            if (LastContactDamageReset.TimeSince > 0.3)
             {
                 SafeFromContactDamage.Clear();
+                LastContactDamageReset.UpdateToNow();
             }
 
             if (LastContactDamageStyleReset.TimeSince > 2.0)
             {
                 if (NormalContactDamageStyleThisTick > 0) Shud.AddPoints(75 * NormalContactDamageStyleThisTick, $"<color=#00ff44>CONTACT DAMAGE</color>", gameObject, null, NormalContactDamageStyleThisTick);
-                if (MiniBossContactDamageStyleThisTick > 0) Shud.AddPoints(250 * MiniBossContactDamageStyleThisTick, $"<color=#00fff7>GHOSTED</color>", gameObject, null, MiniBossContactDamageStyleThisTick);
-                if (BossContactDamageStyleThisTick > 0) Shud.AddPoints(500 * BossContactDamageStyleThisTick, $"<color=#a1f3ff>BRANDED</color>", gameObject, null, BossContactDamageStyleThisTick);
+                if (MiniBossContactDamageStyleThisTick > 0) Shud.AddPoints(250 * MiniBossContactDamageStyleThisTick, $"<color=#00fff7>BRANDED</color>", gameObject, null, MiniBossContactDamageStyleThisTick);
+                if (BossContactDamageStyleThisTick > 0) Shud.AddPoints(500 * BossContactDamageStyleThisTick, $"<color=#a1f3ff>BRANDING STEEL</color>", gameObject, null, BossContactDamageStyleThisTick);
                 if (UltraBossContactDamageStyleThisTick > 0) Shud.AddPoints(5000 * UltraBossContactDamageStyleThisTick, $"<color=#ffb700>NEW EXHIBIT</color>", gameObject, null, UltraBossContactDamageStyleThisTick);
+                LastContactDamageStyleReset.UpdateToNow();
+                NormalContactDamageStyleThisTick = 0;
+                MiniBossContactDamageStyleThisTick = 0;
+                BossContactDamageStyleThisTick = 0;
+                UltraBossContactDamageStyleThisTick = 0;
             }
 
             if (OurHeatResistance != null)
