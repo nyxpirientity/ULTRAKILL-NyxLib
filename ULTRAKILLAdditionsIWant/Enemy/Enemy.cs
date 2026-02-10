@@ -16,6 +16,11 @@ namespace UKAIW
 
         public static bool TryEnrage(this EnemyIdentifier eid)
         {
+            if (eid.Dead)
+            {
+                return false;
+            }
+            
             switch (eid.enemyType)
             {
                 case EnemyType.Swordsmachine:
@@ -58,6 +63,11 @@ namespace UKAIW
 
         public static bool TryUnenrage(this EnemyIdentifier eid)
         {
+            if (eid.Dead)
+            {
+                return false;
+            }
+
             switch (eid.enemyType)
             {
                 case EnemyType.Swordsmachine:

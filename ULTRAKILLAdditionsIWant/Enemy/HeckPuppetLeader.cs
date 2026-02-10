@@ -109,7 +109,14 @@ namespace UKAIW
 
         protected void Start()
         {
-            if (Eid.enemyType == EnemyType.Idol || Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase) || Eid.enemyType == EnemyType.Wicked)
+            /* 
+               Wicked excluded due to the earthmover being a wicked (???), Idol excluded because there's very little gameplay benefit and when instakilled they
+               explode, which sucks, earthmover brain excluded because just in case, V2 and V2Second excluded because... go in sandbox and spawn a V2, make them
+               puppeted, in my experience it breaks. Make them radiant and set their speed to 0.5 (which usually slows enemies down), watch as they
+               suddenly gain super speed. Set it to 0 and watch them fling outside of the map, simply put, the game doesn't seem to work well enough in my
+               experimentation.
+            */
+            if (Eid.enemyType == EnemyType.Idol || Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase) || Eid.enemyType == EnemyType.Wicked || Eid.enemyType == EnemyType.V2 || Eid.enemyType == EnemyType.V2Second)
             {
                 _ExcludedFromHeckPuppetCheat = true;
             }
@@ -171,7 +178,7 @@ namespace UKAIW
                 
                 if (Eid.enemyType == EnemyType.Virtue)
                 {
-                    qualifierGameplayRank = EnemyGameplayRank.Ultraboss;
+                    qualifierGameplayRank = EnemyGameplayRank.Boss;
                 }
 
                 var options = Options.HeckPuppetsStyleEntries[styleRank].HeckPuppetsOptions[qualifierGameplayRank];

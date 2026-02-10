@@ -89,6 +89,12 @@ namespace UKAIW
                 return;
             }
 
+            if (Eid.enemyType == EnemyType.Virtue)
+            {
+                FieldPublisher<Drone, bool> exploded = new FieldPublisher<Drone, bool>(Eid.drone, "exploded");
+                exploded.Value = true;
+            }
+
             Eid.InstaKill();
             TryDecrementRemainingBlood();
         }
