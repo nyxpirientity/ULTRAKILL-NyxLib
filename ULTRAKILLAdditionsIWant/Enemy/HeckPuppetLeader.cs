@@ -52,6 +52,13 @@ namespace UKAIW
                 PuppetRootGo.SetActive(true);
                 PuppetEad.gameObject.SetActive(true);
                 
+                float speedBuff = options.HeckPuppetSpeedBuffScalar.Value;
+
+                if (leader.Eid.enemyType == EnemyType.Virtue) // probably should be more configurable in the future but virtues seem quite disproportionately powerful.
+                {
+                    speedBuff *= 0.4f;
+                }
+
                 PuppetEad.Health = (Mathf.Min(options.MaxHeckPuppetHealth.Value, leader.Eid.Health * options.HeckPuppetHealthScalar.Value));
                 PuppetEad.EnemyRadiance.AddModifier(new Radiance.Modifier() 
                 {
@@ -59,7 +66,7 @@ namespace UKAIW
                     HealthMod = options.HeckPuppetHealthBuffScalar.Value,
                     DamageEnabled = options.HeckPuppetDamageBuffScalar.Value >= 0.0f,
                     DamageMod = options.HeckPuppetDamageBuffScalar.Value,
-                    SpeedEnabled = options.HeckPuppetSpeedBuffScalar.Value >= 0.0f,
+                    SpeedEnabled = speedBuff >= 0.0f,
                     SpeedMod = options.HeckPuppetSpeedBuffScalar.Value,
                     Multiplier = true,
                 });
@@ -105,7 +112,7 @@ namespace UKAIW
                 Puppets[styleRank] = mhp;
             }
 
-            GameplayRank = EnemyUtils.GetEnemyGameplayRank(Eid);
+            GameplayRank = EnemyUtils.GetEnemyGameplayRank(Eid);                
 
             Shud = StyleHUD.Instance;
         }
@@ -151,7 +158,15 @@ namespace UKAIW
                     continue;
                 }
 
-                var options = Options.HeckPuppetsStyleEntries[styleRank].HeckPuppetsOptions[GameplayRank];
+
+                EnemyGameplayRank qualifierGameplayRank = GameplayRank;
+                
+                if (Eid.enemyType == EnemyType.Virtue)
+                {
+                    qualifierGameplayRank = EnemyGameplayRank.Ultraboss;
+                }
+
+                var options = Options.HeckPuppetsStyleEntries[styleRank].HeckPuppetsOptions[qualifierGameplayRank];
                 int intendedNumPuppets = options.NumHeckPuppets.Value;
                 
                 if (puppets.Count > intendedNumPuppets)

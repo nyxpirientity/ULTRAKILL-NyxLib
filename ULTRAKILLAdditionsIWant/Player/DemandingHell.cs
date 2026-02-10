@@ -358,13 +358,13 @@ namespace UKAIW
 
                 bool hasHeatResistanceThatsNotUs = false;
 
-                if (OurHeatResistance != null && LastEnabledHeatRes != null && LastEnabledHeatRes != OurHeatResistance)
+                if (OurHeatResistance != null && LastEnabledHeatRes != null && LastEnabledHeatRes != OurHeatResistance && (LastEnabledHeatRes?.isActiveAndEnabled).GetValueOrDefault(false))
                 {
                     pushDownFactor += 140.0f;
                     hasHeatResistanceThatsNotUs = true;
                 }
 
-                OurHeatResistance.transform.position = BasePosition + Vector3.down * pushDownFactor;
+                OurHeatResistance.transform.position = NyxMath.EaseInterpTo(OurHeatResistance.transform.position, BasePosition + Vector3.down * pushDownFactor, 10.0f, Time.fixedDeltaTime);
                 
                 float heatResistanceRecovery = player.rb.velocity.magnitude;
 
@@ -522,7 +522,7 @@ namespace UKAIW
                     }
                     HeatResRankDescensionTimer += Time.fixedDeltaTime * -2.0f;
                     
-                    if (hasHeatResistanceThatsNotUs)
+                    if (hasHeatResistanceThatsNotUs && (LastEnabledHeatRes?.isActiveAndEnabled).GetValueOrDefault(false))
                     {
                         var otherHeatRes = LastEnabledHeatRes;
                         FieldPublisher<HeatResistance, float> otherHeatResistance = new FieldPublisher<HeatResistance, float>(otherHeatRes, "heatResistance");
