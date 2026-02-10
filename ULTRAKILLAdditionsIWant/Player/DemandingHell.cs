@@ -362,7 +362,7 @@ namespace UKAIW
 
             if (LastContactDamageStyleReset.TimeSince > 2.0)
             {
-                if (PuppetContactDamageStyleThisTick > 0) Shud.AddPoints(5 * PuppetContactDamageStyleThisTick, $"<color=#00ff44>SUPER HEATED</color>", gameObject, null, NormalContactDamageStyleThisTick);
+                if (PuppetContactDamageStyleThisTick > 0) Shud.AddPoints(5 * PuppetContactDamageStyleThisTick, $"<color=#00ff44>SUPER HEATED</color>", gameObject, null, PuppetContactDamageStyleThisTick);
                 if (NormalContactDamageStyleThisTick > 0) Shud.AddPoints(75 * NormalContactDamageStyleThisTick, $"<color=#00ff44>CONTACT DAMAGE</color>", gameObject, null, NormalContactDamageStyleThisTick);
                 if (MiniBossContactDamageStyleThisTick > 0) Shud.AddPoints(250 * MiniBossContactDamageStyleThisTick, $"<color=#00fff7>BRANDED</color>", gameObject, null, MiniBossContactDamageStyleThisTick);
                 if (BossContactDamageStyleThisTick > 0) Shud.AddPoints(500 * BossContactDamageStyleThisTick, $"<color=#a1f3ff>BRANDING STEEL</color>", gameObject, null, BossContactDamageStyleThisTick);

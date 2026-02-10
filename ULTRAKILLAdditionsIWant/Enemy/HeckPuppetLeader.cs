@@ -38,13 +38,13 @@ namespace UKAIW
             {   
                 HeckPuppetID = NextHeckPuppetID;
                 PuppetRootGo = UnityEngine.Object.Instantiate(leader.Ead.PrefabMod.Prefab, leader.Ead.RootGameObject.transform.parent);
-                PuppetRootGo.transform.position = position + UnityEngine.Random.onUnitSphere * 5.0f;
+                PuppetRootGo.transform.position = position + UnityEngine.Random.onUnitSphere * 2.5f;
                 PuppetRootGo.transform.rotation = rotation;
                 PuppetEad = PuppetRootGo.GetComponent<EnemyAdditions>() ?? PuppetRootGo.GetComponentInChildren<EnemyAdditions>();
                 
                 Assert.IsNotNull(PuppetEad);
                 Assert.IsNotNull(PuppetEad.gameObject);
-            
+                
                 PuppetEad.gameObject.GetComponent<HeckPuppetLeader>().enabled = false;
                 PuppetEad.MarkAsUniquelySolo();
                 PuppetEid = PuppetEad.gameObject.GetComponent<EnemyIdentifier>();
@@ -80,9 +80,12 @@ namespace UKAIW
                 PuppetEid.puppet = true;
                 PuppetEid.timeSinceSpawned = 0.0f;
 
-                if (PuppetEid.GetComponent<Collider>() != null && leader.GetComponent<Collider>() != null)
+                if (leader.Eid.enemyType == EnemyType.Virtue)
                 {
-                    Physics.IgnoreCollision(PuppetEid.GetComponent<Collider>(), leader.GetComponent<Collider>());
+                    if (leader.Eid.drone.GetComponent<Collider>() != null && PuppetEid.drone.GetComponent<Collider>() != null)
+                    {
+                        Physics.IgnoreCollision(PuppetEid.drone.GetComponent<Collider>(), leader.Eid.drone.GetComponent<Collider>());
+                    }
                 }
             }
         }
@@ -117,7 +120,7 @@ namespace UKAIW
                 Puppets[styleRank] = mhp;
             }
 
-            GameplayRank = EnemyUtils.GetEnemyGameplayRank(Eid);                
+            GameplayRank = EnemyUtils.GetEnemyGameplayRank(Eid);               
 
             Shud = StyleHUD.Instance;
         }
