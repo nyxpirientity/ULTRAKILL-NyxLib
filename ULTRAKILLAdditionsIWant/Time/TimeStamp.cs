@@ -13,4 +13,15 @@ namespace UKAIW
             TimeStamp = Time.timeSinceLevelLoadAsDouble;
         }
     }
+
+    public struct GlobalTimeStamp
+    {
+        public double? TimeStamp { get; set; }
+        public readonly double TimeSince { get => Time.timeAsDouble - TimeStamp.GetValueOrDefault(0.0); }
+
+        public void UpdateToNow()
+        {
+            TimeStamp = Time.timeAsDouble;
+        }
+    }
 }
