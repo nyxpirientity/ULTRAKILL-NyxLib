@@ -13,6 +13,7 @@ namespace UKAIW
         EnemyAdditions Eadd = null;
         Radiance.Modifier RadianceModifier = new Radiance.Modifier();
         bool PlayedEnrageSound = false;
+        bool EnragedByUs = false;
         float enrageSoundTimer = -1.0f;
         float EnrageSoundCooldown = -1.0f;
 
@@ -44,47 +45,24 @@ namespace UKAIW
                 
                 if (rank is StyleRanks.ULTRAKILL)
                 {
-                    switch (Eid.enemyType)
+                    if (Eid.TryEnrage())
                     {
-                        case EnemyType.Swordsmachine:
-                            Eid.GetComponent<SwordsMachine>()?.Enrage();
-                            break;
-                        case EnemyType.Cerberus:
-                            Eid.GetComponent<StatueBoss>()?.Enrage();
-                            break;
-                        case EnemyType.Virtue:
-                        case EnemyType.Drone:
-                            Eid.GetComponent<Drone>()?.Enrage();
-                            break;
-                        case EnemyType.V2:
-                            Eid.GetComponent<V2>()?.Enrage();
-                            break;
-                        case EnemyType.Mindflayer:
-                            Eid.GetComponent<Mindflayer>()?.Enrage();
-                            break;
-                        case EnemyType.HideousMass:
-                            if (!(Eid.GetComponent<Mass>()?.GetComponentInChildren<EnemySimplifier>()?.enraged).GetValueOrDefault(true))
-                            {
-                                Eid.GetComponent<Mass>()?.Enrage();
-                            }
-                            break;
-                        case EnemyType.MaliciousFace:
-                            Eid.GetComponent<SpiderBody>()?.Enrage();
-                            break;
-                        case EnemyType.Gutterman:
-                            if (!Eid.dead)
-                            {
-                                Eid.GetComponent<Gutterman>()?.Enrage();
-                            }
-                            break;
-                        default:
-                            radienceTier = Options.ULTRAKILLNoEnrageRadianceTier;
-                            enrageSoundTimer = UnityEngine.Random.value % 0.3f;
-                            break;
+                        EnragedByUs = true;
+                    }
+                    else
+                    {
+                        radienceTier = Options.ULTRAKILLNoEnrageRadianceTier;
+                        enrageSoundTimer = UnityEngine.Random.value % 0.5f;
                     }
                 }
                 else
                 {
+                    if (EnragedByUs)
+                    {
+                        Eid.TryUnenrage();
+                        EnragedByUs = false;
+                    }
+
                     PlayedEnrageSound = false;
                     enrageSoundTimer = -1.0f;
                 }

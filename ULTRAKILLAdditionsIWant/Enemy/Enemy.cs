@@ -14,6 +14,83 @@ namespace UKAIW
     {
         public static int NumGameplayRanks = 4;
 
+        public static bool TryEnrage(this EnemyIdentifier eid)
+        {
+            switch (eid.enemyType)
+            {
+                case EnemyType.Swordsmachine:
+                    eid.GetComponent<SwordsMachine>()?.Enrage();
+                    return true;
+                case EnemyType.Cerberus:
+                    eid.GetComponent<StatueBoss>()?.Enrage();
+                    return true;
+                case EnemyType.Virtue:
+                case EnemyType.Drone:
+                    eid.GetComponent<Drone>()?.Enrage();
+                    return true;
+                case EnemyType.V2:
+                    eid.GetComponent<V2>()?.Enrage();
+                    return true;
+                case EnemyType.Mindflayer:
+                    eid.GetComponent<Mindflayer>()?.Enrage();
+                    return true;
+                case EnemyType.HideousMass:
+                    if (!(eid.GetComponent<Mass>()?.GetComponentInChildren<EnemySimplifier>()?.enraged).GetValueOrDefault(true))
+                    {
+                        eid.GetComponent<Mass>()?.Enrage();
+                        return true;
+                    }
+                    return false;
+                case EnemyType.MaliciousFace:
+                    eid.GetComponent<SpiderBody>()?.Enrage();
+                    return true;
+                case EnemyType.Gutterman:
+                    if (!eid.dead)
+                    {
+                        eid.GetComponent<Gutterman>()?.Enrage();
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool TryUnenrage(this EnemyIdentifier eid)
+        {
+            switch (eid.enemyType)
+            {
+                case EnemyType.Swordsmachine:
+                    eid.GetComponent<SwordsMachine>()?.UnEnrage();
+                    return true;
+                case EnemyType.Cerberus:
+                    eid.GetComponent<StatueBoss>()?.UnEnrage();
+                    return true;
+                case EnemyType.Virtue:
+                case EnemyType.Drone:
+                    eid.GetComponent<Drone>()?.UnEnrage();
+                    return true;
+                case EnemyType.V2:
+                    eid.GetComponent<V2>()?.UnEnrage();
+                    return true;
+                case EnemyType.Mindflayer:
+                    eid.GetComponent<Mindflayer>()?.UnEnrage();
+                    return true;
+                case EnemyType.MaliciousFace:
+                    eid.GetComponent<SpiderBody>()?.UnEnrage();
+                    return true;
+                case EnemyType.Gutterman:
+                    if (!eid.dead)
+                    {
+                        eid.GetComponent<Gutterman>()?.UnEnrage();
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
         /* GetHurt would be more consistent but JUST incase they add GetHurt, I'll go with what I usually call it.*/
         public static void ApplyDamage(this EnemyIdentifier eid, Vector3 force, Vector3 hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool fromExplosion)
         {
