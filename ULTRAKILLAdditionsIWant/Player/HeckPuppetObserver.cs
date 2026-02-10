@@ -72,7 +72,7 @@ namespace UKAIW
 
             if (NumBossHeckPuppetsCombo > 0)
             {
-                Shud.AddPoints(NumBossHeckPuppetsCombo * 25, "<color=#ffff00>INANIMATE ONCE MORE</color>", null, null, NumBossHeckPuppetsCombo);
+                Shud.AddPoints(NumBossHeckPuppetsCombo * 25, "<color=#ffff00>INANIMATED</color>", null, null, NumBossHeckPuppetsCombo);
             }
 
             if (NumUltraBossHeckPuppetsCombo > 0)
