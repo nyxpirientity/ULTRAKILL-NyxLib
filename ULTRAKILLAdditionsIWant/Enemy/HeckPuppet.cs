@@ -58,6 +58,12 @@ namespace UKAIW
                 GivePoints = false;
             }
 
+            if (!Leader.isActiveAndEnabled)
+            {
+                GivePoints = false;
+                Destroy(GetComponent<EnemyAdditions>().RootGameObject);
+            }
+
             if (Leader.Eid.Dead)
             {
                 InstaKill();
