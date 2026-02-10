@@ -101,7 +101,7 @@ public static class Cheats
     }
 
     public static bool IsHydraModeOn { get; private set; } = false;
-    public static bool Enabled { get => CheatsController.Instance.cheatsEnabled; }
+    public static bool Enabled { get => (CheatsController.Instance?.cheatsEnabled).GetValueOrDefault(false); }
 
     private static void RegisterCheats()
     {
