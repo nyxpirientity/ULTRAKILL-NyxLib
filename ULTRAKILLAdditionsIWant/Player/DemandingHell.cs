@@ -238,6 +238,7 @@ namespace UKAIW
             HeatResRankDescensionTimer = HeatResRankDescensionTimerMax;
         }
 
+        int PuppetContactDamageStyleThisTick = 0;
         int NormalContactDamageStyleThisTick = 0;
         int MiniBossContactDamageStyleThisTick = 0;
         int BossContactDamageStyleThisTick = 0;
@@ -282,20 +283,27 @@ namespace UKAIW
                 SafeFromContactDamage.Add(eid.gameObject);
                 if (eid.Dead)
                 {
-                    switch (EnemyUtils.GetEnemyGameplayRank(eid))
+                    if (eid.puppet)
                     {
-                        case EnemyGameplayRank.Normal:
-                            NormalContactDamageStyleThisTick += 1;
-                            break;
-                        case EnemyGameplayRank.Miniboss:
-                            MiniBossContactDamageStyleThisTick += 1;
-                            break;
-                        case EnemyGameplayRank.Boss:
-                            BossContactDamageStyleThisTick += 1;
-                            break;
-                        case EnemyGameplayRank.Ultraboss:
-                            UltraBossContactDamageStyleThisTick += 1;
-                            break;
+                        PuppetContactDamageStyleThisTick += 1;
+                    }
+                    else
+                    {
+                        switch (EnemyUtils.GetEnemyGameplayRank(eid))
+                        {
+                            case EnemyGameplayRank.Normal:
+                                NormalContactDamageStyleThisTick += 1;
+                                break;
+                            case EnemyGameplayRank.Miniboss:
+                                MiniBossContactDamageStyleThisTick += 1;
+                                break;
+                            case EnemyGameplayRank.Boss:
+                                BossContactDamageStyleThisTick += 1;
+                                break;
+                            case EnemyGameplayRank.Ultraboss:
+                                UltraBossContactDamageStyleThisTick += 1;
+                                break;
+                        }
                     }
                 }
             }
@@ -321,6 +329,7 @@ namespace UKAIW
 
             if (LastContactDamageStyleReset.TimeSince > 2.0)
             {
+                if (PuppetContactDamageStyleThisTick > 0) Shud.AddPoints(5 * PuppetContactDamageStyleThisTick, $"<color=#00ff44>SUPER HEATED</color>", gameObject, null, NormalContactDamageStyleThisTick);
                 if (NormalContactDamageStyleThisTick > 0) Shud.AddPoints(75 * NormalContactDamageStyleThisTick, $"<color=#00ff44>CONTACT DAMAGE</color>", gameObject, null, NormalContactDamageStyleThisTick);
                 if (MiniBossContactDamageStyleThisTick > 0) Shud.AddPoints(250 * MiniBossContactDamageStyleThisTick, $"<color=#00fff7>BRANDED</color>", gameObject, null, MiniBossContactDamageStyleThisTick);
                 if (BossContactDamageStyleThisTick > 0) Shud.AddPoints(500 * BossContactDamageStyleThisTick, $"<color=#a1f3ff>BRANDING STEEL</color>", gameObject, null, BossContactDamageStyleThisTick);
@@ -330,6 +339,7 @@ namespace UKAIW
                 MiniBossContactDamageStyleThisTick = 0;
                 BossContactDamageStyleThisTick = 0;
                 UltraBossContactDamageStyleThisTick = 0;
+                PuppetContactDamageStyleThisTick = 0;
             }
 
             if (OurHeatResistance != null)
