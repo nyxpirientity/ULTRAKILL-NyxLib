@@ -20,22 +20,47 @@ namespace UKAIW
             if (eid.zombie != null)
             {
                 eid.zombie.GetHurt(eid.gameObject, force, multiplier, critMultiplier, sourceWeapon, fromExplosion);
+                
+                if (eid.zombie.health <= 0)
+                {
+                    eid.Death(); // WHAT you have to check and then call this MANUALLY I THINK?!?!??!?!?
+                }
             }
             else if (eid.drone != null)
             {
                 eid.drone.GetHurt(force, multiplier, sourceWeapon, fromExplosion);
+                
+                if (eid.drone.health <= 0)
+                {
+                    eid.Death();
+                }
             }
             else if (eid.machine != null)
             {
                 eid.machine.GetHurt(eid.gameObject, force, multiplier, critMultiplier, sourceWeapon, fromExplosion);
+                
+                if (eid.machine.health <= 0)
+                {
+                    eid.Death();
+                }
             }
             else if (eid.statue != null)
             {
                 eid.statue.GetHurt(eid.gameObject, force, multiplier, critMultiplier, hitPoint, sourceWeapon, fromExplosion);
+                
+                if (eid.statue.health <= 0)
+                {
+                    eid.Death();
+                }
             }
             else if (eid.spider != null)
             {
                 eid.spider.GetHurt(eid.gameObject, force, hitPoint, multiplier, sourceWeapon);
+                
+                if (eid.spider.health <= 0)
+                {
+                    eid.Death();
+                }
             }
         }
 

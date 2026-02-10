@@ -214,6 +214,7 @@ namespace UKAIW
             player = NewMovement.Instance;
             Shud = StyleHUD.Instance;
             AntiHpCooldown = new FieldPublisher<NewMovement, float>(player, "antiHpCooldown");
+            LastContactDamageReset.UpdateToNow();
         }
 
         protected void OnDestroy()
@@ -237,7 +238,15 @@ namespace UKAIW
             HeatResRankDescensionTimer = HeatResRankDescensionTimerMax;
         }
 
-        protected void OnCollisionEnter(Collision collision)
+        int NormalContactDamageStyleThisTick = 0;
+        int MiniBossContactDamageStyleThisTick = 0;
+        int BossContactDamageStyleThisTick = 0;
+        int UltraBossContactDamageStyleThisTick = 0;
+        HashSet<GameObject> SafeFromContactDamage = new HashSet<GameObject>(128);
+        SceneTimeStamp LastContactDamageReset;
+        SceneTimeStamp LastContactDamageStyleReset;
+
+        protected void OnCollisionStay(Collision collision)
         {
             if (Cheats.IsCheatDisabled(Cheats.DemandingHell))
             {
@@ -260,6 +269,25 @@ namespace UKAIW
             {
                 float burnStrength = NyxMath.InverseNormalizeToRange(CurrentHeatResistance, -100.0f, 40.0f);
                 eid.ApplyDamage(Vector3.Normalize(eid.transform.position - transform.position) * burnStrength * 10.0f, eid.transform.position, burnStrength * 5.0f, 1.0f, null, false);
+                SafeFromContactDamage.Add(eid.gameObject);
+                if (eid.Dead)
+                {
+                    switch (EnemyUtils.GetEnemyGameplayRank(eid))
+                    {
+                        case EnemyGameplayRank.Normal:
+                            NormalContactDamageStyleThisTick += 1;
+                            break;
+                        case EnemyGameplayRank.Miniboss:
+                            MiniBossContactDamageStyleThisTick += 1;
+                            break;
+                        case EnemyGameplayRank.Boss:
+                            BossContactDamageStyleThisTick += 1;
+                            break;
+                        case EnemyGameplayRank.Ultraboss:
+                            UltraBossContactDamageStyleThisTick += 1;
+                            break;
+                    }
+                }
             }
         }
 
@@ -275,6 +303,19 @@ namespace UKAIW
                 return;
             }
             
+            if (LastContactDamageReset.TimeSince > 0.5)
+            {
+                SafeFromContactDamage.Clear();
+            }
+
+            if (LastContactDamageStyleReset.TimeSince > 2.0)
+            {
+                if (NormalContactDamageStyleThisTick > 0) Shud.AddPoints(75 * NormalContactDamageStyleThisTick, $"<color=#00ff44>CONTACT DAMAGE</color>", gameObject, null, NormalContactDamageStyleThisTick);
+                if (MiniBossContactDamageStyleThisTick > 0) Shud.AddPoints(250 * MiniBossContactDamageStyleThisTick, $"<color=#00fff7>GHOSTED</color>", gameObject, null, MiniBossContactDamageStyleThisTick);
+                if (BossContactDamageStyleThisTick > 0) Shud.AddPoints(500 * BossContactDamageStyleThisTick, $"<color=#a1f3ff>BRANDED</color>", gameObject, null, BossContactDamageStyleThisTick);
+                if (UltraBossContactDamageStyleThisTick > 0) Shud.AddPoints(5000 * UltraBossContactDamageStyleThisTick, $"<color=#ffb700>NEW EXHIBIT</color>", gameObject, null, UltraBossContactDamageStyleThisTick);
+            }
+
             if (OurHeatResistance != null)
             {
                 FieldPublisher<HeatResistance, float> heatResistance = new FieldPublisher<HeatResistance, float>(OurHeatResistance, "heatResistance");
@@ -314,8 +355,8 @@ namespace UKAIW
                 BasePosition = OurHeatResistance.transform.position;
                 //BaseScale = OurHeatResistance.transform.localScale; WRONG because it does a scale effect when it enables lol
                 
-                FieldInfo heatResInstanceFI = typeof(HeatResistance).GetField("Instance", BindingFlags.Static | BindingFlags.NonPublic);
-                heatResInstanceFI.SetValue(null, null);
+                //FieldInfo heatResInstanceFI = typeof(MonoSingleton<HeatResistance>).GetField("Instance", BindingFlags.Static | BindingFlags.NonPublic);
+                //heatResInstanceFI.SetValue(null, null);
             }
             
             float revolverCoolingScalar = 1.0f;
