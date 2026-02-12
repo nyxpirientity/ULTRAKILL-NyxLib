@@ -30,7 +30,7 @@ namespace UKAIW
 
             internal bool IsAlive()
             {
-                return !((HeckPuppet?.Eid?.Dead).GetValueOrDefault(true));
+                return !((HeckPuppet.NullInvalid()?.Eid.NullInvalid()?.Dead).GetValueOrDefault(true));
             }
 
             private static ulong NextHeckPuppetID = 0;
@@ -101,7 +101,7 @@ namespace UKAIW
         internal Dictionary<StyleRanks, List<ManagedHeckPuppet>> Puppets = new System.Collections.Generic.Dictionary<StyleRanks, List<ManagedHeckPuppet>>();
 
         private bool _ExcludedFromHeckPuppetCheat = false;
-        public bool ExcludedFromHeckPuppetCheat { get => _ExcludedFromHeckPuppetCheat || (Eid?.puppet).GetValueOrDefault(true) || Eid?.enemyType == EnemyType.Wicked; }
+        public bool ExcludedFromHeckPuppetCheat { get => _ExcludedFromHeckPuppetCheat || (Eid.NullInvalid()?.puppet).GetValueOrDefault(true) || Eid.NullInvalid()?.enemyType == EnemyType.Wicked; }
 
         protected void Awake()
         {
@@ -119,7 +119,7 @@ namespace UKAIW
                experimentation.
                Sisyphus (Insurrectionists, not prime) excluded because they just seem.. broken for some reason. Needs more diagnosing OR this is just how it is
             */
-            if (Eid.enemyType == EnemyType.Sisyphus || Eid.enemyType == EnemyType.Idol || Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase) || Eid.enemyType == EnemyType.Wicked || Eid.enemyType == EnemyType.V2 || Eid.enemyType == EnemyType.V2Second)
+            if (Eid.enemyType == EnemyType.Sisyphus || Eid.enemyType == EnemyType.Idol || Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase) || Eid.gameObject.name.Contains("Mainframe", StringComparison.OrdinalIgnoreCase) || Eid.enemyType == EnemyType.Wicked || Eid.enemyType == EnemyType.V2 || Eid.enemyType == EnemyType.V2Second)
             {
                 _ExcludedFromHeckPuppetCheat = true;
             }
@@ -153,7 +153,7 @@ namespace UKAIW
                         if (puppet.IsAlive())
                         {
                             puppet.HeckPuppet.PrevDead = true;
-                            puppet.HeckPuppet?.InstaKill();
+                            puppet.HeckPuppet.NullInvalid()?.InstaKill();
                             puppet.DeathTimestamp.TimeStamp = 0.0;
                         }
                     }

@@ -21,14 +21,17 @@ namespace UKAIW
 
             public void InstantiatePrefabToPool()
             {
-                Assert.IsNotNull(Prefab);
-
+                if (Prefab == null)
+                {
+                    Deactivate(); // deactivate
+                    Assert.IsNotNull(Prefab); // then just print this to the logs *once*
+                }
                 if (PrefabPoolFull)
                 {
                     return;
                 }
 
-                var newGo = Instantiate(Prefab, PrefabParent?.transform);
+                var newGo = Instantiate(Prefab, PrefabParent.NullInvalid()?.transform);
 
                 PrefabPool.Push(newGo);
 

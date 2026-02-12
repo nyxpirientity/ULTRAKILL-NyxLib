@@ -31,8 +31,13 @@ namespace UKAIW
             Eid.PuppetSpawn();
             GivePoints = true;
             EidPuppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
-            Eid.onDeath.RemoveAllListeners();
+            Eid.onDeath = null;
             
+            if (Eid.machine != null)
+            {
+                Eid.machine.onDeath = null;
+                Eid.machine.destroyOnDeath = new GameObject[0];
+            }
             if (Eid.drone != null)
             {
                 FieldPublisher<Drone, bool> exploded = new FieldPublisher<Drone, bool>(Eid.drone, "exploded");
@@ -110,7 +115,7 @@ namespace UKAIW
 
         public void InstaKill()
         {
-            if ((Eid?.Dead).GetValueOrDefault(true))
+            if ((Eid.NullInvalid()?.Dead).GetValueOrDefault(true))
             {
                 return;
             }
@@ -127,7 +132,10 @@ namespace UKAIW
 
         private void TryGivePoints()
         {
-            EidPuppetSpawnTimer.Value = 1.0f;
+            if (EidPuppetSpawnTimer != null && Eid != null)
+            {
+                EidPuppetSpawnTimer.Value = 1.0f;
+            }
 
             if (GivePoints)
             {

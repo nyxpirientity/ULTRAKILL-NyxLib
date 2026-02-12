@@ -40,6 +40,7 @@ public static class Cheats
     public const string StrongerInNumbers = "ukaiw.stronger-in-numbers";
     public const string Tymitosis = "ukaiw.tymitosis";
     public const string SoleNemesis = "ukaiw.sole-nemesis";
+    public const string LogEIDInfo = "ukaiw.dev.log-eid-info";
 
     public static int FriendCount = 0;
 
@@ -420,6 +421,17 @@ public static class Cheats
             }
         ), "???");
 
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        "Log Eid Info On Start", 
+        Cheats.LogEIDInfo,
+        onDisable: (cheat) =>
+        {
+        },
+        onEnable: (cheat, manager) =>
+        {
+        }
+        ), "dev stuff");
+
         /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Print the ALL!!!!", 
             "ukaiw.dev.print-all-children",
@@ -475,7 +487,7 @@ public static class Cheats
         {
             if (!Cheats.Enabled)
             {
-                return;
+                //return; stopped working I noticed so trying commenting out this?
             }
 
             var activator = GameObject.FindAnyObjectByType<PlayerActivator>();

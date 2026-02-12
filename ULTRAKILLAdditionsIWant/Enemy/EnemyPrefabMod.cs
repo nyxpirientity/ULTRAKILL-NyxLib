@@ -82,7 +82,7 @@ public class EnemyPrefabMod : MonoBehaviour
             //templateGo.SetActive(false);
         }
         Prefab = UnityEngine.Object.Instantiate(templateGo);
-        _PrefabParent = templateGo?.transform?.parent?.gameObject;
+        _PrefabParent = templateGo.NullInvalid()?.transform?.parent?.gameObject;
         Prefab.SetActive(false);
         
         var prefabEid = Prefab.GetComponent<EnemyIdentifier>() ?? Prefab.GetComponentInChildren<EnemyIdentifier>();

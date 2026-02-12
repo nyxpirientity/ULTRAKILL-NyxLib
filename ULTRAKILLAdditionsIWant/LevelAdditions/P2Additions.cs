@@ -192,11 +192,11 @@ namespace UKAIW
                     {
                         eid.GetComponent<EnemyHydraMod>().Shared.OnDeactivated += () =>
                         {
-                            PanopticonRadio?.SetActive(false);  
+                            PanopticonRadio.NullInvalid()?.SetActive(false);  
                         };
                         PanopticonRadio.GetComponent<AudioSource>().time = 22.0f;
                         PanopticonRadio.GetComponent<AudioSource>().volume += 0.1f;
-                        PanopticonRadio?.SetActive(true);
+                        PanopticonRadio.NullInvalid()?.SetActive(true);
                     }
                 }
                 break;

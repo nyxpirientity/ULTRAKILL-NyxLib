@@ -329,6 +329,11 @@ namespace UKAIW
             var enemyGo = enemy.gameObject;
 
             TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(enemy, enemyGo);});
+            
+            if (Cheats.IsCheatEnabled(Cheats.LogEIDInfo))
+            {
+                enemyGo.transform.parent.gameObject.DebugPrintChildren();
+            }
         }
     }
 

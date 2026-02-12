@@ -458,7 +458,7 @@ namespace UKAIW
 
                 bool hasHeatResistanceThatsNotUs = false;
 
-                if (OurHeatResistance != null && LastEnabledHeatRes != null && LastEnabledHeatRes != OurHeatResistance && (LastEnabledHeatRes?.isActiveAndEnabled).GetValueOrDefault(false))
+                if (OurHeatResistance != null && LastEnabledHeatRes != null && LastEnabledHeatRes != OurHeatResistance && (LastEnabledHeatRes.NullInvalid()?.isActiveAndEnabled).GetValueOrDefault(false))
                 {
                     pushDownFactor += 140.0f;
                     hasHeatResistanceThatsNotUs = true;
@@ -632,7 +632,7 @@ namespace UKAIW
                     }
                     HeatResRankDescensionTimer += Time.fixedDeltaTime * -2.0f;
                     
-                    if (hasHeatResistanceThatsNotUs && (LastEnabledHeatRes?.isActiveAndEnabled).GetValueOrDefault(false))
+                    if (hasHeatResistanceThatsNotUs && (LastEnabledHeatRes.NullInvalid()?.isActiveAndEnabled).GetValueOrDefault(false))
                     {
                         var otherHeatRes = LastEnabledHeatRes;
                         FieldPublisher<HeatResistance, float> otherHeatResistance = new FieldPublisher<HeatResistance, float>(otherHeatRes, "heatResistance");
