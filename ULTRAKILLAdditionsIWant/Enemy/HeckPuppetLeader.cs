@@ -60,7 +60,7 @@ namespace UKAIW
                 }
 
                 PuppetEad.Health = (Mathf.Min(options.MaxHeckPuppetHealth.Value, leader.Eid.Health * options.HeckPuppetHealthScalar.Value));
-                PuppetEad.EnemyRadiance.AddModifier(new Radiance.Modifier() 
+                var radianceMod = new Radiance.Modifier() 
                 {
                     HealthEnabled = options.HeckPuppetHealthBuffScalar.Value >= 0.0f,
                     HealthMod = options.HeckPuppetHealthBuffScalar.Value,
@@ -69,15 +69,17 @@ namespace UKAIW
                     SpeedEnabled = speedBuff >= 0.0f,
                     SpeedMod = options.HeckPuppetSpeedBuffScalar.Value,
                     Multiplier = true,
-                });
+                };
+
+                PuppetEad.EnemyRadiance.AddModifier(radianceMod);
                 
                 HeckPuppet = PuppetEad.gameObject.AddComponent<HeckPuppet>();
+                HeckPuppet.RadianceMod = radianceMod;
                 HeckPuppet.Leader = leader;
                 HeckPuppet.GameplayRank = leader.GameplayRank;
                 HeckPuppet.StyleRank = styleRank;
                 HeckPuppet.HeckPuppetID = NextHeckPuppetID;
                 PuppetEid.dontCountAsKills = true;
-                PuppetEid.puppet = true;
                 PuppetEid.timeSinceSpawned = 0.0f;
 
                 if (leader.Eid.enemyType == EnemyType.Virtue)
@@ -115,8 +117,9 @@ namespace UKAIW
                puppeted, in my experience it breaks. Make them radiant and set their speed to 0.5 (which usually slows enemies down), watch as they
                suddenly gain super speed. Set it to 0 and watch them fling outside of the map, simply put, the game doesn't seem to work well enough in my
                experimentation.
+               Sisyphus (Insurrectionists, not prime) excluded because they just seem.. broken for some reason. Needs more diagnosing OR this is just how it is
             */
-            if (Eid.enemyType == EnemyType.Idol || Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase) || Eid.enemyType == EnemyType.Wicked || Eid.enemyType == EnemyType.V2 || Eid.enemyType == EnemyType.V2Second)
+            if (Eid.enemyType == EnemyType.Sisyphus || Eid.enemyType == EnemyType.Idol || Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase) || Eid.enemyType == EnemyType.Wicked || Eid.enemyType == EnemyType.V2 || Eid.enemyType == EnemyType.V2Second)
             {
                 _ExcludedFromHeckPuppetCheat = true;
             }
@@ -196,7 +199,7 @@ namespace UKAIW
                             puppet.DeathTimestamp.UpdateToNow();
                         }
                     }
-
+                    
                     puppets.RemoveRange(intendedNumPuppets, puppets.Count - intendedNumPuppets);
                 }
                 else if (puppets.Count < intendedNumPuppets)
@@ -215,7 +218,7 @@ namespace UKAIW
                     {
                         continue;
                     }
-
+                    
                     if (puppet.DeathTimestamp.TimeSince < 7.0)
                     {
                         continue;
@@ -234,6 +237,22 @@ namespace UKAIW
             ManagedHeckPuppet mHeckPuppet = puppets.Find((a) => heckPuppetID == a.HeckPuppetID ? true : false );
             mHeckPuppet?.DeathTimestamp.UpdateToNow();
             mHeckPuppet?.Nullify();
+        }
+
+        protected void OnDestroy()
+        {
+            foreach (var styleRankPuppets in Puppets.Values)
+            {
+                foreach (var puppet in styleRankPuppets)
+                {
+                    if (puppet?.HeckPuppet == null)
+                    {
+                        continue;
+                    }
+
+                    puppet.HeckPuppet.InstaDestroy();
+                }
+            }
         }
     }
 }

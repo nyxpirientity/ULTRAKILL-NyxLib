@@ -8,10 +8,12 @@ namespace UKAIW
 {
     public class HeckPuppet : MonoBehaviour
     {
+        public GameObject LeaderGo = null;
         public HeckPuppetLeader Leader = null;
         public EnemyIdentifier Eid { get; private set; } = null;
         public bool GivePoints { get; private set; } = true;
         public ulong HeckPuppetID = 0;
+        public Radiance.Modifier RadianceMod = null;
 
         public EnemyGameplayRank GameplayRank;
         public StyleRanks StyleRank;
@@ -26,9 +28,24 @@ namespace UKAIW
 
             Eid = GetComponent<EnemyIdentifier>();
             Eid.dontCountAsKills = true;
-            Eid.puppet = true;
+            Eid.PuppetSpawn();
             GivePoints = true;
             EidPuppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
+            Eid.onDeath.RemoveAllListeners();
+            
+            if (Eid.drone != null)
+            {
+                FieldPublisher<Drone, bool> exploded = new FieldPublisher<Drone, bool>(Eid.drone, "exploded");
+                exploded.Value = true;
+            }
+            
+            var sisypheanInsurrectionist = Eid.GetComponent<Sisyphus>();
+            if (sisypheanInsurrectionist != null)
+            {
+                RadianceMod.SpeedEnabled = false; // disable speed for Sisyphean Insurrectionists because their ring persists for ages, for some reason. Looks like a bug when it happens even though it isn't, and isn't fun at all.
+            }
+            
+            LeaderGo = Leader.gameObject;
         }
 
         protected void Update()
@@ -54,14 +71,17 @@ namespace UKAIW
         {
             if (Leader == null)
             {
-                InstaKill();
-                GivePoints = false;
+                InstaDestroy();
+            }
+
+            if (LeaderGo == null)
+            {
+                InstaDestroy();
             }
 
             if (!Leader.isActiveAndEnabled)
             {
-                GivePoints = false;
-                Destroy(GetComponent<EnemyAdditions>().RootGameObject);
+                InstaDestroy();
             }
 
             if (Leader.Eid.Dead)
@@ -137,6 +157,19 @@ namespace UKAIW
                 TryGivePoints();
                 PrevDead = true;
             }
+        }
+
+        bool InstaDestroyed = false;
+        internal void InstaDestroy()
+        {
+            if (InstaDestroyed)
+            {
+                return;
+            }
+            
+            InstaDestroyed = true;
+            GivePoints = false;
+            Destroy(GetComponent<EnemyAdditions>().RootGameObject);
         }
     }
 }
