@@ -35,6 +35,7 @@ public static class Cheats
     public const string SaltyEnemies = "ukaiw.salty-enemies";
     public const string DemandingHell = "ukaiw.demanding-hell";
     public const string SelfConscience = "ukaiw.self-conscious-v1";
+    public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
     public const string HeckPuppets = "ukaiw.heck-puppets";
     public const string BadGyro = "ukaiw.bad-gyro";
     public const string StrongerInNumbers = "ukaiw.stronger-in-numbers";
@@ -130,6 +131,17 @@ public static class Cheats
             onEnable: (cheat, manager) =>
             {
                 
+            }
+        ), "CYBERGRIND");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Cybergrind Cheat Randomization", 
+            Cheats.CybergrindCheatRandomization,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
             }
         ), "CYBERGRIND");
 

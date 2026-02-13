@@ -24,7 +24,7 @@ namespace UKAIW
             Needed, AwaitingLoad, WaitingToReturn, Returning, Done
         }
 
-        public int NumFixedUpdatesThisScene {get; private set; } = 0;
+        public int NumFixedUpdatesThisScene { get; private set; } = 0;
 
         public override void OnInitializeMelon()
         {

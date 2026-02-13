@@ -158,6 +158,10 @@ public static class Options
 
     public static Dictionary<StyleRanks, HeckPuppetStyleEntry> HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>();
 
+    static MelonPreferences_Category CybergrindCheatRandomization = null;
+    public static MelonPreferences_Entry<int> NumRandomCheats = null;
+
+
     static public float HydraHealthDecayScale { get => HydraHealthDecayScaleEntry.Value; } 
 
     static public float HydraDefaultWaitTime { get => HydraDefaultWaitTimeEntry.Value; }
@@ -350,6 +354,9 @@ public static class Options
         BloodOptimizer = MelonPreferences.CreateCategory("UKAIW-BloodOptimizer");
         BloodOptimizerCapNumUpdatesPerTick = BloodOptimizer.CreateEntry<int>("BloodOptimizerCapNumUpdatesPerTick", 90);
         BloodHeavyModdedEnemiesCapNumBloodPerTick = BloodOptimizer.CreateEntry<int>("BloodHeavyModdedEnemiesCapNumBloodPerTick", 2);
+
+        CybergrindCheatRandomization = MelonPreferences.CreateCategory("UKAIW-CybergrindCheatRandomization");
+        NumRandomCheats = CybergrindCheatRandomization.CreateEntry<int>("NumRandomCheats", 3);
 
         HeckPuppetsCategory = MelonPreferences.CreateCategory("UKAIW-HeckPuppets");
         HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>()

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using UKAIW;
@@ -25,6 +26,66 @@ public static class CybergrindAdditions
             {
                 return;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(EndlessGrid), "NextWave", null)]
+    static class EndlessGridNextWavePatch
+    {
+        public static void Prefix(EndlessGrid __instance)
+        {
+            if (Cheats.IsCheatDisabled(Cheats.CybergrindCheatRandomization))
+            {
+                return;
+            }
+
+            string[] cheats =
+            {
+                Cheats.BloodFueledEnemies,
+                Cheats.DemandingHell,
+                Cheats.HeckPuppets,
+                Cheats.SaltyEnemies,
+                Cheats.HydraMode,
+                Cheats.GiveEnemiesFriends,
+                Cheats.RadiantAllEnemies,
+                Cheats.SelfConscience,
+                Cheats.MundaneMurder,
+                Cheats.SandAllEnemiesID,
+                Cheats.BossBarAllEnemiesID,
+            };
+
+            int numRandomCheats = Options.NumRandomCheats.Value;
+            numRandomCheats = Math.Min(cheats.Length, numRandomCheats);
+
+            for (int i = 0; i < cheats.Length; i++)
+            {
+                CheatsManager.Instance.DisableCheat(cheats[i]);
+            }
+
+            for (int i = 0,j = 0; i < numRandomCheats; i++,j++)
+            {
+                int cheatIdx = UnityEngine.Random.Range(0, cheats.Length);
+                FieldPublisher<CheatsManager, Dictionary<string, ICheat>> idToCheat = new FieldPublisher<CheatsManager, Dictionary<string, ICheat>>(CheatsManager.Instance, "idToCheat");
+                var cheat = idToCheat.Value[cheats[cheatIdx]];
+                
+                if (cheat.IsActive && j < 20)
+                {
+                    i--;
+                    continue;
+                }
+                else if (cheat.IsActive)
+                {
+                    continue;
+                }
+
+                cheat.Enable(CheatsManager.Instance);
+            }
+
+            CheatsManager.Instance.RefreshCheatStates();
+        }
+
+        public static void Postfix(EndlessGrid __instance)
+        {
         }
     }
 

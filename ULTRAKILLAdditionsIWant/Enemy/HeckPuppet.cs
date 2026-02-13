@@ -77,16 +77,19 @@ namespace UKAIW
             if (Leader == null)
             {
                 InstaDestroy();
+                return;
             }
 
             if (LeaderGo == null)
             {
                 InstaDestroy();
+                return;
             }
 
             if (!Leader.isActiveAndEnabled)
             {
                 InstaDestroy();
+                return;
             }
 
             if (Leader.Eid.Dead)
@@ -177,6 +180,11 @@ namespace UKAIW
             
             InstaDestroyed = true;
             GivePoints = false;
+            
+            Assert.IsNotNull(gameObject);
+            Assert.IsNotNull(GetComponent<EnemyAdditions>());
+            Assert.IsNotNull(GetComponent<EnemyAdditions>().RootGameObject);
+
             Destroy(GetComponent<EnemyAdditions>().RootGameObject);
         }
     }
