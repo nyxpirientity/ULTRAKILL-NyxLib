@@ -104,51 +104,7 @@ namespace UKAIW
         /* GetHurt would be more consistent but JUST incase they add GetHurt, I'll go with what I usually call it.*/
         public static void ApplyDamage(this EnemyIdentifier eid, Vector3 force, Vector3 hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool fromExplosion)
         {
-            if (eid.zombie != null)
-            {
-                eid.zombie.GetHurt(eid.gameObject, force, multiplier, critMultiplier, sourceWeapon, fromExplosion);
-                
-                if (eid.zombie.health <= 0)
-                {
-                    eid.Death(); // WHAT you have to check and then call this MANUALLY I THINK?!?!??!?!?
-                }
-            }
-            else if (eid.drone != null)
-            {
-                eid.drone.GetHurt(force, multiplier, sourceWeapon, fromExplosion);
-                
-                if (eid.drone.health <= 0)
-                {
-                    eid.Death();
-                }
-            }
-            else if (eid.machine != null)
-            {
-                eid.machine.GetHurt(eid.gameObject, force, multiplier, critMultiplier, sourceWeapon, fromExplosion);
-                
-                if (eid.machine.health <= 0)
-                {
-                    eid.Death();
-                }
-            }
-            else if (eid.statue != null)
-            {
-                eid.statue.GetHurt(eid.gameObject, force, multiplier, critMultiplier, hitPoint, sourceWeapon, fromExplosion);
-                
-                if (eid.statue.health <= 0)
-                {
-                    eid.Death();
-                }
-            }
-            else if (eid.spider != null)
-            {
-                eid.spider.GetHurt(eid.gameObject, force, hitPoint, multiplier, sourceWeapon);
-                
-                if (eid.spider.health <= 0)
-                {
-                    eid.Death();
-                }
-            }
+            eid.DeliverDamage(eid.gameObject, force, hitPoint, multiplier, false, critMultiplier, sourceWeapon, false, fromExplosion);
         }
 
         public static EnemyGameplayRank GetEnemyGameplayRank(EnemyIdentifier eid)
