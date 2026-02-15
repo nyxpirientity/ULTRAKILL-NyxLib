@@ -1,0 +1,131 @@
+using System;
+using System.Collections.Generic;
+using MelonLoader;
+using Nyxpiri;
+using TMPro;
+using UnityEngine;
+
+namespace UKAIW
+{
+    public class QuickMsg : MonoBehaviour
+    {
+        public Vector3 Velocity = Vector3.zero;
+        public float Duration = 0.0f;
+        public GlobalTimeStamp EnableTimestamp;
+
+        public RectTransform RectTransform { get; private set; }
+
+        public TextMeshProUGUI TextMesh = null;
+
+        protected void Update()
+        {
+            Velocity = NyxMath.EaseInterpTo(Velocity, Vector3.zero, 3.0f, Time.deltaTime);
+            RectTransform.anchoredPosition3D += Velocity * Time.deltaTime;
+        }
+
+        protected void OnEnable()
+        {
+            EnableTimestamp.UpdateToNow();
+            RectTransform = GetComponent<RectTransform>();
+            TextMesh = GetComponent<TextMeshProUGUI>();
+        }
+        
+        protected void OnDisable()
+        {
+            
+        }
+    }
+
+    public static class QuickMsgPool
+    {
+        public static void Initialize()
+        {
+            ScenesEvents.OnSceneWasUnloaded += OnSceneUnloaded;
+            ScenesEvents.OnSceneWasLoaded += OnSceneLoaded;
+            UpdateEvents.OnUpdate += OnUpdate;
+
+            Pool = new ObjPool<GameObject>(() => 
+            { 
+                var go = GameObject.Instantiate(Assets.LabelPrefab, CanvasController.Instance.gameObject.transform);
+                go.AddComponent<QuickMsg>();
+                var textMesh = go.GetComponent<TextMeshProUGUI>();
+                var rectTransform = go.GetComponent<RectTransform>();
+                textMesh.text = "UKAIW QuickMsg default";
+                textMesh.color = Color.white;
+                textMesh.fontSize = 24.0f;
+                textMesh.horizontalAlignment = HorizontalAlignmentOptions.Center;
+                
+                rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                rectTransform.anchorMin = new Vector2(0.5f, 1.0f);
+                rectTransform.anchorMax = new Vector2(0.5f, 1.0f);
+
+                return go;
+            }, 
+            (go) => 
+            { 
+                GameObject.Destroy(go); 
+            });
+            
+            Pool.PrepareObject = (go) =>
+            {
+            };
+
+            Pool.UnprepareObject += (go) =>
+            {
+                go.SetActive(false);
+            };
+        }
+
+        private static ObjPool<GameObject> Pool = null;
+        private static List<(PoolObject<GameObject>, QuickMsg)> ActiveQuickMsgs = new List<(PoolObject<GameObject>, QuickMsg)>(32);
+
+        private static void OnUpdate()
+        {
+            for (int i = 0; i < ActiveQuickMsgs.Count; i++)
+            {
+                (PoolObject<GameObject>, QuickMsg) pair = ActiveQuickMsgs[i];
+                var poolObj = pair.Item1;
+                var quickMsg = pair.Item2;
+
+                if (quickMsg.EnableTimestamp.TimeSince > quickMsg.Duration)
+                {
+                    ActiveQuickMsgs.RemoveAt(i);
+                    i -= 1;
+                    poolObj.Dispose();
+                    continue;
+                }
+
+                quickMsg.TextMesh.alpha = NyxMath.InverseNormalizeToRange((float)(quickMsg.EnableTimestamp.TimeSince), 0.0f, quickMsg.Duration);
+            }
+        }
+
+        private static void OnSceneUnloaded(int arg1, string arg2)
+        {
+            Pool?.Clear();
+            ActiveQuickMsgs?.Clear();
+        }
+
+        private static void OnSceneLoaded(int arg1, string arg2)
+        {
+            if (Assets.LabelPrefab != null && CanvasController.Instance?.gameObject != null)
+            {
+                Pool.EnsureSize(32);
+            }
+        }
+        
+        public static void DisplayQuickMsg(string text, Color color, float duration, Vector3 velocity)
+        {
+            var poolObj = Pool.Take();
+            var go = poolObj.Value;
+            go.SetActive(true);
+            go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0.0f, 0.0f);
+            var textMesh = go.GetComponent<TextMeshProUGUI>();
+            textMesh.text = text;
+            textMesh.color = color;
+            var quickMsg = go.GetComponent<QuickMsg>();
+            quickMsg.Duration = duration;
+            quickMsg.Velocity = velocity;
+            ActiveQuickMsgs.Add((poolObj, quickMsg));
+        }
+    }
+}

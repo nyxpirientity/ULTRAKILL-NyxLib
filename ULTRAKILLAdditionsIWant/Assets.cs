@@ -3,6 +3,7 @@ using System.IO;
 using HarmonyLib;
 using MelonLoader;
 using MelonLoader.Utils;
+using TMPro;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
@@ -17,8 +18,9 @@ namespace UKAIW
         public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
 
         public static GameObject HeatResistancePrefab { get; private set; } = null;
+        public static GameObject LabelPrefab { get; private set; } = null;
         public static GameObject ExplosionPrefab { get; private set; } = null;
-
+    
         public static void Load()
         {
             Log.TraceExpectedInfo($"Assets.Load called!");
@@ -43,6 +45,24 @@ namespace UKAIW
                     HeatResistancePrefab = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
                     HeatResistancePrefab.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefab);
+                    TextMeshProUGUI textMesh = null;
+                    var textMeshProGuis = HeatResistancePrefab.gameObject.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
+                    
+                    foreach (var elem in textMeshProGuis)
+                    {
+                        if (elem.text.Contains("COMPROMISED"))
+                        {
+                            textMesh = elem;
+                            break;
+                        }
+                    }
+                    
+                    Assert.IsNotNull(textMesh);
+
+                    LabelPrefab = UnityEngine.Object.Instantiate(textMesh.gameObject);
+                    LabelPrefab.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(LabelPrefab);
+                    LabelPrefab.GetComponent<TextMeshProUGUI>().text = "UKAIW-Label!";
                 }
                 else
                 {
@@ -128,6 +148,28 @@ namespace UKAIW
 
             public static void Postfix(ExplosionController __instance)
             {
+                Explosion instanceExplosion = __instance.GetComponentInChildren<Explosion>();
+
+                if (instanceExplosion == null)
+                {
+                    return;
+                }
+
+                if (instanceExplosion.electric)
+                {
+                    return;
+                }
+
+                if (instanceExplosion.isFup)
+                {
+                    return;
+                }
+
+                if (instanceExplosion.harmless)
+                {
+                    return;
+                }
+
                 if (ExplosionPrefab == null)
                 {
                     Log.TraceExpectedInfo($"Yoinking (instantiating/cloning) explosion prefab {__instance.gameObject.name} thats about to start, as we needed an ExplosionPrefab!");

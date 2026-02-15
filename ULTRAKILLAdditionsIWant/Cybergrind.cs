@@ -26,6 +26,9 @@ public static class CybergrindAdditions
             {
                 return;
             }
+
+            CybergrindActive = true;
+            CybergrindShuffleTimestamp.UpdateToNow();
         }
     }
 
@@ -39,19 +42,19 @@ public static class CybergrindAdditions
                 return;
             }
 
-            string[] cheats =
+            ValueTuple<int, string>[] cheats =
             {
-                Cheats.BloodFueledEnemies,
-                Cheats.DemandingHell,
-                Cheats.HeckPuppets,
-                Cheats.SaltyEnemies,
-                Cheats.HydraMode,
-                Cheats.GiveEnemiesFriends,
-                Cheats.RadiantAllEnemies,
-                Cheats.SelfConscience,
-                Cheats.MundaneMurder,
-                Cheats.SandAllEnemiesID,
-                Cheats.BossBarAllEnemiesID,
+                (1, Cheats.BloodFueledEnemies),
+                (1, Cheats.DemandingHell),
+                (1, Cheats.HeckPuppets),
+                (1, Cheats.SaltyEnemies),
+                (1, Cheats.HydraMode),
+                (1, Cheats.GiveEnemiesFriends),
+                (1, Cheats.RadiantAllEnemies),
+                (1, Cheats.SelfConscience),
+                (1, Cheats.MundaneMurder),
+                (1, Cheats.SandAllEnemiesID),
+                (1, Cheats.BadGyro),
             };
 
             int numRandomCheats = Options.NumRandomCheats.Value;
@@ -59,14 +62,15 @@ public static class CybergrindAdditions
 
             for (int i = 0; i < cheats.Length; i++)
             {
-                CheatsManager.Instance.DisableCheat(cheats[i]);
+                CheatsManager.Instance.DisableCheat(cheats[i].Item2);
             }
+            
+            FieldPublisher<CheatsManager, Dictionary<string, ICheat>> idToCheat = new FieldPublisher<CheatsManager, Dictionary<string, ICheat>>(CheatsManager.Instance, "idToCheat");
 
             for (int i = 0,j = 0; i < numRandomCheats; i++,j++)
             {
                 int cheatIdx = UnityEngine.Random.Range(0, cheats.Length);
-                FieldPublisher<CheatsManager, Dictionary<string, ICheat>> idToCheat = new FieldPublisher<CheatsManager, Dictionary<string, ICheat>>(CheatsManager.Instance, "idToCheat");
-                var cheat = idToCheat.Value[cheats[cheatIdx]];
+                var cheat = idToCheat.Value[cheats[cheatIdx].Item2];
                 
                 if (cheat.IsActive && j < 20)
                 {
@@ -78,6 +82,7 @@ public static class CybergrindAdditions
                     continue;
                 }
 
+                QuickMsgPool.DisplayQuickMsg($"+ {cheat.LongName.ToUpper()}", new Color(0.875f, 0.75f, 1.0f), 5.0f, velocity: Vector3.down * ((float)((i) * 120.0f) + 200.0f));
                 cheat.Enable(CheatsManager.Instance);
             }
 
@@ -93,8 +98,42 @@ public static class CybergrindAdditions
     {
         Player.PreDeath += PrePlayerDeath;
         Player.PostHurt += PostPlayerHurt;
+        UpdateEvents.OnFixedUpdate += OnFixedUpdate;
+        ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
     }
 
+    private static void OnSceneWasLoaded(int arg1, string arg2)
+    {
+        CybergrindActive = false;
+    }
+
+    private static FixedTimeStamp CybergrindShuffleTimestamp;
+    private static void OnFixedUpdate()
+    {
+        var endlessGrid = EndlessGrid.Instance;
+        if (CybergrindShuffleTimestamp.TimeSince > 6.0f && CybergrindActive && Cheats.IsCheatEnabled(Cheats.CybergrindShuffle))
+        {
+            PropertyPublisher<EndlessGrid, ArenaPattern[]> currentPatternPool = new PropertyPublisher<EndlessGrid, ArenaPattern[]>(endlessGrid, "CurrentPatternPool");
+            FieldPublisher<EndlessGrid, int> currentPatternNum = new FieldPublisher<EndlessGrid, int>(endlessGrid, "currentPatternNum");
+            MethodInfo loadPatternMI = typeof(EndlessGrid).GetMethod("LoadPattern", BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo shuffleDecksMI = typeof(EndlessGrid).GetMethod("ShuffleDecks", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (currentPatternPool.Value.Length > currentPatternNum.Value)
+            {
+                loadPatternMI.Invoke(endlessGrid, new object[] {currentPatternPool.Value[currentPatternNum.Value]});
+            }
+            else
+            {
+                shuffleDecksMI.Invoke(endlessGrid, null);
+                loadPatternMI.Invoke(endlessGrid, new object[] {currentPatternPool.Value[currentPatternNum.Value]});
+            }
+
+            currentPatternNum.Value += 1;
+            CybergrindShuffleTimestamp.UpdateToNow();
+        }
+    }
+
+    public static bool CybergrindActive { get; private set; } = false;
     public static bool IsInCybergrind { get => EndlessGrid.Instance != null; }
 
     private static bool InvincibilityEnabledByUs = false;
@@ -117,25 +156,29 @@ public static class CybergrindAdditions
                 InvincibilityEnabledByUs = true;
             }
 
-            var endlessGrid = MonoSingleton<EndlessGrid>.Instance;
-            endlessGrid.enemyAmount = 0;
-            FieldInfo maxPointsFieldInfo = endlessGrid.GetType().GetField("maxPoints", BindingFlags.NonPublic | BindingFlags.Instance);
-
             if (damage >= 99)
             {
                 newMovement.gameObject.transform.position = new Vector3(0.0f, 100.0f, 64.0f);            
             }
 
-            var endlessGridMaxPoints = (int)maxPointsFieldInfo.GetValue(endlessGrid);
-            endlessGrid.currentWave = Math.Max(endlessGrid.startWave - 1, 0);
-            endlessGridMaxPoints = 10;
-            for (int i = 1; i <= endlessGrid.currentWave; i++)
-            {
-                endlessGridMaxPoints += 3 + i / 3;
-            }
+            var endlessGrid = MonoSingleton<EndlessGrid>.Instance;
 
-            maxPointsFieldInfo.SetValue(endlessGrid, endlessGridMaxPoints);
-            endlessGrid.currentWave = EndlessGrid.Instance.startWave - 1;
+            if (endlessGrid.enemyAmount > 0)
+            {
+                endlessGrid.enemyAmount = 0;
+                FieldInfo maxPointsFieldInfo = endlessGrid.GetType().GetField("maxPoints", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                var endlessGridMaxPoints = (int)maxPointsFieldInfo.GetValue(endlessGrid);
+                endlessGrid.currentWave = Math.Max(endlessGrid.startWave - 1, 0);
+                endlessGridMaxPoints = 10;
+                for (int i = 1; i <= endlessGrid.currentWave; i++)
+                {
+                    endlessGridMaxPoints += 3 + i / 3;
+                }
+
+                maxPointsFieldInfo.SetValue(endlessGrid, endlessGridMaxPoints);
+                endlessGrid.currentWave = EndlessGrid.Instance.startWave - 1;
+            }
         }
     }
 

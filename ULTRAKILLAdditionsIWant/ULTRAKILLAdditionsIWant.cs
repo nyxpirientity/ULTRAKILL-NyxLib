@@ -43,6 +43,7 @@ namespace UKAIW
             CybergrindAdditions.Initialize();
             MundaneMurder.Initialize();
             BloodOptimizer.Initialize();
+            QuickMsgPool.Initialize();
         }
 
 

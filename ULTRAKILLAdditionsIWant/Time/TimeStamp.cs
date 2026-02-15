@@ -14,6 +14,18 @@ namespace UKAIW
         }
     }
 
+    /* represents a timestamp in fixedupdate time */
+    public struct FixedTimeStamp
+    {
+        public double? TimeStamp { get; set; }
+        public readonly double TimeSince { get => Time.fixedTime - TimeStamp.GetValueOrDefault(0.0); }
+
+        public void UpdateToNow()
+        {
+            TimeStamp = Time.fixedTime;
+        }
+    }
+
     public struct GlobalTimeStamp
     {
         public double? TimeStamp { get; set; }

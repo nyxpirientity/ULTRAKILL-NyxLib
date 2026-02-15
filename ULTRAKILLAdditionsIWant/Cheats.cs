@@ -38,6 +38,7 @@ public static class Cheats
     public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
     public const string HeckPuppets = "ukaiw.heck-puppets";
     public const string BadGyro = "ukaiw.bad-gyro";
+    public const string CybergrindShuffle = "ukaiw.cybergrind-shuffle";
     public const string StrongerInNumbers = "ukaiw.stronger-in-numbers";
     public const string Tymitosis = "ukaiw.tymitosis";
     public const string SoleNemesis = "ukaiw.sole-nemesis";
@@ -135,7 +136,7 @@ public static class Cheats
         ), "CYBERGRIND");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Cybergrind Cheat Randomization", 
+            "Cybergrind Challenger", 
             Cheats.CybergrindCheatRandomization,
             onDisable: (cheat) =>
             {
@@ -144,6 +145,17 @@ public static class Cheats
             {
             }
         ), "CYBERGRIND");
+
+        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Cybergrind Shuffle", 
+            Cheats.CybergrindShuffle,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+            }
+        ), "CYBERGRIND");*/
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Blood Fueled Enemies", 
