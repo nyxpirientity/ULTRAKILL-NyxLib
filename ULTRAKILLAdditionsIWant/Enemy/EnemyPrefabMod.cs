@@ -49,22 +49,21 @@ public class EnemyPrefabMod : MonoBehaviour
 
         if (Prefab != null && !force)
         {
-            //Log.ExpectedInfo($"EnemyPrefabMod found that {Mono.name} already had a prefab, no need to make a new one");
+            Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} already had a prefab, and force is false, no need to make a new one");
             return;
         }
-
-        //Log.ExpectedInfo($"EnemyPrefabMod found that {Mono.name} did not have a prefab, need to make a new one");
-
-        var eid = GetComponent<EnemyIdentifier>();
-
-        if (eid == null)
+        else if (Prefab != null && force)
         {
-            return;
+            Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} already had a prefab, but force is true, need to make a new one");
+        }
+        else if (Prefab == null)
+        {
+            Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} did not have a prefab, need to make a new one");            
         }
 
         GameObject templateGo;
         
-        if (eid.enemyType == EnemyType.MaliciousFace)
+        if (Eid.enemyType == EnemyType.MaliciousFace)
         {
             templateGo = transform.parent.gameObject;
         }
@@ -75,12 +74,7 @@ public class EnemyPrefabMod : MonoBehaviour
         }
         
         IsStoringPrefab = true;
-        bool wasActive = false;
-        if (templateGo.activeSelf)
-        {
-            wasActive = true;
-            //templateGo.SetActive(false);
-        }
+
         Prefab = UnityEngine.Object.Instantiate(templateGo);
         _PrefabParent = templateGo.NullInvalid()?.transform?.parent?.gameObject;
         Prefab.SetActive(false);
@@ -91,7 +85,6 @@ public class EnemyPrefabMod : MonoBehaviour
         prefabEid.activateOnDeath = new GameObject[0];
         prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
         prefabEid.stuckMagnets = new System.Collections.Generic.List<Magnet>();
-        //prefabEid.onDeath = null;
 
         if (prefabEid.machine != null)
         {
@@ -112,8 +105,14 @@ public class EnemyPrefabMod : MonoBehaviour
         {
             prefabEid.drone.musicRequested = false;
         }
+        
+        if (prefabEid.spider != null)
+        {
+            FieldPublisher<SpiderBody, bool> requestedMusic = new FieldPublisher<SpiderBody, bool>(prefabEid.spider, "requestedMusic");
+            requestedMusic.Value = false;
+        }
 
-        if (eid.enemyType != EnemyType.MaliciousFace)
+        if (Eid.enemyType != EnemyType.MaliciousFace)
         {
             Assert.IsNotNull(Prefab.GetComponent<EnemyHydraMod>());
             Assert.IsNotNull(Prefab.GetComponent<EnemyPrefabMod>());
@@ -136,9 +135,5 @@ public class EnemyPrefabMod : MonoBehaviour
         }
 
         IsStoringPrefab = false;
-        if (wasActive)
-        {
-            //templateGo.SetActive(true);
-        }
     }
 }

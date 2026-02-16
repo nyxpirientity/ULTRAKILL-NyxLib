@@ -45,7 +45,7 @@ namespace UKAIW
         {
             Log.ExpectedInfo($"Level Additions for P-2 OnSceneLoad called!");
             EnemyEvents.PostStart += OnEnemySpawned;
-            EnemyEvents.DuringDeath += OnEnemyDie;
+            EnemyEvents.Death += OnEnemyDie;
             EnemyEvents.PreDestroy += OnEnemyDestroy;
             UpdateEvents.OnUpdate += Update;
         }
@@ -79,7 +79,7 @@ namespace UKAIW
         internal override void OnSceneUnload()
         {
             EnemyEvents.PostStart -= OnEnemySpawned;
-            EnemyEvents.DuringDeath -= OnEnemyDie;
+            EnemyEvents.Death -= OnEnemyDie;
             EnemyEvents.PreDestroy -= OnEnemyDestroy;
             UpdateEvents.OnUpdate -= Update;
 

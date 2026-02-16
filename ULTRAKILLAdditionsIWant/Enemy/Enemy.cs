@@ -138,9 +138,6 @@ namespace UKAIW
                 EnemyType.Schism => EnemyGameplayRank.Normal,
                 EnemyType.Sisyphus => EnemyGameplayRank.Miniboss,
                 EnemyType.SisyphusPrime => EnemyGameplayRank.Ultraboss,
-                /*
-                * the second layer also just is bad. So like, whatever it takes to make it last less time.
-                */
                 EnemyType.Soldier => EnemyGameplayRank.Normal,
                 EnemyType.Stalker => EnemyGameplayRank.Normal,
                 EnemyType.Stray => EnemyGameplayRank.Normal,
@@ -214,27 +211,6 @@ namespace UKAIW
                 return bounds;
             }
         }
-    }
-
-    public static class EnemyEvents
-    {
-        public static Action<EnemyIdentifier, GameObject> PreStart = null;
-        public static Action<EnemyIdentifier, GameObject> PostStart = null;
-        public static Action<EnemyIdentifier, GameObject> PreDisabled = null;
-        public static Action<EnemyIdentifier, GameObject> PreDestroy = null;
-
-        // params: eid, enemyGo, target, force, multiplier, critMultiplier, sourceWeapon, fromExplosion, hitPoint
-        public static Action<EnemyIdentifier, GameObject, GameObject, Vector3, float, float, GameObject, bool, Vector3?> PreHurt = null;
-        // params: eid, enemyGo, target, force, multiplier, critMultiplier, sourceWeapon, fromExplosion, hitPoint
-        public static Action<EnemyIdentifier, GameObject, GameObject, Vector3, float, float, GameObject, bool, Vector3?> PostHurt = null;
-        
-        // pre death that doesn't include instakill
-        public static Action<EnemyIdentifier> PreNoIKDeath = null;
-        // post death that doesn't include instakill
-        public static Action<EnemyIdentifier> PostNoIKDeath = null;
-
-        public static Action<EnemyIdentifier, bool> PreDeath = null;
-        public static Action<EnemyIdentifier> DuringDeath = null;
     }
 
     [HarmonyPatch(typeof(EnemyIdentifier), "Awake")]

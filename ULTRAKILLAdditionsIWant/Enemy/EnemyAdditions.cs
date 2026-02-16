@@ -47,7 +47,8 @@ public class EnemyAdditions : MonoBehaviour
     }
 
     public GameObject RootGameObject { get => Eid.enemyType == EnemyType.MaliciousFace ? transform.parent.gameObject : gameObject; }
-    public bool PreDeathCalled { get; internal set; } = false;
+
+    public bool InstaKilled { get; private set; } = false;
 
     [NonSerialized] public bool QueuedForDestruction = false;
     
@@ -88,7 +89,7 @@ public class EnemyAdditions : MonoBehaviour
         if (QueuedForDestruction)
         {
             Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' was queued for destruction, so its time has come.");
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 
@@ -139,5 +140,42 @@ public class EnemyAdditions : MonoBehaviour
     public void MarkAsUniquelySolo()
     {
         UniquelySolo = true;
+    }
+    
+    private bool PreDeathCalled = false;
+    internal void TryCallPreDeath(bool instakill)
+    {
+        if (PreDeathCalled)
+        {
+            return;
+        }
+
+        PreDeathCalled = true;
+        InstaKilled = instakill;
+        EnemyEvents.PreDeath?.Invoke(Eid, InstaKilled);
+    }
+
+    private bool PostDeathCalled = false;
+    internal void TryCallPostDeath()
+    {
+        if (PostDeathCalled)
+        {
+            return;
+        }
+
+        PostDeathCalled = true;
+        EnemyEvents.PostDeath?.Invoke(Eid, InstaKilled);
+    }
+    
+    private bool DeathCalled = false;
+    internal void TryCallDeath()
+    {
+        if (DeathCalled)
+        {
+            return;
+        }
+
+        DeathCalled = true;
+        EnemyEvents.Death?.Invoke(Eid);
     }
 }

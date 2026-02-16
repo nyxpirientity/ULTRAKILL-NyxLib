@@ -11,8 +11,8 @@ using UnityEngine.UI;
 
 namespace UKAIW
 {   
+    
     // TODO: changes made instakills with hydramod still let enemies split, this is not intended (at least, not currently intended..)
-
     [HarmonyPatch(typeof(SpiderBody), "Die", new Type[]{})]
     static class SpiderDiePatch
     {
@@ -89,15 +89,29 @@ namespace UKAIW
         public static void Prefix(EnemyIdentifier __instance)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            if (!(eadd?.PreDeathCalled).GetValueOrDefault(true))
-            {
-                EnemyEvents.PreDeath?.Invoke(__instance, true);
-                eadd.PreDeathCalled = true;
-            }
+            eadd.NullInvalid()?.TryCallPreDeath(true);
         }
         
         public static void Postfix(EnemyIdentifier __instance)
         {
+            var eadd = __instance.GetComponent<EnemyAdditions>();
+            eadd.NullInvalid()?.TryCallPostDeath();
+        }
+    }
+
+    [HarmonyPatch(typeof(EnemyIdentifier), "Explode")]
+    static class EnemyIdentifierExplodePatch
+    {
+        public static void Prefix(EnemyIdentifier __instance)
+        {
+            var eadd = __instance.GetComponent<EnemyAdditions>();
+            eadd.NullInvalid()?.TryCallPreDeath(true);
+        }
+        
+        public static void Postfix(EnemyIdentifier __instance)
+        {
+            var eadd = __instance.GetComponent<EnemyAdditions>();
+            eadd.NullInvalid()?.TryCallPostDeath();
         }
     }
 
@@ -110,63 +124,21 @@ namespace UKAIW
 
         public static void PreDeath(EnemyIdentifier eid, bool instakill)
         {
-            if (eid.dead)
-            {
-                CalledPreDeath = false;
-                return;
-            }
-
-            try
-            {
-                EnemyEvents.PreNoIKDeath?.Invoke(eid);
-                var eadd = eid.GetComponent<EnemyAdditions>();
-                if (!(eadd?.PreDeathCalled).GetValueOrDefault(true))
-                {
-                    EnemyEvents.PreDeath?.Invoke(eid, instakill);
-                    eadd.PreDeathCalled = true;
-                }
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"Enemy PreDeath error :c {e}");                
-            }
-            CalledPreDeath = true;
+            var eadd = eid.GetComponent<EnemyAdditions>();
+            eadd.NullInvalid()?.TryCallPreDeath(instakill);
         }
 
         public static void PostDeath(EnemyIdentifier eid)
         {
-            if (!CalledPreDeath)
-            {
-                return;
-            }
-            
-            try
-            {
-                EnemyEvents.PostNoIKDeath?.Invoke(eid);
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"Enemy PreDeath error :c {e}");                
-            }
+            var eadd = eid.GetComponent<EnemyAdditions>();
+            eadd.NullInvalid()?.TryCallPostDeath();
         }
 
         public static void Prefix(EnemyIdentifier __instance, bool fromExplosion)
         {
-            if (__instance.dead)
-            {
-                return;
-            }
-
-            ActivateOnDeath = __instance.activateOnDeath;
-
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            if (!(eadd?.PreDeathCalled).GetValueOrDefault(true))
-            {
-                EnemyEvents.PreDeath?.Invoke(__instance, false);
-                eadd.PreDeathCalled = true;
-            }
-
-            EnemyEvents.DuringDeath?.Invoke(__instance);
+            eadd.NullInvalid()?.TryCallPreDeath(false);
+            eadd.NullInvalid()?.TryCallDeath();
 
             if (Cheats.IsCheatEnabled(Cheats.NoCorpses))
             {
@@ -176,20 +148,8 @@ namespace UKAIW
 
         public static void Postfix(EnemyIdentifier __instance, bool fromExplosion)
         {
-            if (ActivateOnDeath.Length == 0)
-            {
-                return;
-            }
-
-            if (Cheats.IsCheatEnabled(Cheats.NoCorpses))
-            {
-                foreach (var go in ActivateOnDeath)
-                {
-                    UnityEngine.Object.Destroy(go);
-                }
-            }
-
-            ActivateOnDeath = new GameObject[0];
+            var eadd = __instance.GetComponent<EnemyAdditions>();
+            eadd.NullInvalid()?.TryCallPostDeath();
         }
     }
 }

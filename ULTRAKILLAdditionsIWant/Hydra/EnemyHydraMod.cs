@@ -164,11 +164,6 @@ namespace UKAIW
 
         protected void OnDestroy()
         {
-            if (Depth > 0)
-            {
-                //Player.PreDeath -= DestroySelf;
-            }
-            
             TryUnregisterWithShared();
         }
                 
@@ -203,9 +198,11 @@ namespace UKAIW
 
             if (ContributesToInstanceCount)
             {            
+                Log.TraceExpectedInfo($"{name}: unregistered with shared!");
+
                 if (!Eid.dead)
                 {
-                    PreDeath?.Invoke();
+                    PreDeath?.Invoke(); // ?????
                 }
 
                 Shared.UnregisterInstance(SharedIdx);
@@ -214,7 +211,7 @@ namespace UKAIW
 
                 if (Depth != 0)
                 {
-                    Destroy(gameObject);
+                    //Destroy(gameObject);
                 }
 
                 /*if (Shared.InstanceCount == 0)
@@ -336,7 +333,6 @@ namespace UKAIW
 
             if (Depth > 0)
             {
-                //Player.PreDeath += DestroySelf;
                 if (Eid.enemyType == EnemyType.MaliciousFace)
                 {
                     gameObject.transform.parent.gameObject.AddComponent<DestroyOnCheckpointRestart>();
@@ -390,22 +386,20 @@ namespace UKAIW
 
             if (!ContributesToInstanceCount)
             {
+                Log.TraceExpectedInfo($"{name}: registered with shared!");
                 SharedIdx = Shared.RegisterInstance(gameObject);
                 ContributesToInstanceCount = true;
             }
         }
         
-        private void DestroySelf(NewMovement movement, int damage)
-        {
-            Destroy(gameObject);
-        }
-
         public void NotifyOfDeath(bool instakill)
         {
             if (NotifiedOfDeathCalled)
             {
                 return;
             }
+
+            Log.TraceExpectedInfo($"{name}: EnemyHydraMod::NotifyOfDeath called with instakill as {instakill}");
 
             NotifiedOfDeathCalled = true;
 
@@ -436,11 +430,6 @@ namespace UKAIW
 
             Eid.dontCountAsKills = true;
             PreDeath?.Invoke();
-
-            if (Eid.enemyType != EnemyType.SisyphusPrime && Eid.enemyType != EnemyType.MinosPrime)
-            {
-                Eid.puppet = true;
-            }
             
             if (Depth == 0 && Shared.CountAsKill && !CybergrindAdditions.CybergrindActive)
             {
@@ -457,7 +446,7 @@ namespace UKAIW
 
             if (!HydraDuped && Shared.InstanceCount == 0)
             {
-                Eid.puppet = false;
+                Log.TraceExpectedInfo($"{name}: EnemyHydraMod::NotifyOfDeath called and we were hydrakilled, {Shared.InstanceCount} remaining instances, HydraDuped: {HydraDuped}");
                 HydraKilled = true;
 
                 if (Shared.CountAsKill)
@@ -474,6 +463,8 @@ namespace UKAIW
                 Hydra.Hitstop(-1.0);
                 Hydra.Hitstop(-1.0);
                 TimeDilation.ModDisableHitstop = false;
+
+                Log.TraceExpectedInfo($"{name}: About to try give points for hydra kill...");
                 switch (GameplayRank)
                 {
                     case EnemyGameplayRank.Normal:
@@ -486,14 +477,18 @@ namespace UKAIW
                         StyleHUD.Instance.AddPoints(Options.HydraBossKillBonus, "<color=#8a2af7>BIG HYDRA KILL</color>", null, Eid);
                         break;
                     case EnemyGameplayRank.Ultraboss:
-                        StyleHUD.Instance.AddPoints(Options.HydraUltraBossKillBonus, "<color=#ffdb00>?? ULTRA HYDRA KILL ??</color>", null, Eid);
                         StyleHUD.Instance.AddPoints(0, "<color=#ffdb00>?? HOW ??</color>", null, Eid);
+                        StyleHUD.Instance.AddPoints(Options.HydraUltraBossKillBonus, "<color=#ffdb00>?? ULTRA HYDRA KILL ??</color>", null, Eid);
                         break;
+                    default:
+                        throw new InvalidOperationException();
                 }
+                Log.TraceExpectedInfo($"{name}: Points should have been given for hydra kill");
             }
             else
             {
-                Eadd.QueuedForDestruction = true;
+                Eid.puppet = !instakill;
+                Log.TraceExpectedInfo($"{name}: EnemyHydraMod::NotifyOfDeath called and we were NOT hydrakilled, {Shared.InstanceCount} remaining instances, HydraDuped: {HydraDuped}");
             }
         }
 
@@ -519,6 +514,7 @@ namespace UKAIW
             Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod, $"For object by name {gameObject.name}");
             Assert.IsNotNull(GetComponent<EnemyAdditions>().PrefabMod.Prefab, $"For object by name {gameObject.name}");
             */
+            Log.TraceExpectedInfo($"{name}: Now HydraDuped by TryEnqueueDupe");
             HydraDuped = true;
             Hydra.QueuedDupeInfo dupeInfo = new Hydra.QueuedDupeInfo();
             

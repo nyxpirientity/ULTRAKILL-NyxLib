@@ -26,7 +26,7 @@ namespace UKAIW
 
         public static void Initialize()
         {
-            EnemyEvents.PreNoIKDeath += PreEnemyDeath;
+            EnemyEvents.PreDeath += PreEnemyDeath;
             EnemyEvents.PreDeath += (eid, instakill) =>
             {
                 var go = eid.gameObject;
@@ -36,8 +36,8 @@ namespace UKAIW
                 ehm.NotifyOfDeath(instakill);
             };
 
-            EnemyEvents.DuringDeath += DuringEnemyDeath;
-            EnemyEvents.PostNoIKDeath += PostEnemyDeath;
+            EnemyEvents.Death += DuringEnemyDeath;
+            EnemyEvents.PostDeath += PostEnemyDeath;
             UpdateEvents.OnLateUpdate += LateUpdate;
             UpdateEvents.OnFixedUpdate += FixedUpdate;
             ScenesEvents.OnSceneWasUnloaded += OnSceneUnload;
@@ -110,16 +110,16 @@ namespace UKAIW
             LastHitstopTimestamp = Time.unscaledTimeAsDouble;
         }
 
-        private static void PreEnemyDeath(EnemyIdentifier eid)
+        private static void PreEnemyDeath(EnemyIdentifier eid, bool instakill)
         {
             var go = eid.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
             var ehm = eadd.HydraMod;
             
-            ehm.NotifyOfDeath(false);
+            ehm.NotifyOfDeath(instakill);
         }
 
-        private static void PostEnemyDeath(EnemyIdentifier eid)
+        private static void PostEnemyDeath(EnemyIdentifier eid, bool instakill)
         {
             if (Cheats.IsCheatEnabled(Cheats.HydraMode))
             {

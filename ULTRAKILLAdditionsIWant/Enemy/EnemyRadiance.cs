@@ -161,15 +161,6 @@ namespace UKAIW
             {
                 Eid.healthBuffModifier = healthValue;
             }
-            
-
-
-            /*if (Eid.GetComponent<V2>() == null)
-            {
-                Eid.UpdateBuffs();
-                MethodInfo updateModifiersFI = typeof(EnemyIdentifier).GetMethod("UpdateModifiers", BindingFlags.NonPublic | BindingFlags.Instance);
-                updateModifiersFI.Invoke(Eid, null);
-            }*/
         }
 
         private void Start()

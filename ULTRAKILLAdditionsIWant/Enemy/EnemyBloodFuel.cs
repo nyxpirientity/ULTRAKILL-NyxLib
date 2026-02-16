@@ -29,6 +29,11 @@ namespace UKAIW
 
                 float normalizedDist = 1.0f - Mathf.Min(1.0f, dist / maxDist);
                 var eadd = GetComponent<EnemyAdditions>();
+                if (eadd == null)
+                {
+                    Destroy(this);
+                    return;
+                }
                 var eid = eadd.Eid;
                 float heal = (damage * normalizedDist);
                 heal *= Options.BloodFuelEnemiesHealScalar;
