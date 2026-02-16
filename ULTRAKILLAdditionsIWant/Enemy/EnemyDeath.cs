@@ -11,12 +11,14 @@ using UnityEngine.UI;
 
 namespace UKAIW
 {   
+    // TODO: changes made instakills with hydramod still let enemies split, this is not intended (at least, not currently intended..)
+
     [HarmonyPatch(typeof(SpiderBody), "Die", new Type[]{})]
     static class SpiderDiePatch
     {
         public static void Prefix(SpiderBody __instance)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
         }
         
         public static void Postfix(SpiderBody __instance)
@@ -30,7 +32,7 @@ namespace UKAIW
     {
         public static void Prefix(Zombie __instance)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
         }
         
         public static void Postfix(Zombie __instance)
@@ -44,7 +46,7 @@ namespace UKAIW
     {
         public static void Prefix(Statue __instance)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
         }
         
         public static void Postfix(Statue __instance)
@@ -58,7 +60,7 @@ namespace UKAIW
     {
         public static void Prefix(Machine __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
         }
         
         public static void Postfix(Machine __instance, bool fromExplosion)
@@ -72,7 +74,7 @@ namespace UKAIW
     {
         public static void Prefix(Drone __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
         }
         
         public static void Postfix(Drone __instance, bool fromExplosion)
@@ -86,12 +88,16 @@ namespace UKAIW
     {
         public static void Prefix(EnemyIdentifier __instance)
         {
-           // EnemyDeathPatch.PreDeath(__instance);
+            var eadd = __instance.GetComponent<EnemyAdditions>();
+            if (!(eadd?.PreDeathCalled).GetValueOrDefault(true))
+            {
+                EnemyEvents.PreDeath?.Invoke(__instance, true);
+                eadd.PreDeathCalled = true;
+            }
         }
         
         public static void Postfix(EnemyIdentifier __instance)
         {
-            //EnemyDeathPatch.PostDeath(__instance);
         }
     }
 
@@ -102,7 +108,7 @@ namespace UKAIW
         public static GameObject[] ActivateOnDeath;
         public static bool CalledPreDeath = false;
 
-        public static void PreDeath(EnemyIdentifier eid)
+        public static void PreDeath(EnemyIdentifier eid, bool instakill)
         {
             if (eid.dead)
             {
@@ -113,6 +119,12 @@ namespace UKAIW
             try
             {
                 EnemyEvents.PreNoIKDeath?.Invoke(eid);
+                var eadd = eid.GetComponent<EnemyAdditions>();
+                if (!(eadd?.PreDeathCalled).GetValueOrDefault(true))
+                {
+                    EnemyEvents.PreDeath?.Invoke(eid, instakill);
+                    eadd.PreDeathCalled = true;
+                }
             }
             catch (System.Exception e)
             {
@@ -146,6 +158,14 @@ namespace UKAIW
             }
 
             ActivateOnDeath = __instance.activateOnDeath;
+
+            var eadd = __instance.GetComponent<EnemyAdditions>();
+            if (!(eadd?.PreDeathCalled).GetValueOrDefault(true))
+            {
+                EnemyEvents.PreDeath?.Invoke(__instance, false);
+                eadd.PreDeathCalled = true;
+            }
+
             EnemyEvents.DuringDeath?.Invoke(__instance);
 
             if (Cheats.IsCheatEnabled(Cheats.NoCorpses))

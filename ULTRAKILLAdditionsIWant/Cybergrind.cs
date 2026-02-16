@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using UKAIW;
@@ -37,60 +38,110 @@ public static class CybergrindAdditions
     {
         public static void Prefix(EndlessGrid __instance)
         {
+            
+        }
+
+        private static string[] CheatsEnabledByUs = new string[0];
+        
+        private static List<(string, string[])> Challenges = new List<(string, string[])>
+        {
+            ("SEEING DOUBLE", new string[]{Cheats.HeckPuppets, Cheats.GiveEnemiesFriends}),
+            ("GET UP ON THEIR BACK", new string[]{Cheats.HydraMode, Cheats.DemandingHell}),
+            ("MISCONFIGURED", new string[]{Cheats.SelfConscience, Cheats.BadGyro}),
+            ("ULTRACARE", new string[]{Cheats.GiveEnemiesFriends, Cheats.BloodFueledEnemies}),
+            ("NOW SWAP", new string[]{Cheats.SandAllEnemiesID, Cheats.BloodFueledEnemies}),
+            ("BAD GAME DESIGN", new string[]{ Cheats.BadGyro, Cheats.MundaneMurder }),
+        };
+
+        private static List<(string, string[])> HardChallenges = new List<(string, string[])>
+        {
+            ("STYLE ISSUE", new string[]{ Cheats.SaltyEnemies, Cheats.SelfConscience, Cheats.DemandingHell, Cheats.HeckPuppets }),
+            ("FURIOUS MITOSIS", new string[]{ Cheats.SaltyEnemies, Cheats.DemandingHell, Cheats.HydraMode }),
+            ("HEAT OF GREED", new string[]{ Cheats.SandAllEnemiesID, Cheats.BloodFueledEnemies, Cheats.DemandingHell }),
+            ("TECH ISSUES", new string[]{ Cheats.BadGyro, Cheats.DemandingHell, Cheats.SelfConscience }),
+        };
+
+        private static int hardChallengeIdx = 0;
+        private static int challengeIdx = 0;
+
+        public static void Postfix(EndlessGrid __instance)
+        {
+            for (int i = 0; i < CheatsEnabledByUs.Length; i++)
+            {
+                CheatsManager.Instance.DisableCheat(CheatsEnabledByUs[i]);
+            }
+
+            if (Cheats.IsHydraModeOn)
+            {
+                CheatsManager.Instance.ToggleCheat(CheatsManager.Instance.GetCheatInstance<KillAllEnemies>());
+            }
+            
+            CheatsEnabledByUs = new string[0];
+
             if (Cheats.IsCheatDisabled(Cheats.CybergrindCheatRandomization))
             {
                 return;
             }
 
-            ValueTuple<int, string>[] cheats =
-            {
-                (1, Cheats.BloodFueledEnemies),
-                (1, Cheats.DemandingHell),
-                (1, Cheats.HeckPuppets),
-                (1, Cheats.SaltyEnemies),
-                (1, Cheats.HydraMode),
-                (1, Cheats.GiveEnemiesFriends),
-                (1, Cheats.RadiantAllEnemies),
-                (1, Cheats.SelfConscience),
-                (1, Cheats.MundaneMurder),
-                (1, Cheats.SandAllEnemiesID),
-                (1, Cheats.BadGyro),
-            };
+            bool useHardChallenges = ((__instance.currentWave % 5) == 0) && __instance.currentWave != __instance.startWave;
+            List<(string, string[])> challengePool = useHardChallenges ? HardChallenges : Challenges;
+            
+            ref int currentChallengeIdx = ref (useHardChallenges ? ref challengeIdx : ref hardChallengeIdx);
 
-            int numRandomCheats = Options.NumRandomCheats.Value;
-            numRandomCheats = Math.Min(cheats.Length, numRandomCheats);
-
-            for (int i = 0; i < cheats.Length; i++)
+            if (currentChallengeIdx == 0)
             {
-                CheatsManager.Instance.DisableCheat(cheats[i].Item2);
+                if (useHardChallenges)
+                {
+                    for (int i = 0; i < HardChallenges.Count; i++)
+                    {
+                        int targetIdx = UnityEngine.Random.Range(0, HardChallenges.Count - 1);
+                        var movingValue = HardChallenges[i];
+                        HardChallenges.RemoveAt(i);
+                        HardChallenges.Insert(targetIdx, movingValue);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < Challenges.Count; i++)
+                    {
+                        int targetIdx = UnityEngine.Random.Range(0, Challenges.Count - 1);
+                        var movingValue = Challenges[i];
+                        Challenges.RemoveAt(i);
+                        Challenges.Insert(targetIdx, movingValue);
+                    }
+                }
             }
             
+            var challenge = challengePool[currentChallengeIdx];
+            currentChallengeIdx = (currentChallengeIdx + 1) % (useHardChallenges ? HardChallenges.Count : Challenges.Count);
+            
             FieldPublisher<CheatsManager, Dictionary<string, ICheat>> idToCheat = new FieldPublisher<CheatsManager, Dictionary<string, ICheat>>(CheatsManager.Instance, "idToCheat");
+            CheatsEnabledByUs = challenge.Item2;
 
-            for (int i = 0,j = 0; i < numRandomCheats; i++,j++)
+            float downwardOffsetBase = 0.0f;
+
+            if (useHardChallenges)
             {
-                int cheatIdx = UnityEngine.Random.Range(0, cheats.Length);
-                var cheat = idToCheat.Value[cheats[cheatIdx].Item2];
-                
-                if (cheat.IsActive && j < 20)
-                {
-                    i--;
-                    continue;
-                }
-                else if (cheat.IsActive)
-                {
-                    continue;
-                }
-
-                QuickMsgPool.DisplayQuickMsg($"+ {cheat.LongName.ToUpper()}", new Color(0.875f, 0.75f, 1.0f), 5.0f, velocity: Vector3.down * ((float)((i) * 120.0f) + 200.0f));
-                cheat.Enable(CheatsManager.Instance);
+                QuickMsgPool.DisplayQuickMsg($"INTENSITY SPIKE", new Color(1.0f, 0.1f, 0.1f), 5.0f, velocity: Vector3.down * 200.0f, 42.0f);
+                QuickMsgPool.DisplayQuickMsg($"{challenge.Item1}", new Color(1.0f, 0.3f, 0.3f), 5.0f, velocity: Vector3.down * 320.0f, 36.0f);
+                downwardOffsetBase = 500.0f;
+            }
+            else
+            {
+                QuickMsgPool.DisplayQuickMsg($"{challenge.Item1}", new Color(1.0f, 0.4f, 0.4f), 5.0f, velocity: Vector3.down * 220.0f, 36.0f);
+                downwardOffsetBase = 350.0f;
             }
 
+            for (int i = 0; i < challenge.Item2.Length; i++)
+            {
+                string cheatName = challenge.Item2[i];
+                var cheat = idToCheat.Value[cheatName];
+                
+                QuickMsgPool.DisplayQuickMsg($"+ {cheat.LongName.ToUpper()}", new Color(0.875f, 0.75f, 1.0f), 5.0f, velocity: Vector3.down * ((float)((i) * 90.0f) + downwardOffsetBase), 24.0f);
+                cheat.Enable(CheatsManager.Instance);
+            }
+            
             CheatsManager.Instance.RefreshCheatStates();
-        }
-
-        public static void Postfix(EndlessGrid __instance)
-        {
         }
     }
 

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using HarmonyLib;
 using MelonLoader;
 using MelonLoader.Utils;
@@ -20,7 +21,8 @@ namespace UKAIW
         public static GameObject HeatResistancePrefab { get; private set; } = null;
         public static GameObject LabelPrefab { get; private set; } = null;
         public static GameObject ExplosionPrefab { get; private set; } = null;
-    
+        public static GameObject HeatResHurtSound { get; private set; }
+
         public static void Load()
         {
             Log.TraceExpectedInfo($"Assets.Load called!");
@@ -47,6 +49,10 @@ namespace UKAIW
                     UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefab);
                     TextMeshProUGUI textMesh = null;
                     var textMeshProGuis = HeatResistancePrefab.gameObject.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
+                    var heatRes = HeatResistancePrefab.gameObject.GetComponentInChildren<HeatResistance>(includeInactive: true);
+                    FieldPublisher<HeatResistance, GameObject> hurtingSound = new FieldPublisher<HeatResistance, GameObject>(heatRes, "hurtingSound");
+                    HeatResHurtSound = GameObject.Instantiate(hurtingSound.Value); 
+                    UnityEngine.Object.DontDestroyOnLoad(HeatResHurtSound);
                     
                     foreach (var elem in textMeshProGuis)
                     {

@@ -155,6 +155,8 @@ namespace UKAIW
         private bool ExcludedFromHydraCheat = false;
 
         private float NoDupeTime = 0.0f;
+        private bool NotifiedOfDeathCalled = false;
+
         public bool HydraKilled { get; private set; } = false;
         public bool HydraDuped { get; private set; } = false;
         public int SharedIdx {get; private set; } = -1;
@@ -398,8 +400,15 @@ namespace UKAIW
             Destroy(gameObject);
         }
 
-        public void NotifyOfDeath()
+        public void NotifyOfDeath(bool instakill)
         {
+            if (NotifiedOfDeathCalled)
+            {
+                return;
+            }
+
+            NotifiedOfDeathCalled = true;
+
             if (ExcludedFromHydraCheat)
             {
                 return;
@@ -433,13 +442,16 @@ namespace UKAIW
                 Eid.puppet = true;
             }
             
-            if (Depth == 0 && Shared.CountAsKill)
+            if (Depth == 0 && Shared.CountAsKill && !CybergrindAdditions.CybergrindActive)
             {
                 ContributeToActivateNextWave();
             }
 
-            TryEnqueueDupe(false);
-            TryEnqueueDupe(true);
+            if (!instakill)
+            {
+                TryEnqueueDupe(false);
+                TryEnqueueDupe(true);
+            }
             
             TryUnregisterWithShared();
 
@@ -451,6 +463,11 @@ namespace UKAIW
                 if (Shared.CountAsKill)
                 {
                     StatsManager.Instance.kills += 1;
+
+                    if (Shared.CountAsKill && CybergrindAdditions.CybergrindActive)
+                    {
+                        ContributeToActivateNextWave();
+                    }
                 }
 
                 TimeDilation.ModDisableHitstop = true;

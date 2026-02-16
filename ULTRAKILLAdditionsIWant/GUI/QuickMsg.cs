@@ -14,6 +14,10 @@ namespace UKAIW
         public GlobalTimeStamp EnableTimestamp;
 
         public RectTransform RectTransform { get; private set; }
+        public bool FlashEnabled { get; internal set; }
+        public float FlashDelay { get; internal set; }
+        public float FlashFadeTime { get; internal set; }
+        public Color FlashColor { get; internal set; }
 
         public TextMeshProUGUI TextMesh = null;
 
@@ -58,6 +62,7 @@ namespace UKAIW
                 rectTransform.pivot = new Vector2(0.5f, 0.5f);
                 rectTransform.anchorMin = new Vector2(0.5f, 1.0f);
                 rectTransform.anchorMax = new Vector2(0.5f, 1.0f);
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1000.0f);
 
                 return go;
             }, 
@@ -113,7 +118,7 @@ namespace UKAIW
             }
         }
         
-        public static void DisplayQuickMsg(string text, Color color, float duration, Vector3 velocity)
+        public static void DisplayQuickMsg(string text, Color color, float duration, Vector3 velocity, float fontSize, bool flashing = false)
         {
             var poolObj = Pool.Take();
             var go = poolObj.Value;
@@ -122,9 +127,16 @@ namespace UKAIW
             var textMesh = go.GetComponent<TextMeshProUGUI>();
             textMesh.text = text;
             textMesh.color = color;
+            textMesh.fontSize = fontSize;
+            textMesh.outlineWidth = 0.1f;
+            textMesh.outlineColor = new Color((1.0f - color.grayscale) * 5.0f, (1.0f - color.grayscale) * 5.0f, (1.0f - color.grayscale) * 5.0f);
             var quickMsg = go.GetComponent<QuickMsg>();
             quickMsg.Duration = duration;
             quickMsg.Velocity = velocity;
+            quickMsg.FlashEnabled = flashing;
+            quickMsg.FlashDelay = 0.25f;
+            quickMsg.FlashFadeTime = 0.25f;
+            quickMsg.FlashColor = Color.white;
             ActiveQuickMsgs.Add((poolObj, quickMsg));
         }
     }

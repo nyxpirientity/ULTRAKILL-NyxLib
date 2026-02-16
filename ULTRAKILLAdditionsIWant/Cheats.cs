@@ -146,6 +146,22 @@ public static class Cheats
             }
         ), "CYBERGRIND");
 
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Force Next Wave", 
+            "ukaiw.force-next-cybergrind-wave",
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                CheatsManager.Instance.DisableCheat("ukaiw.force-next-cybergrind-wave");
+                if (CybergrindAdditions.CybergrindActive && CybergrindAdditions.IsInCybergrind)
+                {
+                    EndlessGrid.Instance.GetComponent<ActivateNextWave>().deadEnemies = 99999;
+                }
+            }
+        ), "CYBERGRIND");
+
         /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Cybergrind Shuffle", 
             Cheats.CybergrindShuffle,
@@ -531,8 +547,7 @@ public static class Cheats
     {
         public static void Prefix(HeatResistance __instance)
         {
-            //StackTrace trace = new StackTrace(false);
-            //MelonLogger.Msg($"{trace}");
+
         }
         
         public static void Postfix(HeatResistance __instance)

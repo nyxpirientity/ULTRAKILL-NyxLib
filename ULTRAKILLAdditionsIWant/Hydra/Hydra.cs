@@ -27,6 +27,15 @@ namespace UKAIW
         public static void Initialize()
         {
             EnemyEvents.PreNoIKDeath += PreEnemyDeath;
+            EnemyEvents.PreDeath += (eid, instakill) =>
+            {
+                var go = eid.gameObject;
+                var eadd = go.GetComponent<EnemyAdditions>();
+                var ehm = eadd.HydraMod;
+                
+                ehm.NotifyOfDeath(instakill);
+            };
+
             EnemyEvents.DuringDeath += DuringEnemyDeath;
             EnemyEvents.PostNoIKDeath += PostEnemyDeath;
             UpdateEvents.OnLateUpdate += LateUpdate;
@@ -107,7 +116,7 @@ namespace UKAIW
             var eadd = go.GetComponent<EnemyAdditions>();
             var ehm = eadd.HydraMod;
             
-            ehm.NotifyOfDeath();
+            ehm.NotifyOfDeath(false);
         }
 
         private static void PostEnemyDeath(EnemyIdentifier eid)
@@ -123,6 +132,7 @@ namespace UKAIW
             var go = eid.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
             var ehm = eadd.HydraMod;
+            ehm.NotifyOfDeath(false);
             ehm.DuringDeath();
         }
 

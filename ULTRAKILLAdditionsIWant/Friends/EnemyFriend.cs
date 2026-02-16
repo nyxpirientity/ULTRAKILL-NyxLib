@@ -113,7 +113,10 @@ public class EnemyFriendIdentifier : MonoBehaviour
 
     private void NonLeaderStart()
     {
-
+        if (CybergrindAdditions.CybergrindActive)
+        {
+            EndlessGrid.Instance.tempEnemyAmount += 1;
+        }
     }
 
     private void IdolFindRightTarget()
@@ -172,7 +175,7 @@ public class EnemyFriendIdentifier : MonoBehaviour
     {
         EnemyAdditions eadd = GetComponent<EnemyAdditions>();
         var prefab = eadd.PrefabMod.Prefab;
-        var friend = Instantiate(prefab);
+        var friend = Instantiate(prefab, eadd.RootGameObject.transform.parent);
         EnemyAdditions friendEadd = friend.GetComponent<EnemyAdditions>() ?? friend.GetComponentInChildren<EnemyAdditions>();
         friend.transform.position = transform.position + offset;
         friend.SetActive(true);

@@ -233,6 +233,7 @@ namespace UKAIW
         // post death that doesn't include instakill
         public static Action<EnemyIdentifier> PostNoIKDeath = null;
 
+        public static Action<EnemyIdentifier, bool> PreDeath = null;
         public static Action<EnemyIdentifier> DuringDeath = null;
     }
 

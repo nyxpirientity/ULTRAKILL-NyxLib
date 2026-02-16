@@ -41,9 +41,6 @@
 		<Reference Include="Unity.TextMeshPro">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.TextMeshPro.dll</HintPath>
 		</Reference>
-		<Reference Include="Unity.TextCoreModule">
-			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.TextCoreModule.dll</HintPath>
-		</Reference>
 		<Reference Include="UnityEngine.UI">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.UI.dll</HintPath>
 		</Reference>

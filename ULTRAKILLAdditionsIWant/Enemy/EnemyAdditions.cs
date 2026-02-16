@@ -47,6 +47,7 @@ public class EnemyAdditions : MonoBehaviour
     }
 
     public GameObject RootGameObject { get => Eid.enemyType == EnemyType.MaliciousFace ? transform.parent.gameObject : gameObject; }
+    public bool PreDeathCalled { get; internal set; } = false;
 
     [NonSerialized] public bool QueuedForDestruction = false;
     
