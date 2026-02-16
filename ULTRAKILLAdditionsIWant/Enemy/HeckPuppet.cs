@@ -11,7 +11,7 @@ namespace UKAIW
         public GameObject LeaderGo = null;
         public HeckPuppetLeader Leader = null;
         public EnemyIdentifier Eid { get; private set; } = null;
-        public bool GivePoints { get; private set; } = true;
+        public bool GivePoints { get; set; } = true;
         public ulong HeckPuppetID = 0;
         public Radiance.Modifier RadianceMod = null;
 
@@ -28,10 +28,9 @@ namespace UKAIW
 
             Eid = GetComponent<EnemyIdentifier>();
             Eid.dontCountAsKills = true;
-            Eid.PuppetSpawn();
+            
+            Eid.checkingSpawnStatus = false;
             GivePoints = true;
-            EidPuppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
-            Eid.onDeath = null;
             
             if (Eid.machine != null)
             {
@@ -43,6 +42,14 @@ namespace UKAIW
                 FieldPublisher<Drone, bool> exploded = new FieldPublisher<Drone, bool>(Eid.drone, "exploded");
                 exploded.Value = true;
             }
+
+            var stray = Eid.GetComponent<ZombieProjectiles>();
+            if (stray != null)
+            {
+                stray.wanderer = false;
+                stray.afraid = false;
+                stray.chaser = false;
+            }
             
             var sisypheanInsurrectionist = Eid.GetComponent<Sisyphus>();
             if (sisypheanInsurrectionist != null)
@@ -51,12 +58,24 @@ namespace UKAIW
             }
             
             LeaderGo = Leader.gameObject;
+
+            Eid.onDeath.AddListener(() =>
+            {
+                MaybeDeathDestroy();
+            });
         }
 
+        private int NumUpdates = 0;
         protected void Update()
         {
-            FieldPublisher<EnemyIdentifier, float> puppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
-            puppetSpawnTimer.Value = Mathf.Max(puppetSpawnTimer.Value, 0.995f);
+            if (NumUpdates == 1)
+            {
+                Eid.PuppetSpawn();
+                EidPuppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
+                EidPuppetSpawnTimer.Value = 1f - 0.001f; // should instantly finish the puppet spawn animation once EID update is called
+            }
+            
+            NumUpdates += 1;
         }
 
         bool HasDecrementedBlood = false;
@@ -76,32 +95,35 @@ namespace UKAIW
         {
             if (Leader == null)
             {
-                InstaDestroy();
+                GivePoints = false;
+                InstaKill();
                 return;
             }
 
             if (LeaderGo == null)
             {
-                InstaDestroy();
+                GivePoints = false;
+                InstaKill();
                 return;
             }
 
             if (!Leader.isActiveAndEnabled)
             {
-                InstaDestroy();
+                GivePoints = false;
+                InstaKill();
                 return;
             }
 
             if (Leader.Eid.Dead)
             {
-                InstaKill();
                 GivePoints = false;
+                InstaKill();
             }
 
             if (Cheats.IsCheatDisabled(Cheats.HeckPuppets))
             {
-                InstaKill();
                 GivePoints = false;
+                InstaKill();
             }
             
             if (!PrevDead && Eid.Dead)
@@ -128,9 +150,31 @@ namespace UKAIW
                 FieldPublisher<Drone, bool> exploded = new FieldPublisher<Drone, bool>(Eid.drone, "exploded");
                 exploded.Value = true;
             }
-
+            
             Eid.InstaKill();
             TryDecrementRemainingBlood();
+            
+            MaybeDeathDestroy();
+        }
+
+        private void MaybeDeathDestroy()
+        {
+            if (Eid.enemyType == EnemyType.Swordsmachine || Eid.enemyType == EnemyType.Streetcleaner)
+            {
+                TryDestroy();
+            }
+        }
+
+        private bool TriedDestroy = false;
+        private void TryDestroy()
+        {
+            if (TriedDestroy)
+            {
+                return;
+            }
+
+            Destroy(gameObject);
+            TriedDestroy = true;
         }
 
         private void TryGivePoints()
@@ -164,28 +208,10 @@ namespace UKAIW
         {
             if (!PrevDead)
             {
-                Leader.NotifyPuppetDeath(this, HeckPuppetID);
+                Leader.NullInvalid()?.NotifyPuppetDeath(this, HeckPuppetID);
                 TryGivePoints();
                 PrevDead = true;
             }
-        }
-
-        bool InstaDestroyed = false;
-        internal void InstaDestroy()
-        {
-            if (InstaDestroyed)
-            {
-                return;
-            }
-            
-            InstaDestroyed = true;
-            GivePoints = false;
-            
-            Assert.IsNotNull(gameObject);
-            Assert.IsNotNull(GetComponent<EnemyAdditions>());
-            Assert.IsNotNull(GetComponent<EnemyAdditions>().RootGameObject);
-
-            Destroy(GetComponent<EnemyAdditions>().RootGameObject);
         }
     }
 }

@@ -85,6 +85,7 @@ public class EnemyPrefabMod : MonoBehaviour
         prefabEid.activateOnDeath = new GameObject[0];
         prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
         prefabEid.stuckMagnets = new System.Collections.Generic.List<Magnet>();
+        prefabEid.onDeath.RemoveAllListeners();
 
         if (prefabEid.machine != null)
         {

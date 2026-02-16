@@ -13,6 +13,7 @@ public static class Options
     static MelonPreferences_Entry<bool> IncludeLikelyLogsEntry = null;
     static MelonPreferences_Entry<bool> IncludeUnlikelyLogsEntry = null;
     static MelonPreferences_Entry<bool> IncludeUnexpectedLogsEntry = null;
+    public static MelonPreferences_Entry<bool> ShowErrorNotification = null;
 
     static MelonPreferences_Category HydraCategory = null;
     static MelonPreferences_Entry<float> HydraHealthDecayScaleEntry = null;
@@ -156,6 +157,11 @@ public static class Options
     public static MelonPreferences_Entry<int> BloodOptimizerCapNumUpdatesPerTick = null;
     public static MelonPreferences_Entry<int> BloodHeavyModdedEnemiesCapNumBloodPerTick = null;
 
+    static MelonPreferences_Category BugFixesCategory = null;
+    public static MelonPreferences_Entry<bool> EnableStreetCleanerDodgeFix = null;
+    public static MelonPreferences_Entry<bool> EnableStreetCleanerDodgeFixOnlyWhenNeeded = null;
+    public static MelonPreferences_Entry<float> StreetCleanerDodgeFixInterpRate = null;
+
     public static Dictionary<StyleRanks, HeckPuppetStyleEntry> HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>();
 
     static MelonPreferences_Category CybergrindCheatRandomization = null;
@@ -215,6 +221,7 @@ public static class Options
     {
         LoggingCategory = MelonPreferences.CreateCategory("UKAIW-Logging");
         
+        ShowErrorNotification = LoggingCategory.CreateEntry<bool>("ShowErrorNotification", false);
         IncludePerformanceLogsEntry = LoggingCategory.CreateEntry<bool>("IncludePerformanceLogs", false);
         IncludeTraceExpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeTraceExpectedLogs", false);
         IncludeExpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeExpectedLogs", false);
@@ -222,6 +229,11 @@ public static class Options
         IncludeUnlikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnlikelyLogs", true);
         IncludeUnexpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnexpectedLogs", true);
 
+        BugFixesCategory = MelonPreferences.CreateCategory("UKAIW-BugFixes");
+        EnableStreetCleanerDodgeFix = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFix", true);
+        EnableStreetCleanerDodgeFixOnlyWhenNeeded = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
+        StreetCleanerDodgeFixInterpRate = BugFixesCategory.CreateEntry<float>("StreetCleanerDodgeFixInterpRate", 8.0f);
+        
         HydraCategory = MelonPreferences.CreateCategory("UKAIW-Hydra");
 
         HydraHealthDecayScaleEntry = HydraCategory.CreateEntry<float>("HydraHealthDecayScale", 0.5f);

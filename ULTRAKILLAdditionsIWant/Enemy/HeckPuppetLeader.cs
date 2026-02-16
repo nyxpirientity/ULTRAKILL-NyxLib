@@ -250,7 +250,8 @@ namespace UKAIW
                         continue;
                     }
 
-                    puppet.HeckPuppet.InstaDestroy();
+                    puppet.HeckPuppet.GivePoints = false;
+                    puppet.HeckPuppet.InstaKill();
                 }
             }
         }

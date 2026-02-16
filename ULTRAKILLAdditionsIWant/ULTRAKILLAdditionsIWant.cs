@@ -24,8 +24,6 @@ namespace UKAIW
             Needed, AwaitingLoad, WaitingToReturn, Returning, Done
         }
 
-        public int NumFixedUpdatesThisScene { get; private set; } = 0;
-
         public override void OnInitializeMelon()
         {
             Options.Initialize();
@@ -44,6 +42,15 @@ namespace UKAIW
             MundaneMurder.Initialize();
             BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
+
+            GameConsole.Console.Instance.onError += () =>
+            {
+                if (Options.ShowErrorNotification.Value)
+                {
+                    QuickMsgPool.DisplayQuickMsg($"AN ERROR HAS OCCURRED!", Color.red, 3.0f, Vector3.down * 100.0f, 42.0f, false);
+                    QuickMsgPool.DisplayQuickMsg($"TIME: {DateTime.Now.Hour}:{DateTime.Now.Minute}", Color.red, 3.0f, Vector3.down * 200.0f, 32.0f, false);
+                }
+            };
         }
 
 
@@ -51,21 +58,18 @@ namespace UKAIW
         {
             Log.TraceExpectedInfo($"------------- New Scene Loaded '{SceneHelper.CurrentScene}:{buildIndex}' -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasLoaded?.Invoke(buildIndex, sceneName); });
-            NumFixedUpdatesThisScene = 0;
         }
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName) // Runs when a Scene has Initialized and is passed the Scene's Build Index and Name.
         {
             Log.TraceExpectedInfo($"------------- Scene Initialized '{SceneHelper.CurrentScene}:{sceneName}:{buildIndex}' -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasInitialized?.Invoke(buildIndex, sceneName); });
-            NumFixedUpdatesThisScene = 0;
         }
 
         public override void OnSceneWasUnloaded(int buildIndex, string sceneName)
         {
             Log.TraceExpectedInfo($"------------- Scene Unloaded '{SceneHelper.CurrentScene}:{sceneName}:{buildIndex}' -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(buildIndex, sceneName); });
-            NumFixedUpdatesThisScene = 0;
         }
 
         public override void OnUpdate() // Runs once per frame.
