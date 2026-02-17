@@ -16,6 +16,7 @@ public class EnemyAdditions : MonoBehaviour
     public HeckPuppet HeckPuppet { get; private set; } = null;
     public HeckPuppetLeader HeckPuppetLeader { get; private set; } = null;
     public Radiance EnemyRadiance { get; private set; } = null;
+    public EnemyFeedbacker Feedbacker { get; private set; } = null;
     public bool UniquelySolo { get; private set; } = false;
     public float Health 
     { 
@@ -155,6 +156,7 @@ public class EnemyAdditions : MonoBehaviour
         SaltyEnemy = gameObject.AddComponent<SaltyEnemy>();
         HeckPuppetLeader = gameObject.AddComponent<HeckPuppetLeader>();
         EnemyRadiance = gameObject.AddComponent<Radiance>();
+        Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
         EnemyFriend.IsLeader = false;
         PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
@@ -173,6 +175,7 @@ public class EnemyAdditions : MonoBehaviour
         EnemyRadiance = GetComponent<Radiance>();
         HeckPuppet = GetComponent<HeckPuppet>();
         HeckPuppetLeader = GetComponent<HeckPuppetLeader>();
+        Feedbacker = GetComponent<EnemyFeedbacker>();
         
         if (nullAcceptable)
         {

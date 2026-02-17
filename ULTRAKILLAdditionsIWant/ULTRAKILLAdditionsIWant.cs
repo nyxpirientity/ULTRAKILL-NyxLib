@@ -42,6 +42,7 @@ namespace UKAIW
             MundaneMurder.Initialize();
             BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
+            EnemyFeedbackerDelegate.Initialize();
 
             GameConsole.Console.Instance.onError += () =>
             {
