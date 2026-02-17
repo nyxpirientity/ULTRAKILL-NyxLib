@@ -37,6 +37,7 @@ public static class Cheats
     public const string SelfConscience = "ukaiw.self-conscious-v1";
     public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
     public const string HeckPuppets = "ukaiw.heck-puppets";
+    public const string BehaviouralMirror = "ukaiw.behavioural-mirror";
     public const string BadGyro = "ukaiw.bad-gyro";
     public const string FeedbackerForAll = "ukaiw.feedbacker-for-all";
     public const string CybergrindShuffle = "ukaiw.cybergrind-shuffle";
@@ -357,9 +358,9 @@ public static class Cheats
             onEnable: (cheat, manager) =>
             {
             }
-        ), "???");
+        ), "THIS GAME IF IT SUCKED:");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "No Corpses", 
             Cheats.NoCorpses,
             onDisable: (cheat) =>
@@ -368,7 +369,7 @@ public static class Cheats
             onEnable: (cheat, manager) =>
             {
             }
-        ), "???");
+        ), "???");*/
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Hydra Mode", 
@@ -381,9 +382,9 @@ public static class Cheats
             {
                 IsHydraModeOn = true;
             }
-        ), "???");
+        ), "MITOSIS");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Hitstop On Heavy Hydra Load", 
             Cheats.HitstopOnHeavyHydraLoad,
             onDisable: (cheat) =>
@@ -392,7 +393,7 @@ public static class Cheats
             onEnable: (cheat, manager) =>
             {
             }
-        ), "???");
+        ), "???");*/ // why is this a cheat and not a setting?
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Salty Enemies", 
@@ -403,10 +404,10 @@ public static class Cheats
             onEnable: (cheat, manager) =>
             {
             }
-        ), "???");
+        ), "ENEMY'S MIND");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Demanding Hell", 
+            "Heat of Heck", 
             Cheats.DemandingHell,
             onDisable: (cheat) =>
             {
@@ -414,19 +415,7 @@ public static class Cheats
             onEnable: (cheat, manager) =>
             {
             }
-        ), "???");
-
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Self Conscience", 
-            Cheats.SelfConscience,
-            onDisable: (cheat) =>
-            {
-            },
-            onEnable: (cheat, manager) =>
-            {
-                
-            }
-        ), "???");
+        ), "HELL'S IMPACT");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Heck Puppets", 
@@ -438,7 +427,31 @@ public static class Cheats
             {
                 
             }
-        ), "???");
+        ), "HELL'S IMPACT");        
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Behavioural Mirror", 
+            Cheats.BehaviouralMirror,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "HELL'S IMPACT");
+
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Self Conscience", 
+            Cheats.SelfConscience,
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "V1'S MIND");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Bad Gyro", 
@@ -462,7 +475,7 @@ public static class Cheats
             {
                 
             }
-        ), "???");
+        ), "MITOSIS");
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Stronger in Numbers", 
