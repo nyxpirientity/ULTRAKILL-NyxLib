@@ -228,12 +228,12 @@ public static class Options
         IncludeLikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeLikelyLogs", false);
         IncludeUnlikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnlikelyLogs", true);
         IncludeUnexpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnexpectedLogs", true);
-
+        
         BugFixesCategory = MelonPreferences.CreateCategory("UKAIW-BugFixes");
         EnableStreetCleanerDodgeFix = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFix", true);
         EnableStreetCleanerDodgeFixOnlyWhenNeeded = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
         StreetCleanerDodgeFixInterpRate = BugFixesCategory.CreateEntry<float>("StreetCleanerDodgeFixInterpRate", 8.0f);
-        
+
         HydraCategory = MelonPreferences.CreateCategory("UKAIW-Hydra");
 
         HydraHealthDecayScaleEntry = HydraCategory.CreateEntry<float>("HydraHealthDecayScale", 0.5f);

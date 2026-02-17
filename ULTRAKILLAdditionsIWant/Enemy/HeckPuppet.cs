@@ -2,7 +2,9 @@ using System;
 using MelonLoader;
 using SettingsMenu.Components.Pages;
 using TMPro;
+using UKAIW.Diagnostics.Debug;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace UKAIW
 {
@@ -173,7 +175,7 @@ namespace UKAIW
                 return;
             }
 
-            Destroy(gameObject);
+            Destroy(GetComponent<EnemyAdditions>().RootGameObject);
             TriedDestroy = true;
         }
 

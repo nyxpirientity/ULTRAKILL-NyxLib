@@ -41,7 +41,7 @@ namespace UKAIW
                 PuppetRootGo.transform.position = position + UnityEngine.Random.onUnitSphere * 2.5f;
                 PuppetRootGo.transform.rotation = rotation;
                 PuppetEad = PuppetRootGo.GetComponent<EnemyAdditions>() ?? PuppetRootGo.GetComponentInChildren<EnemyAdditions>();
-                
+                PuppetRootGo.name = $"{PuppetRootGo.name} (UKAIW.HeckPuppet)";
                 Assert.IsNotNull(PuppetEad);
                 Assert.IsNotNull(PuppetEad.gameObject);
                 
