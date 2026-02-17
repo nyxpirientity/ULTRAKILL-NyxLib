@@ -38,6 +38,7 @@ public static class Cheats
     public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
     public const string HeckPuppets = "ukaiw.heck-puppets";
     public const string BadGyro = "ukaiw.bad-gyro";
+    public const string FeedbackerForAll = "ukaiw.feedbacker-for-all";
     public const string CybergrindShuffle = "ukaiw.cybergrind-shuffle";
     public const string StrongerInNumbers = "ukaiw.stronger-in-numbers";
     public const string Tymitosis = "ukaiw.tymitosis";
@@ -185,6 +186,20 @@ public static class Cheats
                 
             }
         ), "FAIRNESS AND EQUALITY");
+        
+        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+            "Feedbackers for Everyone!", 
+            Cheats.FeedbackerForAll,
+            onDisable: (cheat) =>
+            {
+                
+            },
+            onEnable: (cheat, manager) =>
+            {
+                
+            }
+        ), "FAIRNESS AND EQUALITY");
+        
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
             "Give Enemies Friend(s)", 
