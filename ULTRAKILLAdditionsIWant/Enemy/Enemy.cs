@@ -10,6 +10,16 @@ namespace UKAIW
         Normal, Miniboss, Boss, Ultraboss
     }
 
+    public enum EnemySpeciesType
+    {
+        Husk, Machine, Demon, Angel, Soul, OrganicMachine, Puppet, Unknown, UltraUnknown
+    }
+
+    public enum EnemySpeciesRank
+    {
+        NotApplicable, Lesser, Greater, Supreme, Prime
+    }
+
     public static class EnemyUtils
     {
         public static int NumGameplayRanks = 4;
@@ -151,6 +161,108 @@ namespace UKAIW
                 EnemyType.Wicked => EnemyGameplayRank.Ultraboss,
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        public static EnemySpeciesType GetSpeciesType(this EnemyType enemyType)
+        {
+            return enemyType switch
+            {
+                EnemyType.Filth => EnemySpeciesType.Husk,
+                EnemyType.BigJohnator => EnemySpeciesType.UltraUnknown,
+                EnemyType.CancerousRodent => EnemySpeciesType.UltraUnknown,
+                EnemyType.Centaur => EnemySpeciesType.Machine,
+                EnemyType.Cerberus => EnemySpeciesType.Demon,
+                EnemyType.Drone => EnemySpeciesType.Machine,
+                EnemyType.Ferryman => EnemySpeciesType.Husk,
+                EnemyType.FleshPanopticon => EnemySpeciesType.OrganicMachine,
+                EnemyType.FleshPrison => EnemySpeciesType.OrganicMachine,
+                EnemyType.Gabriel => EnemySpeciesType.Angel,
+                EnemyType.GabrielSecond => EnemySpeciesType.Angel,
+                EnemyType.Gutterman => EnemySpeciesType.Machine,
+                EnemyType.Guttertank => EnemySpeciesType.Machine,
+                EnemyType.HideousMass => EnemySpeciesType.Demon,
+                EnemyType.Idol => EnemySpeciesType.Demon,
+                EnemyType.Leviathan => EnemySpeciesType.Demon,
+                EnemyType.MaliciousFace => EnemySpeciesType.Demon,
+                EnemyType.Mandalore => EnemySpeciesType.UltraUnknown,
+                EnemyType.Mannequin => EnemySpeciesType.Demon,
+                EnemyType.Mindflayer => EnemySpeciesType.Machine,
+                EnemyType.Minos => EnemySpeciesType.Husk,
+                EnemyType.MinosPrime => EnemySpeciesType.Soul,
+                EnemyType.Minotaur => EnemySpeciesType.Demon,
+                EnemyType.Puppet => EnemySpeciesType.Puppet,
+                EnemyType.Schism => EnemySpeciesType.Husk,
+                EnemyType.Sisyphus => EnemySpeciesType.Husk,
+                EnemyType.SisyphusPrime => EnemySpeciesType.Soul,
+                EnemyType.Soldier => EnemySpeciesType.Husk,
+                EnemyType.Stalker => EnemySpeciesType.Husk,
+                EnemyType.Stray => EnemySpeciesType.Husk,
+                EnemyType.Streetcleaner => EnemySpeciesType.Machine,
+                EnemyType.Swordsmachine => EnemySpeciesType.Machine,
+                EnemyType.Turret => EnemySpeciesType.Machine,
+                EnemyType.V2 => EnemySpeciesType.Machine,
+                EnemyType.V2Second => EnemySpeciesType.Machine,
+                EnemyType.VeryCancerousRodent => EnemySpeciesType.UltraUnknown,
+                EnemyType.Virtue => EnemySpeciesType.Angel,
+                EnemyType.Wicked => EnemySpeciesType.Unknown,
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public static EnemySpeciesRank GetSpeciesRank(this EnemyType enemyType)
+        {
+            return enemyType switch
+            {
+                EnemyType.BigJohnator => EnemySpeciesRank.NotApplicable,
+                EnemyType.CancerousRodent => EnemySpeciesRank.Supreme,
+                EnemyType.Centaur => EnemySpeciesRank.Supreme,
+                EnemyType.Cerberus => EnemySpeciesRank.Lesser,
+                EnemyType.Drone => EnemySpeciesRank.Lesser,
+                EnemyType.Ferryman => EnemySpeciesRank.Supreme,
+                EnemyType.Filth => EnemySpeciesRank.Lesser,
+                EnemyType.FleshPanopticon => EnemySpeciesRank.Greater,
+                EnemyType.FleshPrison => EnemySpeciesRank.Lesser,
+                EnemyType.Gabriel => EnemySpeciesRank.Supreme,
+                EnemyType.GabrielSecond => EnemySpeciesRank.Supreme,
+                EnemyType.Gutterman => EnemySpeciesRank.Greater,
+                EnemyType.Guttertank => EnemySpeciesRank.Greater,
+                EnemyType.HideousMass => EnemySpeciesRank.Greater,
+                EnemyType.Idol => EnemySpeciesRank.Lesser,
+                EnemyType.Leviathan => EnemySpeciesRank.Supreme,
+                EnemyType.MaliciousFace => EnemySpeciesRank.Lesser,
+                EnemyType.Mandalore => EnemySpeciesRank.NotApplicable,
+                EnemyType.Mannequin => EnemySpeciesRank.Lesser,
+                EnemyType.Mindflayer => EnemySpeciesRank.Greater,
+                EnemyType.Minos => EnemySpeciesRank.Supreme,
+                EnemyType.MinosPrime => EnemySpeciesRank.Prime,
+                EnemyType.Minotaur => EnemySpeciesRank.Supreme,
+                EnemyType.Puppet => EnemySpeciesRank.NotApplicable,
+                EnemyType.Schism => EnemySpeciesRank.Greater,
+                EnemyType.Sisyphus => EnemySpeciesRank.Supreme,
+                EnemyType.SisyphusPrime => EnemySpeciesRank.Prime,
+                EnemyType.Soldier => EnemySpeciesRank.Greater,
+                EnemyType.Stalker => EnemySpeciesRank.Lesser,
+                EnemyType.Stray => EnemySpeciesRank.Lesser,
+                EnemyType.Streetcleaner => EnemySpeciesRank.Lesser,
+                EnemyType.Swordsmachine => EnemySpeciesRank.Greater,
+                EnemyType.Turret => EnemySpeciesRank.Greater,
+                EnemyType.V2 => EnemySpeciesRank.Supreme,
+                EnemyType.V2Second => EnemySpeciesRank.Supreme,
+                EnemyType.VeryCancerousRodent => EnemySpeciesRank.Prime,
+                EnemyType.Virtue => EnemySpeciesRank.Lesser,
+                EnemyType.Wicked => EnemySpeciesRank.NotApplicable,
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public static EnemySpeciesRank GetSpeciesRank(this EnemyIdentifier eid)
+        {
+            return eid.enemyType.GetSpeciesRank();
+        }
+
+        public static EnemySpeciesType GetSpeciesType(this EnemyIdentifier eid)
+        {
+            return eid.enemyType.GetSpeciesType();
         }
 
         public static Bounds SolveEnemyBounds(this GameObject enemyGo)

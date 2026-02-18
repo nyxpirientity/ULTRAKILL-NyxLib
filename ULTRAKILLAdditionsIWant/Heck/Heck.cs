@@ -8,7 +8,8 @@ namespace UKAIW
     {
         public static Heck Instance = null;
 
-        public AgonyTracker AgonyTracker { get; private set; } = null;
+        public PainStore PainStore { get; private set; } = null;
+        public AggressiveAgony AggressiveAgony { get; private set; } = null;
 
         protected void Awake()
         {
@@ -17,7 +18,8 @@ namespace UKAIW
 
         protected void Start()
         {
-            AgonyTracker = gameObject.AddComponent<AgonyTracker>();
+            PainStore = gameObject.AddComponent<PainStore>();
+            AggressiveAgony = gameObject.AddComponent<AggressiveAgony>();
         }
 
         protected void Update()

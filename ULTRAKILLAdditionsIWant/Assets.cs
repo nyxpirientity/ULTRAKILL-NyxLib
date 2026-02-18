@@ -23,6 +23,11 @@ namespace UKAIW
         public static GameObject ExplosionPrefab { get; private set; } = null;
         public static GameObject HeatResHurtSound { get; private set; }
 
+        public static GameObject MortarPrefab { get; private set; } = null;
+        public static GameObject HomingProjectilePrefab { get; private set; } = null;
+        public static GameObject FleshPrisonPrefab { get; private set; } = null;
+        public static GameObject FleshPanopticonPrefab { get; private set; } = null;
+
         public static void Load()
         {
             Log.TraceExpectedInfo($"Assets.Load called!");
@@ -73,6 +78,54 @@ namespace UKAIW
                 else
                 {
                     Log.ExpectedInfo($"We'd like a heat resistence prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+
+            if (MortarPrefab == null)
+            {
+                var possibleHideousMass = UnityEngine.Object.FindAnyObjectByType<Mass>(FindObjectsInactive.Include);
+                
+                if (possibleHideousMass != null)
+                {
+                    MortarPrefab = GameObject.Instantiate(possibleHideousMass.explosiveProjectile);
+                    GameObject.DontDestroyOnLoad(MortarPrefab);
+                    MortarPrefab.SetActive(false);
+                    
+                    ExplosionPrefab = GameObject.Instantiate(MortarPrefab.GetComponent<Projectile>().explosionEffect);
+                    GameObject.DontDestroyOnLoad(ExplosionPrefab);
+                    ExplosionPrefab.SetActive(false);
+                    
+                    HomingProjectilePrefab = GameObject.Instantiate(possibleHideousMass.homingProjectile);
+                    GameObject.DontDestroyOnLoad(HomingProjectilePrefab);
+                    HomingProjectilePrefab.SetActive(false);
+                }
+                else
+                {
+                    Log.ExpectedInfo($"We'd like a a hideous mass in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+
+            if (FleshPrisonPrefab == null || FleshPanopticonPrefab == null)
+            {
+                var possibleFleshPrison = UnityEngine.Object.FindAnyObjectByType<FleshPrison>(FindObjectsInactive.Include);
+                
+                if (possibleFleshPrison != null)
+                {
+                    if (possibleFleshPrison.altVersion)
+                    {
+                        possibleFleshPrison.gameObject.transform.parent.gameObject.DebugPrintChildren();
+                        FleshPanopticonPrefab = GameObject.Instantiate(possibleFleshPrison.gameObject);
+                        GameObject.DontDestroyOnLoad(FleshPanopticonPrefab);
+                    }
+                    else
+                    {
+                        FleshPrisonPrefab = GameObject.Instantiate(possibleFleshPrison.gameObject);
+                        GameObject.DontDestroyOnLoad(FleshPrisonPrefab);
+                    }
+                }
+                else
+                {
+                    Log.ExpectedInfo($"We'd like a flesh prison in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
                 }
             }
         }

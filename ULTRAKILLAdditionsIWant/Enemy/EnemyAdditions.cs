@@ -17,13 +17,18 @@ public class EnemyAdditions : MonoBehaviour
     public HeckPuppetLeader HeckPuppetLeader { get; private set; } = null;
     public Radiance EnemyRadiance { get; private set; } = null;
     public EnemyFeedbacker Feedbacker { get; private set; } = null;
-    public EnemyAgony Agony { get; private set; } = null;
+    public EnemyPain Agony { get; private set; } = null;
     public bool UniquelySolo { get; private set; } = false;
 
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
     public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PreHurt = null;
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
     public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PostHurt = null;
+    
+    // params: (bool instakill)
+    public Action<bool> PreDeath = null;
+    // params: (bool instakill)
+    public Action<bool> PostDeath = null;
 
     public float Health 
     { 
@@ -170,7 +175,7 @@ public class EnemyAdditions : MonoBehaviour
         HeckPuppetLeader = gameObject.AddComponent<HeckPuppetLeader>();
         EnemyRadiance = gameObject.AddComponent<Radiance>();
         Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
-        Agony = gameObject.AddComponent<EnemyAgony>();
+        Agony = gameObject.AddComponent<EnemyPain>();
         EnemyFriend.IsLeader = false;
         PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
@@ -190,7 +195,7 @@ public class EnemyAdditions : MonoBehaviour
         HeckPuppet = GetComponent<HeckPuppet>();
         HeckPuppetLeader = GetComponent<HeckPuppetLeader>();
         Feedbacker = GetComponent<EnemyFeedbacker>();
-        Agony = GetComponent<EnemyAgony>();
+        Agony = GetComponent<EnemyPain>();
         
         if (nullAcceptable)
         {
@@ -221,6 +226,7 @@ public class EnemyAdditions : MonoBehaviour
 
         PreDeathCalled = true;
         InstaKilled = instakill;
+        PreDeath?.Invoke(InstaKilled);
         EnemyEvents.PreDeath?.Invoke(Eid, InstaKilled);
     }
 
@@ -233,6 +239,7 @@ public class EnemyAdditions : MonoBehaviour
         }
 
         PostDeathCalled = true;
+        PostDeath?.Invoke(InstaKilled);
         EnemyEvents.PostDeath?.Invoke(Eid, InstaKilled);
     }
     
@@ -266,7 +273,7 @@ public class EnemyAdditions : MonoBehaviour
         }
 
         PreHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
-        EnemyEvents.PreHurt(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        EnemyEvents.PreHurt?.Invoke(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
     }
 
     internal void NotifyOfPostHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
@@ -286,6 +293,6 @@ public class EnemyAdditions : MonoBehaviour
         HurtPatchCallerObject = null;
 
         PostHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
-        EnemyEvents.PostHurt(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        EnemyEvents.PostHurt?.Invoke(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
     }
 }

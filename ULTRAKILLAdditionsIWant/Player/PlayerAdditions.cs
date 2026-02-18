@@ -20,6 +20,7 @@ namespace UKAIW
             gameObject.AddComponent<SelfConscience>();
             gameObject.AddComponent<HeckPuppetObserver>();
             gameObject.AddComponent<ParryabilityCalculator>();
+            gameObject.AddComponent<PlayerPain>();
             gameObject.AddComponent<BadGyro>();
 
             Difficulty = MonoSingleton<PrefsManager>.Instance.GetInt("difficulty");

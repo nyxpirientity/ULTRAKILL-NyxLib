@@ -117,7 +117,10 @@ namespace UKAIW
 
         Dictionary<string, LevelQuickLoadState> QuickLoadStates = new Dictionary<string, LevelQuickLoadState>
         {
-            {"Level 0-E", LevelQuickLoadState.Needed}
+            {"Level 0-E", LevelQuickLoadState.Needed},
+            {"Level P-1", LevelQuickLoadState.Needed},
+            {"Level P-2", LevelQuickLoadState.Needed},
+            {"Endless", LevelQuickLoadState.Needed}
         };
 
         bool QuickLoading = false;

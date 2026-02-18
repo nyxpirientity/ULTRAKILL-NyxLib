@@ -4,13 +4,15 @@ using UnityEngine.UI;
 
 namespace UKAIW
 {
-    public class AgonyTracker : MonoBehaviour
+    /* where heck itself stores its absorbed pain */
+    public class PainStore : MonoBehaviour
     {
         public Heck Heck { get; private set; } = null;
+        public float Agony { get; private set; } = 0.0f;
 
-        public void AddAgony()
+        public void AddPain(float amount)
         {
-            
+            Agony += amount;
         }
 
         protected void Awake()
@@ -30,7 +32,6 @@ namespace UKAIW
 
         protected void FixedUpdate()
         {
-            
         }
 
         protected void OnDestroy()
