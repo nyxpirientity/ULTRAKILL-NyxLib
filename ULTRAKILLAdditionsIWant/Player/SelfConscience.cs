@@ -15,12 +15,12 @@ namespace UKAIW
         protected void Start()
         {
             Shud = StyleHUD.Instance;
-            Player.PreUpdate += PrePlayerUpdate;
+            PlayerEvents.PreUpdate += PrePlayerUpdate;
         }
 
         protected void OnDestroy()
         {
-            Player.PreUpdate -= PrePlayerUpdate;
+            PlayerEvents.PreUpdate -= PrePlayerUpdate;
         }
 
         private void PrePlayerUpdate(NewMovement player)

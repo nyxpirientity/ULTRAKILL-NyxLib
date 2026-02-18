@@ -8,12 +8,12 @@ namespace UKAIW
     {
         protected void OnDestroy()
         {
-            Player.PreHurt -= PlayerPreHurt;
+            PlayerEvents.PreHurt -= PlayerPreHurt;
         }
 
         protected void Start()
         {
-            Player.PreHurt += PlayerPreHurt;
+            PlayerEvents.PreHurt += PlayerPreHurt;
         }
 
         private void PlayerPreHurt(NewMovement player, int damage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility)

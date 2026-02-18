@@ -8,30 +8,6 @@ using UKAIW.Diagnostics.Debug;
 
 namespace UKAIW
 {
-    public static class Player
-    {
-        public static Action<NewMovement> PreUpdate = null;
-        public static Action<NewMovement> PostUpdate = null;
-        public static Action<NewMovement> PreFullStamina = null;
-        public static Action<NewMovement> PostFullStamina = null;
-        public static Action<NewMovement, int> PreDeath = null;
-        public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PreHurt = null;
-        public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PostHurt = null;
-
-        public static void Initialize()
-        {
-            Log.TraceExpectedInfo($"Player.Initialize called!");
-            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
-        }
-
-        private static void OnSceneWasLoaded(int buildIndex, string sceneName)
-        {
-            var player = MonoSingleton<NewMovement>.Instance;
-            
-            player?.gameObject.AddComponent<PlayerAdditions>();
-        }
-    }
-
     public class PlayerAdditions : MonoBehaviour
     {
         NewMovement player = null;
@@ -154,7 +130,7 @@ namespace UKAIW
             }
 
             processedDamage = damage;
-            Player.PreHurt?.Invoke(newMovement, damage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+            PlayerEvents.PreHurt?.Invoke(newMovement, damage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
 
             wasPreHurtCalled = true;
 
@@ -168,7 +144,7 @@ namespace UKAIW
 
             if (newMovement.hp - damage <= 0 && mortal)
             {
-                Player.PreDeath?.Invoke(newMovement, damage);
+                PlayerEvents.PreDeath?.Invoke(newMovement, damage);
             }
         }
 
@@ -181,7 +157,7 @@ namespace UKAIW
                 return;
             }
 
-            Player.PostHurt?.Invoke(newMovement, processedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+            PlayerEvents.PostHurt?.Invoke(newMovement, processedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
         }
     }
 
@@ -190,12 +166,12 @@ namespace UKAIW
     {
         public static void Prefix(NewMovement __instance)
         {
-            Player.PreFullStamina?.Invoke(__instance);
+            PlayerEvents.PreFullStamina?.Invoke(__instance);
         }
 
         public static void Postfix(NewMovement __instance)
         {
-            Player.PostFullStamina?.Invoke(__instance);
+            PlayerEvents.PostFullStamina?.Invoke(__instance);
         }
     }
 
@@ -204,12 +180,12 @@ namespace UKAIW
     {
         public static void Prefix(NewMovement __instance)
         {
-            Player.PreUpdate?.Invoke(__instance);
+            PlayerEvents.PreUpdate?.Invoke(__instance);
         }
 
         public static void Postfix(NewMovement __instance)
         {
-            Player.PostUpdate?.Invoke(__instance);
+            PlayerEvents.PostUpdate?.Invoke(__instance);
         }
     }
 }

@@ -147,8 +147,8 @@ public static class CybergrindAdditions
 
     public static void Initialize()
     {
-        Player.PreDeath += PrePlayerDeath;
-        Player.PostHurt += PostPlayerHurt;
+        PlayerEvents.PreDeath += PrePlayerDeath;
+        PlayerEvents.PostHurt += PostPlayerHurt;
         UpdateEvents.OnFixedUpdate += OnFixedUpdate;
         ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
     }

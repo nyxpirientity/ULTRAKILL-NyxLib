@@ -17,7 +17,14 @@ public class EnemyAdditions : MonoBehaviour
     public HeckPuppetLeader HeckPuppetLeader { get; private set; } = null;
     public Radiance EnemyRadiance { get; private set; } = null;
     public EnemyFeedbacker Feedbacker { get; private set; } = null;
+    public EnemyAgony Agony { get; private set; } = null;
     public bool UniquelySolo { get; private set; } = false;
+
+    // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
+    public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PreHurt = null;
+    // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
+    public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PostHurt = null;
+
     public float Health 
     { 
         get => Eid.Health; 
@@ -81,6 +88,12 @@ public class EnemyAdditions : MonoBehaviour
         {
             Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' was queued for destruction, so its time has come.");
             Destroy(RootGameObject);
+        }
+
+        if (InTheProcessOfHurting)
+        {
+            InTheProcessOfHurting = false;
+            Log.UnexpectedInfo($"{name}: InTheProcessOfHurting had to be set to false by Update");
         }
 
         if (Eid.enemyType == EnemyType.Streetcleaner)
@@ -157,6 +170,7 @@ public class EnemyAdditions : MonoBehaviour
         HeckPuppetLeader = gameObject.AddComponent<HeckPuppetLeader>();
         EnemyRadiance = gameObject.AddComponent<Radiance>();
         Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
+        Agony = gameObject.AddComponent<EnemyAgony>();
         EnemyFriend.IsLeader = false;
         PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
@@ -176,6 +190,7 @@ public class EnemyAdditions : MonoBehaviour
         HeckPuppet = GetComponent<HeckPuppet>();
         HeckPuppetLeader = GetComponent<HeckPuppetLeader>();
         Feedbacker = GetComponent<EnemyFeedbacker>();
+        Agony = GetComponent<EnemyAgony>();
         
         if (nullAcceptable)
         {
@@ -184,6 +199,11 @@ public class EnemyAdditions : MonoBehaviour
 
         Assert.IsNotNull(HydraMod);
         Assert.IsNotNull(PrefabMod);
+        Assert.IsNotNull(EnemyFriend);
+        Assert.IsNotNull(EnemyBloodFuel);
+        Assert.IsNotNull(EnemyRadiance);
+        Assert.IsNotNull(Feedbacker);
+        Assert.IsNotNull(Agony);
     }
 
     public void MarkAsUniquelySolo()
@@ -226,5 +246,46 @@ public class EnemyAdditions : MonoBehaviour
 
         DeathCalled = true;
         EnemyEvents.Death?.Invoke(Eid);
+    }
+
+    private bool InTheProcessOfHurting = false;
+    private object HurtPatchCallerObject = null;
+    internal void NotifyOfPreHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
+    {
+        if (InTheProcessOfHurting)
+        {
+            if (HurtPatchCallerObject == hurtPatchCallerObject)
+            {
+                Log.TraceExpectedInfo($"{name}: had NotifyOfPreHurt called by the same hurtPatchCallerObject when we were in the process of hurting already? ignoring");
+            }
+            else
+            {
+                Log.TraceExpectedInfo($"{name}: had NotifyOfPreHurt called by differing hurtPatchCallerObject when we were in the process of hurting already, ignoring");
+            }
+            return;
+        }
+
+        PreHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        EnemyEvents.PreHurt(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+    }
+
+    internal void NotifyOfPostHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
+    {
+        if (!InTheProcessOfHurting)
+        {
+            Log.TraceExpectedInfo($"{name}: had NotifyOfPreHurt called when we were NOT in the process of hurting already, ignoring");
+            return;
+        }
+
+        if (HurtPatchCallerObject != hurtPatchCallerObject)
+        {
+            Log.TraceExpectedInfo($"{name}: had NotifyOfPreHurt called when we were in the process of hurting already BUT the hurtPatchCallerObject did not match, ignoring");
+            return;
+        }
+
+        HurtPatchCallerObject = null;
+
+        PostHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        EnemyEvents.PostHurt(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
     }
 }

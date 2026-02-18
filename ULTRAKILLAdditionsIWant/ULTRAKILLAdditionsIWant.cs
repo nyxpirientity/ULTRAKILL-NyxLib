@@ -33,7 +33,7 @@ namespace UKAIW
 
         public override void OnLateInitializeMelon() // Runs after OnApplicationStart.
         {
-            Player.Initialize();
+            PlayerEvents.Initialize();
             Cheats.Initialize();
             Hydra.Initialize();
             MusicAdditions.Initialize();
@@ -42,7 +42,7 @@ namespace UKAIW
             MundaneMurder.Initialize();
             BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
-            EnemyFeedbackerDelegate.Initialize();
+            Heck.Initialize();
 
             GameConsole.Console.Instance.onError += () =>
             {

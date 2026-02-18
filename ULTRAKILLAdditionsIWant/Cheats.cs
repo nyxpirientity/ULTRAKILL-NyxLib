@@ -37,7 +37,7 @@ public static class Cheats
     public const string SelfConscience = "ukaiw.self-conscious-v1";
     public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
     public const string HeckPuppets = "ukaiw.heck-puppets";
-    public const string BehaviouralMirror = "ukaiw.behavioural-mirror";
+    public const string AggressiveAgony = "ukaiw.behavioural-mirror";
     public const string BadGyro = "ukaiw.bad-gyro";
     public const string FeedbackerForAll = "ukaiw.feedbacker-for-all";
     public const string CybergrindShuffle = "ukaiw.cybergrind-shuffle";
@@ -425,19 +425,17 @@ public static class Cheats
             },
             onEnable: (cheat, manager) =>
             {
-                
             }
         ), "HELL'S IMPACT");        
 
         CheatsManager.Instance.RegisterCheat(new ToggleCheat(
-            "Behavioural Mirror", 
-            Cheats.BehaviouralMirror,
+            "Aggressive Agony", 
+            Cheats.AggressiveAgony,
             onDisable: (cheat) =>
             {
             },
             onEnable: (cheat, manager) =>
             {
-                
             }
         ), "HELL'S IMPACT");
 

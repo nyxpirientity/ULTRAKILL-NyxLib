@@ -31,7 +31,7 @@ namespace UKAIW
         public StyleHUD Shud { get; private set; } = null;
         public FieldPublisher<NewMovement, float> AntiHpCooldown { get; private set; } = null;
 
-        private void EnemyPostHurt(EnemyIdentifier eid, GameObject enemyGo, GameObject target, Vector3 force, float multiplier, float critMultiplier, GameObject sourceWeapon, bool fromExplosion, Vector3? hitPoint)
+        private void EnemyPostHurt(EnemyAdditions eadd, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
         {
             if (!Cheats.IsCheatEnabled(Cheats.DemandingHell))
             {
@@ -43,6 +43,8 @@ namespace UKAIW
                 return;
             }
             
+            var eid = eadd.Eid;
+
             if (eid.Dead)
             {
                 return;
@@ -209,7 +211,7 @@ namespace UKAIW
 
         protected void Start()
         {
-            Player.PostHurt += PlayerPostHurt;
+            PlayerEvents.PostHurt += PlayerPostHurt;
             EnemyEvents.PostHurt += EnemyPostHurt;
             TextMeshProUGUIEvents.PostEnable += TextMeshProEnabled;
             TextMeshProUGUIEvents.PostDisable += TextMeshProDisabled;
@@ -249,7 +251,7 @@ namespace UKAIW
 
         protected void OnDestroy()
         {
-            Player.PostHurt -= PlayerPostHurt;
+            PlayerEvents.PostHurt -= PlayerPostHurt;
             EnemyEvents.PostHurt -= EnemyPostHurt;
         }
 
