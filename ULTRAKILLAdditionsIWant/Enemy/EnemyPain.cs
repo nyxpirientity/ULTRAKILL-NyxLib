@@ -201,7 +201,7 @@ namespace UKAIW
                 ActiveMentalPain = 0.0f;
                 return;
             }
-
+        
             switch (Eadd.Eid.enemyType)
             {
                 // they've probably ascended beyond the concepts of pain, mild annoyance for them at the worst.
@@ -211,6 +211,9 @@ namespace UKAIW
                     ActivePhysicalPain = -1.0f;
                     ActiveMentalPain = -1.0f;
                 break;
+                case EnemyType.SisyphusPrime:
+                    ActiveMentalPain = 0.0f;
+                    break;
                 default:
                     break;
             }
