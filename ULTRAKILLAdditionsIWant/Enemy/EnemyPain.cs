@@ -1,4 +1,5 @@
 using System;
+using MelonLoader;
 using UnityEngine;
 
 namespace UKAIW
@@ -30,13 +31,22 @@ namespace UKAIW
             
             Eadd.PreHurt += OnPreHurt;
             Eadd.PostDeath += PostDeath;
+
+            Eadd.PreDeath += OnPreDeath;
+        }
+
+        private void OnPreDeath(bool instakill)
+        {
+            if (Eadd.Eid.enemyType == EnemyType.Mindflayer)
+            {
+                Heck.Instance.PainStore.AddPain(5.0f);
+            }
         }
 
         protected void OnEnable()
         {
             TryListenForDeath();
         }
-
 
         protected void OnDisable()
         {
@@ -96,7 +106,7 @@ namespace UKAIW
             {
                 if (otherEid.enemyType is EnemyType.Filth || otherEid.enemyType is EnemyType.Stray || otherEid.enemyType is EnemyType.Schism || otherEid.enemyType is EnemyType.Soldier)
                 {
-                    compassion += 0.5f; // they don't attack each other even with enemies attack enemies on soooooo
+                    compassion += 0.25f; // they don't attack each other even with enemies attack enemies on soooooo
                 }   
             }
 
@@ -181,27 +191,51 @@ namespace UKAIW
             }
 
             var mentalPain = (concern + compassion) * MentalSensitivity;
-            MentalSensitivity = Mathf.Min(0.2f, MentalSensitivity - mentalPain);
+            MentalSensitivity = Mathf.Max(0.2f, MentalSensitivity - mentalPain);
             ActiveMentalPain += mentalPain;
             ActiveHardMentalPain += mentalPain * 0.2f;
         }
 
         protected void FixedUpdate()
         {
-            ActivePhysicalPain = Mathf.MoveTowards(ActivePhysicalPain, -0.1f, Time.fixedDeltaTime * 0.5f);
-            PhysicalSensitivity = Mathf.MoveTowards(PhysicalSensitivity, -0.1f, Time.fixedDeltaTime * 3.0f);
+            ActivePhysicalPain = Mathf.MoveTowards(ActivePhysicalPain, -0.05f, Time.fixedDeltaTime * 0.15f);
+            PhysicalSensitivity = Mathf.MoveTowards(PhysicalSensitivity, 1.0f, Time.fixedDeltaTime * 3.0f);
 
             ActiveMentalPain = Mathf.MoveTowards(ActiveMentalPain, ActiveHardMentalPain, Time.fixedDeltaTime * 0.25f);
-            ActiveHardMentalPain = Mathf.MoveTowards(ActiveHardMentalPain, -0.1f, Time.fixedDeltaTime * 0.05f);
+            ActiveHardMentalPain = Mathf.MoveTowards(ActiveHardMentalPain, -0.05f, Time.fixedDeltaTime * 0.1f);
             MentalSensitivity = Mathf.MoveTowards(MentalSensitivity, 1.0f, Time.fixedDeltaTime * 3.0f);
-            
+
             if (Eadd.Eid.Dead)
             {
                 ActivePhysicalPain = 0.0f;
                 ActiveMentalPain = 0.0f;
                 return;
             }
-        
+
+            if (Eadd.Eid.zombie != null)
+            {
+                var fallSpeed = new FieldPublisher<Zombie, float>(Eadd.Eid.zombie, "fallSpeed");
+                var fallTime = new FieldPublisher<Zombie, float>(Eadd.Eid.zombie, "fallTime");
+                if (fallTime.Value > 0.05f && Eadd.Eid.zombie.GetComponent<Rigidbody>().velocity.y < fallSpeed.Value)
+                {
+                    ActiveMentalPain += Time.fixedDeltaTime;
+                }
+            }
+            else if (Eadd.Eid.machine != null)
+            {
+                var fallSpeed = new FieldPublisher<Machine, float>(Eadd.Eid.machine, "fallSpeed");
+                var fallTime = new FieldPublisher<Machine, float>(Eadd.Eid.machine, "fallTime");
+
+                if (fallTime.Value > 0.05f && Eadd.Eid.machine.GetComponent<Rigidbody>().velocity.y < fallSpeed.Value)
+                {
+                    ActiveMentalPain += Time.fixedDeltaTime * 1.5f;
+                }
+            }
+            
+            ActivePhysicalPain = Mathf.Min(ActivePhysicalPain, 2.0f);
+            ActiveMentalPain = Mathf.Min(ActiveMentalPain, 2.0f);
+            ActiveHardMentalPain = Mathf.Min(ActiveHardMentalPain, 2.0f);
+
             switch (Eadd.Eid.enemyType)
             {
                 // they've probably ascended beyond the concepts of pain, mild annoyance for them at the worst.
@@ -218,14 +252,19 @@ namespace UKAIW
                     break;
             }
 
-            Heck.Instance.PainStore.AddPain(ActivePhysicalPain + ActiveMentalPain * Time.fixedDeltaTime);
+            Heck.Instance.PainStore.AddPain((ActivePhysicalPain + ActiveMentalPain) * Time.fixedDeltaTime);
         }
 
         private void OnPreHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
         {
-            float pain = (Mathf.Pow(multiplier * critMultiplier, 0.5f) * 0.25f * PhysicalSensitivity);
+            if (!ListeningForDeath)
+            {
+                return;
+            }
 
-            PhysicalSensitivity = Mathf.Min(0.2f, PhysicalSensitivity - (pain * 0.25f));
+            float pain = ((Mathf.Pow(multiplier + (multiplier * critMultiplier), 0.5f) * PhysicalSensitivity) / (Mathf.Pow(Eadd.StartingHealth, 0.5f))) * 2.0f;
+
+            PhysicalSensitivity = Mathf.Max(0.2f, PhysicalSensitivity - (pain * 0.5f));
 
             ActivePhysicalPain += pain;
         }

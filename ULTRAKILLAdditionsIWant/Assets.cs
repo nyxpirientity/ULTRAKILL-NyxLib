@@ -18,11 +18,16 @@ namespace UKAIW
         public static GameObject MachineEnrageSound_0 { get; private set; } = null;
         public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
 
+        public static GameObject HeatResistancePrefabWithoutHeatResistance { get; private set; } = null;
         public static GameObject HeatResistancePrefab { get; private set; } = null;
         public static GameObject LabelPrefab { get; private set; } = null;
-        public static GameObject ExplosionPrefab { get; private set; } = null;
         public static GameObject HeatResHurtSound { get; private set; }
 
+        public static GameObject HarmlessExplosionPrefab { get; private set; } = null;
+        public static GameObject ExplosionPrefab { get; private set; } = null;
+        public static GameObject SuperExplosionPrefab { get; private set; } = null;
+
+        public static GameObject RocketPrefab { get; private set; } = null;
         public static GameObject MortarPrefab { get; private set; } = null;
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
         public static GameObject FleshPrisonPrefab { get; private set; } = null;
@@ -49,15 +54,22 @@ namespace UKAIW
                 if (possibleHeatResistance != null)
                 {
                     Log.ExpectedInfo($"Heat Resistance object found in scene \"{SceneHelper.CurrentScene}\" yoinking it (instantiating/cloning it) as a prefab!");
+
                     HeatResistancePrefab = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
                     HeatResistancePrefab.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefab);
+
                     TextMeshProUGUI textMesh = null;
                     var textMeshProGuis = HeatResistancePrefab.gameObject.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
                     var heatRes = HeatResistancePrefab.gameObject.GetComponentInChildren<HeatResistance>(includeInactive: true);
                     FieldPublisher<HeatResistance, GameObject> hurtingSound = new FieldPublisher<HeatResistance, GameObject>(heatRes, "hurtingSound");
                     HeatResHurtSound = GameObject.Instantiate(hurtingSound.Value); 
                     UnityEngine.Object.DontDestroyOnLoad(HeatResHurtSound);
+
+                    HeatResistancePrefabWithoutHeatResistance = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
+                    HeatResistancePrefabWithoutHeatResistance.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefabWithoutHeatResistance);
+                    GameObject.Destroy(HeatResistancePrefabWithoutHeatResistance.GetComponentInChildren<HeatResistance>());
                     
                     foreach (var elem in textMeshProGuis)
                     {
@@ -78,6 +90,46 @@ namespace UKAIW
                 else
                 {
                     Log.ExpectedInfo($"We'd like a heat resistence prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+
+            if (RocketPrefab == null)
+            {
+                var possibleGrenades = UnityEngine.Object.FindObjectsByType<Grenade>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                foreach (var grenade in possibleGrenades)
+                {
+                    if (grenade.rocket)
+                    {
+                        RocketPrefab = GameObject.Instantiate(grenade.gameObject);
+                        GameObject.DontDestroyOnLoad(RocketPrefab);
+                        RocketPrefab.SetActive(false);
+                    }
+
+                    if (HarmlessExplosionPrefab == null && grenade.harmlessExplosion != null)
+                    {
+                        HarmlessExplosionPrefab = GameObject.Instantiate(grenade.harmlessExplosion);
+                        GameObject.DontDestroyOnLoad(HarmlessExplosionPrefab);
+                        HarmlessExplosionPrefab.SetActive(false);
+                    }
+                    
+                    if (ExplosionPrefab == null && grenade.explosion != null)
+                    {
+                        ExplosionPrefab = GameObject.Instantiate(grenade.explosion);
+                        GameObject.DontDestroyOnLoad(ExplosionPrefab);
+                        ExplosionPrefab.SetActive(false);
+                    }
+                    
+                    if (SuperExplosionPrefab == null && grenade.superExplosion != null)
+                    {
+                        SuperExplosionPrefab = GameObject.Instantiate(grenade.superExplosion);
+                        GameObject.DontDestroyOnLoad(SuperExplosionPrefab);
+                        SuperExplosionPrefab.SetActive(false);
+                    }
+
+                    if (SuperExplosionPrefab != null && ExplosionPrefab != null && HarmlessExplosionPrefab != null && RocketPrefab != null)
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -113,7 +165,6 @@ namespace UKAIW
                 {
                     if (possibleFleshPrison.altVersion)
                     {
-                        possibleFleshPrison.gameObject.transform.parent.gameObject.DebugPrintChildren();
                         FleshPanopticonPrefab = GameObject.Instantiate(possibleFleshPrison.gameObject);
                         GameObject.DontDestroyOnLoad(FleshPanopticonPrefab);
                     }

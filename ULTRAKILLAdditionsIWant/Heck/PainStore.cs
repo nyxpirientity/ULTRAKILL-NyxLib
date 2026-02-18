@@ -8,11 +8,15 @@ namespace UKAIW
     public class PainStore : MonoBehaviour
     {
         public Heck Heck { get; private set; } = null;
-        public float Agony { get; private set; } = 0.0f;
+        public float Pain { get; private set; } = 0.0f;
 
         public void AddPain(float amount)
         {
-            Agony += amount;
+            if (amount > 0.0f)
+            {
+                amount = (amount / Mathf.Max((Pain - 100.0f) / 100.0f, 1.0f));
+            }
+            Pain = Mathf.Max(0.0f, Pain + amount);
         }
 
         protected void Awake()

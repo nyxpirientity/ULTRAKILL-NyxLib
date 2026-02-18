@@ -87,7 +87,7 @@ namespace UKAIW
 
                 if (heatResistance.Value <= heatResExplosionLimit && !fromExplosion)
                 {
-                    HeatResExplosion(multiplier, hitPoint.GetValueOrDefault(eid.transform.position), false, out _);
+                    HeatResExplosion(multiplier + (multiplier * critMultiplier), hitPoint.GetValueOrDefault(eid.transform.position), false, out _);
                 }
 
                 if (heatResistance.Value <= 60.0f)
@@ -314,7 +314,7 @@ namespace UKAIW
             if (CurrentHeatResistance <= 35.0f)
             {
                 float burnStrength = NyxMath.InverseNormalizeToRange(CurrentHeatResistance, -100.0f, 40.0f);
-                eid.ApplyDamage(Vector3.Normalize(eid.transform.position - transform.position) * burnStrength * 10.0f, eid.transform.position, burnStrength * 5.0f, 1.0f, null, false);
+                eid.ApplyDamage(Vector3.Normalize(eid.transform.position - transform.position) * burnStrength * 10.0f, eid.transform.position, burnStrength * 5.0f, 0.0f, null, false);
                 SafeFromContactDamage.Add(eid.gameObject);
                 if (eid.Dead)
                 {

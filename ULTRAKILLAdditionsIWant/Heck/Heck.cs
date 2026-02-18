@@ -10,6 +10,8 @@ namespace UKAIW
 
         public PainStore PainStore { get; private set; } = null;
         public AggressiveAgony AggressiveAgony { get; private set; } = null;
+        public GameObject PainMeterGo { get; private set; } = null;
+        public PainMeter PainMeter { get; private set; } = null;
 
         protected void Awake()
         {
@@ -20,11 +22,25 @@ namespace UKAIW
         {
             PainStore = gameObject.AddComponent<PainStore>();
             AggressiveAgony = gameObject.AddComponent<AggressiveAgony>();
+
+            if (Assets.HeatResistancePrefabWithoutHeatResistance != null)
+            {
+                PainMeterGo = GameObject.Instantiate(Assets.HeatResistancePrefabWithoutHeatResistance.transform.GetChild(0).gameObject, CanvasController.Instance.transform);
+                PainMeter = PainMeterGo.AddComponent<PainMeter>();   
+                PainMeterGo.SetActive(true);
+            }
         }
 
         protected void Update()
         {
-            
+            if (AggressiveAgony.Enabled && PainStore.Pain >= 0.1f)
+            {
+                PainMeterGo.SetActive(true);
+            }
+            else
+            {
+                PainMeterGo.SetActive(false);
+            }
         }
 
         protected void FixedUpdate()

@@ -63,6 +63,7 @@ public class EnemyAdditions : MonoBehaviour
     public GameObject RootGameObject { get => Eid.enemyType == EnemyType.MaliciousFace ? transform.parent.gameObject : gameObject; }
 
     public bool InstaKilled { get; private set; } = false;
+    public float StartingHealth { get; private set; } = 0.0f;
 
     [NonSerialized] public bool QueuedForDestruction = false;
     
@@ -177,6 +178,8 @@ public class EnemyAdditions : MonoBehaviour
         Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
         Agony = gameObject.AddComponent<EnemyPain>();
         EnemyFriend.IsLeader = false;
+        GetComponent<EnemyIdentifier>().ForceGetHealth();
+        StartingHealth = GetComponent<EnemyIdentifier>().Health;
         PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
         HydraMod.PassPrefabToShared();
         EnemyFriend.IsLeader = true;
@@ -274,25 +277,30 @@ public class EnemyAdditions : MonoBehaviour
 
         PreHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
         EnemyEvents.PreHurt?.Invoke(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        
+        HurtPatchCallerObject = hurtPatchCallerObject;
+        InTheProcessOfHurting = true;
     }
 
     internal void NotifyOfPostHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
     {
         if (!InTheProcessOfHurting)
         {
-            Log.TraceExpectedInfo($"{name}: had NotifyOfPreHurt called when we were NOT in the process of hurting already, ignoring");
+            Log.TraceExpectedInfo($"{name}: had NotifyOfPostHurt called when we were NOT in the process of hurting already, ignoring");
             return;
         }
 
         if (HurtPatchCallerObject != hurtPatchCallerObject)
         {
-            Log.TraceExpectedInfo($"{name}: had NotifyOfPreHurt called when we were in the process of hurting already BUT the hurtPatchCallerObject did not match, ignoring");
+            Log.TraceExpectedInfo($"{name}: had NotifyOfPostHurt called when we were in the process of hurting already BUT the hurtPatchCallerObject did not match, ignoring");
             return;
         }
 
-        HurtPatchCallerObject = null;
 
         PostHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
         EnemyEvents.PostHurt?.Invoke(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        
+        HurtPatchCallerObject = null;
+        InTheProcessOfHurting = false;
     }
 }
