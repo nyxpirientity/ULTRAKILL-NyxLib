@@ -15,6 +15,7 @@ namespace UKAIW
         public bool Enabled { get => Cheats.IsCheatEnabled(Cheats.AggressiveAgony); }
         public bool Disabled { get => !Enabled; }
         [SerializeField] public Slider Meter { get; private set; }
+        public GameObject Fill { get; private set; }
         [SerializeField] public TextMeshProUGUI MeterPercentage { get; private set; }
         public TextMeshProUGUI MeterLabel { get; private set; }
         public RectTransform RectTransform { get; private set; }
@@ -52,6 +53,7 @@ namespace UKAIW
             }
 
             Meter = transform.Find("Meter").gameObject.GetComponent<Slider>();
+            Fill = transform.Find("Meter/Fill Area/Fill").gameObject;
             MeterPercentage = transform.Find("Meter/Fill Area/Fill/Percentage").gameObject.GetComponent<TextMeshProUGUI>();
             MeterLabel = transform.Find("Meter/Label").gameObject.GetComponent<TextMeshProUGUI>();
             Meter.minValue = 0.0f;
@@ -76,9 +78,7 @@ namespace UKAIW
             Meter.value = PainStore.Pain;
 
             float painAlpha = NyxMath.NormalizeToRange(PainStore.Pain, Meter.minValue, Meter.maxValue);
-            var meterColors = Meter.colors;
-            meterColors.normalColor = Color.Lerp(Color.white, Color.red, painAlpha);
-            Meter.colors = meterColors;
+            Fill.GetComponent<CanvasRenderer>().SetColor(Color.Lerp(Color.white, Color.red, painAlpha));
             MeterPercentage.text = $"{painAlpha * 100.0f:F2}%";
             MeterLabel.text = $"{(painAlpha < 0.5f ? "PAIN" : "AGONY")} - {painAlpha * 100.0f:F1}%";
         }

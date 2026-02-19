@@ -9,6 +9,7 @@ namespace UKAIW
     {
         public Heck Heck { get; private set; } = null;
         public float Pain { get; private set; } = 0.0f;
+        private GameObject CheckpointDetector = null;
 
         public void AddPain(float amount)
         {
@@ -16,6 +17,7 @@ namespace UKAIW
             {
                 amount = (amount / Mathf.Max((Pain - 100.0f) / 100.0f, 1.0f));
             }
+            
             Pain = Mathf.Max(0.0f, Pain + amount);
         }
 
@@ -26,12 +28,22 @@ namespace UKAIW
 
         protected void Start()
         {
-            
+            NewCheckpointDetector();
+        }
+
+        private void NewCheckpointDetector()
+        {
+            CheckpointDetector = new GameObject();
+            CheckpointDetector.AddComponent<DestroyOnCheckpointRestart>();
         }
 
         protected void Update()
         {
-            
+            if (CheckpointDetector == null)
+            {
+                NewCheckpointDetector();
+                Pain = 0.0f;
+            }
         }
 
         protected void FixedUpdate()

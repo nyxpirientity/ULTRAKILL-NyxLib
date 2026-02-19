@@ -110,6 +110,7 @@ namespace UKAIW
                         HarmlessExplosionPrefab = GameObject.Instantiate(grenade.harmlessExplosion);
                         GameObject.DontDestroyOnLoad(HarmlessExplosionPrefab);
                         HarmlessExplosionPrefab.SetActive(false);
+                        HarmlessExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
                     }
                     
                     if (ExplosionPrefab == null && grenade.explosion != null)
@@ -117,6 +118,7 @@ namespace UKAIW
                         ExplosionPrefab = GameObject.Instantiate(grenade.explosion);
                         GameObject.DontDestroyOnLoad(ExplosionPrefab);
                         ExplosionPrefab.SetActive(false);
+                        ExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
                     }
                     
                     if (SuperExplosionPrefab == null && grenade.superExplosion != null)
@@ -124,6 +126,7 @@ namespace UKAIW
                         SuperExplosionPrefab = GameObject.Instantiate(grenade.superExplosion);
                         GameObject.DontDestroyOnLoad(SuperExplosionPrefab);
                         SuperExplosionPrefab.SetActive(false);
+                        SuperExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
                     }
 
                     if (SuperExplosionPrefab != null && ExplosionPrefab != null && HarmlessExplosionPrefab != null && RocketPrefab != null)
@@ -146,6 +149,7 @@ namespace UKAIW
                     ExplosionPrefab = GameObject.Instantiate(MortarPrefab.GetComponent<Projectile>().explosionEffect);
                     GameObject.DontDestroyOnLoad(ExplosionPrefab);
                     ExplosionPrefab.SetActive(false);
+                    ExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
                     
                     HomingProjectilePrefab = GameObject.Instantiate(possibleHideousMass.homingProjectile);
                     GameObject.DontDestroyOnLoad(HomingProjectilePrefab);
@@ -280,7 +284,7 @@ namespace UKAIW
                     return;
                 }
 
-                if (ExplosionPrefab == null)
+                /*if (ExplosionPrefab == null)
                 {
                     Log.TraceExpectedInfo($"Yoinking (instantiating/cloning) explosion prefab {__instance.gameObject.name} thats about to start, as we needed an ExplosionPrefab!");
                     ExplosionPrefab = UnityEngine.GameObject.Instantiate(__instance.gameObject, null, false);
@@ -309,7 +313,7 @@ namespace UKAIW
                     explosion.electric = false;
                     explosion.enabled = true;
                     UnityEngine.Object.DontDestroyOnLoad(ExplosionPrefab);
-                }
+                }*/
             }
         }
     }

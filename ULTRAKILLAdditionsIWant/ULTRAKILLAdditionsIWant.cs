@@ -77,6 +77,33 @@ namespace UKAIW
         {
             TryLog.Action(() => { UpdateEvents.OnUpdate?.Invoke(); });
 
+            TryFindQuickLoadLevel();
+
+            if (SceneHelper.CurrentScene == QuickLoadLevel && (SceneHelper.PendingScene == null))
+            {
+                if (QuickLoadStates[QuickLoadLevel] is LevelQuickLoadState.AwaitingLoad)
+                {
+                    QuickLoadStates[QuickLoadLevel] = LevelQuickLoadState.WaitingToReturn;
+                }
+                else if (QuickLoadStates[QuickLoadLevel] is LevelQuickLoadState.WaitingToReturn)
+                {
+                    Log.TraceExpectedInfo($"{QuickLoadLevel} quick load done!");
+                    QuickLoadStates[QuickLoadLevel] = LevelQuickLoadState.Done;
+                    QuickLoadLevel = null;
+                    QuickLoading = false;
+
+                    if (!TryFindQuickLoadLevel())
+                    {
+                        SceneHelper.LoadScene(PreQuickLoadLevel);
+                        PreQuickLoadLevel = null;
+                        CurrentLevelIsFromQuickLoad = false;
+                    }
+                }
+            }
+        }
+
+        private bool TryFindQuickLoadLevel()
+        {
             if ((SceneHelper.PendingScene == null) && !QuickLoading)
             {
                 QuickLoadLevel = null;
@@ -91,28 +118,20 @@ namespace UKAIW
                 
                 if (QuickLoadLevel != null)
                 {
+                    if (!CurrentLevelIsFromQuickLoad)
+                    {
+                        PreQuickLoadLevel = SceneHelper.CurrentScene;
+                    }
                     Log.TraceExpectedInfo($"Quickloading {QuickLoadLevel}");
                     SceneHelper.LoadScene(QuickLoadLevel);
+                    CurrentLevelIsFromQuickLoad = true;
                     QuickLoadStates[QuickLoadLevel] = LevelQuickLoadState.AwaitingLoad;
                     QuickLoading = true;
+                    return true;
                 }
             }
-
-            if (SceneHelper.CurrentScene == QuickLoadLevel && (SceneHelper.PendingScene == null))
-            {
-                if (QuickLoadStates[QuickLoadLevel] is LevelQuickLoadState.AwaitingLoad)
-                {
-                    QuickLoadStates[QuickLoadLevel] = LevelQuickLoadState.WaitingToReturn;
-                }
-                else if (QuickLoadStates[QuickLoadLevel] is LevelQuickLoadState.WaitingToReturn)
-                {
-                    Log.TraceExpectedInfo($"{QuickLoadLevel} quick load done!");
-                    SceneHelper.LoadPreviousScene();
-                    QuickLoadStates[QuickLoadLevel] = LevelQuickLoadState.Done;
-                    QuickLoadLevel = null;
-                    QuickLoading = false;
-                }
-            }
+            
+            return false;
         }
 
         Dictionary<string, LevelQuickLoadState> QuickLoadStates = new Dictionary<string, LevelQuickLoadState>
@@ -124,7 +143,9 @@ namespace UKAIW
         };
 
         bool QuickLoading = false;
+        bool CurrentLevelIsFromQuickLoad = false;
         string QuickLoadLevel = null;
+        string PreQuickLoadLevel = null;
         public override void OnFixedUpdate() // Can run multiple times per frame. Mostly used for Physics.
         {
             TryLog.Action(() => { UpdateEvents.OnFixedUpdate?.Invoke(); });

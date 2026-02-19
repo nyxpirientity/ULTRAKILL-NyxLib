@@ -41,6 +41,10 @@ namespace UKAIW
             {
                 Heck.Instance.PainStore.AddPain(5.0f);
             }
+            else if (Eadd.Eid.enemyType == EnemyType.HideousMass)
+            {
+                Heck.Instance.PainStore.AddPain(3.5f);
+            }
         }
 
         protected void OnEnable()
@@ -75,6 +79,7 @@ namespace UKAIW
             }
 
             EnemyEvents.Death += OnAnyEnemyDeath;
+            PlayerEvents.PostHurt += PostPlayerHurt;
             ListeningForDeath = true;
         }
 
@@ -86,7 +91,13 @@ namespace UKAIW
             }
 
             EnemyEvents.Death -= OnAnyEnemyDeath;
+            PlayerEvents.PostHurt -= PostPlayerHurt;
             ListeningForDeath = false;
+        }
+
+        private void PostPlayerHurt(NewMovement nm, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility)
+        {
+            ActiveMentalPain = Math.Max(ActiveHardMentalPain, ActiveMentalPain - (float)processedDamage * 0.01f);
         }
 
         private void OnAnyEnemyDeath(EnemyIdentifier otherEid)
@@ -199,11 +210,11 @@ namespace UKAIW
         protected void FixedUpdate()
         {
             ActivePhysicalPain = Mathf.MoveTowards(ActivePhysicalPain, -0.05f, Time.fixedDeltaTime * 0.15f);
-            PhysicalSensitivity = Mathf.MoveTowards(PhysicalSensitivity, 1.0f, Time.fixedDeltaTime * 3.0f);
+            PhysicalSensitivity = Mathf.MoveTowards(PhysicalSensitivity, 1.0f, Time.fixedDeltaTime * 2.0f);
 
             ActiveMentalPain = Mathf.MoveTowards(ActiveMentalPain, ActiveHardMentalPain, Time.fixedDeltaTime * 0.25f);
             ActiveHardMentalPain = Mathf.MoveTowards(ActiveHardMentalPain, -0.05f, Time.fixedDeltaTime * 0.1f);
-            MentalSensitivity = Mathf.MoveTowards(MentalSensitivity, 1.0f, Time.fixedDeltaTime * 3.0f);
+            MentalSensitivity = Mathf.MoveTowards(MentalSensitivity, 1.0f, Time.fixedDeltaTime * 2.0f);
 
             if (Eadd.Eid.Dead)
             {
@@ -232,9 +243,16 @@ namespace UKAIW
                 }
             }
             
-            ActivePhysicalPain = Mathf.Min(ActivePhysicalPain, 2.0f);
-            ActiveMentalPain = Mathf.Min(ActiveMentalPain, 2.0f);
-            ActiveHardMentalPain = Mathf.Min(ActiveHardMentalPain, 2.0f);
+            ActivePhysicalPain = Mathf.Min(ActivePhysicalPain, 4.0f);
+            ActiveMentalPain = Mathf.Min(ActiveMentalPain, 4.0f);
+            ActiveHardMentalPain = Mathf.Min(ActiveHardMentalPain, 4.0f);
+
+            float painScalar = 1.0f;
+
+            if (Eadd.Eid.puppet)
+            {
+                painScalar = 0.0f;
+            }
 
             switch (Eadd.Eid.enemyType)
             {
@@ -247,12 +265,13 @@ namespace UKAIW
                 break;
                 case EnemyType.SisyphusPrime:
                     ActiveMentalPain = 0.0f;
+                    painScalar = 0.35f;
                     break;
                 default:
                     break;
             }
 
-            Heck.Instance.PainStore.AddPain((ActivePhysicalPain + ActiveMentalPain) * Time.fixedDeltaTime);
+            Heck.Instance.PainStore.AddPain((ActivePhysicalPain + ActiveMentalPain) * painScalar * Time.fixedDeltaTime);
         }
 
         private void OnPreHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
