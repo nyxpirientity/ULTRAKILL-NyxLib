@@ -18,12 +18,12 @@ namespace UKAIW
     {
         public static void Prefix(SpiderBody __instance)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(SpiderDiePatch));
         }
         
         public static void Postfix(SpiderBody __instance)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(SpiderDiePatch));
         }
     }
 
@@ -32,12 +32,12 @@ namespace UKAIW
     {
         public static void Prefix(Zombie __instance)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(ZombieLimpPatch));
         }
         
         public static void Postfix(Zombie __instance)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(ZombieLimpPatch));
         }
     }
 
@@ -46,12 +46,12 @@ namespace UKAIW
     {
         public static void Prefix(Statue __instance)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(StatueLimpPatch));
         }
         
         public static void Postfix(Statue __instance)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(StatueLimpPatch));
         }
     }
 
@@ -60,12 +60,12 @@ namespace UKAIW
     {
         public static void Prefix(Machine __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(MachineLimpPatch));
         }
         
         public static void Postfix(Machine __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(MachineLimpPatch));
         }
     }
 
@@ -74,12 +74,12 @@ namespace UKAIW
     {
         public static void Prefix(Drone __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false);
+            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(DroneDeathPatch));
         }
         
         public static void Postfix(Drone __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>());
+            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(DroneDeathPatch));
         }
     }
 
@@ -89,13 +89,13 @@ namespace UKAIW
         public static void Prefix(EnemyIdentifier __instance)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPreDeath(true);
+            eadd.NullInvalid()?.TryCallPreDeath(true, typeof(EnemyIdentifierInstakill));
         }
         
         public static void Postfix(EnemyIdentifier __instance)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPostDeath();
+            eadd.NullInvalid()?.TryCallPostDeath(typeof(EnemyIdentifierInstakill));
         }
     }
 
@@ -105,13 +105,13 @@ namespace UKAIW
         public static void Prefix(EnemyIdentifier __instance)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPreDeath(true);
+            eadd.NullInvalid()?.TryCallPreDeath(true, typeof(EnemyIdentifierExplodePatch));
         }
         
         public static void Postfix(EnemyIdentifier __instance)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPostDeath();
+            eadd.NullInvalid()?.TryCallPostDeath(typeof(EnemyIdentifierExplodePatch));
         }
     }
 
@@ -122,22 +122,22 @@ namespace UKAIW
         public static GameObject[] ActivateOnDeath;
         public static bool CalledPreDeath = false;
 
-        public static void PreDeath(EnemyIdentifier eid, bool instakill)
+        public static void PreDeath(EnemyIdentifier eid, bool instakill, object callerObj)
         {
             var eadd = eid.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPreDeath(instakill);
+            eadd.NullInvalid()?.TryCallPreDeath(instakill, callerObj);
         }
 
-        public static void PostDeath(EnemyIdentifier eid)
+        public static void PostDeath(EnemyIdentifier eid, object callerObj)
         {
             var eadd = eid.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPostDeath();
+            eadd.NullInvalid()?.TryCallPostDeath(callerObj);
         }
 
         public static void Prefix(EnemyIdentifier __instance, bool fromExplosion)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPreDeath(false);
+            eadd.NullInvalid()?.TryCallPreDeath(false, typeof(EnemyDeathPatch));
             eadd.NullInvalid()?.TryCallDeath();
 
             if (Cheats.IsCheatEnabled(Cheats.NoCorpses))
@@ -149,7 +149,7 @@ namespace UKAIW
         public static void Postfix(EnemyIdentifier __instance, bool fromExplosion)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPostDeath();
+            eadd.NullInvalid()?.TryCallPostDeath(typeof(EnemyDeathPatch));
         }
     }
 }

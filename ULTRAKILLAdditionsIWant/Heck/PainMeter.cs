@@ -61,10 +61,10 @@ namespace UKAIW
             Meter.direction = Slider.Direction.RightToLeft;
 
             RectTransform = GetComponent<RectTransform>();
-            RectTransform.anchorMin = new Vector2(1.0f, 0.5f);
-            RectTransform.anchorMax = new Vector2(1.0f, 0.5f);
+            RectTransform.anchorMin = new Vector2(1.0f, 0.0f);
+            RectTransform.anchorMax = new Vector2(1.0f, 0.0f);
             RectTransform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
-            RectTransform.anchoredPosition = new Vector2(-25.0f, 0.0f);
+            RectTransform.anchoredPosition = new Vector2(-25.0f, 225.0f);
             RectTransform.sizeDelta = RectTransform.sizeDelta - new Vector2(100.0f, 40.0f);
         }
 

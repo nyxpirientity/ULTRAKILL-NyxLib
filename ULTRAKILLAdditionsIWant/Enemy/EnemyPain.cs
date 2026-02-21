@@ -31,8 +31,14 @@ namespace UKAIW
             
             Eadd.PreHurt += OnPreHurt;
             Eadd.PostDeath += PostDeath;
+            Eadd.PreEnrage += PreEnrage;
 
             Eadd.PreDeath += OnPreDeath;
+        }
+
+        private void PreEnrage()
+        {
+            ActiveMentalPain += 0.75f;
         }
 
         private void OnPreDeath(bool instakill)
@@ -119,6 +125,11 @@ namespace UKAIW
                 {
                     compassion += 0.25f; // they don't attack each other even with enemies attack enemies on soooooo
                 }   
+            }
+            
+            if (Eadd.Eid.enemyType == otherEid.enemyType)
+            {
+                compassion += 0.4f;
             }
 
             float lesserConcernScale = 0.0f;

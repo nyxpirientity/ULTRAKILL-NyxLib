@@ -23,8 +23,15 @@ namespace UKAIW
             PainStore = gameObject.AddComponent<PainStore>();
             AggressiveAgony = gameObject.AddComponent<AggressiveAgony>();
 
-            if (Assets.HeatResistancePrefabWithoutHeatResistance != null || CanvasController.Instance == null)
+            if (Assets.HeatResistancePrefabWithoutHeatResistance != null && CanvasController.Instance != null)
             {
+                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance);
+                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance.transform);
+                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance.transform.GetChild(0));
+                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance.transform.GetChild(0).gameObject);
+                Assert.IsNotNull(CanvasController.Instance);
+                Assert.IsNotNull(CanvasController.Instance.transform);
+
                 PainMeterGo = GameObject.Instantiate(Assets.HeatResistancePrefabWithoutHeatResistance.transform.GetChild(0).gameObject, CanvasController.Instance.transform);
                 PainMeter = PainMeterGo.AddComponent<PainMeter>();   
                 PainMeterGo.SetActive(true);

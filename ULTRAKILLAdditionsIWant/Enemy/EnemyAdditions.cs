@@ -24,6 +24,9 @@ public class EnemyAdditions : MonoBehaviour
     public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PreHurt = null;
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
     public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PostHurt = null;
+
+    public Action PreEnrage = null;
+    public Action PreUnEnrage = null;
     
     // params: (bool instakill)
     public Action<bool> PreDeath = null;
@@ -80,6 +83,42 @@ public class EnemyAdditions : MonoBehaviour
     {
         FindAndCacheMods(true);
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
+
+        PostDeath += PostDeathValidation;
+    }
+
+    private void PostDeathValidation(bool instakill)
+    {
+        switch (Eid.enemyClass)
+        {
+            case EnemyClass.Husk:
+                break;
+            case EnemyClass.Machine:
+                if (Eid.machine == null)
+                {
+                    return;
+                }
+
+                if (!Eid.machine.limp)
+                {
+                    // seems like something bugged if we're not limp but just died.
+                    Log.Error($"{name}: machine was NOT limp during PostDeathValidation? Destroying RootGameObject {RootGameObject}.");
+                    UnityEngine.GameObject.Destroy(RootGameObject);
+                }
+
+                if (Eid.machine.GetComponent<Turret>() != null)
+                {
+                    Log.Error($"{name}: TURRET was NOT DESTROYED during PostDeathValidation? Destroying!!!!!!.");
+                    UnityEngine.Object.Destroy(Eid.machine.GetComponent<Turret>());
+                }
+                break;
+            case EnemyClass.Demon:
+                break;
+            case EnemyClass.Divine:
+                break;
+            case EnemyClass.Other:
+                break;
+        }
     }
 
     /* to allow patching lol */
@@ -142,6 +181,19 @@ public class EnemyAdditions : MonoBehaviour
                 if (rb.Value == null)
                 {
                     Log.Warning($"invalid nma failsafe caught invalid rb in active swordsmachine '{gameObject}'");
+                    Destroy(RootGameObject);
+                }
+            }
+        }
+        else if (Eid.enemyType == EnemyType.Mannequin)
+        {
+            var man = Eid.GetComponent<Mannequin>();
+            
+            if ((man.NullInvalid()?.isActiveAndEnabled).GetValueOrDefault(false))
+            {
+                if (Eid.machine.limp)
+                {
+                    Log.Error($"Mannequin '{gameObject}' has null nma but still active?");
                     Destroy(RootGameObject);
                 }
             }
@@ -219,14 +271,16 @@ public class EnemyAdditions : MonoBehaviour
         UniquelySolo = true;
     }
     
+    object DeathPatchCallerObject = null;
     private bool PreDeathCalled = false;
-    internal void TryCallPreDeath(bool instakill)
+    internal void TryCallPreDeath(bool instakill, object patchCallerObject)
     {
         if (PreDeathCalled)
         {
             return;
         }
 
+        DeathPatchCallerObject = patchCallerObject;
         PreDeathCalled = true;
         InstaKilled = instakill;
         PreDeath?.Invoke(InstaKilled);
@@ -234,9 +288,14 @@ public class EnemyAdditions : MonoBehaviour
     }
 
     private bool PostDeathCalled = false;
-    internal void TryCallPostDeath()
+    internal void TryCallPostDeath(object patchCallerObject)
     {
         if (PostDeathCalled)
+        {
+            return;
+        }
+
+        if (DeathPatchCallerObject != patchCallerObject)
         {
             return;
         }

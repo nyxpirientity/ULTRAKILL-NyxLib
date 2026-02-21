@@ -31,6 +31,13 @@ namespace UKAIW
                 return false;
             }
             
+            var enrage = eid.GetComponent<IEnrage>();
+
+            if ((enrage?.isEnraged).GetValueOrDefault(false))
+            {
+                return false;
+            }
+
             switch (eid.enemyType)
             {
                 case EnemyType.Swordsmachine:

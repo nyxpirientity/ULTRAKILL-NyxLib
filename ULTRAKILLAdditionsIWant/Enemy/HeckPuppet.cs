@@ -21,6 +21,12 @@ namespace UKAIW
         public StyleRanks StyleRank;
         FieldPublisher<EnemyIdentifier, float> EidPuppetSpawnTimer = null;
 
+        protected void Awake()
+        {
+            Eid = GetComponent<EnemyIdentifier>();
+            Eid.dontCountAsKills = true;
+        }
+
         protected void Start()
         {
             if (!GetComponent<DestroyOnCheckpointRestart>())
@@ -28,15 +34,12 @@ namespace UKAIW
                 gameObject.AddComponent<DestroyOnCheckpointRestart>();
             }
 
-            Eid = GetComponent<EnemyIdentifier>();
-            Eid.dontCountAsKills = true;
-            
             Eid.checkingSpawnStatus = false;
             GivePoints = true;
             
             if (Eid.machine != null)
             {
-                Eid.machine.onDeath = null;
+                Eid.machine.onDeath.RemoveAllListeners();
                 Eid.machine.destroyOnDeath = new GameObject[0];
             }
             if (Eid.drone != null)
@@ -70,7 +73,7 @@ namespace UKAIW
         private int NumUpdates = 0;
         protected void Update()
         {
-            if (NumUpdates == 1)
+            if (NumUpdates == 1 && !Eid.Dead)
             {
                 Eid.PuppetSpawn();
                 EidPuppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
@@ -78,6 +81,14 @@ namespace UKAIW
             }
             
             NumUpdates += 1;
+
+            if (Eid.machine != null)
+            {
+                if (Eid.GetComponent<NavMeshAgent>() == null || Eid.GetComponent<Animator>() == null)
+                {
+                    UnityEngine.Object.Destroy(GetComponent<EnemyAdditions>().RootGameObject);
+                }
+            }
         }
 
         bool HasDecrementedBlood = false;

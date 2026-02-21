@@ -250,8 +250,13 @@ namespace UKAIW
                         continue;
                     }
 
+                    if (puppet.HeckPuppet.Eid.Dead)
+                    {
+                        continue;
+                    }
+
                     puppet.HeckPuppet.GivePoints = false;
-                    puppet.HeckPuppet.InstaKill();
+                    GameObject.Destroy(puppet.HeckPuppet.GetComponent<EnemyAdditions>().RootGameObject);
                 }
             }
         }

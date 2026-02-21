@@ -57,14 +57,14 @@ namespace UKAIW
             SmallExplosionPrefab = GameObject.Instantiate(Assets.ExplosionPrefab, PrefabHolder.transform);
             SmallExplosionPrefab.SetActive(true);
             var smallExplosion = SmallExplosionPrefab.GetComponent<ExplosionAdditions>();
-            smallExplosion.ExplosionScale = 0.35f;
-            smallExplosion.ExplosionSpeedScale = 0.35f;
+            smallExplosion.ExplosionScale = 0.5f;
+            smallExplosion.ExplosionSpeedScale = 0.5f;
 
             ExplosionPrefab = GameObject.Instantiate(Assets.ExplosionPrefab, PrefabHolder.transform);
             ExplosionPrefab.SetActive(true);
             var explosion = ExplosionPrefab.GetComponent<ExplosionAdditions>();
-            explosion.ExplosionScale = 0.5f;
-            explosion.ExplosionSpeedScale = 0.5f;
+            explosion.ExplosionScale = 0.85f;
+            explosion.ExplosionSpeedScale = 0.85f;
         }
 
         protected void Update()
@@ -232,12 +232,13 @@ namespace UKAIW
                 
                 projectile.GetComponent<AudioSource>().Play();
                 projectile.speed = 40.0f;
-                projectile.turningSpeedMultiplier = 0.35f;
+                projectile.turningSpeedMultiplier = 0.75f;
                 projectile.damage = 35;
                 
                 if (explosive)
                 {
                     projectile.explosionEffect = SmallExplosionPrefab;
+                    projectile.damage = 50;
                 }
             }
 
@@ -276,8 +277,10 @@ namespace UKAIW
                 projectile.damage = 0;
                 projectile.bigExplosion = bigExplosion;
                 projectile.explosionEffect = NoExplosionPrefab;
+                projectile.turnSpeed *= 2.0f;
+                projectile.predictiveHomingMultiplier *= 6.0f * ((1.0f + ((float)i / numProjectiles)));
 
-                projectile.GetComponent<Rigidbody>().velocity = Vector3.up * 46.0f;
+                projectile.GetComponent<Rigidbody>().velocity = Vector3.up * 36.0f;
                 projectiles.Add(projectile);
 
                 projectileGo.SetActive(true);
@@ -295,7 +298,7 @@ namespace UKAIW
                 }
                 
                 projectile.GetComponent<AudioSource>().Play();
-                projectile.damage = 25;
+                projectile.damage = 50;
                 projectile.explosionEffect = ExplosionPrefab;
             }
         }
