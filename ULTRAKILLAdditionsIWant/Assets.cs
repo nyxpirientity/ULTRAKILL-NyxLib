@@ -185,14 +185,14 @@ namespace UKAIW
             }
         }
 
-        private static void EnemyStart(EnemyIdentifier eid, GameObject go)
+        private static void EnemyStart(Enemy enemy, GameObject go)
         {
-            switch (eid.enemyType)
+            switch (enemy.EID.enemyType)
             {
                 case EnemyType.Swordsmachine:
                 if (MachineEnrageSound_0 == null)
                 {
-                    MachineEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<SwordsMachine>().bigPainSound, null, false);
+                    MachineEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<SwordsMachine>().bigPainSound, null, false);
                     MachineEnrageSound_0.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(MachineEnrageSound_0);
                     if (MachineEnrageSound_0 != null)
@@ -202,11 +202,11 @@ namespace UKAIW
                 }
                 break;
                 case EnemyType.Cerberus:
-                if (HuskEnrageSound_0 == null && eid.GetComponent<StatueBoss>() != null)
+                if (HuskEnrageSound_0 == null && enemy.GetComponent<StatueBoss>() != null)
                 {
-                    if (eid.GetComponent<StatueBoss>().statueChargeSound2 != null)
+                    if (enemy.GetComponent<StatueBoss>().statueChargeSound2 != null)
                     {
-                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<StatueBoss>().statueChargeSound2, null, false);
+                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound2, null, false);
                         HuskEnrageSound_0.SetActive(false);
                         UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
                         if (HuskEnrageSound_0 != null)
@@ -220,7 +220,7 @@ namespace UKAIW
                 case EnemyType.Streetcleaner:
                 if (MachineEnrageSound_1 == null)
                 {
-                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(eid.machine.deathSound);
+                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(enemy.deathSound);
                 }
                 break;
             }

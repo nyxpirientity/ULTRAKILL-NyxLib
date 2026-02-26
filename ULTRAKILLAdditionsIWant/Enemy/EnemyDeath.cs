@@ -18,54 +18,26 @@ namespace UKAIW
     {
         public static void Prefix(SpiderBody __instance)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(SpiderDiePatch));
+            EidDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(SpiderDiePatch));
         }
         
         public static void Postfix(SpiderBody __instance)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(SpiderDiePatch));
+            EidDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(SpiderDiePatch));
         }
     }
 
-    [HarmonyPatch(typeof(Zombie), "GoLimp", new Type[]{})]
-    static class ZombieLimpPatch
+    [HarmonyPatch(typeof(Enemy), "GoLimp", new Type[]{typeof(bool)})]
+    static class EnemyLimpPatch
     {
-        public static void Prefix(Zombie __instance)
+        public static void Prefix(Enemy __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(ZombieLimpPatch));
+            EidDeathPatch.PreDeath(__instance.EID, false, typeof(EnemyLimpPatch));
         }
         
-        public static void Postfix(Zombie __instance)
+        public static void Postfix(Enemy __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(ZombieLimpPatch));
-        }
-    }
-
-    [HarmonyPatch(typeof(Statue), "GoLimp", new Type[]{})]
-    static class StatueLimpPatch
-    {
-        public static void Prefix(Statue __instance)
-        {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(StatueLimpPatch));
-        }
-        
-        public static void Postfix(Statue __instance)
-        {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(StatueLimpPatch));
-        }
-    }
-
-    [HarmonyPatch(typeof(Machine), "GoLimp", new Type[]{typeof(bool)})]
-    static class MachineLimpPatch
-    {
-        public static void Prefix(Machine __instance, bool fromExplosion)
-        {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(MachineLimpPatch));
-        }
-        
-        public static void Postfix(Machine __instance, bool fromExplosion)
-        {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(MachineLimpPatch));
+            EidDeathPatch.PostDeath(__instance.EID, typeof(EnemyLimpPatch));
         }
     }
 
@@ -74,12 +46,12 @@ namespace UKAIW
     {
         public static void Prefix(Drone __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(DroneDeathPatch));
+            EidDeathPatch.PreDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), false, typeof(DroneDeathPatch));
         }
         
         public static void Postfix(Drone __instance, bool fromExplosion)
         {
-            EnemyDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(DroneDeathPatch));
+            EidDeathPatch.PostDeath(__instance.gameObject.GetComponent<EnemyIdentifier>(), typeof(DroneDeathPatch));
         }
     }
 
@@ -116,8 +88,8 @@ namespace UKAIW
     }
 
 
-    [HarmonyPatch(typeof(EnemyIdentifier), "Death", new Type[1]{typeof(bool)})]
-    static class EnemyDeathPatch
+    [HarmonyPatch(typeof(EnemyIdentifier), "ProcessDeath", new Type[1]{typeof(bool)})]
+    static class EidDeathPatch
     {
         public static GameObject[] ActivateOnDeath;
         public static bool CalledPreDeath = false;
@@ -137,19 +109,14 @@ namespace UKAIW
         public static void Prefix(EnemyIdentifier __instance, bool fromExplosion)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPreDeath(false, typeof(EnemyDeathPatch));
+            eadd.NullInvalid()?.TryCallPreDeath(false, typeof(EidDeathPatch));
             eadd.NullInvalid()?.TryCallDeath();
-
-            if (Cheats.IsCheatEnabled(Cheats.NoCorpses))
-            {
-                __instance.puppet = true;
-            }
         }
 
         public static void Postfix(EnemyIdentifier __instance, bool fromExplosion)
         {
             var eadd = __instance.GetComponent<EnemyAdditions>();
-            eadd.NullInvalid()?.TryCallPostDeath(typeof(EnemyDeathPatch));
+            eadd.NullInvalid()?.TryCallPostDeath(typeof(EidDeathPatch));
         }
     }
 }

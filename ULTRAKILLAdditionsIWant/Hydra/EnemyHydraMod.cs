@@ -10,8 +10,7 @@ using UnityEngine.Assertions;
 
 namespace UKAIW
 {
-    [Serializable]
-    public class EnemyHydraMod : MonoBehaviour
+    public class EnemyHydra : EnemyModifier
     {
         public class SharedData : ScriptableObject
         {
@@ -309,27 +308,8 @@ namespace UKAIW
             {
                 newHealth *= Options.HydraHealthDecayScale;
             }
-
-            if (Eid.zombie)
-            {
-                Eid.zombie.health = newHealth;
-            }
-            else if (Eid.spider)
-            {
-                Eid.spider.health = newHealth;
-            }
-            else if (Eid.machine)
-            {
-                Eid.machine.health = newHealth;
-            }
-            else if (Eid.drone)
-            {
-                Eid.drone.health = newHealth;
-            }
-            else if (Eid.statue)
-            {
-                Eid.statue.health = newHealth;
-            }
+            
+            Eadd.Health = newHealth;
 
             if (Depth > 0)
             {
@@ -606,7 +586,7 @@ namespace UKAIW
         {
             if (Shared.Prefab == null)
             {
-                var prefabMod = GetComponent<EnemyAdditions>().PrefabMod;
+                var prefabMod = GetComponent<EnemyAdditions>().PrefabStore;
                 Shared.Prefab = prefabMod.Prefab;
                 Shared.PrefabParent = prefabMod.PrefabParent;
             }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UKAIW
 {
-    public class EnemyPain : MonoBehaviour
+    public class EnemyPain : EnemyModifier
     {
         /* 
         * by nature, the initial defaults I'm writing for this class as I write this comment are a little lore heavy and I don't really give a darn about ULTRAKILL lore at all so uhhhhhhhh
@@ -106,28 +106,28 @@ namespace UKAIW
             ActiveMentalPain = Math.Max(ActiveHardMentalPain, ActiveMentalPain - (float)processedDamage * 0.01f);
         }
 
-        private void OnAnyEnemyDeath(EnemyIdentifier otherEid)
+        private void OnAnyEnemyDeath(Enemy otherEnemy)
         {
             if (SpeciesType is EnemySpeciesType.OrganicMachine)
             {
                 return;
             }
 
-            var otherSpeciesType = otherEid.GetSpeciesType();
-            var otherSpeciesRank = otherEid.GetSpeciesRank();
+            var otherSpeciesType = otherEnemy.EID.GetSpeciesType();
+            var otherSpeciesRank = otherEnemy.EID.GetSpeciesRank();
 
             float compassion = 0.0f;
             float concern = 0.0f;
 
             if (Eadd.Eid.enemyType is EnemyType.Filth || Eadd.Eid.enemyType is EnemyType.Stray || Eadd.Eid.enemyType is EnemyType.Schism || Eadd.Eid.enemyType is EnemyType.Soldier)
             {
-                if (otherEid.enemyType is EnemyType.Filth || otherEid.enemyType is EnemyType.Stray || otherEid.enemyType is EnemyType.Schism || otherEid.enemyType is EnemyType.Soldier)
+                if (otherEnemy.EID.enemyType is EnemyType.Filth || otherEnemy.EID.enemyType is EnemyType.Stray || otherEnemy.EID.enemyType is EnemyType.Schism || otherEnemy.EID.enemyType is EnemyType.Soldier)
                 {
                     compassion += 0.25f; // they don't attack each other even with enemies attack enemies on soooooo
                 }   
             }
             
-            if (Eadd.Eid.enemyType == otherEid.enemyType)
+            if (Eadd.Eid.enemyType == otherEnemy.EID.enemyType)
             {
                 compassion += 0.4f;
             }
@@ -233,26 +233,6 @@ namespace UKAIW
                 ActiveMentalPain = 0.0f;
                 return;
             }
-
-            if (Eadd.Eid.zombie != null)
-            {
-                var fallSpeed = new FieldPublisher<Zombie, float>(Eadd.Eid.zombie, "fallSpeed");
-                var fallTime = new FieldPublisher<Zombie, float>(Eadd.Eid.zombie, "fallTime");
-                if (fallTime.Value > 0.05f && Eadd.Eid.zombie.GetComponent<Rigidbody>().velocity.y < fallSpeed.Value)
-                {
-                    ActiveMentalPain += Time.fixedDeltaTime;
-                }
-            }
-            else if (Eadd.Eid.machine != null)
-            {
-                var fallSpeed = new FieldPublisher<Machine, float>(Eadd.Eid.machine, "fallSpeed");
-                var fallTime = new FieldPublisher<Machine, float>(Eadd.Eid.machine, "fallTime");
-
-                if (fallTime.Value > 0.05f && Eadd.Eid.machine.GetComponent<Rigidbody>().velocity.y < fallSpeed.Value)
-                {
-                    ActiveMentalPain += Time.fixedDeltaTime * 1.5f;
-                }
-            }
             
             ActivePhysicalPain = Mathf.Min(ActivePhysicalPain, 4.0f);
             ActiveMentalPain = Mathf.Min(ActiveMentalPain, 4.0f);
@@ -292,7 +272,7 @@ namespace UKAIW
                 return;
             }
 
-            float pain = ((Mathf.Pow(multiplier + (multiplier * critMultiplier), 0.5f) * PhysicalSensitivity) / (Mathf.Pow(Eadd.StartingHealth, 0.5f))) * 2.0f;
+            float pain = ((Mathf.Pow(multiplier + (multiplier * critMultiplier), 0.5f) * PhysicalSensitivity) / (Mathf.Pow(Eadd.InitialHealth, 0.5f))) * 2.0f;
 
             PhysicalSensitivity = Mathf.Max(0.2f, PhysicalSensitivity - (pain * 0.5f));
 

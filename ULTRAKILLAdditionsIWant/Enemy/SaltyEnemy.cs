@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace UKAIW
 {
-    public class SaltyEnemy : MonoBehaviour
+    public class SaltyEnemy : EnemyModifier
     {
         EnemyIdentifier Eid = null;
         EnemyAdditions Eadd = null;
-        Radiance.Modifier RadianceModifier = new Radiance.Modifier();
+        EnemyRadiance.Modifier RadianceModifier = new EnemyRadiance.Modifier();
         bool PlayedEnrageSound = false;
         bool EnragedByUs = false;
         float enrageSoundTimer = -1.0f;
@@ -26,7 +26,7 @@ namespace UKAIW
                     return;
                 }
                 
-                var prefabEid = Eadd.PrefabMod.Prefab.GetComponent<EnemyIdentifier>() ?? Eadd.PrefabMod.Prefab.GetComponentInChildren<EnemyIdentifier>();
+                var prefabEid = Eadd.PrefabStore.Prefab.GetComponent<EnemyIdentifier>() ?? Eadd.PrefabStore.Prefab.GetComponentInChildren<EnemyIdentifier>();
                 var radienceTier = prefabEid.hasRadianceEffected ? prefabEid.radianceTier : 0.0f;
                 int rankIndex = StyleHUD.Instance.rankIndex;
                 StyleRanks rank = (StyleRanks)(rankIndex);
@@ -188,7 +188,7 @@ namespace UKAIW
         {
             Eadd = GetComponent<EnemyAdditions>();
             Eid = Eadd.Eid;
-            Eadd.EnemyRadiance.AddModifier(RadianceModifier);
+            Eadd.Radiance.AddModifier(RadianceModifier);
             RadianceModifier.SpeedEnabled = false;
             RadianceModifier.HealthEnabled = false;
             RadianceModifier.DamageEnabled = false;

@@ -18,7 +18,7 @@ namespace UKAIW
             public Vector3 Position;
             public Quaternion Rotation;
             public Vector3 LocalScale;
-            public EnemyHydraMod.SharedData SharedData;
+            public EnemyHydra.SharedData SharedData;
             public int Depth;
             public EnemyType EnemyType;
             public bool BossBar;
@@ -31,7 +31,7 @@ namespace UKAIW
             {
                 var go = eid.gameObject;
                 var eadd = go.GetComponent<EnemyAdditions>();
-                var ehm = eadd.HydraMod;
+                var ehm = eadd.Hydra;
                 
                 ehm.NotifyOfDeath(instakill);
             };
@@ -110,16 +110,16 @@ namespace UKAIW
             LastHitstopTimestamp = Time.unscaledTimeAsDouble;
         }
 
-        private static void PreEnemyDeath(EnemyIdentifier eid, bool instakill)
+        private static void PreEnemyDeath(Enemy enemy, bool instakill)
         {
-            var go = eid.gameObject;
+            var go = enemy.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
-            var ehm = eadd.HydraMod;
+            var ehm = eadd.Hydra;
             
             ehm.NotifyOfDeath(instakill);
         }
 
-        private static void PostEnemyDeath(EnemyIdentifier eid, bool instakill)
+        private static void PostEnemyDeath(Enemy enemy, bool instakill)
         {
             if (Cheats.IsCheatEnabled(Cheats.HydraMode))
             {
@@ -127,11 +127,11 @@ namespace UKAIW
             }
         }
 
-        private static void DuringEnemyDeath(EnemyIdentifier eid)
+        private static void DuringEnemyDeath(Enemy enemy)
         {
-            var go = eid.gameObject;
+            var go = enemy.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
-            var ehm = eadd.HydraMod;
+            var ehm = eadd.Hydra;
             ehm.NotifyOfDeath(false);
             ehm.DuringDeath();
         }
@@ -173,7 +173,7 @@ namespace UKAIW
             }
         }
         private static int SharedDataForPrefabCacheIdx = 0;
-        public static ReserveList<EnemyHydraMod.SharedData> SharedDatas = new ReserveList<EnemyHydraMod.SharedData>(256);
+        public static ReserveList<EnemyHydra.SharedData> SharedDatas = new ReserveList<EnemyHydra.SharedData>(256);
 
         public static void InstantiateDupe(QueuedDupeInfo dupeInfo)
         {
@@ -205,13 +205,11 @@ namespace UKAIW
             eid.spawnIn = false;
             eid.timeSinceSpawned = 0.0f;
 
-            eadd.FindAndCacheMods();
-
             Assert.IsNotNull(eadd);
-            Assert.IsNotNull(eadd.HydraMod);
-            Assert.IsNotNull(eadd.HydraMod.Shared);
+            Assert.IsNotNull(eadd.Hydra);
+            Assert.IsNotNull(eadd.Hydra.Shared);
 
-            eadd.HydraMod.Depth = dupeInfo.Depth;
+            eadd.Hydra.Depth = dupeInfo.Depth;
 
             if (dupeInfo.BossBar)
             {

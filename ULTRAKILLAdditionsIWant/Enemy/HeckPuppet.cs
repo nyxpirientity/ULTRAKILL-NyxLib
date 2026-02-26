@@ -8,14 +8,14 @@ using UnityEngine.AI;
 
 namespace UKAIW
 {
-    public class HeckPuppet : MonoBehaviour
+    public class HeckPuppet : EnemyModifier
     {
         public GameObject LeaderGo = null;
         public HeckPuppetLeader Leader = null;
         public EnemyIdentifier Eid { get; private set; } = null;
         public bool GivePoints { get; set; } = true;
         public ulong HeckPuppetID = 0;
-        public Radiance.Modifier RadianceMod = null;
+        public EnemyRadiance.Modifier RadianceMod = null;
 
         public EnemyGameplayRank GameplayRank;
         public StyleRanks StyleRank;

@@ -9,7 +9,7 @@ using UnityEngine;
 namespace UKAIW
 {
     [Serializable]
-    public class HeckPuppetLeader : MonoBehaviour
+    public class HeckPuppetLeader : EnemyModifier
     {
         public class ManagedHeckPuppet
         {
@@ -37,7 +37,7 @@ namespace UKAIW
             internal void Spawn(Vector3 position, Quaternion rotation, HeckPuppetLeader leader, StyleRanks styleRank, Options.HeckPuppetStyleEntry.HeckPuppetOptions options)
             {   
                 HeckPuppetID = NextHeckPuppetID;
-                PuppetRootGo = UnityEngine.Object.Instantiate(leader.Ead.PrefabMod.Prefab, leader.Ead.RootGameObject.transform.parent);
+                PuppetRootGo = UnityEngine.Object.Instantiate(leader.Ead.PrefabStore.Prefab, leader.Ead.RootGameObject.transform.parent);
                 PuppetRootGo.transform.position = position + UnityEngine.Random.onUnitSphere * 2.5f;
                 PuppetRootGo.transform.rotation = rotation;
                 PuppetEad = PuppetRootGo.GetComponent<EnemyAdditions>() ?? PuppetRootGo.GetComponentInChildren<EnemyAdditions>();
@@ -60,7 +60,7 @@ namespace UKAIW
                 }
 
                 PuppetEad.Health = (Mathf.Min(options.MaxHeckPuppetHealth.Value, leader.Eid.Health * options.HeckPuppetHealthScalar.Value));
-                var radianceMod = new Radiance.Modifier() 
+                var radianceMod = new EnemyRadiance.Modifier() 
                 {
                     HealthEnabled = options.HeckPuppetHealthBuffScalar.Value >= 0.0f,
                     HealthMod = options.HeckPuppetHealthBuffScalar.Value,
@@ -71,7 +71,7 @@ namespace UKAIW
                     Multiplier = true,
                 };
 
-                PuppetEad.EnemyRadiance.AddModifier(radianceMod);
+                PuppetEad.Radiance.AddModifier(radianceMod);
                 
                 HeckPuppet = PuppetEad.gameObject.AddComponent<HeckPuppet>();
                 HeckPuppet.RadianceMod = radianceMod;

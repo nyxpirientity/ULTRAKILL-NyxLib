@@ -342,10 +342,10 @@ namespace UKAIW
         }
     }
 
-    [HarmonyPatch(typeof(EnemyIdentifier), "Awake")]
+    [HarmonyPatch(typeof(Enemy), "Awake")]
     static class EnemyPreSpawnPatch
     {
-        public static void Prefix(EnemyIdentifier __instance)
+        public static void Prefix(Enemy __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
@@ -358,7 +358,6 @@ namespace UKAIW
             try
             {
                 var eadd = enemyGo.AddComponent<EnemyAdditions>();
-                eadd.SetupMods();
             }
             catch (Exception e)
             {
@@ -374,18 +373,18 @@ namespace UKAIW
         }
     }
 
-    [HarmonyPatch(typeof(EnemyIdentifier), "Start")]
+    [HarmonyPatch(typeof(Enemy), "Start")]
     static class EnemyStartPatch
     {
-        public static void Prefix(EnemyIdentifier __instance)
+        public static void Prefix(Enemy __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreStart?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => { EnemyEvents.PreStart?.Invoke(enemy, enemyGo); });
         }
 
-        public static void Postfix(EnemyIdentifier __instance)
+        public static void Postfix(Enemy __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
@@ -394,7 +393,7 @@ namespace UKAIW
             
             if (Cheats.IsCheatEnabled(Cheats.LogEIDInfo))
             {
-                enemyGo.transform.parent.gameObject.DebugPrintChildren();
+                enemyGo.GetComponent<EnemyAdditions>().RootGameObject.DebugPrintChildren();
             }
         }
     }
@@ -407,7 +406,7 @@ namespace UKAIW
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(enemy.GetComponent<Enemy>(), enemyGo);});
         }
 
         public static void Postfix(EnemyIdentifier __instance)
@@ -425,7 +424,7 @@ namespace UKAIW
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(enemy.GetComponent<Enemy>(), enemyGo);});
         }
 
         public static void Postfix(EnemyIdentifier __instance)

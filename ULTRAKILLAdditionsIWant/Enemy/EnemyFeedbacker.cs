@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UKAIW
 {
-    public class EnemyFeedbacker : MonoBehaviour
+    public class EnemyFeedbacker : EnemyModifier
     {
         protected void Start()
         {

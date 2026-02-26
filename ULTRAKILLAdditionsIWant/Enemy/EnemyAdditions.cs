@@ -5,19 +5,24 @@ using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 using UnityEngine.AI;
 
-[Serializable]
+/* as of making it, mostly just meant to be inheritted from so our own enemy addition monobehaviours can be identified. */
+public class EnemyModifier : MonoBehaviour
+{
+}
+
 public class EnemyAdditions : MonoBehaviour
 {
-    public EnemyHydraMod HydraMod { get; private set; }
-    public EnemyPrefabMod PrefabMod { get; private set; }
-    public EnemyFriendIdentifier EnemyFriend { get; private set; } = null;
-    public EnemyBloodFuel EnemyBloodFuel { get; private set; } = null;
-    public SaltyEnemy SaltyEnemy { get; private set; } = null;
-    public HeckPuppet HeckPuppet { get; private set; } = null;
-    public HeckPuppetLeader HeckPuppetLeader { get; private set; } = null;
-    public Radiance EnemyRadiance { get; private set; } = null;
-    public EnemyFeedbacker Feedbacker { get; private set; } = null;
-    public EnemyPain Agony { get; private set; } = null;
+    [SerializeField] public EnemyHydra Hydra { get; private set; }
+    [SerializeField] public EnemyPrefabStore PrefabStore { get; private set; }
+    [SerializeField] public EnemyFriendIdentifier FriendID { get; private set; } = null;
+    [SerializeField] public EnemyBloodFuel BloodFuel { get; private set; } = null;
+    [SerializeField] public SaltyEnemy Salt { get; private set; } = null;
+    [SerializeField] public HeckPuppet HeckPuppet { get; private set; } = null;
+    [SerializeField] public HeckPuppetLeader HeckPuppetLeader { get; private set; } = null;
+    [SerializeField] public EnemyRadiance Radiance { get; private set; } = null;
+    [SerializeField] public EnemyFeedbacker Feedbacker { get; private set; } = null;
+    [SerializeField] public EnemyPain Pain { get; private set; } = null;
+
     public bool UniquelySolo { get; private set; } = false;
 
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
@@ -33,91 +38,47 @@ public class EnemyAdditions : MonoBehaviour
     // params: (bool instakill)
     public Action<bool> PostDeath = null;
 
+    [SerializeField] public float InitialHealth { get; private set; } = -1.0f;
+
     public float Health 
     { 
         get => Eid.Health; 
         set
-        {
-            if (Eid.zombie != null)
-            {
-                Eid.zombie.health = value;
-            }
-            else if (Eid.drone != null)
-            {
-                Eid.drone.health = value;
-            }
-            else if (Eid.machine != null)
-            {
-                Eid.machine.health = value;
-            }
-            else if (Eid.statue != null)
-            {
-                Eid.statue.health = value;
-            }
-            else if (Eid.spider != null)
-            {
-                Eid.spider.health = value;
-            }
-
-            Eid.health = value;
+        {   
+            Enemy.health = value;
         } 
     }
 
     public GameObject RootGameObject { get => Eid.enemyType == EnemyType.MaliciousFace ? transform.parent.gameObject : gameObject; }
 
     public bool InstaKilled { get; private set; } = false;
-    public float StartingHealth { get; private set; } = 0.0f;
 
     [NonSerialized] public bool QueuedForDestruction = false;
     
     [NonSerialized] public EnemyIdentifier Eid = null;
+    [NonSerialized] public Enemy Enemy = null;
 
     private void Awake()
     {
-        Eid = GetComponent<EnemyIdentifier>() ?? GetComponentInChildren<EnemyIdentifier>();
-        FindAndCacheMods(true);
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' awakens...");
+
+        Eid = GetComponent<EnemyIdentifier>() ?? GetComponentInChildren<EnemyIdentifier>();
+        Enemy = GetComponent<Enemy>();
     }
 
     private void Start()
     {
-        FindAndCacheMods(true);
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
 
-        PostDeath += PostDeathValidation;
-    }
-
-    private void PostDeathValidation(bool instakill)
-    {
-        switch (Eid.enemyClass)
+        if (InitialHealth <= 0.0f)
         {
-            case EnemyClass.Husk:
-                break;
-            case EnemyClass.Machine:
-                if (Eid.machine == null)
-                {
-                    return;
-                }
+            InitialHealth = Health;
+        }
 
-                if (!Eid.machine.limp)
-                {
-                    // seems like something bugged if we're not limp but just died.
-                    Log.Error($"{name}: machine was NOT limp during PostDeathValidation? Destroying RootGameObject {RootGameObject}.");
-                    UnityEngine.GameObject.Destroy(RootGameObject);
-                }
-
-                if (Eid.machine.GetComponent<Turret>() != null)
-                {
-                    Log.Error($"{name}: TURRET was NOT DESTROYED during PostDeathValidation? Destroying!!!!!!.");
-                    UnityEngine.Object.Destroy(Eid.machine.GetComponent<Turret>());
-                }
-                break;
-            case EnemyClass.Demon:
-                break;
-            case EnemyClass.Divine:
-                break;
-            case EnemyClass.Other:
-                break;
+        if (Radiance == null)
+        {
+            Eid.ForceGetHealth();
+            CreateMods();
         }
     }
 
@@ -140,64 +101,10 @@ public class EnemyAdditions : MonoBehaviour
             InTheProcessOfHurting = false;
             Log.UnexpectedInfo($"{name}: InTheProcessOfHurting had to be set to false by Update");
         }
-
-        if (Eid.enemyType == EnemyType.Streetcleaner)
-        {
-            var sc = Eid.GetComponent<Streetcleaner>();
-
-            if ((sc.NullInvalid()?.isActiveAndEnabled).GetValueOrDefault(false))
-            {
-                if (!sc.dead && Eid.machine.limp)
-                {
-                    Log.Error($"Streetcleaner '{gameObject}' is not dead but limp?");
-                    sc.dead = true;
-                }
-
-                FieldPublisher<Streetcleaner, NavMeshAgent> nma = new FieldPublisher<Streetcleaner, NavMeshAgent>(sc, "nma");
-                if (nma.Value == null && !sc.dead)
-                {
-                    Log.Warning($"invalid nma failsafe caught invalid nma in active, !dead streetcleaner '{gameObject}'");
-                    Destroy(RootGameObject);
-                }
-            }
-        }
     }
 
     protected void FixedUpdate()
     {
-        if (Eid.enemyType == EnemyType.Swordsmachine)
-        {
-            var sm = Eid.GetComponent<SwordsMachine>();
-
-            if ((sm.NullInvalid()?.isActiveAndEnabled).GetValueOrDefault(false))
-            {
-                if (Eid.machine.limp)
-                {
-                    Log.Error($"Swordsmachine '{gameObject}' is limp but still active?");
-                    Destroy(RootGameObject);
-                }
-
-                FieldPublisher<SwordsMachine, Rigidbody> rb = new FieldPublisher<SwordsMachine, Rigidbody>(sm, "rb");
-                if (rb.Value == null)
-                {
-                    Log.Warning($"invalid nma failsafe caught invalid rb in active swordsmachine '{gameObject}'");
-                    Destroy(RootGameObject);
-                }
-            }
-        }
-        else if (Eid.enemyType == EnemyType.Mannequin)
-        {
-            var man = Eid.GetComponent<Mannequin>();
-            
-            if ((man.NullInvalid()?.isActiveAndEnabled).GetValueOrDefault(false))
-            {
-                if (Eid.machine.limp)
-                {
-                    Log.Error($"Mannequin '{gameObject}' has null nma but still active?");
-                    Destroy(RootGameObject);
-                }
-            }
-        }
     }
     
     private void OnDisable()
@@ -216,54 +123,34 @@ public class EnemyAdditions : MonoBehaviour
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets enabled...");
     }
 
-    /* if called we were instantiated by the game, most likely */
-    public void SetupMods()
+    private void CreateMods()
     {
-        //Log.ExpectedInfo($"{name}.EnemyAdditions is setting up new modules...");
-        HydraMod = gameObject.AddComponent<EnemyHydraMod>();
-        HydraMod.InitializeAsNew();
-        EnemyFriend = gameObject.AddComponent<EnemyFriendIdentifier>();
-        EnemyBloodFuel = gameObject.AddComponent<EnemyBloodFuel>();
-        SaltyEnemy = gameObject.AddComponent<SaltyEnemy>();
+        Log.TraceExpectedInfo($"{name}.EnemyAdditions is creating new modules...");
+        Hydra = gameObject.AddComponent<EnemyHydra>();
+        Hydra.InitializeAsNew();
+        FriendID = gameObject.AddComponent<EnemyFriendIdentifier>();
+        BloodFuel = gameObject.AddComponent<EnemyBloodFuel>();
+        Salt = gameObject.AddComponent<SaltyEnemy>();
         HeckPuppetLeader = gameObject.AddComponent<HeckPuppetLeader>();
-        EnemyRadiance = gameObject.AddComponent<Radiance>();
+        Radiance = gameObject.AddComponent<EnemyRadiance>();
         Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
-        Agony = gameObject.AddComponent<EnemyPain>();
-        EnemyFriend.IsLeader = false;
-        GetComponent<EnemyIdentifier>().ForceGetHealth();
-        StartingHealth = GetComponent<EnemyIdentifier>().Health;
-        PrefabMod = gameObject.AddComponent<EnemyPrefabMod>();
-        HydraMod.PassPrefabToShared();
-        EnemyFriend.IsLeader = true;
+        Pain = gameObject.AddComponent<EnemyPain>();
+        FriendID.IsLeader = false;
+        PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
+        PrefabStore.StorePrefab();
+        Hydra.PassPrefabToShared();
+        FriendID.IsLeader = true;
     }
 
-    public void FindAndCacheMods(bool nullAcceptable = false)
+    private void AssertModsNotNull()
     {
-        //Log.ExpectedInfo($"{name}.EnemyAdditions is finding and caching modules...");
-        // todo: may be faster to just iterate through components manually 
-        HydraMod = GetComponent<EnemyHydraMod>();   
-        PrefabMod = GetComponent<EnemyPrefabMod>();   
-        EnemyFriend = GetComponent<EnemyFriendIdentifier>();
-        SaltyEnemy = GetComponent<SaltyEnemy>();
-        EnemyBloodFuel = GetComponent<EnemyBloodFuel>();
-        EnemyRadiance = GetComponent<Radiance>();
-        HeckPuppet = GetComponent<HeckPuppet>();
-        HeckPuppetLeader = GetComponent<HeckPuppetLeader>();
-        Feedbacker = GetComponent<EnemyFeedbacker>();
-        Agony = GetComponent<EnemyPain>();
-        
-        if (nullAcceptable)
-        {
-            return;
-        }
-
-        Assert.IsNotNull(HydraMod);
-        Assert.IsNotNull(PrefabMod);
-        Assert.IsNotNull(EnemyFriend);
-        Assert.IsNotNull(EnemyBloodFuel);
-        Assert.IsNotNull(EnemyRadiance);
+        Assert.IsNotNull(Hydra);
+        Assert.IsNotNull(PrefabStore);
+        Assert.IsNotNull(FriendID);
+        Assert.IsNotNull(BloodFuel);
+        Assert.IsNotNull(Radiance);
         Assert.IsNotNull(Feedbacker);
-        Assert.IsNotNull(Agony);
+        Assert.IsNotNull(Pain);
     }
 
     public void MarkAsUniquelySolo()
@@ -284,7 +171,7 @@ public class EnemyAdditions : MonoBehaviour
         PreDeathCalled = true;
         InstaKilled = instakill;
         PreDeath?.Invoke(InstaKilled);
-        EnemyEvents.PreDeath?.Invoke(Eid, InstaKilled);
+        EnemyEvents.PreDeath?.Invoke(Enemy, InstaKilled);
     }
 
     private bool PostDeathCalled = false;
@@ -302,7 +189,7 @@ public class EnemyAdditions : MonoBehaviour
 
         PostDeathCalled = true;
         PostDeath?.Invoke(InstaKilled);
-        EnemyEvents.PostDeath?.Invoke(Eid, InstaKilled);
+        EnemyEvents.PostDeath?.Invoke(Enemy, InstaKilled);
     }
     
     private bool DeathCalled = false;
@@ -314,7 +201,7 @@ public class EnemyAdditions : MonoBehaviour
         }
 
         DeathCalled = true;
-        EnemyEvents.Death?.Invoke(Eid);
+        EnemyEvents.Death?.Invoke(Enemy);
     }
 
     private bool InTheProcessOfHurting = false;

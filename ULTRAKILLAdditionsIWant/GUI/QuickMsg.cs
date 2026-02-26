@@ -112,7 +112,7 @@ namespace UKAIW
 
         private static void OnSceneLoaded(int arg1, string arg2)
         {
-            if (Assets.LabelPrefab != null && CanvasController.Instance?.gameObject != null)
+            if (Assets.LabelPrefab != null && CanvasController.Instance.NullInvalid()?.gameObject != null)
             {
                 Pool.EnsureSize(32);
             }

@@ -93,21 +93,21 @@ namespace UKAIW
 
         private GameObject PanopticonRadio = null;
 
-        private void OnEnemySpawned(EnemyIdentifier eid, GameObject go)
+        private void OnEnemySpawned(Enemy enemy, GameObject go)
         {
             Assert.IsTrue(go.activeInHierarchy);
             
-            if (eid.Dead)
+            if (enemy.EID.Dead)
             {
                 return;
             }
 
-            if (!eid.enabled || !eid.isActiveAndEnabled)
+            if (!enemy.enabled || !enemy.isActiveAndEnabled)
             {
                 return;
             }
 
-            switch (eid.enemyType)
+            switch (enemy.EID.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer spawn!");
@@ -141,7 +141,7 @@ namespace UKAIW
                 DisableBattleWithClean();
             }
 
-            if (eid.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
+            if (enemy.EID.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
             {
                 createPanopticonRadioQueued = PanopticonRadio == null ? 20 : -1;
             }
@@ -169,9 +169,9 @@ namespace UKAIW
             }
         }
 
-        private void OnEnemyDie(EnemyIdentifier eid)
+        private void OnEnemyDie(Enemy enemy)
         {
-            switch (eid.enemyType)
+            switch (enemy.EID.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer death!");
@@ -190,7 +190,7 @@ namespace UKAIW
                 {
                     if (!PanopticonRadio.activeSelf)
                     {
-                        eid.GetComponent<EnemyHydraMod>().Shared.OnDeactivated += () =>
+                        enemy.GetComponent<EnemyHydra>().Shared.OnDeactivated += () =>
                         {
                             PanopticonRadio.NullInvalid()?.SetActive(false);  
                         };
@@ -205,14 +205,14 @@ namespace UKAIW
             }
         }
 
-        private void OnEnemyDestroy(EnemyIdentifier eid, GameObject go)
+        private void OnEnemyDestroy(Enemy enemy, GameObject go)
         {
-            if (eid.dead)
+            if (enemy.EID.dead)
             {
                 return;
             }
 
-            switch (eid.enemyType)
+            switch (enemy.EID.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer destruction!");
