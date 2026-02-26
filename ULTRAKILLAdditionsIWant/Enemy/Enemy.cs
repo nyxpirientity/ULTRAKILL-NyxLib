@@ -211,6 +211,11 @@ namespace UKAIW
                 EnemyType.V2Second => EnemySpeciesType.Machine,
                 EnemyType.VeryCancerousRodent => EnemySpeciesType.UltraUnknown,
                 EnemyType.Virtue => EnemySpeciesType.Angel,
+                EnemyType.Providence => EnemySpeciesType.Angel,
+                EnemyType.Power => EnemySpeciesType.Angel,
+                EnemyType.MirrorReaper => EnemySpeciesType.Husk,
+                EnemyType.Geryon => EnemySpeciesType.Demon,
+                EnemyType.Deathcatcher => EnemySpeciesType.Demon,
                 EnemyType.Wicked => EnemySpeciesType.Unknown,
                 _ => throw new NotImplementedException(),
             };
@@ -257,6 +262,11 @@ namespace UKAIW
                 EnemyType.V2Second => EnemySpeciesRank.Supreme,
                 EnemyType.VeryCancerousRodent => EnemySpeciesRank.Prime,
                 EnemyType.Virtue => EnemySpeciesRank.Lesser,
+                EnemyType.MirrorReaper => EnemySpeciesRank.Supreme,
+                EnemyType.Deathcatcher => EnemySpeciesRank.Lesser,
+                EnemyType.Geryon => EnemySpeciesRank.Supreme,
+                EnemyType.Providence => EnemySpeciesRank.Lesser,
+                EnemyType.Power => EnemySpeciesRank.Greater,
                 EnemyType.Wicked => EnemySpeciesRank.NotApplicable,
                 _ => throw new NotImplementedException(),
             };

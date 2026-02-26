@@ -39,7 +39,7 @@ namespace UKAIW
             
             if (Eid.machine != null)
             {
-                Eid.machine.onDeath.RemoveAllListeners();
+                Eid.machine.onDeath = new UnityEngine.Events.UnityEvent();
                 Eid.machine.destroyOnDeath = new GameObject[0];
             }
             if (Eid.drone != null)
@@ -62,6 +62,11 @@ namespace UKAIW
                 RadianceMod.SpeedEnabled = false; // disable speed for Sisyphean Insurrectionists because their ring persists for ages, for some reason. Looks like a bug when it happens even though it isn't, and isn't fun at all.
             }
             
+            if (Leader == null)
+            {
+                TryDestroy();
+                return;
+            }
             LeaderGo = Leader.gameObject;
 
             Eid.onDeath.AddListener(() =>
@@ -82,7 +87,7 @@ namespace UKAIW
             
             NumUpdates += 1;
 
-            if (Eid.machine != null)
+            if (Eid.machine != null && Eid.enemyType != EnemyType.Centaur)
             {
                 if (Eid.GetComponent<NavMeshAgent>() == null || Eid.GetComponent<Animator>() == null)
                 {

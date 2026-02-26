@@ -45,16 +45,21 @@ public static class CybergrindAdditions
         
         private static List<(string, string[])> Challenges = new List<(string, string[])>
         {
-            ("SEEING DOUBLE", new string[]{Cheats.HeckPuppets, Cheats.GiveEnemiesFriends}),
+            //("SEEING DOUBLE", new string[]{Cheats.HeckPuppets, Cheats.GiveEnemiesFriends}),
+            ("BRUTAL HECK", new string[]{Cheats.AggressiveAgony, Cheats.DemandingHell}),
             ("GET UP ON THEIR BACK", new string[]{Cheats.HydraMode, Cheats.DemandingHell}),
             ("MISCONFIGURED", new string[]{Cheats.SelfConscience, Cheats.BadGyro}),
             ("ULTRACARE", new string[]{Cheats.GiveEnemiesFriends, Cheats.BloodFueledEnemies}),
             ("NOW SWAP", new string[]{Cheats.SandAllEnemiesID, Cheats.BloodFueledEnemies}),
             ("BAD GAME DESIGN", new string[]{ Cheats.BadGyro, Cheats.MundaneMurder }),
+            ("PAINFULLY SALTY", new string[]{ Cheats.SaltyEnemies, Cheats.AggressiveAgony }),
+            ("FORCERAD++", new string[]{ Cheats.RadiantAllEnemies, Cheats.AggressiveAgony }),
         };
 
         private static List<(string, string[])> HardChallenges = new List<(string, string[])>
         {
+            ("SSADISTIC HECK", new string[]{ Cheats.SaltyEnemies, Cheats.SelfConscience, Cheats.DemandingHell, Cheats.AggressiveAgony }),
+            ("HECK SPECIAL", new string[]{ Cheats.SaltyEnemies, Cheats.HeckPuppets, Cheats.DemandingHell, Cheats.AggressiveAgony }),
             ("STYLE ISSUE", new string[]{ Cheats.SaltyEnemies, Cheats.SelfConscience, Cheats.DemandingHell, Cheats.HeckPuppets }),
             ("FURIOUS MITOSIS", new string[]{ Cheats.SaltyEnemies, Cheats.DemandingHell, Cheats.HydraMode }),
             ("HEAT OF GREED", new string[]{ Cheats.SandAllEnemiesID, Cheats.BloodFueledEnemies, Cheats.DemandingHell }),
@@ -88,7 +93,7 @@ public static class CybergrindAdditions
             
             ref int currentChallengeIdx = ref (useHardChallenges ? ref challengeIdx : ref hardChallengeIdx);
 
-            if (currentChallengeIdx == 0)
+            if (currentChallengeIdx == 0 || currentChallengeIdx == 2)
             {
                 if (useHardChallenges)
                 {
