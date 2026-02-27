@@ -26,6 +26,10 @@ namespace UKAIW
                     return;
                 }
                 
+                Assert.IsNotNull(Eadd);
+                Assert.IsNotNull(Eadd.PrefabStore);
+                Assert.IsNotNull(Eadd.PrefabStore.Prefab);
+
                 var prefabEid = Eadd.PrefabStore.Prefab.GetComponent<EnemyIdentifier>() ?? Eadd.PrefabStore.Prefab.GetComponentInChildren<EnemyIdentifier>();
                 var radienceTier = prefabEid.hasRadianceEffected ? prefabEid.radianceTier : 0.0f;
                 int rankIndex = StyleHUD.Instance.rankIndex;

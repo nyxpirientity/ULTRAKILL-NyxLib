@@ -243,23 +243,32 @@ namespace UKAIW
 
             GameplayRank = EnemyUtils.GetEnemyGameplayRank(Eid);
 
-            switch (GameplayRank)
+            if (Eid.enemyType == EnemyType.Providence)
             {
-                case EnemyGameplayRank.Normal:
-                    NoDupeTime = Options.HydraDefaultWaitTime;
-                    break;
-                case EnemyGameplayRank.Miniboss:
-                    NoDupeTime = Options.HydraMiniBossWaitTime;
-                    break;
-                case EnemyGameplayRank.Boss:
-                    NoDupeTime = Options.HydraBossWaitTime;
-                    break;
-                case EnemyGameplayRank.Ultraboss:
-                    NoDupeTime = Options.HydraUltraBossWaitTime;
-                    break;
+                NoDupeTime = Options.HydraBossWaitTime;
+            }
+            else
+            {
+                switch (GameplayRank)
+                {
+                    case EnemyGameplayRank.Normal:
+                        NoDupeTime = Options.HydraDefaultWaitTime;
+                        break;
+                    case EnemyGameplayRank.Miniboss:
+                        NoDupeTime = Options.HydraMiniBossWaitTime;
+                        break;
+                    case EnemyGameplayRank.Boss:
+                        NoDupeTime = Options.HydraBossWaitTime;
+                        break;
+                    case EnemyGameplayRank.Ultraboss:
+                        NoDupeTime = Options.HydraUltraBossWaitTime;
+                        break;
+                }
             }
 
-            var newHealth = Eid.health;
+
+
+            var newHealth = Eadd.InitialHealth;
             for (int i = 0; i < Depth; i++)
             {
                 newHealth *= Options.HydraHealthDecayScale;

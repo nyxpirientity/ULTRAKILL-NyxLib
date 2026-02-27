@@ -154,6 +154,7 @@ public class EnemyPrefabStore : EnemyModifier
     {
         if (IsStoringPrefab)
         {
+            Log.UnexpectedInfo($"EnemyPrefabStore tried to store a prefab whilst we were storing a prefab");
             return;
         }
 
@@ -214,6 +215,7 @@ public class EnemyPrefabStore : EnemyModifier
         }
 
         prefabEadd.PrefabStore._Instances = _Instances;
+        prefabEadd.PrefabStore.Prefab = Prefab;
 
         if (prefabEid.enemyType == EnemyType.Swordsmachine)
         {

@@ -61,7 +61,7 @@ public class EnemyAdditions : MonoBehaviour
 
     public float Health 
     { 
-        get => Eid.Health; 
+        get => Enemy.health; 
         set
         {   
             Enemy.health = value;

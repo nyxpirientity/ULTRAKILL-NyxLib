@@ -6,6 +6,8 @@ namespace UKAIW
 {
     public class EnemyBloodFuel : EnemyModifier
     {
+        public EnemyAdditions Eadd { get; private set; } = null;
+
         protected void OnDestroy()
         {
             PlayerEvents.PreHurt -= PlayerPreHurt;
@@ -14,6 +16,7 @@ namespace UKAIW
         protected void Start()
         {
             PlayerEvents.PreHurt += PlayerPreHurt;
+            Eadd = GetComponent<EnemyAdditions>();
         }
 
         private void PlayerPreHurt(NewMovement player, int damage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility)
@@ -28,18 +31,11 @@ namespace UKAIW
                 float maxDist = damage / Options.BloodFuelEnemiesDistDivisor;
 
                 float normalizedDist = 1.0f - Mathf.Min(1.0f, dist / maxDist);
-                var eadd = GetComponent<EnemyAdditions>();
                 
-                if (eadd == null)
-                {
-                    Destroy(this);
-                    return;
-                }
-
                 float heal = (damage * normalizedDist);
                 heal *= Options.BloodFuelEnemiesHealScalar;
 
-                eadd.Health = Mathf.Min(eadd.PrefabStore.Prefab.GetComponent<EnemyAdditions>().Health, eadd.Health + heal);
+                Eadd.Health = Mathf.Min(Eadd.InitialHealth, Eadd.Health + heal);
             }
         }
     }

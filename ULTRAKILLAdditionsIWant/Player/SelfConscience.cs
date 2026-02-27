@@ -27,12 +27,17 @@ namespace UKAIW
         {
             if (!Cheats.IsCheatEnabled(Cheats.SelfConscience))
             {
-                DashCostScale = BaseDashCost;
+                DashCostScale = 1.0f;
                 return;
             }
 
-            if (MonoSingleton<InputManager>.Instance.InputSource.Dodge.WasPerformedThisFrame && player.activated && !player.slowMode && !GameStateManager.Instance.PlayerInputLocked)
+            if (!player.slowMode && MonoSingleton<InputManager>.Instance.InputSource.Dodge.WasPerformedThisFrame)
             {
+                if (((bool)player.groundProperties && !player.groundProperties.canDash) || player.modNoDashSlide)
+                {
+                    return;
+                }
+
                 if (player.boostCharge >= BaseDashCost * DashCostScale && !((player.groundProperties && !player.groundProperties.canDash) || player.modNoDashSlide))
                 {
                     player.boostCharge += BaseDashCost - BaseDashCost * DashCostScale;
@@ -50,7 +55,7 @@ namespace UKAIW
 
             float dashCostTarget = 1.0f;
 
-            switch ((StyleRanks)Shud.rankIndex)
+            switch (Shud.GetStyleRank())
             {
                 case StyleRanks.Destructive:
                 dashCostTarget *= Options.SelfConscienceDestructiveDashCostScale.Value;
@@ -73,10 +78,11 @@ namespace UKAIW
                 case StyleRanks.SSSensoredStorm:
                 dashCostTarget *= Options.SelfConscienceSSSensoredStormDashCostScale.Value;
                     break;
-                case StyleRanks.Null:
                 case StyleRanks.ULTRAKILL:
                 dashCostTarget *= Options.SelfConscienceULTRAKILLDashCostScale.Value;
                     break;
+                case StyleRanks.Null:
+                    throw new NotImplementedException();
             }
 
             DashCostScale = Mathf.MoveTowards(DashCostScale, dashCostTarget, Time.fixedDeltaTime * (dashCostTarget > BaseDashCost ? Options.SelfConscienseDashCostIncreaseInterpRate.Value : Options.SelfConscienseDashCostDecreaseInterpRate.Value));
