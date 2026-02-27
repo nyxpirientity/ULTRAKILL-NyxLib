@@ -159,7 +159,7 @@ public static class Cheats
                 CheatsManager.Instance.DisableCheat("ukaiw.force-next-cybergrind-wave");
                 if (CybergrindAdditions.CybergrindActive && CybergrindAdditions.IsInCybergrind)
                 {
-                    EndlessGrid.Instance.GetComponent<ActivateNextWave>().deadEnemies = 99999;
+                    CybergrindAdditions.LastStartedEndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
                 }
             }
         ), "CYBERGRIND");

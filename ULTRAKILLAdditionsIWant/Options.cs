@@ -14,6 +14,7 @@ public static class Options
     static MelonPreferences_Entry<bool> IncludeUnlikelyLogsEntry = null;
     static MelonPreferences_Entry<bool> IncludeUnexpectedLogsEntry = null;
     public static MelonPreferences_Entry<bool> ShowErrorNotification = null;
+    public static MelonPreferences_Entry<bool> LogEnemyTypeOnStart = null;
 
     static MelonPreferences_Category HydraCategory = null;
     static MelonPreferences_Entry<float> HydraHealthDecayScaleEntry = null;
@@ -228,6 +229,7 @@ public static class Options
         IncludeLikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeLikelyLogs", false);
         IncludeUnlikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnlikelyLogs", true);
         IncludeUnexpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnexpectedLogs", true);
+        LogEnemyTypeOnStart = LoggingCategory.CreateEntry<bool>("LogEnemyTypeOnStart", false);
         
         BugFixesCategory = MelonPreferences.CreateCategory("UKAIW-BugFixes");
         EnableStreetCleanerDodgeFix = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFix", true);

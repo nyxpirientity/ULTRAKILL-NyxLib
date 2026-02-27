@@ -12,16 +12,35 @@ public class EnemyModifier : MonoBehaviour
 
 public class EnemyAdditions : MonoBehaviour
 {
-    [SerializeField] public EnemyHydra Hydra { get; private set; }
-    [SerializeField] public EnemyPrefabStore PrefabStore { get; private set; }
-    [SerializeField] public EnemyFriendIdentifier FriendID { get; private set; } = null;
-    [SerializeField] public EnemyBloodFuel BloodFuel { get; private set; } = null;
-    [SerializeField] public SaltyEnemy Salt { get; private set; } = null;
-    [SerializeField] public HeckPuppet HeckPuppet { get; private set; } = null;
-    [SerializeField] public HeckPuppetLeader HeckPuppetLeader { get; private set; } = null;
-    [SerializeField] public EnemyRadiance Radiance { get; private set; } = null;
-    [SerializeField] public EnemyFeedbacker Feedbacker { get; private set; } = null;
-    [SerializeField] public EnemyPain Pain { get; private set; } = null;
+    [SerializeField] private EnemyHydra _Hydra;
+    public EnemyHydra Hydra { get => _Hydra; private set => _Hydra = value; }
+
+    [SerializeField] private EnemyPrefabStore _PrefabStore = null;
+    public EnemyPrefabStore PrefabStore { get => _PrefabStore; private set => _PrefabStore = value; }
+
+    [SerializeField] private EnemyFriendIdentifier _FriendID = null;
+    public EnemyFriendIdentifier FriendID { get => _FriendID; private set => _FriendID = value; }
+
+    [SerializeField] private EnemyBloodFuel _BloodFuel = null;
+    public EnemyBloodFuel BloodFuel { get => _BloodFuel; private set => _BloodFuel = value; }
+
+    [SerializeField] private SaltyEnemy _Salt = null;
+    public SaltyEnemy Salt { get => _Salt; private set => _Salt = value; }
+
+    [SerializeField] private HeckPuppet _HeckPuppet = null;
+    public HeckPuppet HeckPuppet { get => _HeckPuppet; private set => _HeckPuppet = value; }
+
+    [SerializeField] private HeckPuppetLeader _HeckPuppetLeader = null;
+    public HeckPuppetLeader HeckPuppetLeader { get => _HeckPuppetLeader; private set => _HeckPuppetLeader = value; }
+
+    [SerializeField] private EnemyRadiance _Radiance = null;
+    public EnemyRadiance Radiance { get => _Radiance; private set => _Radiance = value; }
+
+    [SerializeField] private EnemyFeedbacker _Feedbacker = null;
+    public EnemyFeedbacker Feedbacker { get => _Feedbacker; private set => _Feedbacker = value; }
+
+    [SerializeField] private EnemyPain _Pain = null;
+    public EnemyPain Pain { get => _Pain; private set => _Pain = value; }
 
     public bool UniquelySolo { get; private set; } = false;
 

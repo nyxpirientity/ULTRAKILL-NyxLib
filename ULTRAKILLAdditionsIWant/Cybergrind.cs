@@ -10,6 +10,9 @@ using UnityEngine;
 
 public static class CybergrindAdditions
 {
+    // calling EndlessGrid.Instance after endless grid has been not null once but is now null seems to cause lots of lag for some reason.
+    public static EndlessGrid LastStartedEndlessGrid = null;
+
     [HarmonyPatch(typeof(EndlessGrid), "OnTriggerEnter", new Type[] { typeof(Collider) })]
     static class CybergrindStartPatch
     {
@@ -30,6 +33,19 @@ public static class CybergrindAdditions
 
             CybergrindActive = true;
             CybergrindShuffleTimestamp.UpdateToNow();
+        }
+    }
+
+    [HarmonyPatch(typeof(EndlessGrid), "Start")]
+    static class EndlessGridStartPatch
+    {
+        public static void Prefix(EndlessGrid __instance)
+        {
+        }
+
+        public static void Postfix(EndlessGrid __instance)
+        {
+            LastStartedEndlessGrid = __instance;
         }
     }
 
@@ -166,7 +182,7 @@ public static class CybergrindAdditions
     private static FixedTimeStamp CybergrindShuffleTimestamp;
     private static void OnFixedUpdate()
     {
-        var endlessGrid = EndlessGrid.Instance;
+        var endlessGrid = LastStartedEndlessGrid;
         if (CybergrindShuffleTimestamp.TimeSince > 6.0f && CybergrindActive && Cheats.IsCheatEnabled(Cheats.CybergrindShuffle))
         {
             PropertyPublisher<EndlessGrid, ArenaPattern[]> currentPatternPool = new PropertyPublisher<EndlessGrid, ArenaPattern[]>(endlessGrid, "CurrentPatternPool");
@@ -190,7 +206,7 @@ public static class CybergrindAdditions
     }
 
     public static bool CybergrindActive { get; private set; } = false;
-    public static bool IsInCybergrind { get => EndlessGrid.Instance != null; }
+    public static bool IsInCybergrind { get => LastStartedEndlessGrid != null; }
 
     private static bool InvincibilityEnabledByUs = false;
 
@@ -233,7 +249,7 @@ public static class CybergrindAdditions
                 }
 
                 maxPointsFieldInfo.SetValue(endlessGrid, endlessGridMaxPoints);
-                endlessGrid.currentWave = EndlessGrid.Instance.startWave - 1;
+                endlessGrid.currentWave = CybergrindAdditions.LastStartedEndlessGrid.startWave - 1;
             }
         }
     }

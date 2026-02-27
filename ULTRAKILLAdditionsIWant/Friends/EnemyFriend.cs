@@ -115,7 +115,7 @@ public class EnemyFriendIdentifier : EnemyModifier
     {
         if (CybergrindAdditions.CybergrindActive)
         {
-            EndlessGrid.Instance.tempEnemyAmount += 1;
+            CybergrindAdditions.LastStartedEndlessGrid.tempEnemyAmount += 1;
         }
     }
 

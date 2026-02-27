@@ -1,5 +1,6 @@
 using System;
 using HarmonyLib;
+using MelonLoader;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
@@ -166,6 +167,11 @@ namespace UKAIW
                 EnemyType.VeryCancerousRodent => EnemyGameplayRank.Boss,
                 EnemyType.Virtue => EnemyGameplayRank.Normal,
                 EnemyType.Wicked => EnemyGameplayRank.Ultraboss,
+                EnemyType.Providence => EnemyGameplayRank.Normal,
+                EnemyType.Power => EnemyGameplayRank.Normal,
+                EnemyType.MirrorReaper => EnemyGameplayRank.Miniboss,
+                EnemyType.Geryon => EnemyGameplayRank.Boss,
+                EnemyType.Deathcatcher => EnemyGameplayRank.Normal,
                 _ => throw new NotImplementedException(),
             };
         }
@@ -394,6 +400,11 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.LogEIDInfo))
             {
                 enemyGo.GetComponent<EnemyAdditions>().RootGameObject.DebugPrintChildren();
+            }
+
+            if (Options.LogEnemyTypeOnStart.Value)
+            {
+                MelonLogger.Msg($"{enemyGo.name}: enemy type is: {enemy.EID.enemyType}");
             }
         }
     }
