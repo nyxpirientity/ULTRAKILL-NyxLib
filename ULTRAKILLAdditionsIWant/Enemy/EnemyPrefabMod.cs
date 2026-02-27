@@ -1,10 +1,99 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using Nyxpiri;
 using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 public class EnemyPrefabStore : EnemyModifier
 {
+    public class InstanceStore : ScriptableObject
+    {
+        public InstanceStore(GameObject prefab)
+        {
+            Prefab = prefab;
+
+            RegistrationTracker = new RegistrationTracker(
+                registerAction: () =>
+                {
+                    RegistrationIdx = EnemyPrefabManager.RegisterInstanceStore(this);
+                    return true;
+                },
+                unregisterAction: () =>
+                {
+                    EnemyPrefabManager.UnregisterInstanceStore(RegistrationIdx);
+                    RegistrationIdx = -1;
+                    return false;
+                }
+            );
+        }
+
+        public void InstantiateAndStore()
+        {
+            if (Prefab == null)
+            {
+                RegistrationTracker.Unregister();
+                Assert.IsNotNull(Prefab); // then just print this to the logs *once*
+            }
+
+            if (IsFull)
+            {
+                return;
+            }
+
+            var newGo = Instantiate(Prefab, Prefab.transform.parent);
+
+            Instances.Push(newGo);
+
+            newGo.SetActive(false);
+        }
+
+        private GameObject Prefab = null;
+        Stack<GameObject> Instances = new Stack<GameObject>();
+
+        public void RegisterStore(EnemyPrefabStore store)
+        {
+            RegisteredStores.Add(store);
+            
+            if (RegisteredStores.Count == 1)
+            {
+                RegistrationTracker.Register();
+            }
+        }
+
+        public void UnregisterStore(EnemyPrefabStore store)
+        {
+            RegisteredStores.Remove(store);
+
+            if (RegisteredStores.Count == 0)
+            {
+                RegistrationTracker.Unregister();
+            }
+        }
+
+        public GameObject GetNewInstance()
+        {
+            Assert.IsNotNull(Prefab);
+
+            if (Instances.Count > 0)
+            {
+                return Instances.Pop();
+            }
+
+            return Instantiate(Prefab);
+        }
+
+        HashSet<EnemyPrefabStore> RegisteredStores = new HashSet<EnemyPrefabStore>(32);
+        RegistrationTracker RegistrationTracker = null;
+        private int RegistrationIdx = -1;
+
+        public bool IsFull { get => Instances.Count >= 20; }
+    }
+
+    [SerializeField] private InstanceStore _Instances = null;
+    public InstanceStore Instances { get => _Instances; }
+    RegistrationTracker InstancesRegistrator = null;
     public GameObject Prefab = null;
     private GameObject _PrefabParent = null;
     public GameObject PrefabParent { get => _PrefabParent ?? null; }
@@ -12,6 +101,32 @@ public class EnemyPrefabStore : EnemyModifier
     public EnemyAdditions Eadd { get; private set; } = null;
 
     private static bool IsStoringPrefab = false;
+
+    public EnemyPrefabStore()
+    {
+        InstancesRegistrator = new RegistrationTracker(registerAction: () =>
+        {
+            if (_Instances == null)
+            {
+                return false;
+            }
+            
+            _Instances.RegisterStore(this);
+            return true;
+        },
+        unregisterAction: () =>
+        {
+            if (_Instances == null)
+            {
+                return false;
+            }
+            
+            _Instances.UnregisterStore(this);
+            
+            return true;
+        });
+    }
+
     protected void Awake()
     {
         Eid = GetComponent<EnemyIdentifier>();
@@ -62,12 +177,20 @@ public class EnemyPrefabStore : EnemyModifier
         
         IsStoringPrefab = true;
 
-        Prefab = UnityEngine.Object.Instantiate(templateGo);
+        Prefab = UnityEngine.Object.Instantiate(templateGo, templateGo.transform.parent);
+
         _PrefabParent = templateGo.transform.parent.gameObject;
         Prefab.SetActive(false);
-        
+                
+        if (_Instances == null)
+        {
+            _Instances = new InstanceStore(Prefab);
+            InstancesRegistrator.Register();
+        }
+
         var prefabEid = Prefab.GetComponent<EnemyIdentifier>() ?? Prefab.GetComponentInChildren<EnemyIdentifier>();
-        
+        var prefabEadd = Prefab.GetComponent<EnemyAdditions>() ?? Prefab.GetComponentInChildren<EnemyAdditions>();
+
         prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
         prefabEid.activateOnDeath = new GameObject[0];
         prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
@@ -90,16 +213,7 @@ public class EnemyPrefabStore : EnemyModifier
             prefabEid.statue.musicRequested = false;
         }
 
-        if (Eid.enemyType != EnemyType.MaliciousFace)
-        {
-            Assert.IsNotNull(Prefab.GetComponent<EnemyHydra>());
-            Assert.IsNotNull(Prefab.GetComponent<EnemyPrefabStore>());
-            Prefab.GetComponent<EnemyPrefabStore>().Prefab = Prefab;            
-        }
-        else
-        {
-            Prefab.GetComponentInChildren<EnemyPrefabStore>().Prefab = Prefab;            
-        }
+        prefabEadd.PrefabStore._Instances = _Instances;
 
         if (prefabEid.enemyType == EnemyType.Swordsmachine)
         {

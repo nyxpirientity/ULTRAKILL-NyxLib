@@ -4,6 +4,12 @@ namespace Nyxpiri
 {
     public class RegistrationTracker
     {
+        public RegistrationTracker(Func<bool> registerAction, Func<bool> unregisterAction)
+        {
+            RegisterAction = registerAction;
+            UnregisterAction = unregisterAction;
+        }
+
         public Func<bool> RegisterAction { private get; set; } = null;
         public Func<bool> UnregisterAction { private get; set; } = null;
         public bool Registered
@@ -23,8 +29,10 @@ namespace Nyxpiri
                 return;
             }
 
-            RegisterAction?.Invoke();
-            _Registered = true;
+            if ((RegisterAction?.Invoke()).GetValueOrDefault(false))
+            {
+                _Registered = true;
+            }
         }
 
         public void Unregister()
@@ -34,8 +42,10 @@ namespace Nyxpiri
                 return;
             }
 
-            UnregisterAction?.Invoke();
-            _Registered = false;
+            if ((UnregisterAction?.Invoke()).GetValueOrDefault(false))
+            {
+                _Registered = false;
+            }
         }
 
         private bool _Registered = false;

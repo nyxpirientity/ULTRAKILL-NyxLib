@@ -157,7 +157,6 @@ public class EnemyAdditions : MonoBehaviour
         FriendID.IsLeader = false;
         PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
         PrefabStore.StorePrefab();
-        Hydra.PassPrefabToShared();
         FriendID.IsLeader = true;
     }
 

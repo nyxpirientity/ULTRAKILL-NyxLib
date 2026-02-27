@@ -37,7 +37,7 @@ namespace UKAIW
             internal void Spawn(Vector3 position, Quaternion rotation, HeckPuppetLeader leader, StyleRanks styleRank, Options.HeckPuppetStyleEntry.HeckPuppetOptions options)
             {   
                 HeckPuppetID = NextHeckPuppetID;
-                PuppetRootGo = UnityEngine.Object.Instantiate(leader.Ead.PrefabStore.Prefab, leader.Ead.RootGameObject.transform.parent);
+                PuppetRootGo = leader.Eadd.PrefabStore.Instances.GetNewInstance();
                 PuppetRootGo.transform.position = position + UnityEngine.Random.onUnitSphere * 2.5f;
                 PuppetRootGo.transform.rotation = rotation;
                 PuppetEad = PuppetRootGo.GetComponent<EnemyAdditions>() ?? PuppetRootGo.GetComponentInChildren<EnemyAdditions>();
@@ -93,7 +93,7 @@ namespace UKAIW
         }
 
         public StyleHUD Shud = null;
-        public EnemyAdditions Ead = null;
+        public EnemyAdditions Eadd = null;
         public EnemyIdentifier Eid = null;
 
         public EnemyGameplayRank GameplayRank = EnemyGameplayRank.Ultraboss;
@@ -105,8 +105,8 @@ namespace UKAIW
 
         protected void Awake()
         {
-            Ead = GetComponent<EnemyAdditions>();
-            Eid = Ead.Eid;
+            Eadd = GetComponent<EnemyAdditions>();
+            Eid = Eadd.Eid;
         }
 
         protected void Start()

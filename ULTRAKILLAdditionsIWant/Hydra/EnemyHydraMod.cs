@@ -18,50 +18,15 @@ namespace UKAIW
             {
             }
 
-            public void InstantiatePrefabToPool()
-            {
-                if (Prefab == null)
-                {
-                    Deactivate(); // deactivate
-                    Assert.IsNotNull(Prefab); // then just print this to the logs *once*
-                }
-                if (PrefabPoolFull)
-                {
-                    return;
-                }
-
-                var newGo = Instantiate(Prefab, PrefabParent.NullInvalid()?.transform);
-
-                PrefabPool.Push(newGo);
-
-                newGo.SetActive(false);
-            }
-
-            public GameObject GetNewInstance()
-            {
-                Assert.IsNotNull(Prefab);
-
-                if (PrefabPool.Count > 0)
-                {
-                    return PrefabPool.Pop();
-                }
-
-                return Instantiate(Prefab);
-            }
-
             private ReserveList<GameObject> Instances = new ReserveList<GameObject>(16);
             public bool CountAsKill = false;
-            private Stack<GameObject> PrefabPool = new Stack<GameObject>(32);
-            public GameObject Prefab = null;
             public Bounds Bounds = new Bounds();
             public Action OnDeactivated = null;
             internal string CreatorName = "";
-            public bool PrefabPoolFull { get => PrefabPool.Count >= Options.HydraPrefabPoolCapacity; }
             public ScriptableObject EnemySpecificShared = null;
             public int InstanceCount { get => Instances.Count; }
             public int GlobalIdx { get; private set; } = -1;
             public bool Active { get; private set; } = false;
-            public GameObject PrefabParent = null;
 
             internal void UnregisterInstance(int sharedIdx)
             {
@@ -89,10 +54,8 @@ namespace UKAIW
             {
                 Assert.IsTrue(Active);
                 
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' deactivated!");
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' deactivated!");
 
-                Hydra.SharedDatas.RemoveAt(GlobalIdx);
-                
                 OnDeactivated?.Invoke();
 
                 Active = false;
@@ -102,9 +65,7 @@ namespace UKAIW
             {
                 Assert.IsFalse(Active);
 
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' activated!");
-
-                GlobalIdx = Hydra.SharedDatas.Add(this);
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' activated!");
 
                 Active = true;
             }
@@ -119,12 +80,7 @@ namespace UKAIW
 
             private void OnDestroy()
             {
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' destroyed!");
-
-                foreach (var prefab in PrefabPool)
-                {
-                    Destroy(prefab);
-                }
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' destroyed!");
 
                 if (Active)
                 {
@@ -513,6 +469,7 @@ namespace UKAIW
             dupeInfo.Depth = Depth + 1;
             dupeInfo.EnemyType = Eid.enemyType;
             dupeInfo.BossBar = GetComponent<BossHealthBar>() != null;
+            dupeInfo.InstanceStore = Eadd.PrefabStore.Instances;
 
             if (Eid.enemyType == EnemyType.Sisyphus)
             {
@@ -580,16 +537,6 @@ namespace UKAIW
             Depth = 0;
             Shared.CreatorName = gameObject.name;
             SharedName = Shared.name;
-        }
-
-        public void PassPrefabToShared()
-        {
-            if (Shared.Prefab == null)
-            {
-                var prefabMod = GetComponent<EnemyAdditions>().PrefabStore;
-                Shared.Prefab = prefabMod.Prefab;
-                Shared.PrefabParent = prefabMod.PrefabParent;
-            }
         }
 
         internal void DuringDeath()

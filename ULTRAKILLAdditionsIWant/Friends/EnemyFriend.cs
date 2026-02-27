@@ -184,7 +184,6 @@ public class EnemyFriendIdentifier : EnemyModifier
         friendEadd.Hydra.InitializeAsNew();
         friendEadd.FriendID.Leader = this;
         friendEadd.PrefabStore.StorePrefab(force: true);
-        friendEadd.Hydra.PassPrefabToShared();
         friendEadd.FriendID.FriendIdx = idx;
 
         return friendEadd.FriendID;

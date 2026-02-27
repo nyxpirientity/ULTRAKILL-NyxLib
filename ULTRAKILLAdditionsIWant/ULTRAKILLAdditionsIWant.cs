@@ -43,6 +43,7 @@ namespace UKAIW
             BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
             Heck.Initialize();
+            EnemyPrefabManager.Initialize();
 
             GameConsole.Console.Instance.onError += () =>
             {

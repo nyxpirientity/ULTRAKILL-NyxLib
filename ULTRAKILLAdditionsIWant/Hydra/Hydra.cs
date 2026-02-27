@@ -19,6 +19,7 @@ namespace UKAIW
             public Quaternion Rotation;
             public Vector3 LocalScale;
             public EnemyHydra.SharedData SharedData;
+            public EnemyPrefabStore.InstanceStore InstanceStore;
             public int Depth;
             public EnemyType EnemyType;
             public bool BossBar;
@@ -45,15 +46,7 @@ namespace UKAIW
 
         private static void OnSceneUnload(int buildIndex, string sceneName)
         {
-            for (int i = 0; i < SharedDatas.Count; i++)
-            {
-                if (!SharedDatas.IsIndexValid(i))
-                {
-                    continue;
-                }
 
-                SharedDatas.RemoveAt(i);
-            }
         }
 
         public static void DecrementRemainingHydraBloodFxThisTick()
@@ -145,40 +138,17 @@ namespace UKAIW
             {
                 return;
             }
-
-            if (SharedDatas.Count > 0)
-            {
-                for (int i = 0, j = 0; i < Options.HydraPrefabPoolGrowPerUpdate * 2 && j < Options.HydraPrefabPoolGrowPerUpdate; i++)
-                {
-                    SharedDataForPrefabCacheIdx = (SharedDataForPrefabCacheIdx + 1) % SharedDatas.SoftCapacity;
-
-                    if (!SharedDatas.IsIndexValid(SharedDataForPrefabCacheIdx))
-                    {
-                        continue;
-                    }
-
-                    var sharedData = SharedDatas[SharedDataForPrefabCacheIdx];
-                    if (!sharedData.PrefabPoolFull)
-                    {
-                        Assert.IsNotNull(sharedData);
-                        sharedData.InstantiatePrefabToPool();
-                        j++;
-                    }
-                }
-            }
             
             while (ImmediatelyDupeStack.Count > 0)
             {
                 InstantiateDupe(ImmediatelyDupeStack.Pop());
             }
         }
-        private static int SharedDataForPrefabCacheIdx = 0;
-        public static ReserveList<EnemyHydra.SharedData> SharedDatas = new ReserveList<EnemyHydra.SharedData>(256);
 
         public static void InstantiateDupe(QueuedDupeInfo dupeInfo)
         {
             InstantiatedThisTick += 1;
-            var dupeGo = dupeInfo.SharedData.GetNewInstance();
+            var dupeGo = dupeInfo.InstanceStore.GetNewInstance();
             GameObject malFaceDupeGo = null;
             EnemyAdditions eadd;
 
