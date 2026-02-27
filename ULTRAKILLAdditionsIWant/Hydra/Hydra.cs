@@ -103,7 +103,7 @@ namespace UKAIW
             LastHitstopTimestamp = Time.unscaledTimeAsDouble;
         }
 
-        private static void PreEnemyDeath(Enemy enemy, bool instakill)
+        private static void PreEnemyDeath(EnemyAdditions enemy, bool instakill)
         {
             var go = enemy.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();
@@ -112,7 +112,7 @@ namespace UKAIW
             ehm.NotifyOfDeath(instakill);
         }
 
-        private static void PostEnemyDeath(Enemy enemy, bool instakill)
+        private static void PostEnemyDeath(EnemyAdditions enemy, bool instakill)
         {
             if (Cheats.IsCheatEnabled(Cheats.HydraMode))
             {
@@ -120,7 +120,7 @@ namespace UKAIW
             }
         }
 
-        private static void DuringEnemyDeath(Enemy enemy)
+        private static void DuringEnemyDeath(EnemyAdditions enemy)
         {
             var go = enemy.gameObject;
             var eadd = go.GetComponent<EnemyAdditions>();

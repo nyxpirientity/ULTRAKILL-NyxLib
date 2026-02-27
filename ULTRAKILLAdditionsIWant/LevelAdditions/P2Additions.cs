@@ -93,11 +93,11 @@ namespace UKAIW
 
         private GameObject PanopticonRadio = null;
 
-        private void OnEnemySpawned(Enemy enemy, GameObject go)
+        private void OnEnemySpawned(EnemyAdditions enemy)
         {
-            Assert.IsTrue(go.activeInHierarchy);
+            Assert.IsTrue(enemy.gameObject.activeInHierarchy);
             
-            if (enemy.EID.Dead)
+            if (enemy.Eid.Dead)
             {
                 return;
             }
@@ -107,7 +107,7 @@ namespace UKAIW
                 return;
             }
 
-            switch (enemy.EID.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer spawn!");
@@ -141,7 +141,7 @@ namespace UKAIW
                 DisableBattleWithClean();
             }
 
-            if (enemy.EID.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
+            if (enemy.Eid.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
             {
                 createPanopticonRadioQueued = PanopticonRadio == null ? 20 : -1;
             }
@@ -169,9 +169,9 @@ namespace UKAIW
             }
         }
 
-        private void OnEnemyDie(Enemy enemy)
+        private void OnEnemyDie(EnemyAdditions enemy)
         {
-            switch (enemy.EID.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer death!");
@@ -205,14 +205,14 @@ namespace UKAIW
             }
         }
 
-        private void OnEnemyDestroy(Enemy enemy, GameObject go)
+        private void OnEnemyDestroy(EnemyAdditions enemy)
         {
-            if (enemy.EID.dead)
+            if (enemy.Eid.dead)
             {
                 return;
             }
 
-            switch (enemy.EID.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer destruction!");

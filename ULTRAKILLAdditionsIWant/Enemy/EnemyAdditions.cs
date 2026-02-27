@@ -61,10 +61,24 @@ public class EnemyAdditions : MonoBehaviour
 
     public float Health 
     { 
-        get => Enemy.health; 
+        get 
+        {
+            if (Enemy != null)
+            {
+                return Enemy.health;
+            }
+
+            return Eid.health;
+        } 
         set
         {   
-            Enemy.health = value;
+            if (Enemy != null)
+            {
+                Enemy.health = value;
+                return;
+            }
+
+            Eid.health = value;
         } 
     }
 
@@ -81,8 +95,9 @@ public class EnemyAdditions : MonoBehaviour
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' awakens...");
 
-        Eid = GetComponent<EnemyIdentifier>() ?? GetComponentInChildren<EnemyIdentifier>();
+        Eid = GetComponent<EnemyIdentifier>();
         Enemy = GetComponent<Enemy>();
+        Assert.IsNotNull(Eid);
     }
 
     private void Start()
@@ -189,7 +204,7 @@ public class EnemyAdditions : MonoBehaviour
         PreDeathCalled = true;
         InstaKilled = instakill;
         PreDeath?.Invoke(InstaKilled);
-        EnemyEvents.PreDeath?.Invoke(Enemy, InstaKilled);
+        EnemyEvents.PreDeath?.Invoke(this, InstaKilled);
     }
 
     private bool PostDeathCalled = false;
@@ -207,7 +222,7 @@ public class EnemyAdditions : MonoBehaviour
 
         PostDeathCalled = true;
         PostDeath?.Invoke(InstaKilled);
-        EnemyEvents.PostDeath?.Invoke(Enemy, InstaKilled);
+        EnemyEvents.PostDeath?.Invoke(this, InstaKilled);
     }
     
     private bool DeathCalled = false;
@@ -219,7 +234,7 @@ public class EnemyAdditions : MonoBehaviour
         }
 
         DeathCalled = true;
-        EnemyEvents.Death?.Invoke(Enemy);
+        EnemyEvents.Death?.Invoke(this);
     }
 
     private bool InTheProcessOfHurting = false;

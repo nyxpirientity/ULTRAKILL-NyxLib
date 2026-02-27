@@ -348,10 +348,10 @@ namespace UKAIW
         }
     }
 
-    [HarmonyPatch(typeof(Enemy), "Awake")]
+    [HarmonyPatch(typeof(EnemyIdentifier), "Awake")]
     static class EnemyPreSpawnPatch
     {
-        public static void Prefix(Enemy __instance)
+        public static void Prefix(EnemyIdentifier __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
@@ -379,23 +379,23 @@ namespace UKAIW
         }
     }
 
-    [HarmonyPatch(typeof(Enemy), "Start")]
+    [HarmonyPatch(typeof(EnemyIdentifier), "Start")]
     static class EnemyStartPatch
     {
-        public static void Prefix(Enemy __instance)
+        public static void Prefix(EnemyIdentifier __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => { EnemyEvents.PreStart?.Invoke(enemy, enemyGo); });
+            TryLog.Action(() => { EnemyEvents.PreStart?.Invoke(enemy.GetComponent<EnemyAdditions>()); });
         }
 
-        public static void Postfix(Enemy __instance)
+        public static void Postfix(EnemyIdentifier __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(enemy.GetComponent<EnemyAdditions>());});
             
             if (Cheats.IsCheatEnabled(Cheats.LogEIDInfo))
             {
@@ -404,23 +404,23 @@ namespace UKAIW
 
             if (Options.LogEnemyTypeOnStart.Value)
             {
-                MelonLogger.Msg($"{enemyGo.name}: enemy type is: {enemy.EID.enemyType}");
+                MelonLogger.Msg($"{enemyGo.name}: enemy type is: {enemy.enemyType}");
             }
         }
     }
 
-    [HarmonyPatch(typeof(EnemyIdentifier), "OnDisable")]
+    [HarmonyPatch(typeof(EnemyAdditions), "OnDisable")]
     static class EnemyDisablePatch
     {
-        public static void Prefix(EnemyIdentifier __instance)
+        public static void Prefix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(enemy.GetComponent<Enemy>(), enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(__instance);});
         }
 
-        public static void Postfix(EnemyIdentifier __instance)
+        public static void Postfix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
@@ -430,15 +430,15 @@ namespace UKAIW
     [HarmonyPatch(typeof(EnemyAdditions), "OnDestroy")]
     static class EnemyDestroyPatch
     {
-        public static void Prefix(EnemyIdentifier __instance)
+        public static void Prefix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(enemy.GetComponent<Enemy>(), enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(__instance);});
         }
 
-        public static void Postfix(EnemyIdentifier __instance)
+        public static void Postfix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;

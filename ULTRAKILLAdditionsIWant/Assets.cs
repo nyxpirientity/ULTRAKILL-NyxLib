@@ -185,9 +185,9 @@ namespace UKAIW
             }
         }
 
-        private static void EnemyStart(Enemy enemy, GameObject go)
+        private static void EnemyStart(EnemyAdditions enemy)
         {
-            switch (enemy.EID.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Swordsmachine:
                 if (MachineEnrageSound_0 == null)
@@ -197,7 +197,7 @@ namespace UKAIW
                     UnityEngine.Object.DontDestroyOnLoad(MachineEnrageSound_0);
                     if (MachineEnrageSound_0 != null)
                     {
-                        Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                        Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
                     }
                 }
                 break;
@@ -206,12 +206,12 @@ namespace UKAIW
                 {
                     if (enemy.GetComponent<StatueBoss>().statueChargeSound2 != null)
                     {
-                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound2, null, false);
+                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound3, null, false);
                         HuskEnrageSound_0.SetActive(false);
                         UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
                         if (HuskEnrageSound_0 != null)
                         {
-                            Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                            Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
                         }
                     }
                 }
@@ -220,7 +220,7 @@ namespace UKAIW
                 case EnemyType.Streetcleaner:
                 if (MachineEnrageSound_1 == null)
                 {
-                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(enemy.deathSound);
+                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(enemy.Enemy.deathSound);
                 }
                 break;
             }

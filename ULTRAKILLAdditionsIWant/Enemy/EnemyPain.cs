@@ -106,28 +106,28 @@ namespace UKAIW
             ActiveMentalPain = Math.Max(ActiveHardMentalPain, ActiveMentalPain - (float)processedDamage * 0.01f);
         }
 
-        private void OnAnyEnemyDeath(Enemy otherEnemy)
+        private void OnAnyEnemyDeath(EnemyAdditions otherEnemy)
         {
             if (SpeciesType is EnemySpeciesType.OrganicMachine)
             {
                 return;
             }
 
-            var otherSpeciesType = otherEnemy.EID.GetSpeciesType();
-            var otherSpeciesRank = otherEnemy.EID.GetSpeciesRank();
+            var otherSpeciesType = otherEnemy.Eid.GetSpeciesType();
+            var otherSpeciesRank = otherEnemy.Eid.GetSpeciesRank();
 
             float compassion = 0.0f;
             float concern = 0.0f;
 
             if (Eadd.Eid.enemyType is EnemyType.Filth || Eadd.Eid.enemyType is EnemyType.Stray || Eadd.Eid.enemyType is EnemyType.Schism || Eadd.Eid.enemyType is EnemyType.Soldier)
             {
-                if (otherEnemy.EID.enemyType is EnemyType.Filth || otherEnemy.EID.enemyType is EnemyType.Stray || otherEnemy.EID.enemyType is EnemyType.Schism || otherEnemy.EID.enemyType is EnemyType.Soldier)
+                if (otherEnemy.Eid.enemyType is EnemyType.Filth || otherEnemy.Eid.enemyType is EnemyType.Stray || otherEnemy.Eid.enemyType is EnemyType.Schism || otherEnemy.Eid.enemyType is EnemyType.Soldier)
                 {
                     compassion += 0.25f; // they don't attack each other even with enemies attack enemies on soooooo
                 }   
             }
             
-            if (Eadd.Eid.enemyType == otherEnemy.EID.enemyType)
+            if (Eadd.Eid.enemyType == otherEnemy.Eid.enemyType)
             {
                 compassion += 0.4f;
             }
