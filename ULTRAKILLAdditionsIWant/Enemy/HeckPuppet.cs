@@ -13,6 +13,7 @@ namespace UKAIW
         public GameObject LeaderGo = null;
         public HeckPuppetLeader Leader = null;
         public EnemyIdentifier Eid { get; private set; } = null;
+        public EnemyAdditions Eadd { get; private set; } = null;
         public bool GivePoints { get; set; } = true;
         public ulong HeckPuppetID = 0;
         public EnemyRadiance.Modifier RadianceMod = null;
@@ -29,6 +30,8 @@ namespace UKAIW
 
         protected void Start()
         {
+            Eadd = GetComponent<EnemyAdditions>();
+
             if (!GetComponent<DestroyOnCheckpointRestart>())
             {
                 gameObject.AddComponent<DestroyOnCheckpointRestart>();
@@ -47,6 +50,8 @@ namespace UKAIW
                 FieldPublisher<Drone, bool> exploded = new FieldPublisher<Drone, bool>(Eid.drone, "exploded");
                 exploded.Value = true;
             }
+            
+            Eid.PuppetSpawn();
 
             var stray = Eid.GetComponent<ZombieProjectiles>();
             if (stray != null)
@@ -68,8 +73,11 @@ namespace UKAIW
                 return;
             }
             LeaderGo = Leader.gameObject;
-
-            Eid.onDeath.AddListener(() =>
+            Eadd.PreDeath += (instakill) =>
+            {
+                Eadd.QueuedForDestruction = true;  
+            };
+            Eadd.PostDeath += ((instakill) =>
             {
                 MaybeDeathDestroy();
             });
@@ -78,14 +86,6 @@ namespace UKAIW
         private int NumUpdates = 0;
         protected void Update()
         {
-            if (NumUpdates == 1 && !Eid.Dead)
-            {
-                Eid.PuppetSpawn();
-                EidPuppetSpawnTimer = new FieldPublisher<EnemyIdentifier, float>(Eid, "puppetSpawnTimer");
-                EidPuppetSpawnTimer.Value = 1f - 0.001f; // should instantly finish the puppet spawn animation once EID update is called
-            }
-            
-            NumUpdates += 1;
 
             if (Eid.machine != null && Eid.enemyType != EnemyType.Centaur)
             {
@@ -177,9 +177,9 @@ namespace UKAIW
 
         private void MaybeDeathDestroy()
         {
+            TryDestroy();
             if (Eid.enemyType == EnemyType.Swordsmachine || Eid.enemyType == EnemyType.Streetcleaner)
             {
-                TryDestroy();
             }
         }
 

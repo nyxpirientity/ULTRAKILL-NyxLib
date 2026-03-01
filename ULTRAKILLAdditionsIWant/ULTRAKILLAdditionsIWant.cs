@@ -36,7 +36,7 @@ namespace UKAIW
             PlayerEvents.Initialize();
             Cheats.Initialize();
             Hydra.Initialize();
-            MusicAdditions.Initialize();
+            Music.Initialize();
             LevelAdditionsManager.Initialize();
             CybergrindAdditions.Initialize();
             MundaneMurder.Initialize();

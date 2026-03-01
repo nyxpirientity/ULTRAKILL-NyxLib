@@ -11,6 +11,37 @@ using UnityEngine;
 
 public static class Cheats
 {
+    private static CheatsManager _manager = null;
+    public static CheatsManager Manager
+    {
+        get 
+        {
+            if (_manager == null)
+            {
+                if (CheatsManager.Instance != null)
+                {
+                    Log.ExpectedInfo($"Had to get CheatsManager via CheatsManager.Instance (then cached the value)");
+                    _manager = CheatsManager.Instance;
+                }
+            }
+
+            return _manager;
+        }
+    }
+
+    [HarmonyPatch(typeof(CheatsManager), "Start", new Type[] { })]
+    static class CheatsManagerStartPatch
+    {
+        public static void Prefix(CheatsManager __instance)
+        {
+        }
+
+        public static void Postfix(CheatsManager __instance)
+        {
+            _manager = __instance;
+        }
+    }
+
     public const string OverrideCybergrindStartingWaveID = "ukaiw.cybergrind-start-wave-override";
     public const string CybergrindQuickRestart = "ukaiw.cybergrind-quick-restart";
     public const string RadiantAllEnemies = "ukaiw.radiant-all-enemies";
@@ -55,7 +86,7 @@ public static class Cheats
             return false;
         }
         
-        return CheatsManager.Instance.GetCheatState(cheatID);
+        return Cheats.Manager.GetCheatState(cheatID);
     }
 
     public static bool IsCheatDisabled(string cheatID)
@@ -76,32 +107,32 @@ public static class Cheats
 
     private static void OnSceneWasLoaded(int buildIndex, string sceneName)
     {
-        if (CheatsManager.Instance == null)
+        if (Cheats.Manager == null)
         {
             return;
         }
 
-        if (CheatsManager.Instance.GetCheatState(Cheats.RadiantAllEnemies))
+        if (Cheats.Manager.GetCheatState(Cheats.RadiantAllEnemies))
         {
             OptionsManager.forceRadiance = true;
         }
 
-        if (CheatsManager.Instance.GetCheatState(Cheats.SandAllEnemiesID))
+        if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemiesID))
         {
             OptionsManager.forceSand = true;
         }
 
-        if (CheatsManager.Instance.GetCheatState(Cheats.BossBarAllEnemiesID))
+        if (Cheats.Manager.GetCheatState(Cheats.BossBarAllEnemiesID))
         {
             OptionsManager.forceBossBars = true;
         }
 
-        if (CheatsManager.Instance.GetCheatInstance<ToggleCheat>() != null)
+        if (Cheats.Manager.GetCheatInstance<ToggleCheat>() != null)
         {
             return;
         } 
 
-        CheatsManager.Instance.RegisterCheat(new HideCheatsStatus(), "meta");
+        Cheats.Manager.RegisterCheat(new HideCheatsStatus(), "meta");
 
         RegisterCheats();
     }
@@ -111,7 +142,7 @@ public static class Cheats
 
     private static void RegisterCheats()
     {
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Override Cybergrind Starting Wave (unimplemented)", 
             Cheats.OverrideCybergrindStartingWaveID,
             onDisable: (cheat) =>
@@ -124,7 +155,7 @@ public static class Cheats
             }
         ), "CYBERGRIND");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Cybergrind Quick Restart", 
             Cheats.CybergrindQuickRestart,
             onDisable: (cheat) =>
@@ -137,7 +168,7 @@ public static class Cheats
             }
         ), "CYBERGRIND");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Cybergrind Challenger", 
             Cheats.CybergrindCheatRandomization,
             onDisable: (cheat) =>
@@ -148,7 +179,7 @@ public static class Cheats
             }
         ), "CYBERGRIND");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Force Next Wave", 
             "ukaiw.force-next-cybergrind-wave",
             onDisable: (cheat) =>
@@ -156,7 +187,7 @@ public static class Cheats
             },
             onEnable: (cheat, manager) =>
             {
-                CheatsManager.Instance.DisableCheat("ukaiw.force-next-cybergrind-wave");
+                Cheats.Manager.DisableCheat("ukaiw.force-next-cybergrind-wave");
                 if (CybergrindAdditions.CybergrindActive && CybergrindAdditions.IsInCybergrind)
                 {
                     CybergrindAdditions.LastStartedEndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
@@ -164,7 +195,7 @@ public static class Cheats
             }
         ), "CYBERGRIND");
 
-        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        /*Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Cybergrind Shuffle", 
             Cheats.CybergrindShuffle,
             onDisable: (cheat) =>
@@ -175,7 +206,7 @@ public static class Cheats
             }
         ), "CYBERGRIND");*/
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Blood Fueled Enemies", 
             Cheats.BloodFueledEnemies,
             onDisable: (cheat) =>
@@ -188,7 +219,7 @@ public static class Cheats
             }
         ), "FAIRNESS AND EQUALITY");
         
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Feedbackers for Everyone!", 
             Cheats.FeedbackerForAll,
             onDisable: (cheat) =>
@@ -202,7 +233,7 @@ public static class Cheats
         ), "FAIRNESS AND EQUALITY");
         
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Give Enemies Friend(s)", 
             Cheats.GiveEnemiesFriends,
             onDisable: (cheat) =>
@@ -213,7 +244,7 @@ public static class Cheats
             }
         ), "THOUGHTFULNESS AND CARING");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Radiant All Enemies", 
             Cheats.RadiantAllEnemies,
             onDisable: (cheat) =>
@@ -224,7 +255,7 @@ public static class Cheats
             }
         ), "SELF SABOTAGE");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Sand All Enemies", 
             Cheats.SandAllEnemiesID,
             onDisable: (cheat) =>
@@ -237,7 +268,7 @@ public static class Cheats
             }
         ), "SELF SABOTAGE");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Give all Enemies Boss Bar", 
             Cheats.BossBarAllEnemiesID,
             onDisable: (cheat) =>
@@ -250,7 +281,7 @@ public static class Cheats
             }
         ), "SELF SABOTAGE");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Radiance For Thyself", 
             Cheats.GiveSelfRadiance,
             onDisable: (cheat) =>
@@ -261,7 +292,7 @@ public static class Cheats
             }
         ), "SELF CARE");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Hard Damage Rebalance (unimplemented)", 
             Cheats.HardDamageRebalance,
             onDisable: (cheat) =>
@@ -272,7 +303,7 @@ public static class Cheats
             }
         ), "EXPERIMENTATION");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Disable Stops", 
             Cheats.DisableStops,
             onDisable: (cheat) =>
@@ -283,7 +314,7 @@ public static class Cheats
             }
         ), "misc");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Disable Slowdown", 
             Cheats.DisableSlowdown,
             onDisable: (cheat) =>
@@ -294,7 +325,7 @@ public static class Cheats
             }
         ), "misc");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Immortality (unimplemented)", 
             Cheats.Immortality,
             onDisable: (cheat) =>
@@ -305,7 +336,7 @@ public static class Cheats
             }
         ), "SELF HATRED");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "ULTRASTOP (possible flashing lights!)", 
             Cheats.UltraStop,
             onDisable: (cheat) =>
@@ -316,7 +347,7 @@ public static class Cheats
             }
         ), "???");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Shortened Hitstop", 
             Cheats.ShortHitStop,
             onDisable: (cheat) =>
@@ -327,7 +358,7 @@ public static class Cheats
             }
         ), "misc");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Always Play Battle Music", 
             Cheats.AlwaysBattleMusic,
             onDisable: (cheat) =>
@@ -338,7 +369,7 @@ public static class Cheats
             }
         ), "music");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Play Clean Music with Battle Music", 
             Cheats.PlayCleanMusicWithBattle,
             onDisable: (cheat) =>
@@ -349,7 +380,7 @@ public static class Cheats
             }
         ), "music");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "mundanemurder Mode", 
             Cheats.MundaneMurder,
             onDisable: (cheat) =>
@@ -360,7 +391,7 @@ public static class Cheats
             }
         ), "THIS GAME IF IT SUCKED:");
 
-        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        /*Cheats.Manager.RegisterCheat(new ToggleCheat(
             "No Corpses", 
             Cheats.NoCorpses,
             onDisable: (cheat) =>
@@ -371,7 +402,7 @@ public static class Cheats
             }
         ), "???");*/
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Hydra Mode", 
             Cheats.HydraMode,
             onDisable: (cheat) =>
@@ -384,7 +415,7 @@ public static class Cheats
             }
         ), "MITOSIS");
 
-        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        /*Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Hitstop On Heavy Hydra Load", 
             Cheats.HitstopOnHeavyHydraLoad,
             onDisable: (cheat) =>
@@ -395,7 +426,7 @@ public static class Cheats
             }
         ), "???");*/ // why is this a cheat and not a setting?
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Salty Enemies", 
             Cheats.SaltyEnemies,
             onDisable: (cheat) =>
@@ -406,7 +437,7 @@ public static class Cheats
             }
         ), "ENEMY'S MIND");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Heat of Heck", 
             Cheats.DemandingHell,
             onDisable: (cheat) =>
@@ -417,7 +448,7 @@ public static class Cheats
             }
         ), "HELL'S IMPACT");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Heck Puppets", 
             Cheats.HeckPuppets,
             onDisable: (cheat) =>
@@ -428,7 +459,7 @@ public static class Cheats
             }
         ), "HELL'S IMPACT");        
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Aggressive Agony", 
             Cheats.AggressiveAgony,
             onDisable: (cheat) =>
@@ -439,7 +470,7 @@ public static class Cheats
             }
         ), "HELL'S IMPACT");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Self Conscience", 
             Cheats.SelfConscience,
             onDisable: (cheat) =>
@@ -451,7 +482,7 @@ public static class Cheats
             }
         ), "V1'S MIND");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Bad Gyro", 
             Cheats.BadGyro,
             onDisable: (cheat) =>
@@ -463,7 +494,7 @@ public static class Cheats
             }
         ), "???");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Tymitosis", 
             Cheats.Tymitosis,
             onDisable: (cheat) =>
@@ -475,7 +506,7 @@ public static class Cheats
             }
         ), "MITOSIS");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Stronger in Numbers", 
             Cheats.StrongerInNumbers,
             onDisable: (cheat) =>
@@ -487,7 +518,7 @@ public static class Cheats
             }
         ), "???");
 
-        CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
         "Log Eid Info On Start", 
         Cheats.LogEIDInfo,
         onDisable: (cheat) =>
@@ -498,7 +529,7 @@ public static class Cheats
         }
         ), "dev stuff");
 
-        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        /*Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Print the ALL!!!!", 
             "ukaiw.dev.print-all-children",
             onDisable: (cheat) =>
@@ -506,7 +537,7 @@ public static class Cheats
             },
             onEnable: (cheat, manager) =>
             {
-                CheatsManager.Instance.DisableCheat("ukaiw.dev.print-all-children");
+                Cheats.Manager.DisableCheat("ukaiw.dev.print-all-children");
                 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 var roots = scene.GetRootGameObjects();
                 foreach (var root in roots)
@@ -516,7 +547,7 @@ public static class Cheats
             }
         ), "dev stuff");*/
 
-        /*CheatsManager.Instance.RegisterCheat(new ToggleCheat(
+        /*Cheats.Manager.RegisterCheat(new ToggleCheat(
             "dev-button-0", 
             "ukaiw.dev.button-0",
             onDisable: (cheat) =>
@@ -524,7 +555,7 @@ public static class Cheats
             },
             onEnable: (cheat, manager) =>
             {
-                CheatsManager.Instance.DisableCheat("ukaiw.dev.button-0");
+                Cheats.Manager.DisableCheat("ukaiw.dev.button-0");
                 var objects = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>();
                 HashSet<GameObject> printedObjects = new HashSet<GameObject>(256);
                 foreach (var obj in objects)

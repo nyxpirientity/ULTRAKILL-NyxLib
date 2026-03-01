@@ -214,7 +214,7 @@ namespace UKAIW
 
         protected void Start()
         {
-            if (Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second || Eadd.UniquelySolo)
+            if (Eid.enemyType == EnemyType.Deathcatcher || Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second || Eadd.UniquelySolo)
             {
                 ExcludedFromHydraCheat = true;
                 return;
@@ -343,7 +343,7 @@ namespace UKAIW
             {
                 return;
             }
-
+            
             Log.TraceExpectedInfo($"{name}: EnemyHydraMod::NotifyOfDeath called with instakill as {instakill}");
 
             NotifiedOfDeathCalled = true;
@@ -404,10 +404,10 @@ namespace UKAIW
                     }
                 }
 
-                TimeDilation.ModDisableHitstop = true;
+                TimeScale.ModDisableHitstop = true;
                 Hydra.Hitstop(-1.0);
                 Hydra.Hitstop(-1.0);
-                TimeDilation.ModDisableHitstop = false;
+                TimeScale.ModDisableHitstop = false;
 
                 Log.TraceExpectedInfo($"{name}: About to try give points for hydra kill...");
                 switch (GameplayRank)
@@ -433,6 +433,11 @@ namespace UKAIW
             else
             {
                 Eid.puppet = !instakill;
+                if (Eid.enemyType == EnemyType.Providence)
+                {
+                    Eid.drone.spawnOnDeath = null;
+                    Eid.drone.cantInstaExplode = true;
+                }
                 Log.TraceExpectedInfo($"{name}: EnemyHydraMod::NotifyOfDeath called and we were NOT hydrakilled, {Shared.InstanceCount} remaining instances, HydraDuped: {HydraDuped}");
             }
         }

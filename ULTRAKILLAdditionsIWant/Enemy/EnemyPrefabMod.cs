@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MelonLoader;
 using Nyxpiri;
 using UKAIW;
 using UKAIW.Diagnostics.Debug;
@@ -24,7 +25,7 @@ public class EnemyPrefabStore : EnemyModifier
                 {
                     EnemyPrefabManager.UnregisterInstanceStore(RegistrationIdx);
                     RegistrationIdx = -1;
-                    return false;
+                    return true;
                 }
             );
         }
@@ -88,7 +89,7 @@ public class EnemyPrefabStore : EnemyModifier
         RegistrationTracker RegistrationTracker = null;
         private int RegistrationIdx = -1;
 
-        public bool IsFull { get => Instances.Count >= 20; }
+        public bool IsFull { get => Instances.Count >= 5; }
     }
 
     [SerializeField] private InstanceStore _Instances = null;
@@ -135,6 +136,17 @@ public class EnemyPrefabStore : EnemyModifier
 
     protected void Start()
     {
+        InstancesRegistrator.Register();
+    }
+
+    protected void OnEnable()
+    {
+        InstancesRegistrator.Register();
+    }
+
+    protected void OnDisable()
+    {
+        InstancesRegistrator.Unregister();
     }
 
     public void StorePrefab(bool force = false)

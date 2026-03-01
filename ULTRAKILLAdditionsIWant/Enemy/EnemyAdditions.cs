@@ -120,6 +120,16 @@ public class EnemyAdditions : MonoBehaviour
     private void OnDestroy()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets instantaneously obliterated (destroyed)...");
+
+        if (Eid.enemyType == EnemyType.Mindflayer)
+        {
+            var mindflayer = GetComponent<Mindflayer>();
+            
+            if (mindflayer.tempBeam != null)
+            {
+                mindflayer.tempBeam.DetachAndTurnOff();
+            }
+        }
     }
 
     protected void Update()

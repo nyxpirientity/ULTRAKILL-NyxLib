@@ -154,7 +154,7 @@ namespace UKAIW
             if (!IsBattleWithClean)
             {
                 Log.ExpectedInfo($"Level Additions for P-2 trying to play battle music with clean!\nNumVirtues: {NumVirtues}\nNumMindflayers: {NumMindflayers}");
-                MusicAdditions.PlayBattleWithCleanVotes += 1;
+                Music.PlayBattleWithCleanVotes += 1;
                 IsBattleWithClean = true;
             }
         }
@@ -164,7 +164,7 @@ namespace UKAIW
             if (IsBattleWithClean)
             {
                 Log.ExpectedInfo($"Level Additions for P-2 trying to NOT play battle music with clean!");
-                MusicAdditions.PlayBattleWithCleanVotes -= 1;
+                Music.PlayBattleWithCleanVotes -= 1;
                 IsBattleWithClean = false;
             }
         }

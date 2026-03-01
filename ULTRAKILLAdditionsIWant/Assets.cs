@@ -206,7 +206,7 @@ namespace UKAIW
                 {
                     if (enemy.GetComponent<StatueBoss>().statueChargeSound2 != null)
                     {
-                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound3, null, false);
+                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound2, null, false);
                         HuskEnrageSound_0.SetActive(false);
                         UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
                         if (HuskEnrageSound_0 != null)

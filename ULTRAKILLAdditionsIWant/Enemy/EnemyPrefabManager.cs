@@ -7,7 +7,7 @@ namespace UKAIW
     {
         public static void Initialize()
         {
-            
+            UpdateEvents.OnLateUpdate += LateUpdate;
         }
 
         public static void LateUpdate()

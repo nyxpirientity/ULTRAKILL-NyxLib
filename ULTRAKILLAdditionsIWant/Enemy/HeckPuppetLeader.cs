@@ -81,14 +81,6 @@ namespace UKAIW
                 HeckPuppet.HeckPuppetID = NextHeckPuppetID;
                 PuppetEid.dontCountAsKills = true;
                 PuppetEid.timeSinceSpawned = 0.0f;
-
-                if (leader.Eid.enemyType == EnemyType.Virtue)
-                {
-                    if (leader.Eid.drone.GetComponent<Collider>() != null && PuppetEid.drone.GetComponent<Collider>() != null)
-                    {
-                        Physics.IgnoreCollision(PuppetEid.drone.GetComponent<Collider>(), leader.Eid.drone.GetComponent<Collider>());
-                    }
-                }
             }
         }
 

@@ -57,7 +57,7 @@ namespace UKAIW
 
         protected void FixedUpdate()
         {
-            ApplyValues();
+            ApplyValues(); // TODO: should this be here? in fixedupdate?
         }
 
         public void ApplyValues()

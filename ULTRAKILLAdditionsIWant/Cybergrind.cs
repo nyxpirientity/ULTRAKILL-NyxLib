@@ -63,7 +63,7 @@ public static class CybergrindAdditions
         {
             //("SEEING DOUBLE", new string[]{Cheats.HeckPuppets, Cheats.GiveEnemiesFriends}),
             ("BRUTAL HECK", new string[]{Cheats.AggressiveAgony, Cheats.DemandingHell}),
-            ("GET UP ON THEIR BACK", new string[]{Cheats.HydraMode, Cheats.DemandingHell}),
+            //("GET UP ON THEIR BACK", new string[]{Cheats.HydraMode, Cheats.DemandingHell}),
             ("MISCONFIGURED", new string[]{Cheats.SelfConscience, Cheats.BadGyro}),
             ("ULTRACARE", new string[]{Cheats.GiveEnemiesFriends, Cheats.BloodFueledEnemies}),
             ("NOW SWAP", new string[]{Cheats.SandAllEnemiesID, Cheats.BloodFueledEnemies}),
@@ -77,7 +77,7 @@ public static class CybergrindAdditions
             ("SSADISTIC HECK", new string[]{ Cheats.SaltyEnemies, Cheats.SelfConscience, Cheats.DemandingHell, Cheats.AggressiveAgony }),
             ("HECK SPECIAL", new string[]{ Cheats.SaltyEnemies, Cheats.HeckPuppets, Cheats.DemandingHell, Cheats.AggressiveAgony }),
             ("STYLE ISSUE", new string[]{ Cheats.SaltyEnemies, Cheats.SelfConscience, Cheats.DemandingHell, Cheats.HeckPuppets }),
-            ("FURIOUS MITOSIS", new string[]{ Cheats.SaltyEnemies, Cheats.DemandingHell, Cheats.HydraMode }),
+            //("FURIOUS MITOSIS", new string[]{ Cheats.SaltyEnemies, Cheats.DemandingHell, Cheats.HydraMode }),
             ("HEAT OF GREED", new string[]{ Cheats.SandAllEnemiesID, Cheats.BloodFueledEnemies, Cheats.DemandingHell }),
             ("TECH ISSUES", new string[]{ Cheats.BadGyro, Cheats.DemandingHell, Cheats.SelfConscience }),
         };
@@ -89,12 +89,12 @@ public static class CybergrindAdditions
         {
             for (int i = 0; i < CheatsEnabledByUs.Length; i++)
             {
-                CheatsManager.Instance.DisableCheat(CheatsEnabledByUs[i]);
+                Cheats.Manager.DisableCheat(CheatsEnabledByUs[i]);
             }
 
             if (Cheats.IsHydraModeOn)
             {
-                CheatsManager.Instance.ToggleCheat(CheatsManager.Instance.GetCheatInstance<KillAllEnemies>());
+                Cheats.Manager.ToggleCheat(Cheats.Manager.GetCheatInstance<KillAllEnemies>());
             }
             
             CheatsEnabledByUs = new string[0];
@@ -136,7 +136,7 @@ public static class CybergrindAdditions
             var challenge = challengePool[currentChallengeIdx];
             currentChallengeIdx = (currentChallengeIdx + 1) % (useHardChallenges ? HardChallenges.Count : Challenges.Count);
             
-            FieldPublisher<CheatsManager, Dictionary<string, ICheat>> idToCheat = new FieldPublisher<CheatsManager, Dictionary<string, ICheat>>(CheatsManager.Instance, "idToCheat");
+            FieldPublisher<CheatsManager, Dictionary<string, ICheat>> idToCheat = new FieldPublisher<CheatsManager, Dictionary<string, ICheat>>(Cheats.Manager, "idToCheat");
             CheatsEnabledByUs = challenge.Item2;
 
             float downwardOffsetBase = 0.0f;
@@ -159,10 +159,10 @@ public static class CybergrindAdditions
                 var cheat = idToCheat.Value[cheatName];
                 
                 QuickMsgPool.DisplayQuickMsg($"+ {cheat.LongName.ToUpper()}", new Color(0.875f, 0.75f, 1.0f), 5.0f, velocity: Vector3.down * ((float)((i) * 90.0f) + downwardOffsetBase), 24.0f);
-                cheat.Enable(CheatsManager.Instance);
+                cheat.Enable(Cheats.Manager);
             }
             
-            CheatsManager.Instance.RefreshCheatStates();
+            Cheats.Manager.RefreshCheatStates();
         }
     }
 
@@ -214,17 +214,17 @@ public static class CybergrindAdditions
     {
         if (Cheats.IsCheatEnabled(Cheats.CybergrindQuickRestart) && IsInCybergrind)
         {
-            CheatsManager.Instance.ToggleCheat(CheatsManager.Instance.GetCheatInstance<KillAllEnemies>());
+            Cheats.Manager.ToggleCheat(Cheats.Manager.GetCheatInstance<KillAllEnemies>());
             newMovement.ForceAntiHP(0.0f);
             newMovement.FullHeal(false);
             newMovement.FullStamina();
-            MonoSingleton<TimeController>.Instance.SlowDown(0.0f);
-            MonoSingleton<TimeController>.Instance.ParryFlash();
+            TimeScale.Controller.SlowDown(0.0f);
+            TimeScale.Controller.ParryFlash();
             newMovement.antiHpFlash.Flash(1.0f);
             
-            if (!CheatsManager.Instance.GetCheatInstance<Invincibility>().IsActive)
+            if (!Cheats.Manager.GetCheatInstance<Invincibility>().IsActive)
             {
-                CheatsManager.Instance.ToggleCheat(CheatsManager.Instance.GetCheatInstance<Invincibility>());
+                Cheats.Manager.ToggleCheat(Cheats.Manager.GetCheatInstance<Invincibility>());
                 InvincibilityEnabledByUs = true;
             }
 
@@ -233,7 +233,7 @@ public static class CybergrindAdditions
                 newMovement.gameObject.transform.position = new Vector3(0.0f, 100.0f, 64.0f);            
             }
 
-            var endlessGrid = MonoSingleton<EndlessGrid>.Instance;
+            var endlessGrid = LastStartedEndlessGrid;
 
             if (endlessGrid.enemyAmount > 0)
             {
@@ -258,7 +258,7 @@ public static class CybergrindAdditions
     {
         if (InvincibilityEnabledByUs)
         {
-            CheatsManager.Instance.ToggleCheat(CheatsManager.Instance.GetCheatInstance<Invincibility>());
+            Cheats.Manager.ToggleCheat(Cheats.Manager.GetCheatInstance<Invincibility>());
         }
 
         InvincibilityEnabledByUs = false;

@@ -15,6 +15,8 @@ public class EnemyFriendIdentifier : EnemyModifier
     public int FriendIdx = -1;
     public EnemyIdentifier Eid = null;
     public EnemyAdditions Ead = null;
+    public bool ExcludedFromFriends = false;
+
 
     protected void FixedUpdate()
     {
@@ -50,7 +52,12 @@ public class EnemyFriendIdentifier : EnemyModifier
 
     protected void Start()
     {
-        if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends) && !Ead.UniquelySolo)
+        if (Eid.enemyType == EnemyType.Deathcatcher)
+        {
+            ExcludedFromFriends = true;
+        }
+        
+        if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends) && !Ead.UniquelySolo && !ExcludedFromFriends)
         {
             if (IsLeader && !Eid.Dead)
             {

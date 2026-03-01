@@ -52,13 +52,13 @@ namespace UKAIW
             
             if (MonoSingleton<InputManager>.Instance.InputSource.Dodge.WasPerformedThisFrame && player.activated && !player.slowMode && !GameStateManager.Instance.PlayerInputLocked)
             {
-                if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
+                if (Cheats.Manager.GetCheatState(Cheats.GiveSelfRadiance))
                 {
                     player.boostCharge += 50.0f;
                 }
             }
 
-            if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
+            if (Cheats.Manager.GetCheatState(Cheats.GiveSelfRadiance))
             {
                 if (MonoSingleton<FistControl>.Instance.fistCooldown > -1f)
                 {
@@ -72,7 +72,7 @@ namespace UKAIW
             FieldInfo antiHpCooldownFI = typeof(NewMovement).GetField("antiHpCooldown", BindingFlags.NonPublic | BindingFlags.Instance);
             var antiHpCooldown = (float)antiHpCooldownFI.GetValue(player);
 
-            if (CheatsManager.Instance.GetCheatState(Cheats.HardDamageRebalance)) // OH this is actually in the code still?? yeah this stuff is jank as heck and not balanced btw lol
+            if (Cheats.Manager.GetCheatState(Cheats.HardDamageRebalance)) // OH this is actually in the code still?? yeah this stuff is jank as heck and not balanced btw lol
             {
                 float spDeltaF = stats.stylePoints - PrevStylePoints;
                 
