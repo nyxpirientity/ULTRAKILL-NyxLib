@@ -1,10 +1,43 @@
 using System;
+using HarmonyLib;
+using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 namespace UKAIW
 {
-    public static class MusicAdditions
+    public static class Music
     {
+        private static MusicManager _manager = null;
+        public static MusicManager Manager
+        {
+            get 
+            {
+                if (_manager == null)
+                {
+                    if (MusicManager.Instance != null)
+                    {
+                        Log.ExpectedInfo($"Had to get MusicManager via MusicManager.Instance (then cached the value)");
+                        _manager = MusicManager.Instance;
+                    }
+                }
+
+                return _manager;
+            }
+        }
+
+        [HarmonyPatch(typeof(MusicManager), "OnEnable", new Type[] { })]
+        static class MusicManagerAwakePatch
+        {
+            public static void Prefix(MusicManager __instance)
+            {
+            }
+
+            public static void Postfix(MusicManager __instance)
+            {
+                _manager = __instance;
+            }
+        }
+
         public static int PlayBattleWithCleanVotes { get; set; } = 0;
 
         internal static void Initialize()
@@ -28,9 +61,9 @@ namespace UKAIW
 
         private static void VoteForBattleMusic()
         {
-            if (MusicManager.Instance.battleTheme != null)
+            if (Music.Manager.battleTheme != null)
             {
-                MusicManager.Instance.PlayBattleMusic();
+                Music.Manager.PlayBattleMusic();
                 HasVotedForBattleMusic = true;
             }
         }
@@ -39,7 +72,7 @@ namespace UKAIW
         {
             if (HasVotedForBattleMusic)
             {
-                MusicManager.Instance.PlayCleanMusic();
+                Music.Manager.PlayCleanMusic();
                 HasVotedForBattleMusic = false;
             }
         }
@@ -47,7 +80,7 @@ namespace UKAIW
         private static bool WasPlayCleanWithBattle = false;
         private static void Update()
         {
-            if (CheatsManager.Instance == null)
+            if (Cheats.Manager == null)
             {
                 return;
             }
@@ -62,44 +95,49 @@ namespace UKAIW
             }
 
             bool playCleanWithBattle = Cheats.IsCheatEnabled(Cheats.PlayCleanMusicWithBattle) || PlayBattleWithCleanVotes > 0;
+            
+            if (Music.Manager.battleTheme == null || Music.Manager.cleanTheme == null)
+            {
+                return;
+            }
 
             if (playCleanWithBattle)
             {
-                if (MusicManager.Instance.targetTheme == MusicManager.Instance.bossTheme)
+                if (Music.Manager.targetTheme == Music.Manager.bossTheme)
                 {
-                    MusicManager.Instance.cleanTheme.volume = Mathf.Max(MusicManager.Instance.battleTheme.volume, MusicManager.Instance.cleanTheme.volume);
+                    Music.Manager.cleanTheme.volume = Mathf.Max(Music.Manager.battleTheme.volume, Music.Manager.cleanTheme.volume);
                 }
-                else if (MusicManager.Instance.targetTheme == MusicManager.Instance.battleTheme)
+                else if (Music.Manager.targetTheme == Music.Manager.battleTheme)
                 {
-                    MusicManager.Instance.cleanTheme.volume = Mathf.Max(MusicManager.Instance.battleTheme.volume, MusicManager.Instance.cleanTheme.volume);
-                    if (Mathf.Abs(MusicManager.Instance.cleanTheme.time - MusicManager.Instance.battleTheme.time) > 0.1f)
+                    Music.Manager.cleanTheme.volume = Mathf.Max(Music.Manager.battleTheme.volume, Music.Manager.cleanTheme.volume);
+                    if (Mathf.Abs(Music.Manager.cleanTheme.time - Music.Manager.battleTheme.time) > 0.1f)
                     {
-                        MusicManager.Instance.cleanTheme.time = MusicManager.Instance.battleTheme.time;
+                        Music.Manager.cleanTheme.time = Music.Manager.battleTheme.time;
                         
-                        if (!MusicManager.Instance.cleanTheme.isPlaying)
+                        if (!Music.Manager.cleanTheme.isPlaying)
                         {
-                            MusicManager.Instance.cleanTheme.Play();
+                            Music.Manager.cleanTheme.Play();
                         }
                     }
                 }
-                else if (MusicManager.Instance.targetTheme == MusicManager.Instance.cleanTheme)
+                else if (Music.Manager.targetTheme == Music.Manager.cleanTheme)
                 {
-                    MusicManager.Instance.battleTheme.volume = Mathf.MoveTowards(MusicManager.Instance.battleTheme.volume, 0f, MusicManager.Instance.fadeSpeed * Time.deltaTime);
+                    Music.Manager.battleTheme.volume = Mathf.MoveTowards(Music.Manager.battleTheme.volume, 0f, Music.Manager.fadeSpeed * Time.deltaTime);
                 }
             }
-            else if (MusicManager.Instance.off || MusicManager.Instance.targetTheme.volume == MusicManager.Instance.volume) 
+            else if (Music.Manager.off || Music.Manager.targetTheme.volume == Music.Manager.volume) 
             {
-                if (MusicManager.Instance.targetTheme == MusicManager.Instance.bossTheme)
+                if (Music.Manager.targetTheme == Music.Manager.bossTheme)
                 {
-                    MusicManager.Instance.cleanTheme.volume = Mathf.MoveTowards(MusicManager.Instance.cleanTheme.volume, 0f, MusicManager.Instance.fadeSpeed * Time.deltaTime);
+                    Music.Manager.cleanTheme.volume = Mathf.MoveTowards(Music.Manager.cleanTheme.volume, 0f, Music.Manager.fadeSpeed * Time.deltaTime);
                 }
-                else if (MusicManager.Instance.targetTheme == MusicManager.Instance.battleTheme)
+                else if (Music.Manager.targetTheme == Music.Manager.battleTheme)
                 {
-                    MusicManager.Instance.cleanTheme.volume = Mathf.MoveTowards(MusicManager.Instance.cleanTheme.volume, 0f, MusicManager.Instance.fadeSpeed * Time.deltaTime);
+                    Music.Manager.cleanTheme.volume = Mathf.MoveTowards(Music.Manager.cleanTheme.volume, 0f, Music.Manager.fadeSpeed * Time.deltaTime);
                 }
-                else if (MusicManager.Instance.targetTheme == MusicManager.Instance.cleanTheme)
+                else if (Music.Manager.targetTheme == Music.Manager.cleanTheme)
                 {
-                    MusicManager.Instance.battleTheme.volume = Mathf.MoveTowards(MusicManager.Instance.battleTheme.volume, 0f, MusicManager.Instance.fadeSpeed * Time.deltaTime);
+                    Music.Manager.battleTheme.volume = Mathf.MoveTowards(Music.Manager.battleTheme.volume, 0f, Music.Manager.fadeSpeed * Time.deltaTime);
                 }
             }
 

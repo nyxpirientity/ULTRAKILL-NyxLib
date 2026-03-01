@@ -25,11 +25,11 @@ namespace UKAIW
         {
             RemainingBloodFxThisTick -= 1;
             
-            bool wasBloodEnabled = MonoSingleton<PrefsManager>.Instance.GetBoolLocal("bloodEnabled");
+            bool wasBloodEnabled = GamePrefs.Manager.GetBoolLocal("bloodEnabled");
 
             if (RemainingBloodFxThisTick <= 0 && wasBloodEnabled)
             {
-                MonoSingleton<PrefsManager>.Instance.SetBoolLocal("bloodEnabled", false);
+                GamePrefs.Manager.SetBoolLocal("bloodEnabled", false);
                 BloodDisabledByUs = true;
             }
         }
@@ -49,7 +49,7 @@ namespace UKAIW
                 LastRefreshTimeStamp.UpdateToNow();
                 if (BloodDisabledByUs)
                 {
-                    MonoSingleton<PrefsManager>.Instance.SetBoolLocal("bloodEnabled", true);
+                    GamePrefs.Manager.SetBoolLocal("bloodEnabled", true);
                     BloodDisabledByUs = false;
                 }
             }

@@ -9,16 +9,47 @@ using UKAIW.Diagnostics.Debug;
 
 namespace UKAIW
 {
-    public static class TimeDilation
+    public static class TimeScale
     {
+        private static TimeController _controller = null;
+        public static TimeController Controller
+        {
+            get 
+            {
+                if (_controller == null)
+                {
+                    if (TimeController.Instance != null)
+                    {
+                        Log.ExpectedInfo($"Had to get TimeController via TimeController.Instance (then cached the value)");
+                        _controller = TimeController.Instance;
+                    }
+                }
+
+                return _controller;
+            }
+        }
+
+        [HarmonyPatch(typeof(TimeController), "Awake", new Type[] { })]
+        static class TimeControllerAwakePatch
+        {
+            public static void Prefix(TimeController __instance)
+            {
+            }
+
+            public static void Postfix(TimeController __instance)
+            {
+                _controller = __instance;
+            }
+        }
         public static bool ModDisableHitstop = false;
     }
+
     [HarmonyPatch(typeof(TimeController), "TrueStop")]
     static class TrueStopPatch
     {
         public static void Prefix(TimeController __instance, float length)
         {
-            if (Cheats.IsCheatEnabled(Cheats.DisableStops) || TimeDilation.ModDisableHitstop)
+            if (Cheats.IsCheatEnabled(Cheats.DisableStops) || TimeScale.ModDisableHitstop)
             {
                 FieldInfo currentStopFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -28,7 +59,7 @@ namespace UKAIW
 
         public static void Postfix(TimeController __instance, float length)
         {
-            if (Cheats.IsCheatEnabled(Cheats.DisableStops)  || TimeDilation.ModDisableHitstop)
+            if (Cheats.IsCheatEnabled(Cheats.DisableStops)  || TimeScale.ModDisableHitstop)
             {
                 FieldInfo currentStopFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -42,7 +73,7 @@ namespace UKAIW
     {
         public static void Prefix(TimeController __instance, float length)
         {
-            if (Cheats.IsCheatEnabled(Cheats.DisableStops) || TimeDilation.ModDisableHitstop)
+            if (Cheats.IsCheatEnabled(Cheats.DisableStops) || TimeScale.ModDisableHitstop)
             {
                 FieldInfo currentStopFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -52,7 +83,7 @@ namespace UKAIW
 
         public static void Postfix(TimeController __instance, float length)
         {
-            if (Cheats.IsCheatEnabled(Cheats.DisableStops) || TimeDilation.ModDisableHitstop)
+            if (Cheats.IsCheatEnabled(Cheats.DisableStops) || TimeScale.ModDisableHitstop)
             {
                 FieldInfo currentStopFI = __instance.GetType().GetField("currentStop", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -136,7 +167,7 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.UltraStop) && !AudioPlayPatch.Disabled)
             {
                 Disabled = true;
-                MonoSingleton<TimeController>.Instance.ParryFlash();
+                TimeScale.Controller.ParryFlash();
                 Disabled = false;
             }
         }
@@ -154,7 +185,7 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.UltraStop) && !AudioPlayPatch.Disabled)
             {
                 AudioPlayPatch.Disabled = true;
-                MonoSingleton<TimeController>.Instance.ParryFlash();
+                TimeScale.Controller.ParryFlash();
                 AudioPlayPatch.Disabled = false;
             }
         }
@@ -172,7 +203,7 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.UltraStop) && !AudioPlayPatch.Disabled)
             {
                 AudioPlayPatch.Disabled = true;
-                MonoSingleton<TimeController>.Instance.ParryFlash();
+                TimeScale.Controller.ParryFlash();
                 AudioPlayPatch.Disabled = false;
             }
         }
@@ -190,7 +221,7 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.UltraStop) && !AudioPlayPatch.Disabled)
             {
                 AudioPlayPatch.Disabled = true;
-                MonoSingleton<TimeController>.Instance.ParryFlash();
+                TimeScale.Controller.ParryFlash();
                 AudioPlayPatch.Disabled = false;
             }
         }
@@ -207,7 +238,7 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.UltraStop) && !AudioPlayPatch.Disabled)
             {
                 AudioPlayPatch.Disabled = true;
-                MonoSingleton<TimeController>.Instance.ParryFlash();
+                TimeScale.Controller.ParryFlash();
                 AudioPlayPatch.Disabled = false;
             }
         }
@@ -225,7 +256,7 @@ namespace UKAIW
             if (Cheats.IsCheatEnabled(Cheats.UltraStop) && !AudioPlayPatch.Disabled)
             {
                 AudioPlayPatch.Disabled = true;
-                MonoSingleton<TimeController>.Instance.ParryFlash();
+                TimeScale.Controller.ParryFlash();
                 AudioPlayPatch.Disabled = false;
             }
         }

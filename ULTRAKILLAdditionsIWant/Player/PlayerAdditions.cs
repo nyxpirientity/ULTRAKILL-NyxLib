@@ -52,13 +52,13 @@ namespace UKAIW
             
             if (MonoSingleton<InputManager>.Instance.InputSource.Dodge.WasPerformedThisFrame && player.activated && !player.slowMode && !GameStateManager.Instance.PlayerInputLocked)
             {
-                if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
+                if (Cheats.Manager.GetCheatState(Cheats.GiveSelfRadiance))
                 {
                     player.boostCharge += 50.0f;
                 }
             }
 
-            if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
+            if (Cheats.Manager.GetCheatState(Cheats.GiveSelfRadiance))
             {
                 if (MonoSingleton<FistControl>.Instance.fistCooldown > -1f)
                 {
@@ -72,7 +72,7 @@ namespace UKAIW
             FieldInfo antiHpCooldownFI = typeof(NewMovement).GetField("antiHpCooldown", BindingFlags.NonPublic | BindingFlags.Instance);
             var antiHpCooldown = (float)antiHpCooldownFI.GetValue(player);
 
-            if (CheatsManager.Instance.GetCheatState(Cheats.HardDamageRebalance)) // OH this is actually in the code still?? yeah this stuff is jank as heck and not balanced btw lol
+            if (Cheats.Manager.GetCheatState(Cheats.HardDamageRebalance)) // OH this is actually in the code still?? yeah this stuff is jank as heck and not balanced btw lol
             {
                 float spDeltaF = stats.stylePoints - PrevStylePoints;
                 
@@ -110,8 +110,9 @@ namespace UKAIW
     [HarmonyPatch(typeof(NewMovement), "GetHurt", new Type[] { typeof(int), typeof(bool), typeof(float), typeof(bool), typeof(bool), typeof(float), typeof(bool) })]
     static class PlayerHurtPatch
     {
-        private static bool wasPreHurtCalled = false;
-        private static int processedDamage = 0;
+        private static bool WasPreHurtCalled = false;
+        private static int ProcessedDamage = 0;
+        
         public static void Prefix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
         {
             NewMovement newMovement = __instance;
@@ -120,32 +121,28 @@ namespace UKAIW
                 return;
             }
 
-            if (newMovement.asscon.majorEnabled)
+            ProcessedDamage = damage;
+            
+            var assistController = AssistController.Instance;
+            if (assistController.majorEnabled)
             {
-                damage = Mathf.RoundToInt((float)damage * newMovement.asscon.damageTaken);
+                ProcessedDamage = Mathf.RoundToInt((float)ProcessedDamage * assistController.damageTaken);
             }
             
             if (Invincibility.Enabled)
             {
-                damage = 0;
+                ProcessedDamage = 0;
             }
 
-            processedDamage = damage;
-            PlayerEvents.PreHurt?.Invoke(newMovement, damage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+            PlayerEvents.PreHurt?.Invoke(newMovement, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
 
-            wasPreHurtCalled = true;
-
-            if (CheatsManager.Instance.GetCheatState(Cheats.GiveSelfRadiance))
-            {
-                newMovement.hp += (int)((damage / 1.5f));
-                newMovement.antiHp -= (float)damage * (hardDamageMultiplier / 1.5f);
-            }
+            WasPreHurtCalled = true;
 
             bool mortal = !Invincibility.Enabled && !Cheats.IsCheatEnabled(Cheats.Immortality); 
 
-            if (newMovement.hp - damage <= 0 && mortal)
+            if (newMovement.hp - ProcessedDamage <= 0 && mortal)
             {
-                PlayerEvents.PreDeath?.Invoke(newMovement, damage);
+                PlayerEvents.PreDeath?.Invoke(newMovement, ProcessedDamage);
             }
         }
 
@@ -153,12 +150,12 @@ namespace UKAIW
         {
             NewMovement newMovement = __instance;
             
-            if (!wasPreHurtCalled)
+            if (!WasPreHurtCalled)
             {
                 return;
             }
 
-            PlayerEvents.PostHurt?.Invoke(newMovement, processedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+            PlayerEvents.PostHurt?.Invoke(newMovement, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
         }
     }
 

@@ -1,5 +1,6 @@
 using System;
 using HarmonyLib;
+using MelonLoader;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
@@ -166,6 +167,11 @@ namespace UKAIW
                 EnemyType.VeryCancerousRodent => EnemyGameplayRank.Boss,
                 EnemyType.Virtue => EnemyGameplayRank.Normal,
                 EnemyType.Wicked => EnemyGameplayRank.Ultraboss,
+                EnemyType.Providence => EnemyGameplayRank.Normal,
+                EnemyType.Power => EnemyGameplayRank.Normal,
+                EnemyType.MirrorReaper => EnemyGameplayRank.Miniboss,
+                EnemyType.Geryon => EnemyGameplayRank.Boss,
+                EnemyType.Deathcatcher => EnemyGameplayRank.Normal,
                 _ => throw new NotImplementedException(),
             };
         }
@@ -358,7 +364,6 @@ namespace UKAIW
             try
             {
                 var eadd = enemyGo.AddComponent<EnemyAdditions>();
-                eadd.SetupMods();
             }
             catch (Exception e)
             {
@@ -382,7 +387,7 @@ namespace UKAIW
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreStart?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => { EnemyEvents.PreStart?.Invoke(enemy.GetComponent<EnemyAdditions>()); });
         }
 
         public static void Postfix(EnemyIdentifier __instance)
@@ -390,27 +395,32 @@ namespace UKAIW
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(enemy.GetComponent<EnemyAdditions>());});
             
             if (Cheats.IsCheatEnabled(Cheats.LogEIDInfo))
             {
-                enemyGo.transform.parent.gameObject.DebugPrintChildren();
+                enemyGo.GetComponent<EnemyAdditions>().RootGameObject.DebugPrintChildren();
+            }
+
+            if (Options.LogEnemyTypeOnStart.Value)
+            {
+                MelonLogger.Msg($"{enemyGo.name}: enemy type is: {enemy.enemyType}");
             }
         }
     }
 
-    [HarmonyPatch(typeof(EnemyIdentifier), "OnDisable")]
+    [HarmonyPatch(typeof(EnemyAdditions), "OnDisable")]
     static class EnemyDisablePatch
     {
-        public static void Prefix(EnemyIdentifier __instance)
+        public static void Prefix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(__instance);});
         }
 
-        public static void Postfix(EnemyIdentifier __instance)
+        public static void Postfix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
@@ -420,15 +430,15 @@ namespace UKAIW
     [HarmonyPatch(typeof(EnemyAdditions), "OnDestroy")]
     static class EnemyDestroyPatch
     {
-        public static void Prefix(EnemyIdentifier __instance)
+        public static void Prefix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(enemy, enemyGo);});
+            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(__instance);});
         }
 
-        public static void Postfix(EnemyIdentifier __instance)
+        public static void Postfix(EnemyAdditions __instance)
         {
             var enemy = __instance;
             var enemyGo = enemy.gameObject;

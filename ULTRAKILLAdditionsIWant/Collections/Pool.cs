@@ -4,7 +4,10 @@ using UKAIW;
 
 namespace Nyxpiri
 {
-    /* Represents a pool of reusable objects, originally written for my personal godot game, NyxpiriOS */
+    // TODO: this ObjPool implementation is worse than the one I currently use for my game, maybe should update it to the new one?
+    /* 
+    Represents a pool of reusable objects, originally written for my personal godot game, NyxpiriOS 
+    */
     public class ObjPool<T> where T : class, new()
     {
         public Func<T> ConstructObject = null;

@@ -93,21 +93,21 @@ namespace UKAIW
 
         private GameObject PanopticonRadio = null;
 
-        private void OnEnemySpawned(EnemyIdentifier eid, GameObject go)
+        private void OnEnemySpawned(EnemyAdditions enemy)
         {
-            Assert.IsTrue(go.activeInHierarchy);
+            Assert.IsTrue(enemy.gameObject.activeInHierarchy);
             
-            if (eid.Dead)
+            if (enemy.Eid.Dead)
             {
                 return;
             }
 
-            if (!eid.enabled || !eid.isActiveAndEnabled)
+            if (!enemy.enabled || !enemy.isActiveAndEnabled)
             {
                 return;
             }
 
-            switch (eid.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer spawn!");
@@ -141,7 +141,7 @@ namespace UKAIW
                 DisableBattleWithClean();
             }
 
-            if (eid.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
+            if (enemy.Eid.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
             {
                 createPanopticonRadioQueued = PanopticonRadio == null ? 20 : -1;
             }
@@ -154,7 +154,7 @@ namespace UKAIW
             if (!IsBattleWithClean)
             {
                 Log.ExpectedInfo($"Level Additions for P-2 trying to play battle music with clean!\nNumVirtues: {NumVirtues}\nNumMindflayers: {NumMindflayers}");
-                MusicAdditions.PlayBattleWithCleanVotes += 1;
+                Music.PlayBattleWithCleanVotes += 1;
                 IsBattleWithClean = true;
             }
         }
@@ -164,14 +164,14 @@ namespace UKAIW
             if (IsBattleWithClean)
             {
                 Log.ExpectedInfo($"Level Additions for P-2 trying to NOT play battle music with clean!");
-                MusicAdditions.PlayBattleWithCleanVotes -= 1;
+                Music.PlayBattleWithCleanVotes -= 1;
                 IsBattleWithClean = false;
             }
         }
 
-        private void OnEnemyDie(EnemyIdentifier eid)
+        private void OnEnemyDie(EnemyAdditions enemy)
         {
-            switch (eid.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer death!");
@@ -190,7 +190,7 @@ namespace UKAIW
                 {
                     if (!PanopticonRadio.activeSelf)
                     {
-                        eid.GetComponent<EnemyHydraMod>().Shared.OnDeactivated += () =>
+                        enemy.GetComponent<EnemyHydra>().Shared.OnDeactivated += () =>
                         {
                             PanopticonRadio.NullInvalid()?.SetActive(false);  
                         };
@@ -205,14 +205,14 @@ namespace UKAIW
             }
         }
 
-        private void OnEnemyDestroy(EnemyIdentifier eid, GameObject go)
+        private void OnEnemyDestroy(EnemyAdditions enemy)
         {
-            if (eid.dead)
+            if (enemy.Eid.dead)
             {
                 return;
             }
 
-            switch (eid.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer destruction!");

@@ -185,33 +185,33 @@ namespace UKAIW
             }
         }
 
-        private static void EnemyStart(EnemyIdentifier eid, GameObject go)
+        private static void EnemyStart(EnemyAdditions enemy)
         {
-            switch (eid.enemyType)
+            switch (enemy.Eid.enemyType)
             {
                 case EnemyType.Swordsmachine:
                 if (MachineEnrageSound_0 == null)
                 {
-                    MachineEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<SwordsMachine>().bigPainSound, null, false);
+                    MachineEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<SwordsMachine>().bigPainSound, null, false);
                     MachineEnrageSound_0.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(MachineEnrageSound_0);
                     if (MachineEnrageSound_0 != null)
                     {
-                        Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                        Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
                     }
                 }
                 break;
                 case EnemyType.Cerberus:
-                if (HuskEnrageSound_0 == null && eid.GetComponent<StatueBoss>() != null)
+                if (HuskEnrageSound_0 == null && enemy.GetComponent<StatueBoss>() != null)
                 {
-                    if (eid.GetComponent<StatueBoss>().statueChargeSound2 != null)
+                    if (enemy.GetComponent<StatueBoss>().statueChargeSound2 != null)
                     {
-                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(eid.GetComponent<StatueBoss>().statueChargeSound2, null, false);
+                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound2, null, false);
                         HuskEnrageSound_0.SetActive(false);
                         UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
                         if (HuskEnrageSound_0 != null)
                         {
-                            Log.TraceExpectedInfo($"Yoink, thanks {go.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                            Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
                         }
                     }
                 }
@@ -220,7 +220,7 @@ namespace UKAIW
                 case EnemyType.Streetcleaner:
                 if (MachineEnrageSound_1 == null)
                 {
-                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(eid.machine.deathSound);
+                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(enemy.Enemy.deathSound);
                 }
                 break;
             }

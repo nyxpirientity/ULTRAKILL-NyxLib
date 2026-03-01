@@ -10,8 +10,7 @@ using UnityEngine.Assertions;
 
 namespace UKAIW
 {
-    [Serializable]
-    public class EnemyHydraMod : MonoBehaviour
+    public class EnemyHydra : EnemyModifier
     {
         public class SharedData : ScriptableObject
         {
@@ -19,50 +18,15 @@ namespace UKAIW
             {
             }
 
-            public void InstantiatePrefabToPool()
-            {
-                if (Prefab == null)
-                {
-                    Deactivate(); // deactivate
-                    Assert.IsNotNull(Prefab); // then just print this to the logs *once*
-                }
-                if (PrefabPoolFull)
-                {
-                    return;
-                }
-
-                var newGo = Instantiate(Prefab, PrefabParent.NullInvalid()?.transform);
-
-                PrefabPool.Push(newGo);
-
-                newGo.SetActive(false);
-            }
-
-            public GameObject GetNewInstance()
-            {
-                Assert.IsNotNull(Prefab);
-
-                if (PrefabPool.Count > 0)
-                {
-                    return PrefabPool.Pop();
-                }
-
-                return Instantiate(Prefab);
-            }
-
             private ReserveList<GameObject> Instances = new ReserveList<GameObject>(16);
             public bool CountAsKill = false;
-            private Stack<GameObject> PrefabPool = new Stack<GameObject>(32);
-            public GameObject Prefab = null;
             public Bounds Bounds = new Bounds();
             public Action OnDeactivated = null;
             internal string CreatorName = "";
-            public bool PrefabPoolFull { get => PrefabPool.Count >= Options.HydraPrefabPoolCapacity; }
             public ScriptableObject EnemySpecificShared = null;
             public int InstanceCount { get => Instances.Count; }
             public int GlobalIdx { get; private set; } = -1;
             public bool Active { get; private set; } = false;
-            public GameObject PrefabParent = null;
 
             internal void UnregisterInstance(int sharedIdx)
             {
@@ -90,10 +54,8 @@ namespace UKAIW
             {
                 Assert.IsTrue(Active);
                 
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' deactivated!");
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' deactivated!");
 
-                Hydra.SharedDatas.RemoveAt(GlobalIdx);
-                
                 OnDeactivated?.Invoke();
 
                 Active = false;
@@ -103,9 +65,7 @@ namespace UKAIW
             {
                 Assert.IsFalse(Active);
 
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' activated!");
-
-                GlobalIdx = Hydra.SharedDatas.Add(this);
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' activated!");
 
                 Active = true;
             }
@@ -120,12 +80,7 @@ namespace UKAIW
 
             private void OnDestroy()
             {
-                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' with prefab '{Prefab}' destroyed!");
-
-                foreach (var prefab in PrefabPool)
-                {
-                    Destroy(prefab);
-                }
+                Log.TraceExpectedInfo($"EnemyHydraMod.SharedData '{name}' with creator '{CreatorName}' destroyed!");
 
                 if (Active)
                 {
@@ -259,7 +214,7 @@ namespace UKAIW
 
         protected void Start()
         {
-            if (Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second || Eadd.UniquelySolo)
+            if (Eid.enemyType == EnemyType.Deathcatcher || Eid.enemyType == EnemyType.Idol || (Eid.enemyType == EnemyType.Centaur && Eid.gameObject.name.Contains("rain", StringComparison.OrdinalIgnoreCase)) || Eid.enemyType == EnemyType.V2Second || Eadd.UniquelySolo)
             {
                 ExcludedFromHydraCheat = true;
                 return;
@@ -288,48 +243,38 @@ namespace UKAIW
 
             GameplayRank = EnemyUtils.GetEnemyGameplayRank(Eid);
 
-            switch (GameplayRank)
+            if (Eid.enemyType == EnemyType.Providence)
             {
-                case EnemyGameplayRank.Normal:
-                    NoDupeTime = Options.HydraDefaultWaitTime;
-                    break;
-                case EnemyGameplayRank.Miniboss:
-                    NoDupeTime = Options.HydraMiniBossWaitTime;
-                    break;
-                case EnemyGameplayRank.Boss:
-                    NoDupeTime = Options.HydraBossWaitTime;
-                    break;
-                case EnemyGameplayRank.Ultraboss:
-                    NoDupeTime = Options.HydraUltraBossWaitTime;
-                    break;
+                NoDupeTime = Options.HydraBossWaitTime;
+            }
+            else
+            {
+                switch (GameplayRank)
+                {
+                    case EnemyGameplayRank.Normal:
+                        NoDupeTime = Options.HydraDefaultWaitTime;
+                        break;
+                    case EnemyGameplayRank.Miniboss:
+                        NoDupeTime = Options.HydraMiniBossWaitTime;
+                        break;
+                    case EnemyGameplayRank.Boss:
+                        NoDupeTime = Options.HydraBossWaitTime;
+                        break;
+                    case EnemyGameplayRank.Ultraboss:
+                        NoDupeTime = Options.HydraUltraBossWaitTime;
+                        break;
+                }
             }
 
-            var newHealth = Eid.health;
+
+
+            var newHealth = Eadd.InitialHealth;
             for (int i = 0; i < Depth; i++)
             {
                 newHealth *= Options.HydraHealthDecayScale;
             }
-
-            if (Eid.zombie)
-            {
-                Eid.zombie.health = newHealth;
-            }
-            else if (Eid.spider)
-            {
-                Eid.spider.health = newHealth;
-            }
-            else if (Eid.machine)
-            {
-                Eid.machine.health = newHealth;
-            }
-            else if (Eid.drone)
-            {
-                Eid.drone.health = newHealth;
-            }
-            else if (Eid.statue)
-            {
-                Eid.statue.health = newHealth;
-            }
+            
+            Eadd.Health = newHealth;
 
             if (Depth > 0)
             {
@@ -398,7 +343,7 @@ namespace UKAIW
             {
                 return;
             }
-
+            
             Log.TraceExpectedInfo($"{name}: EnemyHydraMod::NotifyOfDeath called with instakill as {instakill}");
 
             NotifiedOfDeathCalled = true;
@@ -459,10 +404,10 @@ namespace UKAIW
                     }
                 }
 
-                TimeDilation.ModDisableHitstop = true;
+                TimeScale.ModDisableHitstop = true;
                 Hydra.Hitstop(-1.0);
                 Hydra.Hitstop(-1.0);
-                TimeDilation.ModDisableHitstop = false;
+                TimeScale.ModDisableHitstop = false;
 
                 Log.TraceExpectedInfo($"{name}: About to try give points for hydra kill...");
                 switch (GameplayRank)
@@ -488,6 +433,11 @@ namespace UKAIW
             else
             {
                 Eid.puppet = !instakill;
+                if (Eid.enemyType == EnemyType.Providence)
+                {
+                    Eid.drone.spawnOnDeath = null;
+                    Eid.drone.cantInstaExplode = true;
+                }
                 Log.TraceExpectedInfo($"{name}: EnemyHydraMod::NotifyOfDeath called and we were NOT hydrakilled, {Shared.InstanceCount} remaining instances, HydraDuped: {HydraDuped}");
             }
         }
@@ -533,6 +483,7 @@ namespace UKAIW
             dupeInfo.Depth = Depth + 1;
             dupeInfo.EnemyType = Eid.enemyType;
             dupeInfo.BossBar = GetComponent<BossHealthBar>() != null;
+            dupeInfo.InstanceStore = Eadd.PrefabStore.Instances;
 
             if (Eid.enemyType == EnemyType.Sisyphus)
             {
@@ -600,16 +551,6 @@ namespace UKAIW
             Depth = 0;
             Shared.CreatorName = gameObject.name;
             SharedName = Shared.name;
-        }
-
-        public void PassPrefabToShared()
-        {
-            if (Shared.Prefab == null)
-            {
-                var prefabMod = GetComponent<EnemyAdditions>().PrefabMod;
-                Shared.Prefab = prefabMod.Prefab;
-                Shared.PrefabParent = prefabMod.PrefabParent;
-            }
         }
 
         internal void DuringDeath()

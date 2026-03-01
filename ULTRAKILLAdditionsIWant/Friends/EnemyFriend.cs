@@ -7,7 +7,7 @@ using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
-public class EnemyFriendIdentifier : MonoBehaviour
+public class EnemyFriendIdentifier : EnemyModifier
 {
     public bool IsLeader = false;
     public EnemyFriendIdentifier Leader = null;
@@ -15,6 +15,8 @@ public class EnemyFriendIdentifier : MonoBehaviour
     public int FriendIdx = -1;
     public EnemyIdentifier Eid = null;
     public EnemyAdditions Ead = null;
+    public bool ExcludedFromFriends = false;
+
 
     protected void FixedUpdate()
     {
@@ -50,7 +52,12 @@ public class EnemyFriendIdentifier : MonoBehaviour
 
     protected void Start()
     {
-        if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends) && !Ead.UniquelySolo)
+        if (Eid.enemyType == EnemyType.Deathcatcher)
+        {
+            ExcludedFromFriends = true;
+        }
+        
+        if (Cheats.IsCheatEnabled(Cheats.GiveEnemiesFriends) && !Ead.UniquelySolo && !ExcludedFromFriends)
         {
             if (IsLeader && !Eid.Dead)
             {
@@ -115,7 +122,7 @@ public class EnemyFriendIdentifier : MonoBehaviour
     {
         if (CybergrindAdditions.CybergrindActive)
         {
-            EndlessGrid.Instance.tempEnemyAmount += 1;
+            CybergrindAdditions.LastStartedEndlessGrid.tempEnemyAmount += 1;
         }
     }
 
@@ -149,7 +156,7 @@ public class EnemyFriendIdentifier : MonoBehaviour
         }
         
         var leaderTargetEadd = leaderTarget.gameObject.GetComponent<EnemyAdditions>();
-        var leaderTargetFriends = leaderTargetEadd.EnemyFriend.Friends;
+        var leaderTargetFriends = leaderTargetEadd.FriendID.Friends;
 
         if (leaderTargetFriends.Length <= FriendIdx)
         {
@@ -174,20 +181,18 @@ public class EnemyFriendIdentifier : MonoBehaviour
     private EnemyFriendIdentifier SpawnFriend(Vector3 offset, int idx)
     {
         EnemyAdditions eadd = GetComponent<EnemyAdditions>();
-        var prefab = eadd.PrefabMod.Prefab;
+        var prefab = eadd.PrefabStore.Prefab;
         var friend = Instantiate(prefab, eadd.RootGameObject.transform.parent);
         EnemyAdditions friendEadd = friend.GetComponent<EnemyAdditions>() ?? friend.GetComponentInChildren<EnemyAdditions>();
         friend.transform.position = transform.position + offset;
         friend.SetActive(true);
         friend = friendEadd.gameObject;
         friend.SetActive(true);
-        friendEadd.FindAndCacheMods();
-        friendEadd.HydraMod.InitializeAsNew();
-        friendEadd.EnemyFriend.Leader = this;
-        friendEadd.PrefabMod.StorePrefab(force: true);
-        friendEadd.HydraMod.PassPrefabToShared();
-        friendEadd.EnemyFriend.FriendIdx = idx;
+        friendEadd.Hydra.InitializeAsNew();
+        friendEadd.FriendID.Leader = this;
+        friendEadd.PrefabStore.StorePrefab(force: true);
+        friendEadd.FriendID.FriendIdx = idx;
 
-        return friendEadd.EnemyFriend;
+        return friendEadd.FriendID;
     }
 }

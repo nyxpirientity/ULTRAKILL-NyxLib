@@ -36,13 +36,14 @@ namespace UKAIW
             PlayerEvents.Initialize();
             Cheats.Initialize();
             Hydra.Initialize();
-            MusicAdditions.Initialize();
+            Music.Initialize();
             LevelAdditionsManager.Initialize();
             CybergrindAdditions.Initialize();
             MundaneMurder.Initialize();
             BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
             Heck.Initialize();
+            EnemyPrefabManager.Initialize();
 
             GameConsole.Console.Instance.onError += () =>
             {

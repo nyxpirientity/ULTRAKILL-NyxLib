@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace UKAIW
 {
-    public class Radiance : MonoBehaviour
+    public class EnemyRadiance : EnemyModifier
     {
         public class Modifier
         {
@@ -39,7 +39,7 @@ namespace UKAIW
             Modifiers.Add(modifier);
         }
 
-        private Radiance.Modifier RadiantAllModifier = new Radiance.Modifier();
+        private EnemyRadiance.Modifier RadiantAllModifier = new EnemyRadiance.Modifier();
 
         protected void FixedUpdate()
         {
@@ -168,7 +168,7 @@ namespace UKAIW
             Eid = GetComponent<EnemyIdentifier>();
             Eadd = GetComponent<EnemyAdditions>();
             
-            RadiantAllModifier = new Radiance.Modifier();
+            RadiantAllModifier = new EnemyRadiance.Modifier();
             AddModifier(RadiantAllModifier);
         }
     }

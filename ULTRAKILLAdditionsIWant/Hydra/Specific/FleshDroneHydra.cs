@@ -17,12 +17,12 @@ namespace UKAIW
             public FleshPrison Prison = null;
         }
 
-        EnemyHydraMod Hydra = null;
+        EnemyHydra Hydra = null;
         public SharedData Shared = null;
         private bool RegisteredWithPrison = false;
         protected void Start()
         {
-            Hydra = GetComponent<EnemyHydraMod>();
+            Hydra = GetComponent<EnemyHydra>();
             Shared = (SharedData)(Hydra.Shared.EnemySpecificShared);
 
             if (Hydra.Depth > 0)

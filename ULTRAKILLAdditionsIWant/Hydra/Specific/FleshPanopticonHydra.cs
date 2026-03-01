@@ -17,13 +17,13 @@ namespace UKAIW
             public uint NumLights = 0;
         }
 
-        EnemyHydraMod Hydra = null;
+        EnemyHydra Hydra = null;
         SharedData Shared = null;
         bool ContributingLights = false;
 
         protected void Start()
         {
-            Hydra = GetComponent<EnemyHydraMod>();
+            Hydra = GetComponent<EnemyHydra>();
             Shared = (SharedData)(Hydra.Shared.EnemySpecificShared);
             
             if (Hydra.Depth > 0 && Shared.NumLights > 2)

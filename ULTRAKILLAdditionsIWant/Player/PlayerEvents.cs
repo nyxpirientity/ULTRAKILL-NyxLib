@@ -30,7 +30,12 @@ namespace UKAIW
         {
             var player = MonoSingleton<NewMovement>.Instance;
             
-            player?.gameObject.AddComponent<PlayerAdditions>();
+            if (player == null)
+            {
+                return;
+            }
+
+            player.gameObject.AddComponent<PlayerAdditions>();
         }
     }
 }
