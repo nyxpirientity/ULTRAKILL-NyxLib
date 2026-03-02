@@ -45,17 +45,17 @@ public class EnemyAdditions : MonoBehaviour
     public bool UniquelySolo { get; private set; } = false;
 
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
-    public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PreHurt = null;
+    public event Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PreHurt = null;
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
-    public Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PostHurt = null;
+    public event Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PostHurt = null;
 
-    public Action PreEnrage = null;
-    public Action PreUnEnrage = null;
+    public event Action PreEnrage = null;
+    public event Action PreUnEnrage = null;
     
     // params: (bool instakill)
-    public Action<bool> PreDeath = null;
+    public event Action<bool> PreDeath = null;
     // params: (bool instakill)
-    public Action<bool> PostDeath = null;
+    public event Action<bool> PostDeath = null;
 
     [SerializeField] public float InitialHealth { get; private set; } = -1.0f;
 
@@ -97,6 +97,7 @@ public class EnemyAdditions : MonoBehaviour
 
         Eid = GetComponent<EnemyIdentifier>();
         Enemy = GetComponent<Enemy>();
+        RootGameObject.AddComponent<EnemyRoot>();
         Assert.IsNotNull(Eid);
     }
 
