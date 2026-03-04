@@ -49,8 +49,8 @@ public class EnemyAdditions : MonoBehaviour
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
     public event Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PostHurt = null;
 
-    public event Action PreEnrage = null;
-    public event Action PreUnEnrage = null;
+    public Action PreEnrage = null;
+    public Action PreUnEnrage = null;
     
     // params: (bool instakill)
     public event Action<bool> PreDeath = null;
@@ -90,6 +90,9 @@ public class EnemyAdditions : MonoBehaviour
     
     [NonSerialized] public EnemyIdentifier Eid = null;
     [NonSerialized] public Enemy Enemy = null;
+    public IReadOnlyList<Collider> Colliders { get => _colliders; }
+
+    [SerializeField] private Collider[] _colliders = null; 
 
     private void Awake()
     {
@@ -112,6 +115,7 @@ public class EnemyAdditions : MonoBehaviour
 
         if (Radiance == null)
         {
+            _colliders = GetComponentsInChildren<Collider>();
             Eid.ForceGetHealth();
             CreateMods();
         }

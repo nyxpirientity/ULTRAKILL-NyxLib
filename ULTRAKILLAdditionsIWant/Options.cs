@@ -15,6 +15,7 @@ public static class Options
     static MelonPreferences_Entry<bool> IncludeUnexpectedLogsEntry = null;
     public static MelonPreferences_Entry<bool> ShowErrorNotification = null;
     public static MelonPreferences_Entry<bool> LogEnemyTypeOnStart = null;
+    public static MelonPreferences_Entry<bool> DisableQuickLoad = null;
 
     static MelonPreferences_Category HydraCategory = null;
     static MelonPreferences_Entry<float> HydraHealthDecayScaleEntry = null;
@@ -59,6 +60,9 @@ public static class Options
     static MelonPreferences_Entry<float> RadianceAllSpeedTierEntry = null;
     static MelonPreferences_Entry<float> RadianceAllDamageTierEntry = null;
     static MelonPreferences_Entry<float> RadianceAllHealthTierEntry = null;
+
+    static MelonPreferences_Category EnemyFeedbackersCategory = null;
+    public static MelonPreferences_Entry<bool> HitstopOnEnemyParry = null;
 
     static MelonPreferences_Category DemandingHellCategory = null;
 
@@ -230,6 +234,7 @@ public static class Options
         IncludeUnlikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnlikelyLogs", true);
         IncludeUnexpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnexpectedLogs", true);
         LogEnemyTypeOnStart = LoggingCategory.CreateEntry<bool>("LogEnemyTypeOnStart", false);
+        DisableQuickLoad = LoggingCategory.CreateEntry<bool>("DisableGameInitLevelQuickLoad", false);
         
         BugFixesCategory = MelonPreferences.CreateCategory("UKAIW-BugFixes");
         EnableStreetCleanerDodgeFix = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFix", true);
@@ -285,6 +290,9 @@ public static class Options
         RadianceAllSpeedTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllSpeedTier", 1.5f);
         RadianceAllDamageTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllDamageTier", 1.5f);
         RadianceAllHealthTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllHealthTier", 1.5f);
+
+        EnemyFeedbackersCategory = MelonPreferences.CreateCategory("UKAIW-EnemyFeedbackers");
+        HitstopOnEnemyParry = EnemyFeedbackersCategory.CreateEntry<bool>("HitstopOnEnemyParry", false);
 
         DemandingHellCategory = MelonPreferences.CreateCategory("UKAIW-DemandingHell");
 

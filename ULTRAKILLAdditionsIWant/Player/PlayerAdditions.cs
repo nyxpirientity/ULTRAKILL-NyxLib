@@ -19,7 +19,6 @@ namespace UKAIW
             gameObject.AddComponent<DemandingHell>();
             gameObject.AddComponent<SelfConscience>();
             gameObject.AddComponent<HeckPuppetObserver>();
-            gameObject.AddComponent<ParryabilityCalculator>();
             gameObject.AddComponent<PlayerPain>();
             gameObject.AddComponent<BadGyro>();
 

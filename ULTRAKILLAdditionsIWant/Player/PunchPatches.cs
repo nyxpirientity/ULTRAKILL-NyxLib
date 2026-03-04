@@ -1,0 +1,34 @@
+using System;
+using System.Linq;
+using System.Reflection;
+using HarmonyLib;
+using UnityEngine;
+
+namespace UKAIW
+{
+    [HarmonyPatch(typeof(Punch), "ParryProjectile")]
+    static class PunchParryProjectilePatch
+    {
+        public static void Prefix(Punch __instance, Projectile proj)
+        {
+            if (Cheats.Enabled)
+            {
+                var boostTracker = proj.GetComponent<ProjectileBoostTracker>();
+                if (boostTracker != null)
+                {
+                    boostTracker.IncrementPlayerBoosts();
+                    boostTracker.IgnoreColliders = new Collider[0];
+                    
+                    if (boostTracker.NumPlayerBoosts > 1)
+                    {
+                        proj.speed *= 0.55f; // player parry boosts speed by 2x, so this counteracts it
+                    }
+                }
+            }
+        }
+
+        public static void Postfix(Punch __instance, Projectile proj)
+        {
+        }
+    }
+}

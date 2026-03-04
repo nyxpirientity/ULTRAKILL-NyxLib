@@ -11,7 +11,7 @@ public class EnemyPrefabStore : EnemyModifier
 {
     public class InstanceStore : ScriptableObject
     {
-        public InstanceStore(GameObject prefab)
+        public void Initialize(GameObject prefab)
         {
             Prefab = prefab;
 
@@ -197,7 +197,8 @@ public class EnemyPrefabStore : EnemyModifier
                 
         if (_Instances == null)
         {
-            _Instances = new InstanceStore(Prefab);
+            _Instances = ScriptableObject.CreateInstance<InstanceStore>();
+            _Instances.Initialize(Prefab);
             InstancesRegistrator.Register();
         }
 

@@ -44,6 +44,12 @@ namespace UKAIW
             QuickMsgPool.Initialize();
             Heck.Initialize();
             EnemyPrefabManager.Initialize();
+            ParryabilityTracker.Initialize();
+
+            if (Options.DisableQuickLoad.Value)
+            {
+                QuickLoadStates.Clear();
+            }
 
             GameConsole.Console.Instance.onError += () =>
             {
@@ -137,6 +143,7 @@ namespace UKAIW
 
         Dictionary<string, LevelQuickLoadState> QuickLoadStates = new Dictionary<string, LevelQuickLoadState>
         {
+            {"Level 4-4", LevelQuickLoadState.Needed},
             {"Level 0-E", LevelQuickLoadState.Needed},
             {"Level P-1", LevelQuickLoadState.Needed},
             {"Level P-2", LevelQuickLoadState.Needed},

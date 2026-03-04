@@ -23,6 +23,9 @@ namespace UKAIW
         public static GameObject LabelPrefab { get; private set; } = null;
         public static GameObject HeatResHurtSound { get; private set; }
 
+        public static GameObject EnemyRevolverBullet { get; private set; } = null;
+        public static GameObject EnemyRevolverAltBullet { get; private set; } = null;
+
         public static GameObject HarmlessExplosionPrefab { get; private set; } = null;
         public static GameObject ExplosionPrefab { get; private set; } = null;
         public static GameObject SuperExplosionPrefab { get; private set; } = null;
@@ -136,6 +139,21 @@ namespace UKAIW
                 }
             }
 
+            if (EnemyRevolverBullet == null)
+            {
+                var possibleRevolver = UnityEngine.Object.FindAnyObjectByType<EnemyRevolver>(FindObjectsInactive.Include);
+                if (possibleRevolver != null)
+                {
+                    EnemyRevolverBullet = GameObject.Instantiate(possibleRevolver.bullet);
+                    EnemyRevolverBullet.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(EnemyRevolverBullet);
+                
+                    EnemyRevolverAltBullet = GameObject.Instantiate(possibleRevolver.altBullet);
+                    EnemyRevolverAltBullet.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(EnemyRevolverAltBullet);
+                }
+            }
+
             if (MortarPrefab == null)
             {
                 var possibleHideousMass = UnityEngine.Object.FindAnyObjectByType<Mass>(FindObjectsInactive.Include);
@@ -180,7 +198,7 @@ namespace UKAIW
                 }
                 else
                 {
-                    Log.ExpectedInfo($"We'd like a flesh prison in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                    Log.ExpectedInfo($"We'd like a flesh prison in order to yoink it as a prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
                 }
             }
         }
@@ -216,7 +234,6 @@ namespace UKAIW
                     }
                 }
                 break;
-
                 case EnemyType.Streetcleaner:
                 if (MachineEnrageSound_1 == null)
                 {
