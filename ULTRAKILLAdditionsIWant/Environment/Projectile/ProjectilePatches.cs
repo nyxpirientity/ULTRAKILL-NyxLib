@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
+using MelonLoader;
+using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 namespace UKAIW
@@ -16,12 +18,8 @@ namespace UKAIW
 
         public static void Postfix(Projectile __instance)
         {
-            if (__instance.gameObject.GetComponent<ProjectileAdditions>() != null)
-            {
-                return;
-            }
-
-            __instance.gameObject.AddComponent<ProjectileAdditions>();
+            __instance.gameObject.GetOrAddComponent<ProjectileAdditions>();
+            __instance.gameObject.GetOrAddComponent<ProjectileBoostTracker>();
         }
     }
 
@@ -31,7 +29,7 @@ namespace UKAIW
         public static void Prefix(Projectile __instance)
         {
             var additions = __instance.GetComponent<ProjectileAdditions>();
-
+            
             additions.InvokePreExplode(false);
         }
 
@@ -93,6 +91,18 @@ namespace UKAIW
             }
             else if ((other.gameObject.CompareTag("Armor") && (__instance.friendly || !other.TryGetComponent(out eidid) || !eidid.eid || eidid.eid.enemyType != __instance.safeEnemyType)) || (__instance.boosted && other.gameObject.layer == 11 && other.gameObject.CompareTag("Body") && other.TryGetComponent(out eidid) && (bool)eidid.eid && eidid.eid.enemyType == EnemyType.MaliciousFace && !eidid.eid.isGasolined))
             {
+                EnemyIdentifier eid = null;
+
+                if (eidid != null && eidid.eid != null)
+                {
+                    eid = eidid.eid;
+                }
+
+                if (boostTracker.SafeEid == eid)
+                {
+                    return false;
+                }
+
                 return true;
             }
             else if ((other.gameObject.CompareTag("Head") || other.gameObject.CompareTag("Body") || other.gameObject.CompareTag("Limb") || other.gameObject.CompareTag("EndLimb")) && !other.gameObject.CompareTag("Armor"))
@@ -106,6 +116,11 @@ namespace UKAIW
                     eid = eidid.eid;
                 }
 
+                if (boostTracker.SafeEid == eid)
+                {
+                    return false;
+                }
+
                 if ((eid == null) || (__instance.alreadyHitEnemies.Count != 0 && __instance.alreadyHitEnemies.Contains(eid)) || ((eid.enemyType == __instance.safeEnemyType || EnemyIdentifier.CheckHurtException(__instance.safeEnemyType, eid.enemyType, __instance.targetHandle)) && (!__instance.friendly || eid.immuneToFriendlyFire) && !__instance.playerBullet && !__instance.parried))
                 {
                     return true;
@@ -115,6 +130,9 @@ namespace UKAIW
                 {
                     return true;
                 }
+
+                Log.TraceExpectedInfo($"Deciding parry capability for enemy {eid}, for projectile {__instance} with a hit that hit collider {other}");
+                Log.TraceExpectedInfo($"boostTracker.IgnoreEid = {boostTracker.SafeEid}");
 
                 var eadd = eid.GetComponent<EnemyAdditions>();
 
@@ -154,6 +172,8 @@ namespace UKAIW
                 __instance.transform.rotation = Quaternion.LookRotation(parryForce);
                 feedbacker.ParryEffect();
                 boostTracker.IgnoreColliders = eadd.Colliders;
+                boostTracker.SetTempSafeEnemyType(eadd.Eid.enemyType);
+                boostTracker.SafeEid = eadd.Eid;
                 __instance.friendly = false;
                 return false;
             }

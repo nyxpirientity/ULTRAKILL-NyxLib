@@ -124,6 +124,11 @@ namespace UKAIW
 
             var hit = __instance.hitList[enemiesPierced];
 
+            if (hit.collider == null)
+            {
+                return true;
+            }
+            
             if ((hit.collider.attachedRigidbody ? hit.collider.attachedRigidbody.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) : hit.collider.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) && (bool)eidid.eid)
             {
                 var eadd = eidid.eid.GetComponent<EnemyAdditions>();
@@ -167,6 +172,7 @@ namespace UKAIW
                 
                 var colliders = eadd.Colliders;
                 counterBeamBoostTracker.IgnoreColliders = colliders;
+                counterBeamBoostTracker.SafeEid = eadd.Eid;
 
                 //counterBeam.safeEnemyType = eadd.Eid.enemyType;
                 counterBeam.playerBullet = true;

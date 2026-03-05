@@ -17,7 +17,6 @@ namespace UKAIW
                 if (boostTracker != null)
                 {
                     boostTracker.IncrementPlayerBoosts();
-                    boostTracker.IgnoreColliders = new Collider[0];
                     
                     if (boostTracker.NumPlayerBoosts > 1)
                     {

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using HarmonyLib;
 using MelonLoader;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
@@ -12,13 +14,23 @@ namespace UKAIW
     {
         public enum ProjectileCategory : byte
         {
-            Null, RevolverShot, ChargedRevolverShot, BigRevolverShot, BigChargedRevolverShot, HellProjectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade
+            Null, RevolverShot, ChargedRevolverShot, BigRevolverShot, BigChargedRevolverShot, PlayerProjectile, Projectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade, Coin, Nail, Saw
         }
 
+        public bool HasBeenBoosted { get => NumPlayerBoosts != 0 || NumEnemyBoosts != 0; }
         public bool LastBoostedByPlayer = false;
         public uint NumPlayerBoosts { get; private set; } = 0;
         public uint NumEnemyBoosts { get; private set; } = 0;
         public ProjectileCategory ProjectileType { get; private set; } = ProjectileCategory.Null;
+
+        private Cannonball _cannonball;
+        public EnemyIdentifier SafeEid = null;
+        public bool Electric = false;
+
+        public IReadOnlyList<Collider> Colliders
+        {
+            get => _colliders;
+        }
         public IReadOnlyList<Collider> IgnoreColliders
         {
             get => _ignoreColliders;
@@ -65,8 +77,13 @@ namespace UKAIW
             LastBoostedByPlayer = true;
             _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
             _creationProgressTime.UpdateToNow();
+            _canBeEnemyParried = true;
+            SafeEid = null;
+            IgnoreColliders = new Collider[]{};
+            BoostOomph(true);
+            Log.TraceExpectedInfo($"IncrementPlayerBoosts called for ProjectileBoostTracker {this}");
         }
-        
+
         public void IncrementEnemyBoost()
         {
             if (!LastBoostedByPlayer && NumEnemyBoosts > 0)
@@ -78,6 +95,48 @@ namespace UKAIW
             LastBoostedByPlayer = false;
             _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
             _creationProgressTime.UpdateToNow();
+            
+            _canBeEnemyParried = true;
+            BoostOomph(false);
+            Log.TraceExpectedInfo($"IncrementEnemyBoosts called for ProjectileBoostTracker {this}");
+        }
+
+        private void BoostOomph(bool bigOomph)
+        {
+            if (_proj != null)
+            {
+                if (bigOomph)
+                {
+                    MakeExplosiveAndExplosionUnique();
+                    _proj.enemyDamageMultiplier *= 1.4f;
+                    _proj.damage *= 1.2f;
+                    _explosion.ExplosionScale *= 1.5f;
+                    _explosion.ExplosionSpeedScale *= 1.5f;
+                    _explosion.ExplosionDamageScale += 0.1f;
+                }
+                else
+                {
+                    MakeExplosiveAndExplosionUnique();
+                    _proj.enemyDamageMultiplier *= 1.2f;
+                    _proj.damage *= 1.1f;
+                }
+            }
+            else if (_cannonball != null)
+            {
+                if (bigOomph)
+                {
+                    MakeExplosiveAndExplosionUnique();
+                    _cannonball.damage *= 1.2f;
+                    _explosion.ExplosionScale *= 1.5f;
+                    _explosion.ExplosionSpeedScale *= 1.5f;
+                    _explosion.ExplosionDamageScale += 0.1f;
+                }
+                else
+                {
+                    MakeExplosiveAndExplosionUnique();
+                    _cannonball.damage *= 1.1f;
+                }
+            }
         }
 
         protected void Awake()
@@ -133,34 +192,131 @@ namespace UKAIW
                 }
                 else if (TryGetComponent(out Projectile proj))
                 {
-                    if (proj.homingType == HomingType.None)
+                    _proj = proj;
+
+                    if (proj.playerBullet)
                     {
-                        ProjectileType = ProjectileCategory.HellProjectile;                    
+                        ProjectileType = ProjectileCategory.PlayerProjectile;
                     }
                     else
                     {
-                        ProjectileType = ProjectileCategory.HomingProjectile;
+                        if (proj.homingType == HomingType.None)
+                        {
+                            ProjectileType = ProjectileCategory.Projectile;                    
+                        }
+                        else
+                        {
+                            ProjectileType = ProjectileCategory.HomingProjectile;
+                        }
                     }
                 }
                 else if (TryGetComponent(out RevolverBeam revolverBeam))
                 {
-                    ProjectileType = ProjectileCategory.RevolverShot;                    
+                    ProjectileType = ProjectileCategory.RevolverShot;  
+
+                    if (revolverBeam.attributes.Contains(HitterAttribute.Electricity))
+                    {
+                        Electric = true;
+                    }                  
                 }
+                else if (TryGetComponent(out Coin coin))
+                {
+                    ProjectileType = ProjectileCategory.Coin;
+                }
+                else if (TryGetComponent(out Cannonball cannonball))
+                {
+                    ProjectileType = ProjectileCategory.Rocket;
+                    _cannonball = cannonball;
+                }
+                else if (TryGetComponent(out Nail nail))
+                {
+                    if (nail.chainsaw)
+                    {
+                        ProjectileType = ProjectileCategory.Saw;                        
+                    }
+                    else if (nail.sawblade)
+                    {
+                        ProjectileType = ProjectileCategory.Saw;                        
+                    }
+                    else
+                    {
+                        ProjectileType = ProjectileCategory.Nail;                        
+                    }
+
+                    _nail = nail;
+                }
+
 
                 _startParryabilityDist = ParryabilityTracker.NotifyCreationStart(GetHashCode());
                 _creationStartTime.UpdateToNow();
             }
+            else
+            {
+                if (TryGetComponent(out Cannonball cannonball))
+                {
+                    _cannonball = cannonball;
+                }
+                else if (TryGetComponent(out Projectile proj))
+                {
+                    _proj = proj;
+                }
+            }
 
             _creationProgressTime.UpdateToNow();
+            MaybeEnforceOurExplosionPrefab();
+        }
+
+        internal void PreNailFixedUpdate()
+        {
+            Assert.IsNotNull(_nail);
+
+            if (_nail.punched)
+            {
+                IncrementPlayerBoosts();
+            }
         }
 
         protected void FixedUpdate()
         {
-            
+            if (_safeEnemyTypeCountDown >= 0.0)
+            {
+                _safeEnemyTypeCountDown -= Time.fixedDeltaTime;
+
+                if (_safeEnemyTypeCountDown <= 0.0)
+                {
+                    _safeEnemyTypeCountDown = -1.0;
+                    if (_proj != null)
+                    {
+                        _proj.safeEnemyType = EnemyType.Idol;
+                    }
+                }
+            }
+
+            MaybeEnforceOurExplosionPrefab();
+        }
+
+        private void MaybeEnforceOurExplosionPrefab()
+        {
+            if (_explosiveAndExplosionUnique)
+            {
+                if (_proj != null)
+                {
+                    _proj.explosionEffect = _explosion.gameObject;
+                }
+                else if (_cannonball != null)
+                {
+                    _cballInterruptionExplosionFi.SetValue(_cannonball, _explosion.gameObject);
+                }
+            }
         }
 
         public double NotifyContact()
         {
+            if (!_canBeEnemyParried)
+            {
+                return 0.0;
+            }
+
             var contactDiffDist = ParryabilityTracker.NotifyContact(GetHashCode());
 
             double window = Math.Max(Math.Max(0.4 + (_creationStartTime.TimeSince * 0.25), 0.3 + (_creationProgressTime.TimeSince * 0.5)), 0.75);
@@ -169,7 +325,7 @@ namespace UKAIW
 
             var parryability = Mathf.Clamp01(NyxMath.InverseNormalizeToRange((float)diffDist, (float)window / 2, (float)window));
 
-            Log.TraceExpectedInfo($"ProjectileBoostTracker.NotifyContact called and is giving a window of {window}, a diffDist of {diffDist} and a contactDiffDist of {contactDiffDist}, resulting in a parryability of {parryability}");
+            Log.TraceExpectedInfo($"ProjectileBoostTracker.NotifyContact called and is giving a window of {window}, a diffDist of {diffDist} and a contactDiffDist of {contactDiffDist}, resulting in a parryability of {parryability} (hash: {GetHashCode()})");
             
             return parryability;
         }
@@ -190,7 +346,7 @@ namespace UKAIW
 
             byte boostByte = (byte)(playerBoostByte ^ enemyBoostByte);
 
-            MelonLogger.Msg($"TEST PRINT FOR ProjectileBoostTracker.GetHashCode\nplayerBoostByte:{Convert.ToString(playerBoostByte, toBase: 2)}\nenemyBoostByte:{Convert.ToString(enemyBoostByte, toBase: 2)}\nboostByte:{Convert.ToString(boostByte, toBase: 2)}");
+            //MelonLogger.Msg($"TEST PRINT FOR ProjectileBoostTracker.GetHashCode\nplayerBoostByte:{Convert.ToString(playerBoostByte, toBase: 2)}\nenemyBoostByte:{Convert.ToString(enemyBoostByte, toBase: 2)}\nboostByte:{Convert.ToString(boostByte, toBase: 2)}");
             return BitConverter.ToInt32(new byte[] { boostByte, (byte)ProjectileType, 0, 0}, 0);
         }
 
@@ -203,13 +359,92 @@ namespace UKAIW
             _startParryabilityDist = other._startParryabilityDist;
             _creationProgressTime = other._creationProgressTime;
             _creationStartTime = other._creationStartTime;
+            Electric = other.Electric;
+
+            if (other._explosiveAndExplosionUnique)
+            {
+                _explosiveAndExplosionUnique = true;
+                _prefabHolder = new GameObject();
+                _prefabHolder.transform.parent = transform;
+                _prefabHolder.SetActive(false);
+                _explosion = GameObject.Instantiate(_explosion.gameObject, _prefabHolder.transform).GetComponent<ExplosionAdditions>();
+            }
         }
 
+        internal void SetTempSafeEnemyType(EnemyType enemyType)
+        {
+            if (_proj == null)
+            {
+                return;
+            }
+
+            _proj.safeEnemyType = enemyType;
+            _safeEnemyTypeCountDown = 0.1;
+        }
+
+        internal void MarkCannotBeEnemyParried()
+        {
+            _canBeEnemyParried = false;
+        }
+
+        private void MakeExplosiveAndExplosionUnique()
+        {
+            if (_explosiveAndExplosionUnique)
+            {
+                return;
+            }
+
+            _prefabHolder = new GameObject();
+            _prefabHolder.transform.parent = transform;
+            _prefabHolder.SetActive(false);
+
+            if (_proj != null)
+            {
+                var explosion = _proj.explosionEffect.GetComponentsInChildren<Explosion>();
+
+                if (explosion != null)
+                {
+                    _proj.explosionEffect = GameObject.Instantiate(_proj.explosionEffect, _prefabHolder.transform);
+                    _explosion = _proj.explosionEffect.GetOrAddComponent<ExplosionAdditions>();
+                }
+                else
+                {
+                    _proj.explosionEffect = GameObject.Instantiate(Assets.ExplosionPrefab, _prefabHolder.transform);
+                    _explosion = _proj.explosionEffect.GetComponent<ExplosionAdditions>();
+                }
+            }
+            else if (_cannonball != null)
+            {
+                var interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
+
+                if (interruptionExplosion != null)
+                {
+                    _cballInterruptionExplosionFi.SetValue(_cannonball, GameObject.Instantiate(interruptionExplosion, _prefabHolder.transform));
+                    interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
+                    _explosion = interruptionExplosion.GetOrAddComponent<ExplosionAdditions>();
+                }
+                else
+                {
+                    _cballInterruptionExplosionFi.SetValue(_cannonball, GameObject.Instantiate(Assets.ExplosionPrefab, _prefabHolder.transform));
+                    interruptionExplosion = _cballInterruptionExplosionFi.GetValue(_cannonball) as GameObject;
+                    _explosion = interruptionExplosion.GetComponent<ExplosionAdditions>();
+                }
+            }
+        }
+
+        private static FieldInfo _cballInterruptionExplosionFi = AccessTools.Field(typeof(Cannonball), "interruptionExplosion");
         private double _startParryabilityDist = double.PositiveInfinity;
         private double _creationProgressParryabilityDist = double.PositiveInfinity;
         private FixedTimeStamp _creationStartTime = new FixedTimeStamp();
         private FixedTimeStamp _creationProgressTime = new FixedTimeStamp();
         private Collider[] _ignoreColliders = new Collider[0];
         private Collider[] _colliders = null;
+        private Projectile _proj;
+        private double _safeEnemyTypeCountDown = -1.0;
+        private bool _explosiveAndExplosionUnique = false;
+        private ExplosionAdditions _explosion = null;
+        private GameObject _prefabHolder = null;
+        private bool _canBeEnemyParried = true;
+        private Nail _nail;
     }
 }

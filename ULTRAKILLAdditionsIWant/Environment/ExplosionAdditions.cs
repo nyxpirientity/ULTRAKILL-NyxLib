@@ -21,6 +21,7 @@ namespace UKAIW
 
         public float ExplosionScale = 1.0f;
         public float ExplosionSpeedScale = 1.0f;
+        public float ExplosionDamageScale = 1.0f;
 
         protected void Awake()
         {
@@ -66,6 +67,8 @@ namespace UKAIW
             {
                 explosion.Explosion.maxSize = explosion.BaseMaxSize * ExplosionScale;
                 explosion.Explosion.speed = explosion.BaseSpeed * ExplosionSpeedScale;
+                explosion.Explosion.damage = Mathf.RoundToInt(explosion.Explosion.damage * ExplosionDamageScale);
+                explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.Explosion.playerDamageOverride * ExplosionDamageScale);
             }
         }
     }

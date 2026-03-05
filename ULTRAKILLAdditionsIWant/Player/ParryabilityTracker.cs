@@ -55,7 +55,7 @@ namespace UKAIW
         {
             if (!_attackParryabilitysDict.TryGetValue(hash, out ParryabilityInfo parryability))
             {
-                parryability = new ParryabilityInfo();
+                parryability = new ParryabilityInfo($"{hash}");
                 _attackParryabilitysDict.Add(hash, parryability);
                 _parryabilitys.Add(parryability);
             }
@@ -79,21 +79,21 @@ namespace UKAIW
             public double NotifyContact()
             {
                 _contactTimestamps.EnqueueNew();
-                Log.TraceExpectedInfo($"ParryabilityTracker.ParryabilityInfo.NotifyContact called and is giving a bestDiffDist of {_contactTimestamps.BestDiffDist}");
+                Log.TraceExpectedInfo($"{_debugName}:ParryabilityTracker.ParryabilityInfo.NotifyContact called and is giving a bestDiffDist of {_contactTimestamps.BestDiffDist}");
                 return _contactTimestamps.BestDiffDist;
             }
 
             public double NotifyCreationProgress()
             {
                 _creationProgressTimestamps.EnqueueNew();
-                Log.TraceExpectedInfo($"ParryabilityTracker.ParryabilityInfo.NotifyCreationProgress called and is giving a bestDiffDist of {_creationProgressTimestamps.BestDiffDist}");
+                Log.TraceExpectedInfo($"{_debugName}:ParryabilityTracker.ParryabilityInfo.NotifyCreationProgress called and is giving a bestDiffDist of {_creationProgressTimestamps.BestDiffDist}");
                 return _creationProgressTimestamps.BestDiffDist;
             }
 
             public double NotifyCreationStart()
             {
                 _creationStartTimestamps.EnqueueNew();
-                Log.TraceExpectedInfo($"ParryabilityTracker.ParryabilityInfo.NotifyCreationStart called and is giving a bestDiffDist of {_creationStartTimestamps.BestDiffDist}");
+                Log.TraceExpectedInfo($"{_debugName}:ParryabilityTracker.ParryabilityInfo.NotifyCreationStart called and is giving a bestDiffDist of {_creationStartTimestamps.BestDiffDist}");
                 return _creationStartTimestamps.BestDiffDist;
             }
 
@@ -104,16 +104,18 @@ namespace UKAIW
                 _contactTimestamps.FixedUpdate();
             }
 
-            internal ParryabilityInfo() 
+            internal ParryabilityInfo(string debugName) 
             {
+                _debugName = debugName;
                 _creationStartTimestamps = new TimestampsQueue();
-                _creationStartTimestamps.Init();
+                _creationStartTimestamps.Init($"{_debugName}.creationStartTimestamps");
                 _creationProgressTimestamps = new TimestampsQueue();
-                _creationProgressTimestamps.Init();
+                _creationProgressTimestamps.Init($"{_debugName}.creationProgressTimestamps");
                 _contactTimestamps = new TimestampsQueue();
-                _contactTimestamps.Init();
+                _contactTimestamps.Init($"{_debugName}.contactTimestamps");
             }
 
+            private string _debugName;
             private TimestampsQueue _creationStartTimestamps;
             private TimestampsQueue _creationProgressTimestamps;
             private TimestampsQueue _contactTimestamps;
@@ -158,8 +160,9 @@ namespace UKAIW
                 not sure if there's a better way for C# (on this version, newer versions have the feature) but parameterless
                 constructors seems to be unsupported for structs so I'm doing this pattern which is admittedly yuck
                 */
-                internal void Init() 
+                internal void Init(string debugName) 
                 {
+                    _debugName = debugName;
                     _queue = new Queue<FixedTimeStamp>(QueueCap);
                     _decayTimestamp.UpdateToNow();
                     _averageDiffs = new List<double>(QueueCap - 1);
@@ -187,6 +190,7 @@ namespace UKAIW
                     FixedTimeStamp timestamp = new FixedTimeStamp();
                     timestamp.UpdateToNow();
                     _queue.Enqueue(timestamp);
+                    _decayTimestamp.UpdateToNow();
                     UpdateDecayTime();
                     UpdateBestDiffDist();
                 }
@@ -196,7 +200,7 @@ namespace UKAIW
                     if (_queue.Count <= 2)
                     {
                         BestDiffDist = 10000.0f;
-                        Log.TraceExpectedInfo($"ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist} (based on queue being small)");
+                        Log.TraceExpectedInfo($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist} (based on queue being small)");
                         return;
                     }
 
@@ -235,7 +239,7 @@ namespace UKAIW
                     }
 
                     BestDiffDist = (float)lowestDist;
-                    Log.TraceExpectedInfo($"ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist}, _queue.Count: {_queue.Count}");
+                    Log.TraceExpectedInfo($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateBestDiffDist ended with a BestDiffDist of {BestDiffDist}, _queue.Count: {_queue.Count}");
                 }
 
                 internal void FixedUpdate()
@@ -287,11 +291,12 @@ namespace UKAIW
                     }
 
                     _decayTime /= _queue.Count - 1;
-                    _decayTime *= QueueCap;
+                    _decayTime *= 2.0f;
                     _decayTime = Mathf.Clamp(_decayTime, 1.0f, (float)MaxDecayTime);
-                    Log.TraceExpectedInfo($"ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateDecayTime ended with a _decayTime of {_decayTime}, _queue.Count: {_queue.Count}");
+                    Log.TraceExpectedInfo($"{_debugName}:ParryabilityTracker.ParryabilityInfo.TimestampsQueue.UpdateDecayTime ended with a _decayTime of {_decayTime}, _queue.Count: {_queue.Count}");
                 }
 
+                private string _debugName;
                 private List<double> _averageDiffs;
                 private Queue<FixedTimeStamp> _queue;
                 private FixedTimeStamp _decayTimestamp;

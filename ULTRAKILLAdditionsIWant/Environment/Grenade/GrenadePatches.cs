@@ -29,7 +29,11 @@ namespace UKAIW
         {
             var grenadeBeamPrefab = (RevolverBeam)(grenadeBeamFi.GetValue(__instance));
             var boostTracker = grenadeBeamPrefab.gameObject.AddComponent<ProjectileBoostTracker>();
+            Assert.IsNotNull(boostTracker);
+            Assert.IsNotNull(__instance);
+            Assert.IsNotNull(__instance.GetComponent<ProjectileBoostTracker>());
             boostTracker.CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
+            boostTracker.IncrementPlayerBoosts();
         }
         
         public static void Postfix(Grenade __instance, Vector3 targetPoint, GameObject newSourceWeapon = null)
@@ -114,8 +118,9 @@ namespace UKAIW
                 __instance.enemy = true;
                 boostTracker.IncrementEnemyBoost();
                 feedbacker.ParryEffect();
-
+  
                 boostTracker.IgnoreColliders = eadd.Colliders;
+                boostTracker.SafeEid = eadd.Eid;
 
                 var v1 = NewMovement.Instance;
                 Physics.IgnoreCollision(__instance.GetComponent<Collider>(), v1.playerCollider, false);

@@ -17,14 +17,16 @@ namespace UKAIW
         }
 
         public float ParryCost { get => 0.36f; }
-        public float ParryCooldown { get => 0.3f; }
+        public float ParryCooldown { get => 0.1f; }
         public FixedTimeStamp LastParryTimestamp;
         public float Stamina { get; private set; } = 0;
 
         protected void Awake()
         {
             _eadd = GetComponent<EnemyAdditions>();
+            
             Assert.IsNotNull(_eadd);
+
             _eadd.PreHurt += PreHurt;
             _eadd.PostHurt += PostHurt;
         }
@@ -50,6 +52,7 @@ namespace UKAIW
         public void ParryEffect()
         {
             Assert.IsTrue(ReadyToParry, "EnemyFeedbacker.ParryEffect called when not ReadyToParry?");
+
             if (Options.HitstopOnEnemyParry.Value)
             {
                 TimeScale.Controller.ParryFlash();
@@ -60,6 +63,8 @@ namespace UKAIW
                 TimeScale.Controller.ParryFlash();
                 TimeScale.ModDisableHitstop = false;
             }
+
+            Stamina -= ParryCost;
 
             LastParryTimestamp.UpdateToNow();
         }
