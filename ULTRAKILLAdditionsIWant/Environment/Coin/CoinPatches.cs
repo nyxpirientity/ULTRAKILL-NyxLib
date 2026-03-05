@@ -148,6 +148,8 @@ namespace UKAIW
 
             var boostTracker = coin.GetComponent<ProjectileBoostTracker>();
 
+            boostTracker.CoinPunched = true;
+
             var parryability = boostTracker.NotifyContact();
 
             var eadd = eid.GetComponent<EnemyAdditions>();

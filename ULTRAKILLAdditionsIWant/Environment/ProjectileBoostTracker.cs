@@ -14,18 +14,20 @@ namespace UKAIW
     {
         public enum ProjectileCategory : byte
         {
-            Null, RevolverShot, ChargedRevolverShot, BigRevolverShot, BigChargedRevolverShot, PlayerProjectile, Projectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade, Coin, Nail, Saw
+            Null, RevolverShot, PlayerProjectile, Projectile, HomingProjectile, Rocket, Grenade, EnemyRocket, EnemyGrenade, Coin, Nail, Saw
         }
 
         public bool HasBeenBoosted { get => NumPlayerBoosts != 0 || NumEnemyBoosts != 0; }
         public bool LastBoostedByPlayer = false;
         public uint NumPlayerBoosts { get; private set; } = 0;
         public uint NumEnemyBoosts { get; private set; } = 0;
+        public uint NumBoosts { get => NumPlayerBoosts + NumEnemyBoosts; }
         public ProjectileCategory ProjectileType { get; private set; } = ProjectileCategory.Null;
 
         private Cannonball _cannonball;
         public EnemyIdentifier SafeEid = null;
         public bool Electric = false;
+        public bool CoinPunched = false;
 
         public IReadOnlyList<Collider> Colliders
         {
@@ -74,6 +76,16 @@ namespace UKAIW
             }
 
             NumPlayerBoosts += 1;
+
+            if (_proj != null)
+            {
+                if (NumBoosts == 1 && !_proj.friendly)
+                {
+                    _creationStartTime.UpdateToNow();
+                    _startParryabilityDist = ParryabilityTracker.NotifyCreationStart(GetHashCode());
+                }
+            }
+
             LastBoostedByPlayer = true;
             _creationProgressParryabilityDist = ParryabilityTracker.NotifyCreationProgress(GetHashCode());
             _creationProgressTime.UpdateToNow();
@@ -103,6 +115,11 @@ namespace UKAIW
 
         private void BoostOomph(bool bigOomph)
         {
+            if (NumEnemyBoosts == 0)
+            {
+                return;
+            }
+            
             if (_proj != null)
             {
                 if (bigOomph)
@@ -268,7 +285,10 @@ namespace UKAIW
 
         internal void PreNailFixedUpdate()
         {
-            Assert.IsNotNull(_nail);
+            if (_nail == null)
+            {
+                _nail = GetComponent<Nail>();
+            }
 
             if (_nail.punched)
             {
@@ -321,7 +341,16 @@ namespace UKAIW
 
             double window = Math.Max(Math.Max(0.4 + (_creationStartTime.TimeSince * 0.25), 0.3 + (_creationProgressTime.TimeSince * 0.5)), 0.75);
 
-            var diffDist = Math.Min(Math.Min(contactDiffDist, _startParryabilityDist), _creationProgressParryabilityDist);
+            double creationDist = _creationProgressParryabilityDist;
+
+            if (_startParryabilityDist < _creationProgressParryabilityDist)
+            {
+                double startParryabilityDistWeight = 1.0f / (NumBoosts + 1);
+                
+                creationDist = ((_startParryabilityDist * startParryabilityDistWeight) + _creationProgressParryabilityDist) / (1.0 + (1.0 * startParryabilityDistWeight));
+            }
+            
+            var diffDist = Math.Min(contactDiffDist, creationDist);
 
             var parryability = Mathf.Clamp01(NyxMath.InverseNormalizeToRange((float)diffDist, (float)window / 2, (float)window));
 

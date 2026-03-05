@@ -75,9 +75,23 @@ namespace UKAIW
                 return true;
             }
 
+            if (!__instance.friendly)
+            {
+                return true;
+            }
+
+
             var boostTracker = __instance.GetComponent<ProjectileBoostTracker>();
 
             var parryability = boostTracker.NotifyContact();
+
+            Action failedParry = () =>
+            {
+                if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && boostTracker.NumPlayerBoosts > 0 && boostTracker.NumEnemyBoosts > 0)
+                {
+                    StyleHUD.Instance.AddPoints(10, "<color=#ffd000>KEEP THE CHANGE</color>");
+                }
+            };
 
             EnemyIdentifierIdentifier eidid = null;
 
@@ -142,21 +156,25 @@ namespace UKAIW
 
                 if (!feedbacker.Enabled)
                 {
+                    failedParry();
                     return true;
                 }
 
                 if (!feedbacker.ReadyToParry)
                 {
+                    failedParry();
                     return true;
                 }
 
                 if (__instance.unparryable || __instance.undeflectable)
                 {
+                    failedParry();
                     return true;
                 }
 
                 if (parryability < 0.5f)
                 {
+                    failedParry();
                     return true;
                 }
                 

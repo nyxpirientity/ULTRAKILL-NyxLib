@@ -12,6 +12,8 @@ namespace UKAIW
             public Explosion Explosion = null;
             public float BaseMaxSize = 0.0f;
             public float BaseSpeed = 0.0f;
+            public int BasePlayerDamageOverride = 0;
+            public int BaseDamage = 0;
         }
 
         ManagedExplosion[] _Explosions = null;
@@ -35,6 +37,8 @@ namespace UKAIW
                 mExplosion.Explosion = explosion;
                 mExplosion.BaseSpeed = explosion.speed;
                 mExplosion.BaseMaxSize = explosion.maxSize;
+                mExplosion.BaseDamage = explosion.damage;
+                mExplosion.BasePlayerDamageOverride = explosion.playerDamageOverride;
                 _Explosions[i] = mExplosion;
             }
 
@@ -67,8 +71,8 @@ namespace UKAIW
             {
                 explosion.Explosion.maxSize = explosion.BaseMaxSize * ExplosionScale;
                 explosion.Explosion.speed = explosion.BaseSpeed * ExplosionSpeedScale;
-                explosion.Explosion.damage = Mathf.RoundToInt(explosion.Explosion.damage * ExplosionDamageScale);
-                explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.Explosion.playerDamageOverride * ExplosionDamageScale);
+                explosion.Explosion.damage = Mathf.RoundToInt(explosion.BaseDamage * ExplosionDamageScale);
+                explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.BasePlayerDamageOverride * ExplosionDamageScale);
             }
         }
     }

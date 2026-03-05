@@ -31,6 +31,14 @@ namespace UKAIW
             Collider col = cannonball.GetComponent<Collider>();
             var boostTracker = cannonball.GetComponent<ProjectileBoostTracker>();
 
+            Action failedParry = () =>
+            {
+                if (boostTracker.NumPlayerBoosts > 0 && boostTracker.NumEnemyBoosts > 0)
+                {
+                    StyleHUD.Instance.AddPoints(10, "<color=#00c3ff>VOLLEYBALL</color>");
+                }
+            };
+
             if (other.TryGetComponent<NewMovement>(out var _) && !boostTracker.LastBoostedByPlayer && boostTracker.HasBeenBoosted)
             {
                 __instance.Explode();
@@ -68,6 +76,7 @@ namespace UKAIW
 
                 if (!feedbacker.Enabled)
                 {
+                    failedParry();
                     return true;
                 }
 
@@ -81,11 +90,13 @@ namespace UKAIW
 
                 if (!feedbacker.ReadyToParry)
                 {
+                    failedParry();
                     return true;
                 }
 
                 if ((parryability < 0.5f))
                 {
+                    failedParry();
                     return true;
                 }
 

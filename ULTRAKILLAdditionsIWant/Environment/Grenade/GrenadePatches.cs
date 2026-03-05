@@ -29,10 +29,24 @@ namespace UKAIW
         {
             var grenadeBeamPrefab = (RevolverBeam)(grenadeBeamFi.GetValue(__instance));
             var boostTracker = grenadeBeamPrefab.gameObject.AddComponent<ProjectileBoostTracker>();
+            var oldBoostTracker = __instance.GetComponent<ProjectileBoostTracker>();
             Assert.IsNotNull(boostTracker);
             Assert.IsNotNull(__instance);
             Assert.IsNotNull(__instance.GetComponent<ProjectileBoostTracker>());
-            boostTracker.CopyFrom(__instance.GetComponent<ProjectileBoostTracker>());
+
+            if (oldBoostTracker.NumEnemyBoosts > 0)
+            {
+                if (__instance.rocket)
+                {
+                    StyleHUD.Instance.AddPoints(10, "<color=#ae57ff>MODERN <color=#ff0000>T<color=#ffaa00>E<color=#0dff00>C<color=#ffd500>H<color=#7bff00>N<color=#00ff59>O<color=#00c3ff>L<color=#0080ff>O<color=#7300ff>G<color=#ff00ee>Y");
+                }
+                else
+                {
+                    StyleHUD.Instance.AddPoints(10, "<color=#00fff7>CONVERSION</color>");
+                }
+            }
+
+            boostTracker.CopyFrom(oldBoostTracker);
             boostTracker.IncrementPlayerBoosts();
         }
         

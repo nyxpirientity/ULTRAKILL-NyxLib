@@ -30,6 +30,11 @@ namespace UKAIW
                 return true;
             }
 
+            if (__instance.beamType == BeamType.Enemy || __instance.beamType == BeamType.MaliciousFace)
+            {
+                return true;
+            }
+
             var boostTracker = __instance.GetComponent<ProjectileBoostTracker>();
 
             var parryability = boostTracker.NotifyContact();
@@ -106,6 +111,11 @@ namespace UKAIW
                 return true;
             }
 
+            if (__instance.beamType == BeamType.Enemy || __instance.beamType == BeamType.MaliciousFace)
+            {
+                return true;
+            }
+
             var boostTracker = __instance.GetComponent<ProjectileBoostTracker>();
 
             var parryability = boostTracker.NotifyContact();
@@ -123,7 +133,7 @@ namespace UKAIW
             }
 
             var hit = __instance.hitList[enemiesPierced];
-
+            
             if (hit.collider == null)
             {
                 return true;
