@@ -9,7 +9,6 @@ It features mainly a variety of cheats that change the game up in random ways. C
 - Give Enemies Friend(s) - for each enemy that spawns, clones will be made based on what you setup in a preferences file
 - mundanemurder Mode - You've heard of ULTRAKILL, now get ready for mundanemurder, play mundanely, not stylishly.
 - Hydra Mode - when you kill one enemy, they clone into two halved health enemies. Kill the clones within a configured period of time or else they'll clone again when killed...
-- Salty Enemies - do more stylishly, and enemies stats change depending on the configuration in the preferences file
 - Bad Gyro - V1's internal orientation sensing is malfunctioning, and thus your viewing angle will annoyingly sway around. What a shame.
 - Self Consciense - V1 is self conscious, and thus depending on your style (and configuration) V1 will have varying amounts of energy. By default, lowest style rank causes your stamina to be _halved_
 - Salty Enemies - Enemies will get very, very ANGRY the more style you get, (you get to set the radiance buff they get for each style rank in the prefs file) and those that can, will become enraged if you reach ULTRAKILL rank
