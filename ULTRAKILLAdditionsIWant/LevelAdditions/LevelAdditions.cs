@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UKAIW.Diagnostics.Debug;
+using UnityEngine.SceneManagement;
 
 namespace UKAIW
 {
@@ -25,7 +26,7 @@ namespace UKAIW
 
         private static LevelAdditions CurrentAdditions = null;
 
-        private static void OnSceneLoad(int buildIndex, string sceneName)
+        private static void OnSceneLoad(Scene scene, string sceneName)
         {
             sceneName = SceneHelper.CurrentScene;
             CurrentAdditions = null;
@@ -44,7 +45,7 @@ namespace UKAIW
             }
         }
 
-        private static void OnSceneUnload(int buildIndex, string sceneName)
+        private static void OnSceneUnload(Scene scene, string sceneName)
         {
             CurrentAdditions?.OnSceneUnload();
             CurrentAdditions = null;

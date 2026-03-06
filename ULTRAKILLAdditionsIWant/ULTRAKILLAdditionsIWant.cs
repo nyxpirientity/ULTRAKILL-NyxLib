@@ -4,6 +4,7 @@ using UnityEngine;
 using UKAIW.Diagnostics.Debug;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using HarmonyLib;
 
 namespace UKAIW
 {
@@ -18,10 +19,11 @@ namespace UKAIW
 
         protected void Awake()
         {
+            Harmony.CreateAndPatchAll(System.Reflection.Assembly.GetAssembly(typeof(ULTRAKILLAdditionsIWant)));
             Log.Logger = Logger;
             Options.Config = Config;
             Options.Initialize();
-            Log.TraceExpectedInfo($"Initialize called!");
+            Log.TraceExpectedInfo($"Awake called!");
             Assets.Load();
         }
 

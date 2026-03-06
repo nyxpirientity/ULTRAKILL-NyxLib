@@ -33,13 +33,8 @@ namespace UKAIW
             EnemyEvents.PostDeath += PostEnemyDeath;
             UpdateEvents.OnLateUpdate += LateUpdate;
             UpdateEvents.OnFixedUpdate += FixedUpdate;
-            ScenesEvents.OnSceneWasUnloaded += OnSceneUnload;
         }
 
-        private static void OnSceneUnload(int buildIndex, string sceneName)
-        {
-
-        }
 
         public static void DecrementRemainingHydraBloodFxThisTick()
         {

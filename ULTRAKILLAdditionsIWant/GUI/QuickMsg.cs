@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Nyxpiri;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UKAIW
 {
@@ -102,13 +103,13 @@ namespace UKAIW
             }
         }
 
-        private static void OnSceneUnloaded(int arg1, string arg2)
+        private static void OnSceneUnloaded(Scene scene, string sceneName)
         {
             Pool?.Clear();
             ActiveQuickMsgs?.Clear();
         }
 
-        private static void OnSceneLoaded(int arg1, string arg2)
+        private static void OnSceneLoaded(Scene scene, string sceneName)
         {
             if (Assets.LabelPrefab != null && CanvasController.Instance.NullInvalid()?.gameObject != null)
             {

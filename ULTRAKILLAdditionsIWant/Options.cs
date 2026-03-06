@@ -207,164 +207,163 @@ public static class Options
     static public float RadianceAllDamageTier { get => RadianceAllDamageTierEntry.Value; }
     static public float RadianceAllHealthTier { get => RadianceAllHealthTierEntry.Value; }
 
+    const string ModCat = "UKAIW";
+    const string DebugCat = "Debug";
+    const string DevCat = "Development";
+    const string BugFixCat = "BugFixes";
+    const string CheatsCat = "Cheats";
+    const string HydraCat = "Hydra";
+    const string FriendsCat = "EnemyFriends";
+    const string BloodFueledEnemiesCat = "BloodFueledEnemies";
+    const string SaltyEnemiesCat = "SaltyEnemies";
+    const string RadianceAllCat = "RadianceAllCat";
+    const string EnemyFeedbackersCat = "EnemyFeedbackers";
+    const string HeatOfHeckCat = "HeatOfHeck";
+    const string SelfConscienceCat = "SelfConscience";
+    const string BasicBloodOptimizerCat = "BasicBloodOptimizer";
+    const string HeckPuppetsCat = "HeckPuppets";
+
     public static void Initialize()
     {
+        ShowErrorNotification = Config.Bind($"{ModCat}.{DebugCat}", "ShowErrorNotification", false, "Shows text saying An Error has Occured! At the top of your screen as a 'QuickMsg', with a timestamp (using your locally set timezone!)");
+        IncludePerformanceLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludePerformanceLogs", false);
+        IncludeTraceExpectedLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeTraceExpectedLogs", false);
+        IncludeExpectedLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeExpectedLogs", false);
+        IncludeLikelyLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeLikelyLogs", false);
+        IncludeUnlikelyLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeUnlikelyLogs", false);
+        IncludeUnexpectedLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeUnexpectedLogs", false);
+        LogEnemyTypeOnStart = Config.Bind($"{ModCat}.{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
+        DisableQuickLoad = Config.Bind($"{ModCat}.{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
         
-        ShowErrorNotification = Config.Bind("UKAIW.Debug", "ShowErrorNotification", false, "Shows text saying An Error has Occured! At the top of your screen as a 'QuickMsg', with a timestamp (using your locally set timezone!)");
-        IncludePerformanceLogsEntry = Config.Bind("UKAIW.Debug", "IncludePerformanceLogs", false);
-        IncludeTraceExpectedLogsEntry = Config.Bind("UKAIW.Debug", "IncludeTraceExpectedLogs", false);
-        IncludeExpectedLogsEntry = Config.Bind("UKAIW.Debug", "IncludeExpectedLogs", false);
-        IncludeLikelyLogsEntry = Config.Bind("UKAIW.Debug", "IncludeLikelyLogs", false);
-        IncludeUnlikelyLogsEntry = Config.Bind("UKAIW.Debug", "IncludeUnlikelyLogs", false);
-        IncludeUnexpectedLogsEntry = Config.Bind("UKAIW.Debug", "IncludeUnexpectedLogs", false);
-        LogEnemyTypeOnStart = Config.Bind("UKAIW.Debug.Development", "LogEnemyTypeOnEnemyStart", false);
-        DisableQuickLoad = Config.Bind("UKAIW.Debug.Development", "DisableGameInitLevelQuickLoad", false);
+        EnableStreetCleanerDodgeFix = Config.Bind($"{ModCat}.{BugFixCat}", "EnableStreetCleanerDodgeFix", true);
+        EnableStreetCleanerDodgeFixOnlyWhenNeeded = Config.Bind($"{ModCat}.{BugFixCat}", "EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
+        StreetCleanerDodgeFixInterpRate = Config.Bind($"{ModCat}.{BugFixCat}", "StreetCleanerDodgeFixInterpRate", 8.0f);
+
+        HydraHealthDecayScaleEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraHealthDecayScale", 0.5f);
+
+        HydraDefaultWaitTimeEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraDefaultWaitTime", 0.45f);
+        HydraMiniBossWaitTimeEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraMiniBossWaitTime", 0.75f);
+        HydraBossWaitTimeEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraBossWaitTime", 1.5f);
+        HydraUltraBossWaitTimeEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraUltraBossWaitTime", 2.75f);
+
+        HydraMaxFromOneBossEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraMaxFromOneBoss", 6);
+        HydraMaxDepthEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraMaxDepth", 16);
+        HydraMaxFromOneEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraMaxFromOne", 12);
+        HydraMaxPerUpdateEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraMaxPerFrame", 4);
+
+        HydraPrefabPoolCapacityEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraPrefabPoolCapacity", 20);
+        HydraPrefabPoolGrowPerUpdateEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraPrefabPoolGrowPerUpdate", 3);
+
+        HydraKillBonusEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraKillBonus", 10);
+        HydraMiniBossKillBonusEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraMiniBossKillBonus", 50);
+        HydraBossKillBonusEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraBossKillBonus", 100);
+        HydraUltraBossKillBonusEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HydraCat}", "HydraUltraBossKillBonus", 1000);
+
+        NumFriendsToSpawnEntry = Config.Bind($"{ModCat}.{CheatsCat}.{FriendsCat}", "NumFriendsToSpawn", 1);
+
+        BloodFuelEnemiesHealScalarEntry = Config.Bind($"{ModCat}.{CheatsCat}.{BloodFueledEnemiesCat}", "BloodFuelEnemiesHealScalar", 0.4f);
+        BloodFuelEnemiesDistDivisorEntry = Config.Bind($"{ModCat}.{CheatsCat}.{BloodFueledEnemiesCat}", "BloodFuelEnemiesDistDivisor", 8.0f);
+
+        DestructiveRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "DestructiveRadianceTier", 0.0f);
+        ChaoticRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "ChaoticRadianceTier", 0.0f);
+        BrutalRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "BrutalRadianceTier", 1.0f);
+        AnarchicRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "AnarchicRadianceTier", 1.1f);
+        SupremeRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "SupremeRadianceTier", 1.25f);
+        SSadisticRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "SSadisticRadianceTier", 1.4f);
+        SSSensoredStormRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "SSSensoredStormRadianceTier", 1.6f);
+        ULTRAKILLNoEnrageRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "ULTRAKILLNoEnrageRadianceTier", 2.0f);
+        ULTRAKILLRadianceTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "ULTRAKILLRadianceTier", 1.8f);
+
+        SaltEffectSpeedEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "SaltEffectSpeed", true);
+        SaltEffectHealthEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "SaltEffectHealth", false);
+        SaltEffectDamageEntry = Config.Bind($"{ModCat}.{CheatsCat}.{SaltyEnemiesCat}", "SaltEffectDamage", false);
         
-        BugFixesCategory = MelonPreferences.CreateCategory("UKAIW-BugFixes");
-        EnableStreetCleanerDodgeFix = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFix", true);
-        EnableStreetCleanerDodgeFixOnlyWhenNeeded = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
-        StreetCleanerDodgeFixInterpRate = BugFixesCategory.CreateEntry<float>("StreetCleanerDodgeFixInterpRate", 8.0f);
+        RadianceAllTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
+        RadianceAllSpeedTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.5f);
+        RadianceAllDamageTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.5f);
+        RadianceAllHealthTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllHealthTier", 1.5f);
 
-        HydraCategory = MelonPreferences.CreateCategory("UKAIW-Hydra");
+        HitstopOnEnemyParry = Config.Bind($"{ModCat}.{CheatsCat}.{EnemyFeedbackersCat}", "HitstopOnEnemyParry", false);
 
-        HydraHealthDecayScaleEntry = HydraCategory.CreateEntry<float>("HydraHealthDecayScale", 0.5f);
+        DemandingHellDestructiveHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Destructive", "HeatResDrain", -1.0f);
+        DemandingHellDestructiveHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Destructive", "HeatResRecovery", 100.0f);
+        DemandingHellDestructiveHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Destructive", "HeatResExplosiveSizeBase", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Destructive", "HeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Destructive", "HeatResExplosiveSizeNormMax", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Destructive", "HeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellDestructiveHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Destructive", "HeatResExplosiveDmgPlayer", false);
 
-        HydraDefaultWaitTimeEntry = HydraCategory.CreateEntry<float>("HydraDefaultWaitTime", 0.45f);
-        HydraMiniBossWaitTimeEntry = HydraCategory.CreateEntry<float>("HydraMiniBossWaitTime", 0.75f);
-        HydraBossWaitTimeEntry = HydraCategory.CreateEntry<float>("HydraBossWaitTime", 1.5f);
-        HydraUltraBossWaitTimeEntry = HydraCategory.CreateEntry<float>("HydraUltraBossWaitTime", 2.75f);
+        DemandingHellChaoticHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Chaotic", "HeatResDrain", -1.0f);
+        DemandingHellChaoticHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Chaotic", "HeatResRecovery", 100.0f);
+        DemandingHellChaoticHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Chaotic", "HeatResExplosiveSizeBase", -1.0f);
+        DemandingHellChaoticHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Chaotic", "HeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellChaoticHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Chaotic", "HeatResExplosiveSizeNormMax", -1.0f);
+        DemandingHellChaoticHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Chaotic", "HeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellChaoticHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Chaotic", "HeatResExplosiveDmgPlayer", false);
 
-        HydraMaxFromOneBossEntry = HydraCategory.CreateEntry<int>("HydraMaxFromOneBoss", 6);
-        HydraMaxDepthEntry = HydraCategory.CreateEntry<int>("HydraMaxDepth", 16);
-        HydraMaxFromOneEntry = HydraCategory.CreateEntry<int>("HydraMaxFromOne", 12);
-        HydraMaxPerUpdateEntry = HydraCategory.CreateEntry<int>("HydraMaxPerFrame", 4);
+        DemandingHellBrutalHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Brutal", "HeatResDrain", -1.0f);
+        DemandingHellBrutalHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Brutal", "HeatResRecovery", 100.0f);
+        DemandingHellBrutalHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Brutal", "HeatResExplosiveSizeBase", -1.0f);
+        DemandingHellBrutalHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Brutal", "HeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellBrutalHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Brutal", "HeatResExplosiveSizeNormMax", -1.0f);
+        DemandingHellBrutalHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Brutal", "HeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellBrutalHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Brutal", "HeatResExplosiveDmgPlayer", false);
 
-        HydraPrefabPoolCapacityEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolCapacity", 20);
-        HydraPrefabPoolGrowPerUpdateEntry = HydraCategory.CreateEntry<int>("HydraPrefabPoolGrowPerUpdate", 3);
+        DemandingHellAnarchicHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Anarchic", "HeatResDrain", 30.0f);
+        DemandingHellAnarchicHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Anarchic", "HeatResRecovery", 1.7f);
+        DemandingHellAnarchicHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Anarchic", "HeatResExplosiveSizeBase", -1.0f);
+        DemandingHellAnarchicHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Anarchic", "HeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellAnarchicHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Anarchic", "HeatResExplosiveSizeNormMax", -1.0f);
+        DemandingHellAnarchicHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Anarchic", "HeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellAnarchicHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Anarchic", "HeatResExplosiveDmgPlayer", false);
 
-        HydraKillBonusEntry = HydraCategory.CreateEntry<int>("HydraKillBonus", 10);
-        HydraMiniBossKillBonusEntry = HydraCategory.CreateEntry<int>("HydraMiniBossKillBonus", 50);
-        HydraBossKillBonusEntry = HydraCategory.CreateEntry<int>("HydraBossKillBonus", 100);
-        HydraUltraBossKillBonusEntry = HydraCategory.CreateEntry<int>("HydraUltraBossKillBonus", 1000);
+        DemandingHellSupremeHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Supreme", "HeatResDrain", 60.0f);
+        DemandingHellSupremeHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Supreme", "HeatResRecovery", 2.0f);
+        DemandingHellSupremeHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Supreme", "HeatResExplosiveSizeBase", -1.0f);
+        DemandingHellSupremeHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Supreme", "HeatResExplosiveSizeNormMin", -1.0f);
+        DemandingHellSupremeHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Supreme", "HeatResExplosiveSizeNormMax", -1.0f);
+        DemandingHellSupremeHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Supreme", "HeatResExplosiveDmgScalar", -1.0f);
+        DemandingHellSupremeHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.Supreme", "HeatResExplosiveDmgPlayer", false);
 
-        FriendsCategory = MelonPreferences.CreateCategory("UKAIW-Friends");
-        NumFriendsToSpawnEntry = FriendsCategory.CreateEntry<int>("NumFriendsToSpawn", 1);
+        DemandingHellSSadisticHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSadistic", "HeatResDrain", 70.0f);
+        DemandingHellSSadisticHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSadistic", "HeatResRecovery", 2.0f);
+        DemandingHellSSadisticHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSadistic", "HeatResExplosiveSizeBase", 12.0f);
+        DemandingHellSSadisticHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSadistic", "HeatResExplosiveSizeNormMin", 2.5f);
+        DemandingHellSSadisticHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSadistic", "HeatResExplosiveSizeNormMax", 7.0f);
+        DemandingHellSSadisticHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSadistic", "HeatResExplosiveDmgScalar", 0.35f);
+        DemandingHellSSadisticHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSadistic", "HeatResExplosiveDmgPlayer", true);
 
-        BloodFuelEnemiesCategory = MelonPreferences.CreateCategory("UKAIW-BloodFueledEnemies");
-        BloodFuelEnemiesHealScalarEntry = BloodFuelEnemiesCategory.CreateEntry<float>("BloodFuelEnemiesHealScalar", 0.4f);
-        BloodFuelEnemiesDistDivisorEntry = BloodFuelEnemiesCategory.CreateEntry<float>("BloodFuelEnemiesDistDivisor", 8.0f);
+        DemandingHellSSSensoredStormHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSSensoredStorm", "HeatStormResDrain", 85.0f);
+        DemandingHellSSSensoredStormHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSSensoredStorm", "HeatStormResRecovery", 1.9f);
+        DemandingHellSSSensoredStormHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSSensoredStorm", "HeatResExplosiveSizeBase", 14.0f);
+        DemandingHellSSSensoredStormHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSSensoredStorm", "HeatResExplosiveSizeNormMin", 0.15f);
+        DemandingHellSSSensoredStormHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSSensoredStorm", "HeatResExplosiveSizeNormMax", 8.5f);
+        DemandingHellSSSensoredStormHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSSensoredStorm", "HeatResExplosiveDmgScalar", 0.5f);
+        DemandingHellSSSensoredStormHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.SSSensoredStorm", "HeatResExplosiveDmgPlayer", true);
 
-        SaltCategory = MelonPreferences.CreateCategory("UKAIW-Salt");
-        DestructiveRadianceTierEntry = SaltCategory.CreateEntry<float>("DestructiveRadianceTier", 0.0f);
-        ChaoticRadianceTierEntry = SaltCategory.CreateEntry<float>("ChaoticRadianceTier", 0.0f);
-        BrutalRadianceTierEntry = SaltCategory.CreateEntry<float>("BrutalRadianceTier", 1.0f);
-        AnarchicRadianceTierEntry = SaltCategory.CreateEntry<float>("AnarchicRadianceTier", 1.1f);
-        SupremeRadianceTierEntry = SaltCategory.CreateEntry<float>("SupremeRadianceTier", 1.25f);
-        SSadisticRadianceTierEntry = SaltCategory.CreateEntry<float>("SSadisticRadianceTier", 1.4f);
-        SSSensoredStormRadianceTierEntry = SaltCategory.CreateEntry<float>("SSSensoredStormRadianceTier", 1.6f);
-        ULTRAKILLNoEnrageRadianceTierEntry = SaltCategory.CreateEntry<float>("ULTRAKILLNoEnrageRadianceTier", 2.0f);
-        ULTRAKILLRadianceTierEntry = SaltCategory.CreateEntry<float>("ULTRAKILLRadianceTier", 1.8f);
+        DemandingHellULTRAKILLHeatResRecoveryEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.ULTRAKILL", "HeatResRecovery", 2.7f);
+        DemandingHellULTRAKILLHeatResDrainEntry = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.ULTRAKILL", "HeatResDrain", 100.0f);
+        DemandingHellULTRAKILLHeatResExplosiveSizeBase = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.ULTRAKILL", "HeatResExplosiveSizeBase", 20.0f);
+        DemandingHellULTRAKILLHeatResExplosiveSizeNormMin = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.ULTRAKILL", "HeatResExplosiveSizeNormMin", 0.15f);
+        DemandingHellULTRAKILLHeatResExplosiveSizeNormMax = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.ULTRAKILL", "HeatResExplosiveSizeNormMax", 6.5f);
+        DemandingHellULTRAKILLHeatResExplosiveDmgScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.ULTRAKILL", "HeatResExplosiveDmgScalar", 0.8f);
+        DemandingHellULTRAKILLHeatResExplosiveDmgPlayer = Config.Bind($"{ModCat}.{CheatsCat}.{HeatOfHeckCat}.ULTRAKILL", "HeatResExplosiveDmgPlayer", true);
 
-        SaltEffectSpeedEntry = SaltCategory.CreateEntry<bool>("SaltEffectSpeed", true);
-        SaltEffectHealthEntry = SaltCategory.CreateEntry<bool>("SaltEffectHealth", false);
-        SaltEffectDamageEntry = SaltCategory.CreateEntry<bool>("SaltEffectDamage", false);
-        
-        RadianceAllCategory = MelonPreferences.CreateCategory("UKAIW-RadianceAll");
-        RadianceAllTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllTier", 1.0f);
-        RadianceAllSpeedTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllSpeedTier", 1.5f);
-        RadianceAllDamageTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllDamageTier", 1.5f);
-        RadianceAllHealthTierEntry = RadianceAllCategory.CreateEntry<float>("RadianceAllHealthTier", 1.5f);
+        SelfConscienceDestructiveDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.Destructive", "DashCostScale", 1.35f);
+        SelfConscienceChaoticDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.Chaotic", "DashCostScale", 1.1f);
+        SelfConscienceBrutalDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.Brutal", "DashCostScale", 1.05f);
+        SelfConscienceAnarchicDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.Anarchic", "DashCostScale", 1.0f);
+        SelfConscienceSupremeDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.Supreme", "DashCostScale", 0.9f);
+        SelfConscienceSSadisticDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.SSadistic", "DashCostScale", 0.85f);
+        SelfConscienceSSSensoredStormDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.SSSensoredStorm", "DashCostScale", 0.825f);
+        SelfConscienceULTRAKILLDashCostScale = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}.ULTRAKILL", "DashCostScale", 0.825f);
 
-        EnemyFeedbackersCategory = MelonPreferences.CreateCategory("UKAIW-EnemyFeedbackers");
-        HitstopOnEnemyParry = EnemyFeedbackersCategory.CreateEntry<bool>("HitstopOnEnemyParry", false);
+        SelfConscienseDashCostIncreaseInterpRate = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}", "DashCostIncreaseInterpRate", 0.3f);
+        SelfConscienseDashCostDecreaseInterpRate = Config.Bind($"{ModCat}.{CheatsCat}.{SelfConscienceCat}", "DashCostIDecreaseInterpRate", 1.0f);
 
-        DemandingHellCategory = MelonPreferences.CreateCategory("UKAIW-DemandingHell");
+        BloodOptimizerCapNumUpdatesPerTick =  Config.Bind($"{ModCat}.{CheatsCat}.{BasicBloodOptimizerCat}", "BloodOptimizerCapNumUpdatesPerTick", 90);
+        BloodHeavyModdedEnemiesCapNumBloodPerTick =  Config.Bind($"{ModCat}.{CheatsCat}.{BasicBloodOptimizerCat}", "BloodHeavyModdedEnemiesCapNumBloodPerTick", 2);
 
-        DemandingHellDestructiveHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResDrain", -1.0f);
-        DemandingHellDestructiveHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("DestructHeatResRecovery", 100.0f);
-        DemandingHellDestructiveHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveSizeBase", -1.0f);
-        DemandingHellDestructiveHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveSizeNormMin", -1.0f);
-        DemandingHellDestructiveHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveSizeNormMax", -1.0f);
-        DemandingHellDestructiveHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("DestructiveHeatResExplosiveDmgScalar", -1.0f);
-        DemandingHellDestructiveHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("DestructiveHeatResExplosiveDmgPlayer", false);
-
-        DemandingHellChaoticHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResDrain", -1.0f);
-        DemandingHellChaoticHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResRecovery", 100.0f);
-        DemandingHellChaoticHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveSizeBase", -1.0f);
-        DemandingHellChaoticHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveSizeNormMin", -1.0f);
-        DemandingHellChaoticHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveSizeNormMax", -1.0f);
-        DemandingHellChaoticHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("ChaoticHeatResExplosiveDmgScalar", -1.0f);
-        DemandingHellChaoticHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("ChaoticHeatResExplosiveDmgPlayer", false);
-
-        DemandingHellBrutalHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("BrutalHeatResDrain", -1.0f);
-        DemandingHellBrutalHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("BrutalHeatResRecovery", 100.0f);
-        DemandingHellBrutalHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveSizeBase", -1.0f);
-        DemandingHellBrutalHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveSizeNormMin", -1.0f);
-        DemandingHellBrutalHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveSizeNormMax", -1.0f);
-        DemandingHellBrutalHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("BrutalHeatResExplosiveDmgScalar", -1.0f);
-        DemandingHellBrutalHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("BrutalHeatResExplosiveDmgPlayer", false);
-
-        DemandingHellAnarchicHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResDrain", 30.0f);
-        DemandingHellAnarchicHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResRecovery", 1.7f);
-        DemandingHellAnarchicHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveSizeBase", -1.0f);
-        DemandingHellAnarchicHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveSizeNormMin", -1.0f);
-        DemandingHellAnarchicHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveSizeNormMax", -1.0f);
-        DemandingHellAnarchicHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("AnarchicHeatResExplosiveDmgScalar", -1.0f);
-        DemandingHellAnarchicHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("AnarchicHeatResExplosiveDmgPlayer", false);
-
-        DemandingHellSupremeHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SupremeHeatResDrain", 60.0f);
-        DemandingHellSupremeHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SupremeHeatResRecovery", 2.0f);
-        DemandingHellSupremeHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveSizeBase", -1.0f);
-        DemandingHellSupremeHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveSizeNormMin", -1.0f);
-        DemandingHellSupremeHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveSizeNormMax", -1.0f);
-        DemandingHellSupremeHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SupremeHeatResExplosiveDmgScalar", -1.0f);
-        DemandingHellSupremeHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SupremeHeatResExplosiveDmgPlayer", false);
-
-        DemandingHellSSadisticHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResDrain", 70.0f);
-        DemandingHellSSadisticHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SSadistricHeatResRecovery", 2.0f);
-        DemandingHellSSadisticHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeBase", 12.0f);
-        DemandingHellSSadisticHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeNormMin", 2.5f);
-        DemandingHellSSadisticHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveSizeNormMax", 7.0f);
-        DemandingHellSSadisticHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSadisticHeatResExplosiveDmgScalar", 0.35f);
-        DemandingHellSSadisticHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SSadisticHeatResExplosiveDmgPlayer", true);
-
-        DemandingHellSSSensoredStormHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatStormResDrain", 85.0f);
-        DemandingHellSSSensoredStormHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatStormResRecovery", 1.9f);
-        DemandingHellSSSensoredStormHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeBase", 14.0f);
-        DemandingHellSSSensoredStormHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeNormMin", 0.15f);
-        DemandingHellSSSensoredStormHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveSizeNormMax", 8.5f);
-        DemandingHellSSSensoredStormHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("SSSensoredStormHeatResExplosiveDmgScalar", 0.5f);
-        DemandingHellSSSensoredStormHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("SSSensoredStormHeatResExplosiveDmgPlayer", true);
-
-        DemandingHellULTRAKILLHeatResRecoveryEntry = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResRecovery", 2.7f);
-        DemandingHellULTRAKILLHeatResDrainEntry = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResDrain", 100.0f);
-        DemandingHellULTRAKILLHeatResExplosiveSizeBase = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeBase", 20.0f);
-        DemandingHellULTRAKILLHeatResExplosiveSizeNormMin = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeNormMin", 0.15f);
-        DemandingHellULTRAKILLHeatResExplosiveSizeNormMax = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveSizeNormMax", 6.5f);
-        DemandingHellULTRAKILLHeatResExplosiveDmgScalar = DemandingHellCategory.CreateEntry<float>("ULTRAKILLHeatResExplosiveDmgScalar", 0.8f);
-        DemandingHellULTRAKILLHeatResExplosiveDmgPlayer = DemandingHellCategory.CreateEntry<bool>("ULTRAKILLHeatResExplosiveDmgPlayer", true);
-
-        SelfConscienceCategory = MelonPreferences.CreateCategory("UKAIW-SelfConscience");
-        SelfConscienceDestructiveDashCostScale = SelfConscienceCategory.CreateEntry<float>("DestructiveDashCostScale", 1.35f);
-        SelfConscienceChaoticDashCostScale = SelfConscienceCategory.CreateEntry<float>("ChaoticDashCostScale", 1.1f);
-        SelfConscienceBrutalDashCostScale = SelfConscienceCategory.CreateEntry<float>("BrutalDashCostScale", 1.05f);
-        SelfConscienceAnarchicDashCostScale = SelfConscienceCategory.CreateEntry<float>("AnarchicDashCostScale", 1.0f);
-        SelfConscienceSupremeDashCostScale = SelfConscienceCategory.CreateEntry<float>("SupremeDashCostScale", 0.9f);
-        SelfConscienceSSadisticDashCostScale = SelfConscienceCategory.CreateEntry<float>("SSadisticDashCostScale", 0.85f);
-        SelfConscienceSSSensoredStormDashCostScale = SelfConscienceCategory.CreateEntry<float>("SSSensoredStormDashCostScale", 0.825f);
-        SelfConscienceULTRAKILLDashCostScale = SelfConscienceCategory.CreateEntry<float>("ULTRAKILLDashCostScale", 0.825f);
-
-        SelfConscienseDashCostIncreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIncreaseInterpRate", 0.3f);
-        SelfConscienseDashCostDecreaseInterpRate = SelfConscienceCategory.CreateEntry<float>("DashCostIDecreaseInterpRate", 1.0f);
-
-        BloodOptimizer = MelonPreferences.CreateCategory("UKAIW-BloodOptimizer");
-        BloodOptimizerCapNumUpdatesPerTick = BloodOptimizer.CreateEntry<int>("BloodOptimizerCapNumUpdatesPerTick", 90);
-        BloodHeavyModdedEnemiesCapNumBloodPerTick = BloodOptimizer.CreateEntry<int>("BloodHeavyModdedEnemiesCapNumBloodPerTick", 2);
-
-        CybergrindCheatRandomization = MelonPreferences.CreateCategory("UKAIW-CybergrindCheatRandomization");
-        NumRandomCheats = CybergrindCheatRandomization.CreateEntry<int>("NumRandomCheats", 3);
-
-        HeckPuppetsCategory = MelonPreferences.CreateCategory("UKAIW-HeckPuppets");
         HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>()
         {
             {
@@ -375,45 +374,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("DestructiveUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("DestructiveUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("DestructiveUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "DestructiveUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }
@@ -427,45 +426,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ChaoticUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ChaoticUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ChaoticUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ChaoticUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }
@@ -479,45 +478,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("BrutalUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("BrutalUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("BrutalUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "BrutalUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }
@@ -531,45 +530,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("AnarchicUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("AnarchicUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("AnarchicUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "AnarchicUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }
@@ -583,45 +582,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SupremeUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SupremeUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SupremeUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SupremeUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }
@@ -635,45 +634,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSadisticUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSadisticUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSadisticUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSadisticUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }
@@ -687,45 +686,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("SSSensoredStormUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("SSSensoredStormUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "SSSensoredStormUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }
@@ -739,45 +738,45 @@ public static class Options
                         {
                             EnemyGameplayRank.Normal, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLNormalNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLNormalMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLNormalHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLNormalNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLNormalMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLNormalHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLNormalHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLNormalHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLNormalHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Miniboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLMinibossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLMinibossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLMinibossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLMinibossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLMinibossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLMinibossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLMinibossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLMinibossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLMinibossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Boss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                         {
                             EnemyGameplayRank.Ultraboss, new HeckPuppetStyleEntry.HeckPuppetOptions()
                             {
-                                NumHeckPuppets = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLUltraBossNumHeckPuppets", 0),
-                                MaxHeckPuppetHealth = HeckPuppetsCategory.CreateEntry<int>("ULTRAKILLUltraBossMaxHeckPuppetHealth", 10),
-                                HeckPuppetHealthScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetHealthScalar", 0.5f),
-                                HeckPuppetHealthBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetHealthBuffScalar", 0.5f),
-                                HeckPuppetDamageBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetDamageBuffScalar", 0.5f),
-                                HeckPuppetSpeedBuffScalar = HeckPuppetsCategory.CreateEntry<float>("ULTRAKILLUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
+                                NumHeckPuppets = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLUltraBossNumHeckPuppets", 0),
+                                MaxHeckPuppetHealth = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLUltraBossMaxHeckPuppetHealth", 10),
+                                HeckPuppetHealthScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLUltraBossHeckPuppetHealthScalar", 0.5f),
+                                HeckPuppetHealthBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLUltraBossHeckPuppetHealthBuffScalar", 0.5f),
+                                HeckPuppetDamageBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLUltraBossHeckPuppetDamageBuffScalar", 0.5f),
+                                HeckPuppetSpeedBuffScalar = Config.Bind($"{ModCat}.{CheatsCat}.{HeckPuppetsCat}", "ULTRAKILLUltraBossHeckPuppetSpeedBuffScalar", 0.5f),
                             }
                         },
                     }

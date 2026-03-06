@@ -1,5 +1,6 @@
 using System;
 using UKAIW.Diagnostics.Debug;
+using UnityEngine.SceneManagement;
 
 namespace UKAIW
 {
@@ -21,7 +22,7 @@ namespace UKAIW
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
         }
 
-        private static void OnSceneWasLoaded(int buildIndex, string sceneName)
+        private static void OnSceneWasLoaded(Scene scene, string sceneName)
         {
             var player = MonoSingleton<NewMovement>.Instance;
             

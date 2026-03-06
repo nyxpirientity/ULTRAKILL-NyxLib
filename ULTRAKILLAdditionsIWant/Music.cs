@@ -2,6 +2,7 @@ using System;
 using HarmonyLib;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UKAIW
 {
@@ -42,19 +43,14 @@ namespace UKAIW
 
         internal static void Initialize()
         {
-            ScenesEvents.OnSceneWasUnloaded += OnSceneUnload;
             ScenesEvents.OnSceneWasLoaded += OnSceneLoad;
             UpdateEvents.OnUpdate += Update;
         }
 
-        private static void OnSceneLoad(int arg1, string arg2)
+        private static void OnSceneLoad(Scene arg1, string arg2)
         {
             PlayBattleWithCleanVotes = 0;
             HasVotedForBattleMusic = false;
-        }
-
-        private static void OnSceneUnload(int arg1, string arg2)
-        {
         }
 
         private static bool HasVotedForBattleMusic = false;
