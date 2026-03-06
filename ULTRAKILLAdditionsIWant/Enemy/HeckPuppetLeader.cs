@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using MelonLoader;
-using SettingsMenu.Components.Pages;
-using TMPro;
-using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 namespace UKAIW

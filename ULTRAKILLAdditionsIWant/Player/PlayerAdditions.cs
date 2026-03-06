@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
-using MelonLoader;
 using UnityEngine;
 using ULTRAKILL.Cheats;
 using UKAIW.Diagnostics.Debug;
@@ -41,7 +40,7 @@ namespace UKAIW
             }
             catch (System.Exception e)
             {
-                MelonLogger.Error(e.ToString());
+                Log.Error(e.ToString());
             }
         }
 

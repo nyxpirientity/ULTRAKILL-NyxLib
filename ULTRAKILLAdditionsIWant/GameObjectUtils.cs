@@ -1,5 +1,4 @@
 using System;
-using MelonLoader;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ namespace UKAIW
     {
         public static void DebugPrintChildren(this GameObject go, bool forceLog = true, bool includeComponents = true)
         {
-            Action<string> logFunc = forceLog ? new Action<string>((string str) => { MelonLogger.Msg(str); }) : (string str) => { Log.TraceExpectedInfo(str); };
+            Action<string> logFunc = forceLog ? new Action<string>((string str) => { Log.Message(str); }) : (string str) => { Log.TraceExpectedInfo(str); };
 
             logFunc($"----- Debug Print for {go.name} start! -----");
             DebugPrintChildren(go, logFunc, includeComponents, 0);

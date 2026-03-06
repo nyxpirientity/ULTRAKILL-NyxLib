@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using MelonLoader;
-using SettingsMenu.Components.Pages;
-using TMPro;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UKAIW
 {
@@ -63,7 +61,7 @@ namespace UKAIW
             return parryability;
         }
 
-        private static void OnSceneLoad(int sceneIdx, string sceneName)
+        private static void OnSceneLoad(Scene sceneIdx, string sceneName)
         {
             _attackParryabilitysDict.Clear();
             _parryabilitys.Clear();

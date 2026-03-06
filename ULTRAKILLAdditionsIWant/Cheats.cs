@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using HarmonyLib;
-using MelonLoader;
-using TMPro;
 using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using ULTRAKILL.Cheats;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class Cheats
 {
@@ -97,15 +94,9 @@ public static class Cheats
     public static void Initialize()
     {
         ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
-        UpdateEvents.OnGUI += OnGUI;
     }
 
-    
-    private static void OnGUI()
-    {
-    }
-
-    private static void OnSceneWasLoaded(int buildIndex, string sceneName)
+    private static void OnSceneWasLoaded(Scene scene, string sceneName)
     {
         if (Cheats.Manager == null)
         {

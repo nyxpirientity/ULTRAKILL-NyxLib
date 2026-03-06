@@ -20,8 +20,8 @@
 	  <DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<Reference Include="MelonLoader">
-			<HintPath>$(ULTRAKILL_DIR)\MelonLoader\net35\MelonLoader.dll</HintPath>
+		<Reference Include="BepInEx">
+			<HintPath>$(ULTRAKILL_DIR)\BepInEx\core\BepInEx.dll</HintPath>
 		</Reference>
 		<Reference Include="Assembly-CSharp">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -39,7 +39,7 @@
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
 		</Reference>
 		<Reference Include="Harmony">
-			<HintPath>$(ULTRAKILL_DIR)\MelonLoader\net35\0Harmony.dll</HintPath>
+			<HintPath>$(ULTRAKILL_DIR)\BepInEx\core\0Harmony.dll</HintPath>
 		</Reference>
 		<Reference Include="Unity.TextMeshPro">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.TextMeshPro.dll</HintPath>
@@ -76,10 +76,10 @@
 		</Reference>
 	</ItemGroup>
 	<Target Name="PostBuildUnix" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Unix'">
-	  <Exec Command="cp &quot;$(OutDir)/ULTRAKILLAdditionsIWant.dll&quot; &quot;$ULTRAKILL_DIR/Mods&quot;" />
-	  <Exec Command="cp &quot;resources/ukaiw_assets&quot; &quot;$ULTRAKILL_DIR/Mods&quot; -r" />
+	  <Exec Command="cp &quot;$(OutDir)/ULTRAKILLAdditionsIWant.dll&quot; &quot;$ULTRAKILL_DIR/BepInEx/plugins&quot;" />
+	  <Exec Command="cp &quot;resources/ukaiw_assets&quot; &quot;$ULTRAKILL_DIR/BepInEx/plugins&quot; -r" />
 	</Target>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
-	  <Exec Command="copy &quot;$(OutDir)\ULTRAKILLAdditionsIWant.dll&quot; &quot;%25ULTRAKILL_DIR%25\Mods&quot;" />
+	  <Exec Command="copy &quot;$(OutDir)\ULTRAKILLAdditionsIWant.dll&quot; &quot;%25ULTRAKILL_DIR%25\BepInEx\plugins&quot;" />
 	</Target>
 </Project>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UKAIW;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
-using UnityEngine.AI;
 
 /* as of making it, mostly just meant to be inheritted from so our own enemy addition monobehaviours can be identified. */
 public class EnemyModifier : MonoBehaviour

@@ -1,13 +1,6 @@
 using System;
-using MelonLoader;
 using UnityEngine;
 using HarmonyLib;
-using MelonLoader.Utils;
-using System.Reflection;
-using System.Collections.Generic;
-using UKAIW.Diagnostics.Debug;
-using ULTRAKILL.Cheats;
-using UnityEngine.UI;
 
 namespace UKAIW
 {   

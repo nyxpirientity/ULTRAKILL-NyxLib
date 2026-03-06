@@ -1,6 +1,5 @@
 # About
-**ULTRAKILL Additions I Want** is a janky mod made for my own personal use meant for ULTRAKILL and built for *Melon Loader* currently. This means the standard ULTRAKILL mod loader setup WILL (probably) NOT work for this code in it's current state and 
-instead it'd need to be ported over. Although, I've heard about a melonloader -> bepinex compatibility layer, but I've not tested it and have no knowledge of it, so that may work. Alternatively, you can use Melonloader which is here: https://github.com/LavaGang/MelonLoader
+**ULTRAKILL Additions I Want** is a janky mod made for my own personal use meant for ULTRAKILL, using Bepinex as a modloader (like all the other mods, now! wow! It used to use melonloader cuz it's what I had on hand lol)
 
 # Cheats
 It features mainly a variety of cheats that change the game up in random ways. Cheats are *intended* to be capable of being fully mixable, within reason, however, they may have bugs/issues ESPECIALLY when combined. Generally, I've found them good enough for challenge runs, even if still not as stable as I'd prefer. I'll list the cheats here:
