@@ -1,10 +1,8 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
-using MelonLoader;
 using UnityEngine;
 using ULTRAKILL.Cheats;
-using UKAIW.Diagnostics.Debug;
 
 namespace UKAIW
 {

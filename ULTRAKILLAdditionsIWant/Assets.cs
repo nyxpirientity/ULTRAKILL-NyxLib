@@ -1,12 +1,9 @@
-using System;
 using System.IO;
-using System.Reflection;
 using HarmonyLib;
-using MelonLoader;
-using MelonLoader.Utils;
 using TMPro;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace UKAIW
 {
@@ -39,7 +36,7 @@ namespace UKAIW
         public static void Load()
         {
             Log.TraceExpectedInfo($"Assets.Load called!");
-            var modsDir = MelonEnvironment.ModsDirectory;
+            var modsDir = BepInEx.Paths.PluginPath;
             var assetsDir = $"{modsDir}/ukaiw_assets";
             Log.TraceExpectedInfo($"Loading assets in {assetsDir}!");
             
@@ -49,7 +46,7 @@ namespace UKAIW
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
         }
 
-        private static void OnSceneWasLoaded(int sceneIdx, string sceneName)
+        private static void OnSceneWasLoaded(Scene scene, string sceneName)
         {
             if (HeatResistancePrefab == null)
             {
@@ -255,12 +252,12 @@ namespace UKAIW
                 {
                     if (!ImageConversion.LoadImage(texture, fileBytes))
                     {
-                        MelonLogger.Error($"Failed to load asset '{path}'");
+                        Log.Error($"Failed to load asset '{path}'");
                     }   
                 }
                 catch (System.Exception e)
                 {
-                    MelonLogger.Error($"Failed to load asset '{path}' error/exception: {e}");
+                    Log.Error($"Failed to load asset '{path}' error/exception: {e}");
                     texture = new Texture2D(1, 1);
                 }
             }

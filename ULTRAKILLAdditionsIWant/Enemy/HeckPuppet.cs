@@ -1,8 +1,3 @@
-using System;
-using MelonLoader;
-using SettingsMenu.Components.Pages;
-using TMPro;
-using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 using UnityEngine.AI;
 

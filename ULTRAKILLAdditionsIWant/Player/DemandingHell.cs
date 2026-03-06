@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using HarmonyLib;
-using MelonLoader;
-using SettingsMenu.Components.Pages;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

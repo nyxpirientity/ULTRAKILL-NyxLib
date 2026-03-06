@@ -1,11 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using MelonLoader;
-using UKAIW;
-using UKAIW.Diagnostics.Debug;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace UKAIW
 {

@@ -1,176 +1,161 @@
-using System;
 using System.Collections.Generic;
-using MelonLoader;
+using BepInEx.Configuration;
 using UKAIW;
-using UnityEngine;
 
 public static class Options
 {
-    static MelonPreferences_Category LoggingCategory = null;
-    static MelonPreferences_Entry<bool> IncludePerformanceLogsEntry = null;
-    static MelonPreferences_Entry<bool> IncludeTraceExpectedLogsEntry = null;
-    static MelonPreferences_Entry<bool> IncludeExpectedLogsEntry = null;
-    static MelonPreferences_Entry<bool> IncludeLikelyLogsEntry = null;
-    static MelonPreferences_Entry<bool> IncludeUnlikelyLogsEntry = null;
-    static MelonPreferences_Entry<bool> IncludeUnexpectedLogsEntry = null;
-    public static MelonPreferences_Entry<bool> ShowErrorNotification = null;
-    public static MelonPreferences_Entry<bool> LogEnemyTypeOnStart = null;
-    public static MelonPreferences_Entry<bool> DisableQuickLoad = null;
+    internal static ConfigFile Config = null;
 
-    static MelonPreferences_Category HydraCategory = null;
-    static MelonPreferences_Entry<float> HydraHealthDecayScaleEntry = null;
-    static MelonPreferences_Entry<float> HydraDefaultWaitTimeEntry = null;
-    static MelonPreferences_Entry<float> HydraMiniBossWaitTimeEntry = null;
-    static MelonPreferences_Entry<float> HydraBossWaitTimeEntry = null;
-    static MelonPreferences_Entry<float> HydraUltraBossWaitTimeEntry = null;
-    static MelonPreferences_Entry<int> HydraMaxDepthEntry = null;
-    static MelonPreferences_Entry<int> HydraMaxFromOneBossEntry = null;
-    static MelonPreferences_Entry<int> HydraMaxFromOneEntry = null;
-    static MelonPreferences_Entry<int> HydraMaxPerUpdateEntry = null;
-    static MelonPreferences_Entry<int> HydraPrefabPoolCapacityEntry = null;
-    static MelonPreferences_Entry<int> HydraPrefabPoolGrowPerUpdateEntry = null;
-    static MelonPreferences_Entry<int> HydraKillBonusEntry = null;
-    static MelonPreferences_Entry<int> HydraMiniBossKillBonusEntry = null;
-    static MelonPreferences_Entry<int> HydraBossKillBonusEntry = null;
-    static MelonPreferences_Entry<int> HydraUltraBossKillBonusEntry = null;
+    static ConfigEntry<bool> IncludePerformanceLogsEntry = null;
+    static ConfigEntry<bool> IncludeTraceExpectedLogsEntry = null;
+    static ConfigEntry<bool> IncludeExpectedLogsEntry = null;
+    static ConfigEntry<bool> IncludeLikelyLogsEntry = null;
+    static ConfigEntry<bool> IncludeUnlikelyLogsEntry = null;
+    static ConfigEntry<bool> IncludeUnexpectedLogsEntry = null;
+    public static ConfigEntry<bool> ShowErrorNotification = null;
+    public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
+    public static ConfigEntry<bool> DisableQuickLoad = null;
 
-    static MelonPreferences_Category FriendsCategory = null;
-    static MelonPreferences_Entry<int> NumFriendsToSpawnEntry = null;
+    static ConfigEntry<float> HydraHealthDecayScaleEntry = null;
+    static ConfigEntry<float> HydraDefaultWaitTimeEntry = null;
+    static ConfigEntry<float> HydraMiniBossWaitTimeEntry = null;
+    static ConfigEntry<float> HydraBossWaitTimeEntry = null;
+    static ConfigEntry<float> HydraUltraBossWaitTimeEntry = null;
+    static ConfigEntry<int> HydraMaxDepthEntry = null;
+    static ConfigEntry<int> HydraMaxFromOneBossEntry = null;
+    static ConfigEntry<int> HydraMaxFromOneEntry = null;
+    static ConfigEntry<int> HydraMaxPerUpdateEntry = null;
+    static ConfigEntry<int> HydraPrefabPoolCapacityEntry = null;
+    static ConfigEntry<int> HydraPrefabPoolGrowPerUpdateEntry = null;
+    static ConfigEntry<int> HydraKillBonusEntry = null;
+    static ConfigEntry<int> HydraMiniBossKillBonusEntry = null;
+    static ConfigEntry<int> HydraBossKillBonusEntry = null;
+    static ConfigEntry<int> HydraUltraBossKillBonusEntry = null;
 
-    static MelonPreferences_Category BloodFuelEnemiesCategory = null;
-    static MelonPreferences_Entry<float> BloodFuelEnemiesHealScalarEntry = null;
-    static MelonPreferences_Entry<float> BloodFuelEnemiesDistDivisorEntry = null;
+    static ConfigEntry<int> NumFriendsToSpawnEntry = null;
 
-    static MelonPreferences_Category SaltCategory = null;
-    static MelonPreferences_Entry<float> DestructiveRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> ChaoticRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> BrutalRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> AnarchicRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> SupremeRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> SSadisticRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> SSSensoredStormRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> ULTRAKILLNoEnrageRadianceTierEntry = null;
-    static MelonPreferences_Entry<float> ULTRAKILLRadianceTierEntry = null;
-    static MelonPreferences_Entry<bool> SaltEffectHealthEntry = null;
-    static MelonPreferences_Entry<bool> SaltEffectSpeedEntry = null;
-    static MelonPreferences_Entry<bool> SaltEffectDamageEntry = null;
+    static ConfigEntry<float> BloodFuelEnemiesHealScalarEntry = null;
+    static ConfigEntry<float> BloodFuelEnemiesDistDivisorEntry = null;
+
+    static ConfigEntry<float> DestructiveRadianceTierEntry = null;
+    static ConfigEntry<float> ChaoticRadianceTierEntry = null;
+    static ConfigEntry<float> BrutalRadianceTierEntry = null;
+    static ConfigEntry<float> AnarchicRadianceTierEntry = null;
+    static ConfigEntry<float> SupremeRadianceTierEntry = null;
+    static ConfigEntry<float> SSadisticRadianceTierEntry = null;
+    static ConfigEntry<float> SSSensoredStormRadianceTierEntry = null;
+    static ConfigEntry<float> ULTRAKILLNoEnrageRadianceTierEntry = null;
+    static ConfigEntry<float> ULTRAKILLRadianceTierEntry = null;
+    static ConfigEntry<bool> SaltEffectHealthEntry = null;
+    static ConfigEntry<bool> SaltEffectSpeedEntry = null;
+    static ConfigEntry<bool> SaltEffectDamageEntry = null;
     
-    static MelonPreferences_Category RadianceAllCategory = null;
-    static MelonPreferences_Entry<float> RadianceAllTierEntry = null;
-    static MelonPreferences_Entry<float> RadianceAllSpeedTierEntry = null;
-    static MelonPreferences_Entry<float> RadianceAllDamageTierEntry = null;
-    static MelonPreferences_Entry<float> RadianceAllHealthTierEntry = null;
+    static ConfigEntry<float> RadianceAllTierEntry = null;
+    static ConfigEntry<float> RadianceAllSpeedTierEntry = null;
+    static ConfigEntry<float> RadianceAllDamageTierEntry = null;
+    static ConfigEntry<float> RadianceAllHealthTierEntry = null;
 
-    static MelonPreferences_Category EnemyFeedbackersCategory = null;
-    public static MelonPreferences_Entry<bool> HitstopOnEnemyParry = null;
+    public static ConfigEntry<bool> HitstopOnEnemyParry = null;
 
-    static MelonPreferences_Category DemandingHellCategory = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellDestructiveHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellDestructiveHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellDestructiveHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellDestructiveHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellDestructiveHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellDestructiveHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellDestructiveHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellDestructiveHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellDestructiveHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellChaoticHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellChaoticHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellChaoticHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellChaoticHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellChaoticHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellChaoticHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellChaoticHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellChaoticHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellChaoticHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellBrutalHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellBrutalHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellBrutalHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellBrutalHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellBrutalHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellBrutalHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellBrutalHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellBrutalHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellBrutalHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellAnarchicHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellAnarchicHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellAnarchicHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellAnarchicHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellAnarchicHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellAnarchicHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellAnarchicHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellAnarchicHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellAnarchicHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSupremeHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellSupremeHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSupremeHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSupremeHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSupremeHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSupremeHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSupremeHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSupremeHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellSupremeHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSadisticHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellSSadisticHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSadisticHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSadisticHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSadisticHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSadisticHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSadisticHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSadisticHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellSSadisticHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellSSSensoredStormHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellSSSensoredStormHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSSensoredStormHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSSensoredStormHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSSensoredStormHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellSSSensoredStormHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellSSSensoredStormHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResDrainEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResRecoveryEntry { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveSizeBase { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveSizeNormMin { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveSizeNormMax { get; private set; } = null;
-    public static MelonPreferences_Entry<float> DemandingHellULTRAKILLHeatResExplosiveDmgScalar { get; private set; } = null;
-    public static MelonPreferences_Entry<bool> DemandingHellULTRAKILLHeatResExplosiveDmgPlayer { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellULTRAKILLHeatResDrainEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellULTRAKILLHeatResRecoveryEntry { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellULTRAKILLHeatResExplosiveSizeBase { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellULTRAKILLHeatResExplosiveSizeNormMin { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellULTRAKILLHeatResExplosiveSizeNormMax { get; private set; } = null;
+    public static ConfigEntry<float> DemandingHellULTRAKILLHeatResExplosiveDmgScalar { get; private set; } = null;
+    public static ConfigEntry<bool> DemandingHellULTRAKILLHeatResExplosiveDmgPlayer { get; private set; } = null;
 
-    static MelonPreferences_Category SelfConscienceCategory = null;
-    public static MelonPreferences_Entry<float> SelfConscienceDestructiveDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienceChaoticDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienceBrutalDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienceAnarchicDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienceSupremeDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienceSSadisticDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienceSSSensoredStormDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienceULTRAKILLDashCostScale { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienseDashCostIncreaseInterpRate { get; private set; } = null;
-    public static MelonPreferences_Entry<float> SelfConscienseDashCostDecreaseInterpRate { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceDestructiveDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceChaoticDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceBrutalDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceAnarchicDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceSupremeDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceSSadisticDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceSSSensoredStormDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienceULTRAKILLDashCostScale { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienseDashCostIncreaseInterpRate { get; private set; } = null;
+    public static ConfigEntry<float> SelfConscienseDashCostDecreaseInterpRate { get; private set; } = null;
     
-    static MelonPreferences_Category HeckPuppetsCategory = null;
     public class HeckPuppetStyleEntry
     {
         public class HeckPuppetOptions
         {
-            public MelonPreferences_Entry<int> NumHeckPuppets;
-            public MelonPreferences_Entry<float> HeckPuppetDamageBuffScalar;
-            public MelonPreferences_Entry<float> HeckPuppetSpeedBuffScalar;
-            public MelonPreferences_Entry<float> HeckPuppetHealthBuffScalar;
-            public MelonPreferences_Entry<float> HeckPuppetHealthScalar;
-            public MelonPreferences_Entry<int> MaxHeckPuppetHealth;
+            public ConfigEntry<int> NumHeckPuppets;
+            public ConfigEntry<float> HeckPuppetDamageBuffScalar;
+            public ConfigEntry<float> HeckPuppetSpeedBuffScalar;
+            public ConfigEntry<float> HeckPuppetHealthBuffScalar;
+            public ConfigEntry<float> HeckPuppetHealthScalar;
+            public ConfigEntry<int> MaxHeckPuppetHealth;
         }
 
         public Dictionary<EnemyGameplayRank, HeckPuppetOptions> HeckPuppetsOptions = new Dictionary<EnemyGameplayRank, HeckPuppetOptions>();
     }
 
-    public static MelonPreferences_Category BloodOptimizer = null;
-    public static MelonPreferences_Entry<int> BloodOptimizerCapNumUpdatesPerTick = null;
-    public static MelonPreferences_Entry<int> BloodHeavyModdedEnemiesCapNumBloodPerTick = null;
+    public static ConfigEntry<int> BloodOptimizerCapNumUpdatesPerTick = null;
+    public static ConfigEntry<int> BloodHeavyModdedEnemiesCapNumBloodPerTick = null;
 
-    static MelonPreferences_Category BugFixesCategory = null;
-    public static MelonPreferences_Entry<bool> EnableStreetCleanerDodgeFix = null;
-    public static MelonPreferences_Entry<bool> EnableStreetCleanerDodgeFixOnlyWhenNeeded = null;
-    public static MelonPreferences_Entry<float> StreetCleanerDodgeFixInterpRate = null;
+    public static ConfigEntry<bool> EnableStreetCleanerDodgeFix = null;
+    public static ConfigEntry<bool> EnableStreetCleanerDodgeFixOnlyWhenNeeded = null;
+    public static ConfigEntry<float> StreetCleanerDodgeFixInterpRate = null;
 
     public static Dictionary<StyleRanks, HeckPuppetStyleEntry> HeckPuppetsStyleEntries = new Dictionary<StyleRanks, HeckPuppetStyleEntry>();
-
-    static MelonPreferences_Category CybergrindCheatRandomization = null;
-    public static MelonPreferences_Entry<int> NumRandomCheats = null;
 
 
     static public float HydraHealthDecayScale { get => HydraHealthDecayScaleEntry.Value; } 
@@ -224,17 +209,16 @@ public static class Options
 
     public static void Initialize()
     {
-        LoggingCategory = MelonPreferences.CreateCategory("UKAIW-Logging");
         
-        ShowErrorNotification = LoggingCategory.CreateEntry<bool>("ShowErrorNotification", false);
-        IncludePerformanceLogsEntry = LoggingCategory.CreateEntry<bool>("IncludePerformanceLogs", false);
-        IncludeTraceExpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeTraceExpectedLogs", false);
-        IncludeExpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeExpectedLogs", false);
-        IncludeLikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeLikelyLogs", false);
-        IncludeUnlikelyLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnlikelyLogs", true);
-        IncludeUnexpectedLogsEntry = LoggingCategory.CreateEntry<bool>("IncludeUnexpectedLogs", true);
-        LogEnemyTypeOnStart = LoggingCategory.CreateEntry<bool>("LogEnemyTypeOnStart", false);
-        DisableQuickLoad = LoggingCategory.CreateEntry<bool>("DisableGameInitLevelQuickLoad", false);
+        ShowErrorNotification = Config.Bind("UKAIW.Debug", "ShowErrorNotification", false, "Shows text saying An Error has Occured! At the top of your screen as a 'QuickMsg', with a timestamp (using your locally set timezone!)");
+        IncludePerformanceLogsEntry = Config.Bind("UKAIW.Debug", "IncludePerformanceLogs", false);
+        IncludeTraceExpectedLogsEntry = Config.Bind("UKAIW.Debug", "IncludeTraceExpectedLogs", false);
+        IncludeExpectedLogsEntry = Config.Bind("UKAIW.Debug", "IncludeExpectedLogs", false);
+        IncludeLikelyLogsEntry = Config.Bind("UKAIW.Debug", "IncludeLikelyLogs", false);
+        IncludeUnlikelyLogsEntry = Config.Bind("UKAIW.Debug", "IncludeUnlikelyLogs", false);
+        IncludeUnexpectedLogsEntry = Config.Bind("UKAIW.Debug", "IncludeUnexpectedLogs", false);
+        LogEnemyTypeOnStart = Config.Bind("UKAIW.Debug.Development", "LogEnemyTypeOnEnemyStart", false);
+        DisableQuickLoad = Config.Bind("UKAIW.Debug.Development", "DisableGameInitLevelQuickLoad", false);
         
         BugFixesCategory = MelonPreferences.CreateCategory("UKAIW-BugFixes");
         EnableStreetCleanerDodgeFix = BugFixesCategory.CreateEntry<bool>("EnableStreetCleanerDodgeFix", true);

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
-using ULTRAKILL.Portal;
 using UnityEngine;
 
 namespace UKAIW

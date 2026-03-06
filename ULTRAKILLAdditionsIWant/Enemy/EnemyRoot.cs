@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using UKAIW;
-using UKAIW.Diagnostics.Debug;
 using UnityEngine;
-using UnityEngine.AI;
 
 /* component to be added to the root/top-level game object for all enemies */
 public class EnemyRoot : MonoBehaviour

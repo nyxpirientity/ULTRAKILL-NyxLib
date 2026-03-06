@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
-using MelonLoader;
 using UKAIW;
-using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
 public class EnemyFriendIdentifier : EnemyModifier

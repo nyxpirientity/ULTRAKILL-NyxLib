@@ -1,7 +1,4 @@
-using System;
 using HarmonyLib;
-using ULTRAKILL.Portal;
-using UnityEngine;
 
 namespace UKAIW
 {

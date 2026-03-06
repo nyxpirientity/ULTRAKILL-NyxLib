@@ -1,37 +1,31 @@
 ﻿using System;
-using MelonLoader;
+using BepInEx;
 using UnityEngine;
-using HarmonyLib;
-using MelonLoader.Utils;
-using System.IO;
-using System.Globalization;
-using ULTRAKILL.Cheats;
-using System.Reflection;
-using TMPro;
-using UnityEngine.UI;
-using UnityEngine.Events;
-using Sandbox;
 using UKAIW.Diagnostics.Debug;
-using GameConsole.Commands;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace UKAIW
 {
-    public class ULTRAKILLAdditionsIWant : MelonMod
+    [BepInPlugin("com.nyxpiri.bepinex.plugins.ultrakill.ukaiw", "UKAIW", "0.0.0.1")]
+    [BepInProcess("ULTRAKILL.exe")]
+    public class ULTRAKILLAdditionsIWant : BaseUnityPlugin
     {
         enum LevelQuickLoadState
         {
             Needed, AwaitingLoad, WaitingToReturn, Returning, Done
         }
 
-        public override void OnInitializeMelon()
+        protected void Awake()
         {
+            Log.Logger = Logger;
+            Options.Config = Config;
             Options.Initialize();
             Log.TraceExpectedInfo($"Initialize called!");
             Assets.Load();
         }
 
-        public override void OnLateInitializeMelon() // Runs after OnApplicationStart.
+        protected void Start()
         {
             PlayerEvents.Initialize();
             Cheats.Initialize();
@@ -59,28 +53,25 @@ namespace UKAIW
                     QuickMsgPool.DisplayQuickMsg($"TIME: {DateTime.Now.Hour}:{DateTime.Now.Minute}", Color.red, 3.0f, Vector3.down * 200.0f, 32.0f, false);
                 }
             };
+
+            SceneManager.sceneLoaded += OnSceneWasLoaded;
+            SceneManager.sceneUnloaded += OnSceneWasUnloaded;
         }
 
 
-        public override void OnSceneWasLoaded(int buildIndex, string sceneName) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
+        public void OnSceneWasLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode loadSceneMode) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
         {
-            Log.TraceExpectedInfo($"------------- New Scene Loaded '{SceneHelper.CurrentScene}:{buildIndex}' -------------");
-            TryLog.Action(() => { ScenesEvents.OnSceneWasLoaded?.Invoke(buildIndex, sceneName); });
+            Log.TraceExpectedInfo($"------------- New Scene Loaded '{SceneHelper.CurrentScene}' -------------");
+            TryLog.Action(() => { ScenesEvents.OnSceneWasLoaded?.Invoke(scene, SceneHelper.CurrentScene); });
         }
 
-        public override void OnSceneWasInitialized(int buildIndex, string sceneName) // Runs when a Scene has Initialized and is passed the Scene's Build Index and Name.
+        public void OnSceneWasUnloaded(UnityEngine.SceneManagement.Scene scene)
         {
-            Log.TraceExpectedInfo($"------------- Scene Initialized '{SceneHelper.CurrentScene}:{sceneName}:{buildIndex}' -------------");
-            TryLog.Action(() => { ScenesEvents.OnSceneWasInitialized?.Invoke(buildIndex, sceneName); });
+            Log.TraceExpectedInfo($"------------- Scene Unloaded '{SceneHelper.CurrentScene}' -------------");
+            TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(scene, SceneHelper.CurrentScene); });
         }
 
-        public override void OnSceneWasUnloaded(int buildIndex, string sceneName)
-        {
-            Log.TraceExpectedInfo($"------------- Scene Unloaded '{SceneHelper.CurrentScene}:{sceneName}:{buildIndex}' -------------");
-            TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(buildIndex, sceneName); });
-        }
-
-        public override void OnUpdate() // Runs once per frame.
+        protected void OnUpdate()
         {
             TryLog.Action(() => { UpdateEvents.OnUpdate?.Invoke(); });
 
@@ -154,32 +145,14 @@ namespace UKAIW
         bool CurrentLevelIsFromQuickLoad = false;
         string QuickLoadLevel = null;
         string PreQuickLoadLevel = null;
-        public override void OnFixedUpdate() // Can run multiple times per frame. Mostly used for Physics.
+        protected void OnFixedUpdate()
         {
             TryLog.Action(() => { UpdateEvents.OnFixedUpdate?.Invoke(); });
         }
 
-        public override void OnLateUpdate() // Runs once per frame after OnUpdate and OnFixedUpdate have finished.
+        protected void OnLateUpdate() 
         {
             TryLog.Action(() => { UpdateEvents.OnLateUpdate?.Invoke(); });
-        }
-
-        public override void OnGUI() // Can run multiple times per frame. Mostly used for Unity's IMGUI.
-        {
-            TryLog.Action(() => { UpdateEvents.OnGUI?.Invoke(); });
-        }
-
-        public override void OnApplicationQuit() // Runs when the Game is told to Close.
-        {
-
-        }
-
-        public override void OnPreferencesSaved() // Runs when Melon Preferences get saved.
-        {
-        }
-
-        public override void OnPreferencesLoaded() // Runs when Melon Preferences get loaded.
-        {
         }
     }
 }

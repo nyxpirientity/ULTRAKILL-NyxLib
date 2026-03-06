@@ -7,6 +7,5 @@ namespace UKAIW
         public static Action OnUpdate = null;
         public static Action OnFixedUpdate = null;
         public static Action OnLateUpdate = null;
-        public static Action OnGUI = null;
     }
 }

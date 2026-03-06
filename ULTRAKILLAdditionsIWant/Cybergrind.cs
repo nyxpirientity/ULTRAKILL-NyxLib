@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using UKAIW;
-using UKAIW.Diagnostics.Debug;
 using ULTRAKILL.Cheats;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class CybergrindAdditions
 {
@@ -174,7 +173,7 @@ public static class CybergrindAdditions
         ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
     }
 
-    private static void OnSceneWasLoaded(int arg1, string arg2)
+    private static void OnSceneWasLoaded(Scene scene, string sceneName)
     {
         CybergrindActive = false;
     }

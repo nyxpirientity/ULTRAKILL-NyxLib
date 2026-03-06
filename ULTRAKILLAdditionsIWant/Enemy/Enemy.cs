@@ -1,6 +1,5 @@
 using System;
 using HarmonyLib;
-using MelonLoader;
 using UKAIW.Diagnostics.Debug;
 using UnityEngine;
 
@@ -404,7 +403,7 @@ namespace UKAIW
 
             if (Options.LogEnemyTypeOnStart.Value)
             {
-                MelonLogger.Msg($"{enemyGo.name}: enemy type is: {enemy.enemyType}");
+                Log.Message($"{enemyGo.name}: enemy type is: {enemy.enemyType}");
             }
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 /* list that allows indices to be reserved for individual elements, even if you remove elements at indices before that element */
