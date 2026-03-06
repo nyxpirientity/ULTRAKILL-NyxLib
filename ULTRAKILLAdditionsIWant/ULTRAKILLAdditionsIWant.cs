@@ -9,7 +9,7 @@ using HarmonyLib;
 namespace UKAIW
 {
     [BepInPlugin("com.nyxpiri.bepinex.plugins.ultrakill.ukaiw", "UKAIW", "0.0.0.1")]
-    //[BepInProcess("ULTRAKILL.exe")]
+    [BepInProcess("ULTRAKILL.exe")]
     public class ULTRAKILLAdditionsIWant : BaseUnityPlugin
     {
         enum LevelQuickLoadState
