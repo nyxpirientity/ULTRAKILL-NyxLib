@@ -33,7 +33,7 @@ namespace UKAIW
         public static GameObject FleshPrisonPrefab { get; private set; } = null;
         public static GameObject FleshPanopticonPrefab { get; private set; } = null;
 
-        public static void Load()
+        public static void Initialize()
         {
             Log.TraceExpectedInfo($"Assets.Load called!");
             var modsDir = BepInEx.Paths.PluginPath;

@@ -9,7 +9,7 @@ using HarmonyLib;
 namespace UKAIW
 {
     [BepInPlugin("com.nyxpiri.bepinex.plugins.ultrakill.ukaiw", "UKAIW", "0.0.0.1")]
-    [BepInProcess("ULTRAKILL.exe")]
+    //[BepInProcess("ULTRAKILL.exe")]
     public class ULTRAKILLAdditionsIWant : BaseUnityPlugin
     {
         enum LevelQuickLoadState
@@ -24,11 +24,18 @@ namespace UKAIW
             Options.Config = Config;
             Options.Initialize();
             Log.TraceExpectedInfo($"Awake called!");
-            Assets.Load();
+            Assets.Initialize();
+            Log.TraceExpectedInfo($"Awake finished!");
+        }
+
+        protected void OnDestroy()
+        {
+            Log.Error($"Got... destroyed?");
         }
 
         protected void Start()
         {
+            Log.TraceExpectedInfo($"Start called!");
             PlayerEvents.Initialize();
             Cheats.Initialize();
             Hydra.Initialize();
@@ -45,6 +52,7 @@ namespace UKAIW
             if (Options.DisableQuickLoad.Value)
             {
                 QuickLoadStates.Clear();
+                Log.Message($"Clearing QuickLoadStates...");
             }
 
             GameConsole.Console.Instance.onError += () =>
@@ -58,6 +66,7 @@ namespace UKAIW
 
             SceneManager.sceneLoaded += OnSceneWasLoaded;
             SceneManager.sceneUnloaded += OnSceneWasUnloaded;
+            Log.TraceExpectedInfo($"Start finished!");
         }
 
 
@@ -73,7 +82,7 @@ namespace UKAIW
             TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(scene, SceneHelper.CurrentScene); });
         }
 
-        protected void OnUpdate()
+        protected void Update()
         {
             TryLog.Action(() => { UpdateEvents.OnUpdate?.Invoke(); });
 
@@ -147,12 +156,12 @@ namespace UKAIW
         bool CurrentLevelIsFromQuickLoad = false;
         string QuickLoadLevel = null;
         string PreQuickLoadLevel = null;
-        protected void OnFixedUpdate()
+        protected void FixedUpdate()
         {
             TryLog.Action(() => { UpdateEvents.OnFixedUpdate?.Invoke(); });
         }
 
-        protected void OnLateUpdate() 
+        protected void LateUpdate() 
         {
             TryLog.Action(() => { UpdateEvents.OnLateUpdate?.Invoke(); });
         }
