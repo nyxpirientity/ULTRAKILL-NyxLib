@@ -64,6 +64,7 @@ namespace UKAIW
                 }
             };
 
+            
             SceneManager.sceneLoaded += OnSceneWasLoaded;
             SceneManager.sceneUnloaded += OnSceneWasUnloaded;
             Log.TraceExpectedInfo($"Start finished!");
@@ -80,6 +81,14 @@ namespace UKAIW
         {
             Log.TraceExpectedInfo($"------------- Scene Unloaded '{SceneHelper.CurrentScene}' -------------");
             TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(scene, SceneHelper.CurrentScene); });
+        }
+
+        protected void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                Config.Reload();
+            }
         }
 
         protected void Update()
