@@ -1,0 +1,334 @@
+using System.IO;
+using HarmonyLib;
+using TMPro;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+namespace Nyxpiri.ULTRAKILL.NyxLib
+{
+    public static class Assets
+    {
+        public static Texture2D MundaneMurderIcon { get; private set; } = null;
+
+        public static GameObject HuskEnrageSound_0 { get; private set; } = null;
+        public static GameObject MachineEnrageSound_0 { get; private set; } = null;
+        public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
+
+        public static GameObject HeatResistancePrefabWithoutHeatResistance { get; private set; } = null;
+        public static GameObject HeatResistancePrefab { get; private set; } = null;
+        public static GameObject LabelPrefab { get; private set; } = null;
+        public static GameObject HeatResHurtSound { get; private set; }
+
+        public static GameObject EnemyRevolverBullet { get; private set; } = null;
+        public static GameObject EnemyRevolverAltBullet { get; private set; } = null;
+
+        public static GameObject HarmlessExplosionPrefab { get; private set; } = null;
+        public static GameObject ExplosionPrefab { get; private set; } = null;
+        public static GameObject SuperExplosionPrefab { get; private set; } = null;
+
+        public static GameObject RocketPrefab { get; private set; } = null;
+        public static GameObject MortarPrefab { get; private set; } = null;
+        public static GameObject HomingProjectilePrefab { get; private set; } = null;
+        public static GameObject FleshPrisonPrefab { get; private set; } = null;
+        public static GameObject FleshPanopticonPrefab { get; private set; } = null;
+
+        public static void Initialize()
+        {
+            Log.TraceExpectedInfo($"Assets.Load called!");
+            var modsDir = BepInEx.Paths.PluginPath;
+            var assetsDir = $"{modsDir}/ukaiw_assets";
+            Log.TraceExpectedInfo($"Loading assets in {assetsDir}!");
+            
+            MundaneMurderIcon = LoadTexture($"{assetsDir}/mundane_murder.png");
+
+            EnemyEvents.PostStart += EnemyStart;
+            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+        }
+
+        private static void OnSceneWasLoaded(Scene scene, string sceneName)
+        {
+            if (HeatResistancePrefab == null)
+            {
+                var possibleHeatResistance = UnityEngine.Object.FindAnyObjectByType<HeatResistance>(FindObjectsInactive.Include);
+                if (possibleHeatResistance != null)
+                {
+                    Log.ExpectedInfo($"Heat Resistance object found in scene \"{SceneHelper.CurrentScene}\" yoinking it (instantiating/cloning it) as a prefab!");
+
+                    HeatResistancePrefab = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
+                    HeatResistancePrefab.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefab);
+
+                    TextMeshProUGUI textMesh = null;
+                    var textMeshProGuis = HeatResistancePrefab.gameObject.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
+                    var heatRes = HeatResistancePrefab.gameObject.GetComponentInChildren<HeatResistance>(includeInactive: true);
+                    FieldPublisher<HeatResistance, GameObject> hurtingSound = new FieldPublisher<HeatResistance, GameObject>(heatRes, "hurtingSound");
+                    HeatResHurtSound = GameObject.Instantiate(hurtingSound.Value); 
+                    UnityEngine.Object.DontDestroyOnLoad(HeatResHurtSound);
+
+                    HeatResistancePrefabWithoutHeatResistance = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
+                    HeatResistancePrefabWithoutHeatResistance.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefabWithoutHeatResistance);
+                    GameObject.Destroy(HeatResistancePrefabWithoutHeatResistance.GetComponentInChildren<HeatResistance>());
+                    
+                    foreach (var elem in textMeshProGuis)
+                    {
+                        if (elem.text.Contains("COMPROMISED"))
+                        {
+                            textMesh = elem;
+                            break;
+                        }
+                    }
+                    
+                    Assert.IsNotNull(textMesh);
+
+                    LabelPrefab = UnityEngine.Object.Instantiate(textMesh.gameObject);
+                    LabelPrefab.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(LabelPrefab);
+                    LabelPrefab.GetComponent<TextMeshProUGUI>().text = "UKAIW-Label!";
+                }
+                else
+                {
+                    Log.ExpectedInfo($"We'd like a heat resistence prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+
+            if (RocketPrefab == null)
+            {
+                var possibleGrenades = UnityEngine.Object.FindObjectsByType<Grenade>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                foreach (var grenade in possibleGrenades)
+                {
+                    if (grenade.rocket)
+                    {
+                        RocketPrefab = GameObject.Instantiate(grenade.gameObject);
+                        GameObject.DontDestroyOnLoad(RocketPrefab);
+                        RocketPrefab.SetActive(false);
+                    }
+
+                    if (HarmlessExplosionPrefab == null && grenade.harmlessExplosion != null)
+                    {
+                        HarmlessExplosionPrefab = GameObject.Instantiate(grenade.harmlessExplosion);
+                        GameObject.DontDestroyOnLoad(HarmlessExplosionPrefab);
+                        HarmlessExplosionPrefab.SetActive(false);
+                        HarmlessExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
+                    }
+                    
+                    if (ExplosionPrefab == null && grenade.explosion != null)
+                    {
+                        ExplosionPrefab = GameObject.Instantiate(grenade.explosion);
+                        GameObject.DontDestroyOnLoad(ExplosionPrefab);
+                        ExplosionPrefab.SetActive(false);
+                        ExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
+                    }
+                    
+                    if (SuperExplosionPrefab == null && grenade.superExplosion != null)
+                    {
+                        SuperExplosionPrefab = GameObject.Instantiate(grenade.superExplosion);
+                        GameObject.DontDestroyOnLoad(SuperExplosionPrefab);
+                        SuperExplosionPrefab.SetActive(false);
+                        SuperExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
+                    }
+
+                    if (SuperExplosionPrefab != null && ExplosionPrefab != null && HarmlessExplosionPrefab != null && RocketPrefab != null)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (EnemyRevolverBullet == null)
+            {
+                var possibleRevolver = UnityEngine.Object.FindAnyObjectByType<EnemyRevolver>(FindObjectsInactive.Include);
+                if (possibleRevolver != null)
+                {
+                    EnemyRevolverBullet = GameObject.Instantiate(possibleRevolver.bullet);
+                    EnemyRevolverBullet.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(EnemyRevolverBullet);
+                
+                    EnemyRevolverAltBullet = GameObject.Instantiate(possibleRevolver.altBullet);
+                    EnemyRevolverAltBullet.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(EnemyRevolverAltBullet);
+                }
+            }
+
+            if (MortarPrefab == null)
+            {
+                var possibleHideousMass = UnityEngine.Object.FindAnyObjectByType<Mass>(FindObjectsInactive.Include);
+                
+                if (possibleHideousMass != null)
+                {
+                    MortarPrefab = GameObject.Instantiate(possibleHideousMass.explosiveProjectile);
+                    GameObject.DontDestroyOnLoad(MortarPrefab);
+                    MortarPrefab.SetActive(false);
+                    
+                    ExplosionPrefab = GameObject.Instantiate(MortarPrefab.GetComponent<Projectile>().explosionEffect);
+                    GameObject.DontDestroyOnLoad(ExplosionPrefab);
+                    ExplosionPrefab.SetActive(false);
+                    ExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
+                    
+                    HomingProjectilePrefab = GameObject.Instantiate(possibleHideousMass.homingProjectile);
+                    GameObject.DontDestroyOnLoad(HomingProjectilePrefab);
+                    HomingProjectilePrefab.SetActive(false);
+                }
+                else
+                {
+                    Log.ExpectedInfo($"We'd like a a hideous mass in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+
+            if (FleshPrisonPrefab == null || FleshPanopticonPrefab == null)
+            {
+                var possibleFleshPrison = UnityEngine.Object.FindAnyObjectByType<FleshPrison>(FindObjectsInactive.Include);
+                
+                if (possibleFleshPrison != null)
+                {
+                    if (possibleFleshPrison.altVersion)
+                    {
+                        FleshPanopticonPrefab = GameObject.Instantiate(possibleFleshPrison.gameObject);
+                        GameObject.DontDestroyOnLoad(FleshPanopticonPrefab);
+                    }
+                    else
+                    {
+                        FleshPrisonPrefab = GameObject.Instantiate(possibleFleshPrison.gameObject);
+                        GameObject.DontDestroyOnLoad(FleshPrisonPrefab);
+                    }
+                }
+                else
+                {
+                    Log.ExpectedInfo($"We'd like a flesh prison in order to yoink it as a prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+        }
+
+        private static void EnemyStart(EnemyComponents enemy)
+        {
+            switch (enemy.Eid.enemyType)
+            {
+                case EnemyType.Swordsmachine:
+                if (MachineEnrageSound_0 == null)
+                {
+                    MachineEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<SwordsMachine>().bigPainSound, null, false);
+                    MachineEnrageSound_0.SetActive(false);
+                    UnityEngine.Object.DontDestroyOnLoad(MachineEnrageSound_0);
+                    if (MachineEnrageSound_0 != null)
+                    {
+                        Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                    }
+                }
+                break;
+                case EnemyType.Cerberus:
+                if (HuskEnrageSound_0 == null && enemy.GetComponent<StatueBoss>() != null)
+                {
+                    if (enemy.GetComponent<StatueBoss>().statueChargeSound2 != null)
+                    {
+                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound2, null, false);
+                        HuskEnrageSound_0.SetActive(false);
+                        UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
+                        if (HuskEnrageSound_0 != null)
+                        {
+                            Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
+                        }
+                    }
+                }
+                break;
+                case EnemyType.Streetcleaner:
+                if (MachineEnrageSound_1 == null)
+                {
+                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(enemy.Enemy.deathSound);
+                }
+                break;
+            }
+        }
+
+        private static Texture2D LoadTexture(string path)
+        {
+            Log.ExpectedInfo($"Attempting to load texture from '{path}'");
+            var fileBytes = File.ReadAllBytes(path);
+            var texture = new Texture2D(1, 1);
+            
+            if (fileBytes != null)
+            {
+                try
+                {
+                    if (!ImageConversion.LoadImage(texture, fileBytes))
+                    {
+                        Log.Error($"Failed to load asset '{path}'");
+                    }   
+                }
+                catch (System.Exception e)
+                {
+                    Log.Error($"Failed to load asset '{path}' error/exception: {e}");
+                    texture = new Texture2D(1, 1);
+                }
+            }
+
+            Log.ExpectedInfo($"Seemingly successfully loaded asset at '{path}'");
+            return texture;
+        }
+
+        [HarmonyPatch(typeof(ExplosionController), "Start")]
+        static class ExplosionAwakePatch
+        {
+            public static void Prefix(ExplosionController __instance)
+            {
+     
+            }
+
+            public static void Postfix(ExplosionController __instance)
+            {
+                Explosion instanceExplosion = __instance.GetComponentInChildren<Explosion>();
+
+                if (instanceExplosion == null)
+                {
+                    return;
+                }
+
+                if (instanceExplosion.electric)
+                {
+                    return;
+                }
+
+                if (instanceExplosion.isFup)
+                {
+                    return;
+                }
+
+                if (instanceExplosion.harmless)
+                {
+                    return;
+                }
+
+                /*if (ExplosionPrefab == null)
+                {
+                    Log.TraceExpectedInfo($"Yoinking (instantiating/cloning) explosion prefab {__instance.gameObject.name} thats about to start, as we needed an ExplosionPrefab!");
+                    ExplosionPrefab = UnityEngine.GameObject.Instantiate(__instance.gameObject, null, false);
+                    ExplosionPrefab.SetActive(false);
+                    Explosion explosion = ExplosionPrefab.GetComponentInChildren<Explosion>();
+                    ExplosionPrefab.GetComponentInChildren<ExplosionController>().enabled = true;
+                    explosion.damage = 0;
+                    explosion.enemy = false;
+                    explosion.harmless = true;
+                    explosion.lowQuality = false;
+                    explosion.speed = 1.0f;
+                    explosion.maxSize = 1.0f;
+                    explosion.enemyDamageMultiplier = 1.0f;
+                    explosion.playerDamageOverride = -1;
+                    explosion.ignite = true;
+                    explosion.friendlyFire = false;
+                    explosion.isFup = false;
+                    explosion.hitterWeapon = "";
+                    explosion.halved = false;
+                    explosion.canHit = AffectedSubjects.All;
+                    explosion.originEnemy = null;
+                    explosion.rocketExplosion = false;
+                    explosion.toIgnore = new System.Collections.Generic.List<EnemyType>();
+                    explosion.ultrabooster = false;
+                    explosion.unblockable = false;
+                    explosion.electric = false;
+                    explosion.enabled = true;
+                    UnityEngine.Object.DontDestroyOnLoad(ExplosionPrefab);
+                }*/
+            }
+        }
+    }
+}

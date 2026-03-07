@@ -1,0 +1,172 @@
+using System.Collections.Generic;
+
+namespace Nyxpiri.ULTRAKILL.NyxLib
+{
+    public class EnemyRadiance : EnemyModifier
+    {
+        public class Modifier
+        {
+            public bool BaseEnabled = false;
+            public bool SpeedEnabled = false;
+            public bool HealthEnabled = false;
+            public bool DamageEnabled = false;
+            public bool Multiplier = false;
+            public float BaseMod = 0.0f;
+            public float SpeedMod = 0.0f;
+            public float DamageMod = 0.0f;
+            public float HealthMod = 0.0f;
+        }
+    
+        EnemyIdentifier Eid = null;
+        EnemyComponents Enemy = null;
+
+        bool RequestedSpeedBuff = false;
+        bool RequestedHealthBuff = false;
+        bool RequestedDamageBuff = false;
+
+        public bool BuffsBase { get; private set; } = false;
+        public bool BuffsSpeed { get; private set; } = false;
+        public bool BuffsDamage { get; private set; } = false;
+        public bool BuffsHealth { get; private set; } = false;
+
+        public HashSet<Modifier> Modifiers = new HashSet<Modifier>(8);
+
+        public void AddModifier(Modifier modifier)
+        {
+            Modifiers.Add(modifier);
+        }
+
+        private EnemyRadiance.Modifier RadiantAllModifier = new EnemyRadiance.Modifier();
+
+        protected void FixedUpdate()
+        {
+            if (Eid.Dead)
+            {
+                return;
+            }
+            
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (Cheats.IsCheatEnabled(Cheats.RadiantAllEnemies))
+            {
+                RadiantAllModifier.SpeedEnabled = Options.RadianceAllSpeedTier >= 0.0f;
+                RadiantAllModifier.DamageEnabled = Options.RadianceAllDamageTier >= 0.0f;
+                RadiantAllModifier.HealthEnabled = Options.RadianceAllHealthTier >= 0.0f;
+                RadiantAllModifier.BaseMod = Options.RadianceAllTier - 1.0f;
+                RadiantAllModifier.SpeedMod = Options.RadianceAllSpeedTier - 1.0f;
+                RadiantAllModifier.HealthMod = Options.RadianceAllHealthTier - 1.0f;
+                RadiantAllModifier.DamageMod = Options.RadianceAllDamageTier - 1.0f;
+                // we start with 1.0f so subtract that for simplicity (maybe simpler?)
+            }
+            else
+            {
+                RadiantAllModifier.SpeedEnabled = false;
+                RadiantAllModifier.DamageEnabled = false;
+                RadiantAllModifier.HealthEnabled = false;
+            }
+
+            float radianceTier = 1.0f;
+            float healthValue = 1.0f;
+            float speedValue = 1.0f;
+            float damageValue = 1.0f;
+
+            BuffsDamage = false;
+            BuffsHealth = false;
+            BuffsSpeed = false;
+            BuffsBase = false;
+
+            foreach (var modifier in Modifiers)
+            {
+                BuffsDamage = BuffsDamage || modifier.DamageEnabled;
+                BuffsHealth = BuffsHealth || modifier.HealthEnabled;
+                BuffsSpeed = BuffsSpeed || modifier.SpeedEnabled;
+                BuffsBase = BuffsBase || modifier.BaseEnabled;
+
+                if (modifier.BaseEnabled)
+                {
+                    radianceTier = modifier.Multiplier ? radianceTier * modifier.BaseMod : radianceTier + modifier.BaseMod;
+                }
+
+                if (modifier.HealthEnabled)
+                {
+                    healthValue = modifier.Multiplier ? healthValue * modifier.HealthMod : healthValue + modifier.HealthMod;
+                }
+                
+                if (modifier.SpeedEnabled)
+                {
+                    speedValue = modifier.Multiplier ? speedValue * modifier.SpeedMod : speedValue + modifier.SpeedMod;
+                }
+
+                if (modifier.DamageEnabled)
+                {
+                    damageValue = modifier.Multiplier ? damageValue * modifier.DamageMod : damageValue + modifier.DamageMod;
+                }
+            }
+
+            if (BuffsDamage && !RequestedDamageBuff)
+            {
+                Eid.DamageBuff();
+                RequestedDamageBuff = true;
+            }
+            else if (!BuffsDamage && RequestedDamageBuff)
+            {
+                Eid.DamageUnbuff();
+                RequestedDamageBuff = false;
+            }
+
+            if (BuffsHealth && !RequestedHealthBuff)
+            {
+                Eid.HealthBuff();
+                RequestedHealthBuff = true;
+            }
+            else if (!BuffsHealth && RequestedHealthBuff)
+            {
+                Eid.HealthUnbuff();
+                RequestedHealthBuff = false;
+            }
+
+            if (BuffsSpeed && !RequestedSpeedBuff)
+            {
+                Eid.SpeedBuff();
+                RequestedSpeedBuff = true;
+            }
+            else if (!BuffsSpeed && RequestedSpeedBuff)
+            {
+                Eid.SpeedUnbuff();
+                RequestedSpeedBuff = false;
+            }
+
+            if (BuffsBase)
+            {
+                Eid.radianceTier = radianceTier;
+            }
+
+            if (BuffsSpeed)
+            {
+                Eid.speedBuffModifier = speedValue;
+            }
+
+            if (BuffsDamage)
+            {
+                Eid.damageBuffModifier = damageValue;
+            }
+
+            if (BuffsHealth)
+            {
+                Eid.healthBuffModifier = healthValue;
+            }
+        }
+
+        private void Start()
+        {
+            Eid = GetComponent<EnemyIdentifier>();
+            Enemy = GetComponent<EnemyComponents>();
+            
+            RadiantAllModifier = new EnemyRadiance.Modifier();
+            AddModifier(RadiantAllModifier);
+        }
+    }
+}
