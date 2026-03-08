@@ -19,23 +19,11 @@ public class EnemyComponents : MonoBehaviour
     [SerializeField] private EnemyFriendIdentifier _FriendID = null;
     public EnemyFriendIdentifier FriendID { get => _FriendID; private set => _FriendID = value; }
 
-    [SerializeField] private EnemyBloodFuel _BloodFuel = null;
-    public EnemyBloodFuel BloodFuel { get => _BloodFuel; private set => _BloodFuel = value; }
-
-    [SerializeField] private HeckPuppet _HeckPuppet = null;
-    public HeckPuppet HeckPuppet { get => _HeckPuppet; private set => _HeckPuppet = value; }
-
-    [SerializeField] private HeckPuppetLeader _HeckPuppetLeader = null;
-    public HeckPuppetLeader HeckPuppetLeader { get => _HeckPuppetLeader; private set => _HeckPuppetLeader = value; }
-
     [SerializeField] private EnemyRadiance _Radiance = null;
     public EnemyRadiance Radiance { get => _Radiance; private set => _Radiance = value; }
 
     [SerializeField] private EnemyFeedbacker _Feedbacker = null;
     public EnemyFeedbacker Feedbacker { get => _Feedbacker; private set => _Feedbacker = value; }
-
-    [SerializeField] private EnemyPain _Pain = null;
-    public EnemyPain Pain { get => _Pain; private set => _Pain = value; }
 
     public bool UniquelySolo { get; private set; } = false;
 
@@ -200,11 +188,8 @@ public class EnemyComponents : MonoBehaviour
         }
 
         FriendID = gameObject.AddComponent<EnemyFriendIdentifier>();
-        BloodFuel = gameObject.AddComponent<EnemyBloodFuel>();
-        HeckPuppetLeader = gameObject.AddComponent<HeckPuppetLeader>();
         Radiance = gameObject.AddComponent<EnemyRadiance>();
         Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
-        Pain = gameObject.AddComponent<EnemyPain>();
         FriendID.IsLeader = false;
         PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
         PrefabStore.StorePrefab();
@@ -215,10 +200,8 @@ public class EnemyComponents : MonoBehaviour
     {
         Assert.IsNotNull(PrefabStore);
         Assert.IsNotNull(FriendID);
-        Assert.IsNotNull(BloodFuel);
         Assert.IsNotNull(Radiance);
         Assert.IsNotNull(Feedbacker);
-        Assert.IsNotNull(Pain);
     }
     
     object DeathPatchCallerObject = null;

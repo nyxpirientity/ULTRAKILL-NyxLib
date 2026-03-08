@@ -29,10 +29,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         protected void Start()
         {
             NewMovement = gameObject.GetComponent<NewMovement>();
-            gameObject.AddComponent<DemandingHell>();
-            gameObject.AddComponent<HeckPuppetObserver>();
-            gameObject.AddComponent<PlayerPain>();
-            gameObject.AddComponent<BadGyro>();
 
             _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
 

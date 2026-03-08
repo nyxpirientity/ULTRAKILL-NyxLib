@@ -59,19 +59,19 @@
 		<Reference Include="UnityEngine.InputLegacyModule">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
 		</Reference>
-		<Reference Include="UnityEngine.ImageConversionModule.dll">
+		<Reference Include="UnityEngine.ImageConversionModule">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
 		</Reference>
-		<Reference Include="UnityEngine.IMGUIModule.dll">
+		<Reference Include="UnityEngine.IMGUIModule">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
 		</Reference>
-		<Reference Include="Unity.AI.Navigation.dll">
+		<Reference Include="Unity.AI.Navigation">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.AI.Navigation.dll</HintPath>
 		</Reference>
-		<Reference Include="UnityEngine.AIModule.dll">
+		<Reference Include="UnityEngine.AIModule">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.AIModule.dll</HintPath>
 		</Reference>
-		<Reference Include="UnityEngine.AnimationModule.dll">
+		<Reference Include="UnityEngine.AnimationModule">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
 		</Reference>
 	</ItemGroup>

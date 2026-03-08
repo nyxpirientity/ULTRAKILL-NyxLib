@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
@@ -5,51 +7,44 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     /* Represents heck itself. */
     public class Heck : MonoBehaviour
     {
-        public static Heck Instance = null;
+        public static Heck Itself = null;
+        public static MonoRegistrar MonoRegistrar = new MonoRegistrar();
 
-        public PainStore PainStore { get; private set; } = null;
-        public AggressiveAgony AggressiveAgony { get; private set; } = null;
         public GameObject PainMeterGo { get; private set; } = null;
-        public PainMeter PainMeter { get; private set; } = null;
+
+        public T GetMonoByIndex<T>(int idx) where T : MonoBehaviour
+        {
+            if (idx < 0)
+            {
+                throw new IndexOutOfRangeException($"Index {idx} was less than 0");
+            }
+
+            if (idx > _monoBehaviours.Count)
+            {
+                return null;
+            }
+
+            return _monoBehaviours[idx] as T;
+        }
 
         protected void Awake()
         {
-            Instance = this;
+            Itself = this;
         }
 
         protected void Start()
         {
-            PainStore = gameObject.AddComponent<PainStore>();
-            AggressiveAgony = gameObject.AddComponent<AggressiveAgony>();
+            _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
 
-            if (Assets.HeatResistancePrefabWithoutHeatResistance != null && CanvasController.Instance != null)
+            foreach (var type in MonoRegistrar.RegisteredTypes)
             {
-                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance);
-                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance.transform);
-                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance.transform.GetChild(0));
-                Assert.IsNotNull(Assets.HeatResistancePrefabWithoutHeatResistance.transform.GetChild(0).gameObject);
-                Assert.IsNotNull(CanvasController.Instance);
-                Assert.IsNotNull(CanvasController.Instance.transform);
-
-                PainMeterGo = GameObject.Instantiate(Assets.HeatResistancePrefabWithoutHeatResistance.transform.GetChild(0).gameObject, CanvasController.Instance.transform);
-                PainMeter = PainMeterGo.AddComponent<PainMeter>();   
-                PainMeterGo.SetActive(true);
+                _monoBehaviours.Add((MonoBehaviour)(gameObject.AddComponent(type)));
             }
         }
 
         protected void Update()
         {
-            if (PainMeterGo != null)
-            {
-                if (AggressiveAgony.Enabled && PainStore.Pain >= 0.1f)
-                {
-                    PainMeterGo.SetActive(true);
-                }
-                else
-                {
-                    PainMeterGo.SetActive(false);
-                }
-            }
+
         }
 
         protected void FixedUpdate()
@@ -79,7 +74,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private static void CreateHeck()
         {
-            if (Instance != null)
+            if (Itself != null)
             {
                 return;
             }
@@ -87,5 +82,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             GameObject go = new GameObject();
             go.AddComponent<Heck>();
         }
+
+        private List<MonoBehaviour> _monoBehaviours = null;
     }
 }
