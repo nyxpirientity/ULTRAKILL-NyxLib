@@ -51,9 +51,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public const string SandAllEnemiesID = "ukaiw.sand-all-enemies";
         public const string BossBarAllEnemiesID = "ukaiw.boss-bar-all";
         public const string GiveEnemiesFriends = "ukaiw.give-enemies-friends";
-        public const string GiveSelfRadiance = "ukaiw.give-self-radiance";
         public const string HideCheatsHud = "ukaiw.hide-cheats-hud";
-        public const string HardDamageRebalance = "ukaiw.hard-damage-rebalance";
         public const string Immortality = "ukaiw.immortality";
         public const string MundaneMurder = "ukaiw.mundane-murder";
         public const string NoCorpses = "ukaiw.no-corpses";
@@ -268,28 +266,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     OptionsManager.forceBossBars = true;
                 }
             ), "SELF SABOTAGE");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Radiance For Thyself", 
-                Cheats.GiveSelfRadiance,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "SELF CARE");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Hard Damage Rebalance (unimplemented)", 
-                Cheats.HardDamageRebalance,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "EXPERIMENTATION");
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Disable Stops", 
