@@ -78,8 +78,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public const string SoleNemesis = "ukaiw.sole-nemesis";
         public const string LogEIDInfo = "ukaiw.dev.log-eid-info";
 
-        public static int FriendCount = 0;
-
         public static bool IsCheatEnabled(string cheatID)
         {
             if (!Enabled)
