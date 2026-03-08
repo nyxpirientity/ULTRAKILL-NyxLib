@@ -32,7 +32,7 @@
 		<Reference Include="UnityEngine.CoreModule">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
 		</Reference>
-			<Reference Include="Unity.Addressables">
+		<Reference Include="Unity.Addressables">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.Addressables.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.PhysicsModule">
