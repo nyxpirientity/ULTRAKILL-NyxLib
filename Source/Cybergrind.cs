@@ -48,7 +48,7 @@ public static class CybergrindAdditions
         }
     }
 
-    [HarmonyPatch(typeof(EndlessGrid), "NextWave", null)]
+    /*[HarmonyPatch(typeof(EndlessGrid), "NextWave", null)] TODO: figure out where to put this.
     static class EndlessGridNextWavePatch
     {
         public static void Prefix(EndlessGrid __instance)
@@ -163,7 +163,7 @@ public static class CybergrindAdditions
             
             Cheats.Manager.RefreshCheatStates();
         }
-    }
+    }*/
 
     public static void Initialize()
     {

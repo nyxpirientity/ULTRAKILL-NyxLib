@@ -25,6 +25,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Options.Initialize();
             Log.TraceExpectedInfo($"Awake called!");
             Assets.Initialize();
+            Cheats.Initialize();
             Log.TraceExpectedInfo($"Awake finished!");
         }
 
@@ -36,8 +37,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         protected void Start()
         {
             Log.TraceExpectedInfo($"Start called!");
-            PlayerEvents.Initialize();
-            Cheats.Initialize();
             Music.Initialize();
             LevelAdditionsManager.Initialize();
             CybergrindAdditions.Initialize();

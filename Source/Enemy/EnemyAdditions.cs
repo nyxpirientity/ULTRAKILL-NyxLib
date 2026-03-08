@@ -11,6 +11,8 @@ public class EnemyModifier : MonoBehaviour
 
 public class EnemyComponents : MonoBehaviour
 {
+    public static MonoRegistrar MonoRegistrar = new MonoRegistrar();
+
     [SerializeField] private EnemyPrefabStore _PrefabStore = null;
     public EnemyPrefabStore PrefabStore { get => _PrefabStore; private set => _PrefabStore = value; }
 
@@ -19,9 +21,6 @@ public class EnemyComponents : MonoBehaviour
 
     [SerializeField] private EnemyBloodFuel _BloodFuel = null;
     public EnemyBloodFuel BloodFuel { get => _BloodFuel; private set => _BloodFuel = value; }
-
-    [SerializeField] private SaltyEnemy _Salt = null;
-    public SaltyEnemy Salt { get => _Salt; private set => _Salt = value; }
 
     [SerializeField] private HeckPuppet _HeckPuppet = null;
     public HeckPuppet HeckPuppet { get => _HeckPuppet; private set => _HeckPuppet = value; }
@@ -88,7 +87,28 @@ public class EnemyComponents : MonoBehaviour
     [NonSerialized] public Enemy Enemy = null;
     public IReadOnlyList<Collider> Colliders { get => _colliders; }
 
+    public T GetMonoByIndex<T>(int idx) where T : MonoBehaviour
+    {
+        if (idx < 0)
+        {
+            throw new IndexOutOfRangeException($"Index {idx} was less than 0");
+        }
+
+        if (idx > _monoBehaviours.Count)
+        {
+            return null;
+        }
+
+        return _monoBehaviours[idx] as T;
+    }
+
+    public void MarkAsUniquelySolo()
+    {
+        UniquelySolo = true;
+    }
+
     [SerializeField] private Collider[] _colliders = null; 
+    [SerializeField] private List<MonoBehaviour> _monoBehaviours = null;
 
     private void Awake()
     {
@@ -171,9 +191,16 @@ public class EnemyComponents : MonoBehaviour
     private void CreateMods()
     {
         Log.TraceExpectedInfo($"{name}.EnemyAdditions is creating new modules...");
+
+        _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
+
+        foreach (var type in MonoRegistrar.RegisteredTypes)
+        {
+            _monoBehaviours.Add((MonoBehaviour)(gameObject.AddComponent(type)));
+        }
+
         FriendID = gameObject.AddComponent<EnemyFriendIdentifier>();
         BloodFuel = gameObject.AddComponent<EnemyBloodFuel>();
-        Salt = gameObject.AddComponent<SaltyEnemy>();
         HeckPuppetLeader = gameObject.AddComponent<HeckPuppetLeader>();
         Radiance = gameObject.AddComponent<EnemyRadiance>();
         Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
@@ -192,11 +219,6 @@ public class EnemyComponents : MonoBehaviour
         Assert.IsNotNull(Radiance);
         Assert.IsNotNull(Feedbacker);
         Assert.IsNotNull(Pain);
-    }
-
-    public void MarkAsUniquelySolo()
-    {
-        UniquelySolo = true;
     }
     
     object DeathPatchCallerObject = null;

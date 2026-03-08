@@ -10,9 +10,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 {
     public static class Cheats
     {
-        public delegate void CheatsManagerStartEventHandler(EventMethodCanceler cancellation, CheatsManager cheatsManager);
-        public static event CheatsManagerStartEventHandler PreCheatsManagerStart;
-        public static event CheatsManagerStartEventHandler PostCheatsManagerStart;
+        public delegate void ReadyForCheatRegistrationEventHandler(CheatsManager cheatsManager);
+        public static event ReadyForCheatRegistrationEventHandler ReadyForCheatRegistration;
 
         private static CheatsManager _manager = null;
         public static CheatsManager Manager
@@ -35,19 +34,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [HarmonyPatch(typeof(CheatsManager), "Start", new Type[] { })]
         static class CheatsManagerStartPatch
         {
-            private static EventMethodCancellationTracker MethodCancellationTracker = new EventMethodCancellationTracker();
 
-            public static bool Prefix(CheatsManager __instance)
+                public static void Prefix(CheatsManager __instance)
             {
                 _manager = __instance;
-                MethodCancellationTracker.Reset();
-                PreCheatsManagerStart?.Invoke(MethodCancellationTracker.GetCanceler(), __instance);
-                return !MethodCancellationTracker.Cancelled;
             }
 
             public static void Postfix(CheatsManager __instance)
             {
-                PostCheatsManagerStart?.Invoke(MethodCancellationTracker.GetCanceler(), __instance);
             }
         }
 
@@ -71,7 +65,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public const string PlayCleanMusicWithBattle = "ukaiw.clean-music-with-battle";
         public const string AlwaysBattleMusic = "ukaiw.always-battle-music";
         public const string BloodFueledEnemies = "ukaiw.blood-fueled-enemies";
-        public const string SaltyEnemies = "ukaiw.salty-enemies";
         public const string DemandingHell = "ukaiw.demanding-hell";
         public const string SelfConscience = "ukaiw.self-conscious-v1";
         public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
@@ -128,11 +121,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 OptionsManager.forceBossBars = true;
             }
-
-            if (Cheats.Manager.GetCheatInstance<ToggleCheat>() != null)
-            {
-                return;
-            } 
 
             Cheats.Manager.RegisterCheat(new HideCheatsStatus(), "meta");
 
@@ -416,17 +404,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             ), "???");*/ // why is this a cheat and not a setting?
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Salty Enemies", 
-                Cheats.SaltyEnemies,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "ENEMY'S MIND");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Heat of Heck", 
                 Cheats.DemandingHell,
                 onDisable: (cheat) =>
@@ -564,6 +541,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     }
                 }
             ), "dev stuff");*/
+
+            ReadyForCheatRegistration?.Invoke(Manager);
         }
 
         [HarmonyPatch(typeof(TeleportCheat), "Teleport")]
