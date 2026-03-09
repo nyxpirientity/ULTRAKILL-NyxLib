@@ -5,133 +5,56 @@ using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    [HarmonyPatch(typeof(Nail), "Start")]
-    static class NailStartPatch
-    {
-        public static void Prefix(Nail __instance)
-        {
-            __instance.GetOrAddComponent<ProjectileBoostTracker>();
-        }
-        
-        public static void Postfix(Nail __instance)
-        {
-        }
-    }
+    public static class NailEvents
+    {        
+        public delegate void PreNailStartEventHandler(EventMethodCanceler canceler, Nail nail);
+        public static event PreNailStartEventHandler PreNailStart;
 
-    [HarmonyPatch(typeof(Nail), "FixedUpdate")]
-    static class NailFixedUpdatePatch
-    {
-        public static void Prefix(Nail __instance)
+        public delegate void PostNailStartEventHandler(EventMethodCancelInfo cancelInfo, Nail nail);
+        public static event PostNailStartEventHandler PostNailStart;
+    
+        public delegate void PreNailHitEnemyEventHandler(EventMethodCanceler canceler, Nail nail, Transform other, EnemyIdentifierIdentifier eidid);
+        public static event PreNailHitEnemyEventHandler PreNailHitEnemy;
+
+        public delegate void PostNailHitEnemyEventHandler(EventMethodCancelInfo cancelInfo, Nail nail, Transform other, EnemyIdentifierIdentifier eidid);
+        public static event PostNailHitEnemyEventHandler PostNailHitEnemy;
+
+        [HarmonyPatch(typeof(Nail), "Start")]
+        static class NailStartPatch
         {
-            if (!__instance.sawblade && !__instance.chainsaw)
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(Nail __instance)
             {
-                return;
-            }
-
-            var boostTracker = __instance.GetComponent<ProjectileBoostTracker>();
-
-            boostTracker.PreNailFixedUpdate();
-        }
-        
-        public static void Postfix(Nail __instance)
-        {
-        }
-    }
-
-    [HarmonyPatch(typeof(Nail), "HitEnemy")]
-    static class NailHitEnemyPatch
-    {
-        static FieldInfo sameEnemyHitCooldownFi = AccessTools.Field(typeof(Nail), "sameEnemyHitCooldown");
-        static FieldInfo currentHitEnemyFi =AccessTools.Field(typeof(Nail), "currentHitEnemy");
-        static FieldInfo hitLimbsFi = AccessTools.Field(typeof(Nail), "hitLimbs");
-
-        public static bool Prefix(Nail __instance, Transform other, EnemyIdentifierIdentifier eidid = null)
-        {
-            Nail nail = __instance;
-            
-            if (!nail.chainsaw && !nail.sawblade)
-            {
-                return true;
-            }
-
-            if (nail.magnets.Count > 0)
-            {
-                return true;
+                _cancellationTracker.Reset();
+                PreNailStart?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
             
-            var sameEnemyHitCooldown = (float)sameEnemyHitCooldownFi.GetValue(nail);
-            var currentHitEnemy = (EnemyIdentifier)currentHitEnemyFi.GetValue(nail);
-            var hitLimbs = (List<Transform>)hitLimbsFi.GetValue(nail);
-
-            if ((eidid == null && !other.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) || !eidid.eid || (nail.enemy && eidid != null && eidid.eid != null && eidid.eid.enemyType == nail.safeEnemyType) || (nail.sawblade && ((sameEnemyHitCooldown > 0f && currentHitEnemy != null && currentHitEnemy == eidid.eid) || hitLimbs.Contains(other))))
+            public static void Postfix(Nail __instance)
             {
-                return true;
+                PostNailStart?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
             }
-
-            Assert.IsNotNull(eidid);
-            Assert.IsNotNull(eidid.eid);
-
-            var enemy = eidid.eid.GetComponent<EnemyComponents>();
-            
-            Assert.IsNotNull(enemy);
-
-            if (enemy.Eid.Dead)
-            {
-                return true;
-            }                
-
-            var feedbacker = enemy.Feedbacker;
-
-            if (!feedbacker.Enabled)
-            {
-                return true;
-            }
-
-            var boostTracker = nail.GetComponent<ProjectileBoostTracker>();
-
-            if (boostTracker.SafeEid == enemy.Eid)
-            {
-                return false;
-            }
-
-            var parryability = boostTracker.NotifyContact();
-            boostTracker.MarkCannotBeEnemyParried();
-
-            if (!feedbacker.ReadyToParry)
-            {
-                return true;
-            }
-
-            if ((parryability < 0.5f))
-            {
-                return true;
-            }
-
-            var parryForce = enemy.Feedbacker.SolveParryForce(nail.transform.position, nail.rb.velocity);
-            
-            nail.rb.velocity = parryForce * nail.rb.velocity.magnitude;
-            nail.rb.transform.rotation = Quaternion.LookRotation(parryForce);
-
-            boostTracker.IncrementEnemyBoost();
-            feedbacker.ParryEffect();
-
-            boostTracker.IgnoreColliders = enemy.Colliders;
-            boostTracker.SafeEid = enemy.Eid;
-            nail.enemy = true;
-            nail.gameObject.layer = 2;
-
-            var v1 = NewMovement.Instance;
-            
-            foreach (var col in boostTracker.Colliders)
-            {
-                Physics.IgnoreCollision(col, v1.playerCollider, false);
-            }
-
-            return false;
         }
-        
-        public static void Postfix(Nail __instance, Transform other, EnemyIdentifierIdentifier eidid = null)
+
+        [HarmonyPatch(typeof(Nail), "HitEnemy")]
+        static class NailHitEnemyPatch
         {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(Nail __instance, Transform other, EnemyIdentifierIdentifier eidid = null)
+            {
+                _cancellationTracker.Reset();
+                PreNailHitEnemy?.Invoke(_cancellationTracker.GetCanceler(), __instance, other, eidid);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
+            }
+            
+            public static void Postfix(Nail __instance, Transform other, EnemyIdentifierIdentifier eidid = null)
+            {
+                PostNailHitEnemy?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, other, eidid);
+            }
         }
     }
 }

@@ -6,232 +6,81 @@ using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    [HarmonyPatch(typeof(Coin), nameof(Coin.ReflectRevolver))]
-    static class CoinReflectRevolverPatch
+    public static class CoinEvents
     {
-        static void DeliverDamageReplacement(EnemyIdentifier eid, GameObject target, Vector3 force, Vector3 hitPoint, float multiplier, bool tryForExplode, float critMultiplier = 0f, GameObject sourceWeapon = null, bool ignoreTotalDamageTakenMultiplier = false, bool fromExplosion = false)
-        {
-            Action deliverThatDamage = () =>
-            {
-                eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
-            };
+        public delegate void PreCoinAwakeEventHandler(EventMethodCanceler canceler, Coin coin);
+        public static event PreCoinAwakeEventHandler PreCoinAwake;
 
-            if (Cheats.IsCheatDisabled(Cheats.FeedbackerForAll))
+        public delegate void PostCoinAwakeEventHandler(EventMethodCancelInfo cancelInfo, Coin coin);
+        public static event PostCoinAwakeEventHandler PostCoinAwake;
+    
+        public delegate void PreCoinPunchflectionEventHandler(EventMethodCanceler canceler, Coin coin);
+        public static event PreCoinPunchflectionEventHandler PreCoinPunchflection;
+
+        public delegate void PostCoinPunchflectionEventHandler(EventMethodCancelInfo cancelInfo, Coin coin);
+        public static event PostCoinPunchflectionEventHandler PostCoinPunchflection;
+
+        public delegate void PreCoinReflectRevolverEventHandler(EventMethodCanceler canceler, Coin coin);
+        public static event PreCoinReflectRevolverEventHandler PreCoinReflectRevolver;
+
+        public delegate void PostCoinReflectRevolverEventHandler(EventMethodCancelInfo cancelInfo, Coin coin);
+        public static event PostCoinReflectRevolverEventHandler PostCoinReflectRevolver;
+
+        [HarmonyPatch(typeof(Coin), "Awake")]
+        static class CoinAwakePatch
+        {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(Coin __instance)
             {
-                deliverThatDamage();
-                return;
+                _cancellationTracker.Reset();
+                PreCoinAwake?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
+
+            public static void Postfix(Coin __instance)
+            {
+                PostCoinAwake?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+            }
+        }
+
+        [HarmonyPatch(typeof(Coin), nameof(Coin.ReflectRevolver))]
+        static class CoinReflectRevolverPatch
+        {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
             
-            var coin = _currentCoin;
-
-            var boostTracker = coin.GetComponent<ProjectileBoostTracker>();
-
-            var parryability = boostTracker.NotifyContact();
-
-            var enemy = eid.GetComponent<EnemyComponents>();
-
-            Assert.IsNotNull(enemy);
-
-            if (enemy.Eid.Dead)
+            public static bool Prefix(Coin __instance)
             {
-                deliverThatDamage();
-                return;
+                _cancellationTracker.Reset();
+                PreCoinReflectRevolver?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
 
-            if (parryability < 0.5f)
+            public static void Postfix(Coin __instance)
             {
-                deliverThatDamage();
-                return;
-            }
-
-            var feedbacker = enemy.Feedbacker;
-
-            if (!feedbacker.Enabled)
-            {
-                deliverThatDamage();
-                return;
-            }
-
-            if (!feedbacker.ReadyToParry)
-            {
-                deliverThatDamage();
-                return;
-            }
-
-            var parryForce = feedbacker.SolveParryForce(hitPoint, Vector3.zero);
-            
-            feedbacker.ParryEffect();
-            var coinMeshF = coin.GetComponentInChildren<MeshFilter>();
-            var coinMeshR = coin.GetComponentInChildren<MeshRenderer>();
-            
-            var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
-            var counterBeam = counterBeamGo.GetComponent<Projectile>();
-            var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-            counterBeam.GetComponentInChildren<MeshFilter>().mesh = coinMeshF.mesh;
-            counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
-            counterBeamBoostTracker.CopyFrom(boostTracker);
-            counterBeamBoostTracker.IncrementEnemyBoost();
-            counterBeamGo.transform.position = hitPoint;
-            counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-            counterBeamGo.SetActive(true);
-            
-            var colliders = enemy.Colliders;
-            counterBeamBoostTracker.IgnoreColliders = colliders;
-            counterBeamBoostTracker.SafeEid = eid;
-
-            //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-            counterBeam.playerBullet = true;
-            counterBeam.damage = coin.power * 5.0f;
-            counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
-            UnityEngine.Object.Destroy(coin.gameObject);
-            return;
-        }
-
-        private static Coin _currentCoin = null;
-
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            foreach (var instr in instructions)
-            {
-                if (instr.Calls(typeof(EnemyIdentifier).GetMethod(nameof(EnemyIdentifier.DeliverDamage))))
-                {
-                    instr.operand = typeof(CoinReflectRevolverPatch).GetMethod(nameof(DeliverDamageReplacement), BindingFlags.Static | BindingFlags.NonPublic);
-                }
-
-                yield return instr;
-            }
-        }
-        
-        public static void Prefix(Coin __instance)
-        {
-            _currentCoin = __instance;
-        }
-
-        public static void Postfix(Coin __instance)
-        {
-            _currentCoin = null;
-        }
-    }
-
-    [HarmonyPatch(typeof(Coin), "Awake")]
-    static class CoinAwakePatch
-    {
-        public static void Prefix(Coin __instance)
-        {
-            __instance.GetOrAddComponent<ProjectileBoostTracker>();
-        }
-
-        public static void Postfix(Coin __instance)
-        {
-        }
-    }
-
-    [HarmonyPatch(typeof(Coin), nameof(Coin.Punchflection))]
-    static class CoinPunchflectionPatch
-    {
-        static void DeliverDamageReplacement(EnemyIdentifier eid, GameObject target, Vector3 force, Vector3 hitPoint, float multiplier, bool tryForExplode, float critMultiplier = 0f, GameObject sourceWeapon = null, bool ignoreTotalDamageTakenMultiplier = false, bool fromExplosion = false)
-        {
-            Action deliverThatDamage = () =>
-            {
-                eid.DeliverDamage(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);  
-            };
-
-            if (Cheats.IsCheatDisabled(Cheats.FeedbackerForAll))
-            {
-                deliverThatDamage();
-                return;
-            }
-            
-            var coin = _currentCoin;
-
-            var boostTracker = coin.GetComponent<ProjectileBoostTracker>();
-
-            boostTracker.CoinPunched = true;
-
-            var parryability = boostTracker.NotifyContact();
-
-            var enemy = eid.GetComponent<EnemyComponents>();
-
-            Assert.IsNotNull(enemy);
-
-            if (enemy.Eid.Dead)
-            {
-                deliverThatDamage();
-                return;
-            }
-
-            if (parryability < 0.5f)
-            {
-                deliverThatDamage();
-                return;
-            }
-
-            var feedbacker = enemy.Feedbacker;
-
-            if (!feedbacker.Enabled)
-            {
-                deliverThatDamage();
-                return;
-            }
-
-            if (!feedbacker.ReadyToParry)
-            {
-                deliverThatDamage();
-                return;
-            }
-
-            var parryForce = feedbacker.SolveParryForce(hitPoint, Vector3.zero);
-            
-            feedbacker.ParryEffect();
-            var coinMeshF = coin.GetComponentInChildren<MeshFilter>();
-            var coinMeshR = coin.GetComponentInChildren<MeshRenderer>();
-            
-            var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
-            var counterBeam = counterBeamGo.GetComponent<Projectile>();
-            var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-            counterBeam.GetComponentInChildren<MeshFilter>().mesh = coinMeshF.mesh;
-            counterBeam.GetComponentInChildren<MeshRenderer>().material = coinMeshR.material;
-            counterBeamBoostTracker.CopyFrom(boostTracker);
-            counterBeamBoostTracker.IncrementEnemyBoost();
-            counterBeamGo.transform.position = hitPoint;
-            counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-            counterBeamGo.SetActive(true);
-            
-            var colliders = enemy.Colliders;
-            counterBeamBoostTracker.IgnoreColliders = colliders;
-            counterBeamBoostTracker.SafeEid = eid;
-
-            //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-            counterBeam.playerBullet = true;
-            counterBeam.damage = coin.power * 5.0f;
-            counterBeam.enemyDamageMultiplier = 1.0f / 5.0f;
-            coin.GetDeleted();
-            return;
-        }
-
-        private static Coin _currentCoin = null;
-
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            foreach (var instr in instructions)
-            {
-                if (instr.Calls(typeof(EnemyIdentifier).GetMethod(nameof(EnemyIdentifier.DeliverDamage))))
-                {
-                    instr.operand = typeof(CoinPunchflectionPatch).GetMethod(nameof(DeliverDamageReplacement), BindingFlags.Static | BindingFlags.NonPublic);
-                }
-
-                yield return instr;
+                PostCoinReflectRevolver?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
             }
         }
 
-        public static void Prefix(Coin __instance)
+        [HarmonyPatch(typeof(Coin), nameof(Coin.Punchflection))]
+        static class CoinPunchflectionPatch
         {
-            _currentCoin = __instance;
-        }
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-        public static void Postfix(Coin __instance)
-        {
-            _currentCoin = null;
+            public static bool Prefix(Coin __instance)
+            {
+                _cancellationTracker.Reset();
+                PreCoinPunchflection?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
+            }
+
+            public static void Postfix(Coin __instance)
+            {
+                PostCoinPunchflection?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+            }
         }
     }
 }

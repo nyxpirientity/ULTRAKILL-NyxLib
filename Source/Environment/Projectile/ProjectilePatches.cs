@@ -7,199 +7,93 @@ using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    [HarmonyPatch(typeof(Projectile), "Awake")]
-    static class ProjectileAwakePatch
+    public static class ProjectileEvents
     {
-        public static void Prefix(Projectile __instance)
+        public delegate void PreProjectileAwakeEventHandler(EventMethodCanceler canceler, Projectile projectile);
+        public static event PreProjectileAwakeEventHandler PreProjectileAwake;
+
+        public delegate void PostProjectileAwakeEventHandler(EventMethodCancelInfo cancelInfo, Projectile projectile);
+        public static event PostProjectileAwakeEventHandler PostProjectileAwake;
+    
+        public delegate void PreProjectileCollidedEventHandler(EventMethodCanceler canceler, Projectile projectile, Collider other);
+        public static event PreProjectileCollidedEventHandler PreProjectileCollided;
+
+        public delegate void PostProjectileCollidedEventHandler(EventMethodCancelInfo cancelInfo, Projectile projectile, Collider other);
+        public static event PostProjectileCollidedEventHandler PostProjectileCollided;
+
+        [HarmonyPatch(typeof(Projectile), "Awake")]
+        static class ProjectileAwakePatch
         {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-        }
-
-        public static void Postfix(Projectile __instance)
-        {
-            __instance.gameObject.GetOrAddComponent<ProjectileAdditions>();
-            __instance.gameObject.GetOrAddComponent<ProjectileBoostTracker>();
-        }
-    }
-
-    [HarmonyPatch(typeof(Projectile), "Explode")]
-    static class ProjectileExplodePatch
-    {
-        public static void Prefix(Projectile __instance)
-        {
-            var additions = __instance.GetComponent<ProjectileAdditions>();
-            
-            additions.InvokePreExplode(false);
-        }
-
-        public static void Postfix(Projectile __instance)
-        {
-            var additions = __instance.GetComponent<ProjectileAdditions>();
-
-            additions.InvokePostExplode(false);
-        }
-    }
-
-    [HarmonyPatch(typeof(Projectile), "CreateExplosionEffect")]
-    static class ProjectileCreateExplosionEffectPatch
-    {
-        public static void Prefix(Projectile __instance)
-        {
-            var additions = __instance.GetComponent<ProjectileAdditions>();
-
-            additions.InvokePreExplode(true);
-        }
-
-        public static void Postfix(Projectile __instance)
-        {
-            var additions = __instance.GetComponent<ProjectileAdditions>();
-
-            additions.InvokePostExplode(true);
-        }
-    }
-
-    [HarmonyPatch(typeof(Projectile), "Collided")]
-    static class ProjectileCollidedPatch
-    {
-        static FieldInfo _activeFi = typeof(Projectile).GetField("active", BindingFlags.Instance | BindingFlags.NonPublic); 
-        public static bool Prefix(Projectile __instance, Collider other)
-        {
-            if (!(bool)_activeFi.GetValue(__instance))
+            public static bool Prefix(Projectile __instance)
             {
-                return true;
+                _cancellationTracker.Reset();
+                PreProjectileAwake?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
 
-            if (Cheats.IsCheatDisabled(Cheats.FeedbackerForAll))
+            public static void Postfix(Projectile __instance)
             {
-                return true;
+                PostProjectileAwake?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+                __instance.gameObject.GetOrAddComponent<ProjectileAdditions>();
+            }
+        }
+
+        [HarmonyPatch(typeof(Projectile), "Collided")]
+        static class ProjectileCollidedPatch
+        {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(Projectile __instance, Collider other)
+            {
+                _cancellationTracker.Reset();
+                PreProjectileCollided?.Invoke(_cancellationTracker.GetCanceler(), __instance, other);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
 
-            if (!__instance.friendly)
+            public static void Postfix(Projectile __instance, Collider other)
             {
-                return true;
+                PostProjectileCollided?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, other);
             }
+        }
 
-
-            var boostTracker = __instance.GetComponent<ProjectileBoostTracker>();
-
-            var parryability = boostTracker.NotifyContact();
-
-            Action failedParry = () =>
+        [HarmonyPatch(typeof(Projectile), "Explode")]
+        static class ProjectileExplodePatch
+        {
+            public static void Prefix(Projectile __instance)
             {
-                if (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.Coin && boostTracker.NumPlayerBoosts > 0 && boostTracker.NumEnemyBoosts > 0)
-                {
-                    StyleHUD.Instance.AddPoints(10, "<color=#ffd000>KEEP THE CHANGE</color>");
-                }
-            };
-
-            EnemyIdentifierIdentifier eidid = null;
-
-            if (!__instance.friendly && !__instance.hittingPlayer && other.gameObject.CompareTag("Player"))
-            {
-                return true;
-            }
-            else if (__instance.canHitCoin && other.gameObject.CompareTag("Coin"))
-            {
-                return true;
-            }
-            else if ((other.gameObject.CompareTag("Armor") && (__instance.friendly || !other.TryGetComponent(out eidid) || !eidid.eid || eidid.eid.enemyType != __instance.safeEnemyType)) || (__instance.boosted && other.gameObject.layer == 11 && other.gameObject.CompareTag("Body") && other.TryGetComponent(out eidid) && (bool)eidid.eid && eidid.eid.enemyType == EnemyType.MaliciousFace && !eidid.eid.isGasolined))
-            {
-                EnemyIdentifier eid = null;
-
-                if (eidid != null && eidid.eid != null)
-                {
-                    eid = eidid.eid;
-                }
-
-                if (boostTracker.SafeEid == eid)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            else if ((other.gameObject.CompareTag("Head") || other.gameObject.CompareTag("Body") || other.gameObject.CompareTag("Limb") || other.gameObject.CompareTag("EndLimb")) && !other.gameObject.CompareTag("Armor"))
-            {
-                eidid = other.gameObject.GetComponentInParent<EnemyIdentifierIdentifier>();
+                var additions = __instance.GetComponent<ProjectileAdditions>();
                 
-                EnemyIdentifier eid = null;
-
-                if (eidid != null && eidid.eid != null)
-                {
-                    eid = eidid.eid;
-                }
-
-                if (boostTracker.SafeEid == eid)
-                {
-                    return false;
-                }
-
-                if ((eid == null) || (__instance.alreadyHitEnemies.Count != 0 && __instance.alreadyHitEnemies.Contains(eid)) || ((eid.enemyType == __instance.safeEnemyType || EnemyIdentifier.CheckHurtException(__instance.safeEnemyType, eid.enemyType, __instance.targetHandle)) && (!__instance.friendly || eid.immuneToFriendlyFire) && !__instance.playerBullet && !__instance.parried))
-                {
-                    return true;
-                }
-
-                if (eid.Dead)
-                {
-                    return true;
-                }
-
-                Log.TraceExpectedInfo($"Deciding parry capability for enemy {eid}, for projectile {__instance} with a hit that hit collider {other}");
-                Log.TraceExpectedInfo($"boostTracker.IgnoreEid = {boostTracker.SafeEid}");
-
-                var enemy = eid.GetComponent<EnemyComponents>();
-
-                Assert.IsNotNull(enemy);
-
-                var feedbacker = enemy.Feedbacker;
-
-                if (!feedbacker.Enabled)
-                {
-                    failedParry();
-                    return true;
-                }
-
-                if (!feedbacker.ReadyToParry)
-                {
-                    failedParry();
-                    return true;
-                }
-
-                if (__instance.unparryable || __instance.undeflectable)
-                {
-                    failedParry();
-                    return true;
-                }
-
-                if (parryability < 0.5f)
-                {
-                    failedParry();
-                    return true;
-                }
-                
-                boostTracker.IncrementEnemyBoost();
-                
-                if (boostTracker.IgnoreColliders.Contains(other))
-                {
-                    return false;
-                }
-
-                var parryForce = feedbacker.SolveParryForce(__instance.transform.position, __instance.GetComponent<Rigidbody>().velocity);
-                __instance.homingType = HomingType.None;
-                __instance.transform.rotation = Quaternion.LookRotation(parryForce);
-                feedbacker.ParryEffect();
-                boostTracker.IgnoreColliders = enemy.Colliders;
-                boostTracker.SetTempSafeEnemyType(enemy.Eid.enemyType);
-                boostTracker.SafeEid = enemy.Eid;
-                __instance.friendly = false;
-                return false;
+                additions.InvokePreExplode(false);
             }
-            return true;
+
+            public static void Postfix(Projectile __instance)
+            {
+                var additions = __instance.GetComponent<ProjectileAdditions>();
+
+                additions.InvokePostExplode(false);
+            }
         }
 
-        public static void Postfix(Projectile __instance, Collider other)
+        [HarmonyPatch(typeof(Projectile), "CreateExplosionEffect")]
+        static class ProjectileCreateExplosionEffectPatch
         {
+            public static void Prefix(Projectile __instance)
+            {
+                var additions = __instance.GetComponent<ProjectileAdditions>();
+
+                additions.InvokePreExplode(true);
+            }
+
+            public static void Postfix(Projectile __instance)
+            {
+                var additions = __instance.GetComponent<ProjectileAdditions>();
+
+                additions.InvokePostExplode(true);
+            }
         }
     }
-
 }

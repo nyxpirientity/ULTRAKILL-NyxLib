@@ -4,198 +4,81 @@ using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    [HarmonyPatch(typeof(RevolverBeam), "Start")]
-    static class RevolverBeamStartPatch
+    public static class RevolverBeamEvents
     {
-        public static void Prefix(RevolverBeam __instance)
+        public delegate void PreRevolverBeamStartEventHandler(EventMethodCanceler canceler, RevolverBeam revolverBeam);
+        public static event PreRevolverBeamStartEventHandler PreRevolverBeamStart;
+
+        public delegate void PostRevolverBeamStartEventHandler(EventMethodCancelInfo cancelInfo, RevolverBeam revolverBeam);
+        public static event PostRevolverBeamStartEventHandler PostRevolverBeamStart;
+    
+        public delegate void PreRevolverBeamHitSomethingEventHandler(EventMethodCanceler canceler, RevolverBeam revolverBeam, PhysicsCastResult hit);
+        public static event PreRevolverBeamHitSomethingEventHandler PreRevolverBeamHitSomething;
+
+        public delegate void PostRevolverBeamHitSomethingEventHandler(EventMethodCancelInfo cancelInfo, RevolverBeam revolverBeam, PhysicsCastResult hit);
+        public static event PostRevolverBeamHitSomethingEventHandler PostRevolverBeamHitSomething;
+    
+        public delegate void PreRevolverBeamPiercingShotCheckEventHandler(EventMethodCanceler canceler, RevolverBeam revolverBeam);
+        public static event PreRevolverBeamPiercingShotCheckEventHandler PreRevolverBeamPiercingShotCheck;
+
+        public delegate void PostRevolverBeamPiercingShotCheckEventHandler(EventMethodCancelInfo cancelInfo, RevolverBeam revolverBeam);
+        public static event PostRevolverBeamPiercingShotCheckEventHandler PostRevolverBeamPiercingShotCheck;
+
+        [HarmonyPatch(typeof(RevolverBeam), "Start")]
+        static class RevolverBeamStartPatch
         {
-            __instance.GetOrAddComponent<ProjectileBoostTracker>();
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(RevolverBeam __instance)
+            {
+                _cancellationTracker.Reset();
+                PreRevolverBeamStart?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
+            }
+
+            public static void Postfix(RevolverBeam __instance)
+            {
+                PostRevolverBeamStart?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+            }
         }
 
-        public static void Postfix(RevolverBeam __instance)
+        [HarmonyPatch(typeof(RevolverBeam), "HitSomething")]
+        static class RevolverBeamHitSomethingPatch
         {
-            
-        }
-    }
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-    [HarmonyPatch(typeof(RevolverBeam), "HitSomething")]
-    static class RevolverBeamHitSomethingPatch
-    {
-        public static bool Prefix(RevolverBeam __instance, PhysicsCastResult hit)
-        {
-            if (Cheats.IsCheatDisabled(Cheats.FeedbackerForAll))
+            public static bool Prefix(RevolverBeam __instance, PhysicsCastResult hit)
             {
-                return true;
+                _cancellationTracker.Reset();
+                PreRevolverBeamHitSomething?.Invoke(_cancellationTracker.GetCanceler(), __instance, hit);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
 
-            if (__instance.beamType == BeamType.Enemy || __instance.beamType == BeamType.MaliciousFace)
+            public static void Postfix(RevolverBeam __instance, PhysicsCastResult hit)
             {
-                return true;
+                PostRevolverBeamHitSomething?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, hit);
             }
-
-            var boostTracker = __instance.GetComponent<ProjectileBoostTracker>();
-
-            var parryability = boostTracker.NotifyContact();
-
-            if ((hit.collider.attachedRigidbody ? hit.collider.attachedRigidbody.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) : hit.collider.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) && (bool)eidid.eid)
-            {
-                var enemy = eidid.eid.GetComponent<EnemyComponents>();
-
-                Assert.IsNotNull(enemy);
-
-                if (enemy.Eid.Dead)
-                {
-                    return true;
-                }
-
-                if (parryability < 0.5f)
-                {
-                    return true;
-                }
-
-                var feedbacker = enemy.Feedbacker;
-
-                if (!feedbacker.Enabled)
-                {
-                    return true;
-                }
-
-                if (!feedbacker.ReadyToParry)
-                {
-                    return true;
-                }
-
-                var parryForce = feedbacker.SolveParryForce(hit.point, Vector3.one);
-                
-                feedbacker.ParryEffect();
-
-                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
-                var counterBeam = counterBeamGo.GetComponent<Projectile>();
-                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-                counterBeamBoostTracker.CopyFrom(boostTracker);
-                counterBeamBoostTracker.IncrementEnemyBoost();
-                counterBeamGo.transform.position = hit.point;
-                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-                counterBeamGo.SetActive(true);
-                
-                var colliders = enemy.Colliders;
-                counterBeamBoostTracker.IgnoreColliders = colliders;
-
-                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-                counterBeam.playerBullet = true;
-                counterBeam.damage = __instance.damage * 25.0f;
-                counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
-                __instance.fake = true;
-                return false;
-            }
-
-            return true;
         }
 
-        public static void Postfix(RevolverBeam __instance, PhysicsCastResult hit)
+        [HarmonyPatch(typeof(RevolverBeam), "PiercingShotCheck")]
+        static class RevolverBeamPiercingShotCheckPatch
         {
-        }
-    }
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-    [HarmonyPatch(typeof(RevolverBeam), "PiercingShotCheck")]
-    static class RevolverBeamPiercingShotCheckPatch
-    {
-        private static FieldInfo _enemiesPiercedFi = typeof(RevolverBeam).GetField("enemiesPierced", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        public static bool Prefix(RevolverBeam __instance)
-        {
-            if (Cheats.IsCheatDisabled(Cheats.FeedbackerForAll))
+            public static bool Prefix(RevolverBeam __instance)
             {
-                return true;
+                _cancellationTracker.Reset();
+                PreRevolverBeamPiercingShotCheck?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
 
-            if (__instance.beamType == BeamType.Enemy || __instance.beamType == BeamType.MaliciousFace)
+            public static void Postfix(RevolverBeam __instance)
             {
-                return true;
+                PostRevolverBeamPiercingShotCheck?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
             }
-
-            var boostTracker = __instance.GetComponent<ProjectileBoostTracker>();
-
-            var parryability = boostTracker.NotifyContact();
-
-            int enemiesPierced = (int)_enemiesPiercedFi.GetValue(__instance);
-            
-            if (enemiesPierced != 0)
-            {
-                return true;
-            }
-
-            if (__instance.hitList.Count <= enemiesPierced)
-            {
-                return true;
-            }
-
-            var hit = __instance.hitList[enemiesPierced];
-            
-            if (hit.collider == null)
-            {
-                return true;
-            }
-            
-            if ((hit.collider.attachedRigidbody ? hit.collider.attachedRigidbody.TryGetComponent<EnemyIdentifierIdentifier>(out var eidid) : hit.collider.TryGetComponent<EnemyIdentifierIdentifier>(out eidid)) && (bool)eidid.eid)
-            {
-                var enemy = eidid.eid.GetComponent<EnemyComponents>();
-
-                Assert.IsNotNull(enemy);
-
-                if (enemy.Eid.Dead)
-                {
-                    return true;
-                }
-
-                if (parryability < 0.5f)
-                {
-                    return true;
-                }
-
-                var feedbacker = enemy.Feedbacker;
-
-                if (!feedbacker.Enabled)
-                {
-                    return true;
-                }
-
-                if (!feedbacker.ReadyToParry)
-                {
-                    return true;
-                }
-
-                var parryForce = feedbacker.SolveParryForce(hit.point, Vector3.one);
-                
-                feedbacker.ParryEffect();
-
-                var counterBeamGo = GameObject.Instantiate(Assets.EnemyRevolverBullet);
-                var counterBeam = counterBeamGo.GetComponent<Projectile>();
-                var counterBeamBoostTracker = counterBeamGo.GetOrAddComponent<ProjectileBoostTracker>();
-                counterBeamBoostTracker.CopyFrom(boostTracker);
-                counterBeamBoostTracker.IncrementEnemyBoost();
-                counterBeamGo.transform.position = hit.point;
-                counterBeamGo.transform.rotation = Quaternion.LookRotation(parryForce);
-                counterBeamGo.SetActive(true);
-                
-                var colliders = enemy.Colliders;
-                counterBeamBoostTracker.IgnoreColliders = colliders;
-                counterBeamBoostTracker.SafeEid = enemy.Eid;
-
-                //counterBeam.safeEnemyType = enemy.Eid.enemyType;
-                counterBeam.playerBullet = true;
-                counterBeam.damage = __instance.damage * 25.0f;
-                counterBeam.enemyDamageMultiplier = 1.0f / 25.0f;
-                __instance.fake = true;
-                _enemiesPiercedFi.SetValue(__instance, int.MaxValue);
-                return true;
-            }
-
-            return true;
-        }
-
-        public static void Postfix(RevolverBeam __instance)
-        {
         }
     }
 }

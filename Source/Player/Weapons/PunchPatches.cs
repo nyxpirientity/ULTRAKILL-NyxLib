@@ -2,34 +2,34 @@ using HarmonyLib;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    [HarmonyPatch(typeof(Punch), "ParryProjectile")]
-    static class PunchParryProjectilePatch
+    public static class PlayerPunchEvents
     {
-        public static void Prefix(Punch __instance, Projectile proj)
+        public delegate void PreParryProjectileEventHandler(EventMethodCanceler canceler, Punch punch, Projectile projectile);
+        public static event PreParryProjectileEventHandler PreParryProjectile;
+
+        public delegate void PostParryProjectileEventHandler(EventMethodCancelInfo cancelInfo, Punch punch, Projectile projectile);
+        public static event PostParryProjectileEventHandler PostParryProjectile;
+
+        [HarmonyPatch(typeof(Punch), "ParryProjectile")]
+        static class PunchParryProjectilePatch
         {
-            if (Cheats.Enabled)
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(Punch __instance, Projectile proj)
             {
-                var boostTracker = proj.GetComponent<ProjectileBoostTracker>();
-                if (boostTracker != null)
-                {
-                    boostTracker.IncrementPlayerBoosts();
-                    
-                    if (boostTracker.NumPlayerBoosts > 1)
-                    {
-                        proj.speed *= 0.55f; // player parry boosts speed by 2x, so this counteracts it
-                    }
+                _cancellationTracker.Reset();
+                PreParryProjectile?.Invoke(_cancellationTracker.GetCanceler(), __instance, proj);
+                _cancellationTracker.TryInvokeReimplementation();
+                
+                return !_cancellationTracker.Cancelled;
+            }
 
-                    if (boostTracker.NumEnemyBoosts > 0 && (boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.RevolverShot || boostTracker.ProjectileType == ProjectileBoostTracker.ProjectileCategory.PlayerProjectile))
-                    {
-                        StyleHUD.Instance.AddPoints(10, "<color=#26ff00>PARRY PONG</color>");
-                    }
-
-                }
+            public static void Postfix(Punch __instance, Projectile proj)
+            {
+                PostParryProjectile?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, proj);
             }
         }
-
-        public static void Postfix(Punch __instance, Projectile proj)
-        {
-        }
     }
+    
+
 }

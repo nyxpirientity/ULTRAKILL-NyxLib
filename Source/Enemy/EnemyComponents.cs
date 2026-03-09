@@ -22,9 +22,6 @@ public class EnemyComponents : MonoBehaviour
     [SerializeField] private EnemyRadiance _Radiance = null;
     public EnemyRadiance Radiance { get => _Radiance; private set => _Radiance = value; }
 
-    [SerializeField] private EnemyFeedbacker _Feedbacker = null;
-    public EnemyFeedbacker Feedbacker { get => _Feedbacker; private set => _Feedbacker = value; }
-
     public bool UniquelySolo { get; private set; } = false;
 
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
@@ -189,7 +186,6 @@ public class EnemyComponents : MonoBehaviour
 
         FriendID = gameObject.AddComponent<EnemyFriendIdentifier>();
         Radiance = gameObject.AddComponent<EnemyRadiance>();
-        Feedbacker = gameObject.AddComponent<EnemyFeedbacker>();
         FriendID.IsLeader = false;
         PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
         PrefabStore.StorePrefab();
@@ -201,7 +197,6 @@ public class EnemyComponents : MonoBehaviour
         Assert.IsNotNull(PrefabStore);
         Assert.IsNotNull(FriendID);
         Assert.IsNotNull(Radiance);
-        Assert.IsNotNull(Feedbacker);
     }
     
     object DeathPatchCallerObject = null;

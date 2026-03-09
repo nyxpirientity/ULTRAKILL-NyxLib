@@ -20,12 +20,24 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     public static class Style
     {
         public static int NumStyleRanks = 8;
+        
+        public delegate void PreAddPointsEventHandler(EventMethodCanceler canceler, StyleHUD shud, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "");
+        public static event PreAddPointsEventHandler PreAddPoints;
 
-        public static Action<StyleHUD, int, string, GameObject, EnemyIdentifier, int, string, string> AddPointsPrefix = null;
-        public static Action<StyleHUD, int, string, GameObject, EnemyIdentifier, int, string, string> AddPointsPostfix = null;
+        public delegate void PostAddPointsEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "");
+        public static event PostAddPointsEventHandler PostAddPoints;
+        
+        public delegate void PreRemovePointsEventHandler(EventMethodCanceler canceler, StyleHUD shud, int points);
+        public static event PreRemovePointsEventHandler PreRemovePoints;
 
-        public static Action<StyleHUD, int> RemovePointsPrefix = null;
-        public static Action<StyleHUD, int> RemovePointsPostfix = null;
+        public delegate void PostRemovePointsEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud, int points);
+        public static event PostRemovePointsEventHandler PostRemovePoints;
+        
+        public delegate void PreShudUpdateEventHandler(EventMethodCanceler canceler, StyleHUD shud);
+        public static event PreShudUpdateEventHandler PreShudUpdate;
+
+        public delegate void PostShudUpdateEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud);
+        public static event PostShudUpdateEventHandler PostShudUpdate;
 
         public static StyleRanks GetStyleRank(this StyleHUD self)
         {
@@ -35,34 +47,44 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [HarmonyPatch(typeof(StyleHUD), "AddPoints")]
         static class AddPointsPatch
         {
+            private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
+
             public static bool Prefix(StyleHUD __instance, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "")
             {
-                if (Cheats.IsCheatEnabled(Cheats.MundaneMurder))
-                {
-                    MundaneMurder.AddPointsPrefix(__instance, points, pointID, sourceWeapon, eid, count, prefix, postfix);
-                    return false;
-                }
+                CancellationTracker.Reset();
 
-                return true;
+                PreAddPoints?.Invoke(CancellationTracker.GetCanceler(), __instance, points, pointID, sourceWeapon, eid, count, prefix, postfix);
+                
+                CancellationTracker.TryInvokeReimplementation();
+
+                return !CancellationTracker.Cancelled;
             }
 
             public static void Postfix(StyleHUD __instance, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "")
             {
-
+                PostAddPoints?.Invoke(CancellationTracker.GetCancelInfo(), __instance, points, pointID, sourceWeapon, eid, count, prefix, postfix);
             }
         }
 
         [HarmonyPatch(typeof(StyleHUD), "RemovePoints")]
         static class RemovePointsPatch
         {
-            public static void Prefix(StyleHUD __instance, int points)
+            private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
+            
+            public static bool Prefix(StyleHUD __instance, int points)
             {
+                CancellationTracker.Reset();
 
+                PreRemovePoints?.Invoke(CancellationTracker.GetCanceler(), __instance, points);
+
+                CancellationTracker.TryInvokeReimplementation();
+                
+                return !CancellationTracker.Cancelled;
             }
 
             public static void Postfix(StyleHUD __instance, int points)
             {
-
+                PostRemovePoints?.Invoke(CancellationTracker.GetCancelInfo(), __instance, points);
             }
         }
 
@@ -97,20 +119,22 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [HarmonyPatch(typeof(StyleHUD), "Update")]
         static class StyleUpdatePatch
         {
+            private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
+
             public static bool Prefix(StyleHUD __instance)
             {
-                if (Cheats.IsCheatEnabled(Cheats.MundaneMurder))
-                {
-                    MundaneMurder.OnStyleUpdate(__instance);
-                    return false;
-                }
+                CancellationTracker.Reset();
 
-                return true;
+                PreShudUpdate?.Invoke(CancellationTracker.GetCanceler(), __instance);
+
+                CancellationTracker.TryInvokeReimplementation();
+
+                return !CancellationTracker.Cancelled;
             }
 
             public static void Postfix(StyleHUD __instance)
             {
-
+                PostShudUpdate?.Invoke(CancellationTracker.GetCancelInfo(), __instance);
             }
         } 
     }

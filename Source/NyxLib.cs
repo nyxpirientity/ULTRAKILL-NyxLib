@@ -40,12 +40,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Music.Initialize();
             LevelAdditionsManager.Initialize();
             CybergrindAdditions.Initialize();
-            MundaneMurder.Initialize();
             BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
             Heck.Initialize();
             EnemyPrefabManager.Initialize();
-            ParryabilityTracker.Initialize();
 
             if (Options.DisableQuickLoad.Value)
             {
