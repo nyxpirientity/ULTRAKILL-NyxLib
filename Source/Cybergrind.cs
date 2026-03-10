@@ -7,10 +7,10 @@ using ULTRAKILL.Cheats;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public static class CybergrindAdditions
+public static class Cybergrind
 {
     // calling EndlessGrid.Instance after endless grid has been not null once but is now null seems to cause lots of lag for some reason.
-    public static EndlessGrid LastStartedEndlessGrid = null;
+    public static EndlessGrid EndlessGrid { get; private set; } = null;
 
     [HarmonyPatch(typeof(EndlessGrid), "OnTriggerEnter", new Type[] { typeof(Collider) })]
     static class CybergrindStartPatch
@@ -30,8 +30,7 @@ public static class CybergrindAdditions
                 return;
             }
 
-            CybergrindActive = true;
-            CybergrindShuffleTimestamp.UpdateToNow();
+            IsActive = true;
         }
     }
 
@@ -44,7 +43,7 @@ public static class CybergrindAdditions
 
         public static void Postfix(EndlessGrid __instance)
         {
-            LastStartedEndlessGrid = __instance;
+            EndlessGrid = __instance;
         }
     }
 
@@ -167,99 +166,19 @@ public static class CybergrindAdditions
 
     public static void Initialize()
     {
-        PlayerEvents.PreDeath += PrePlayerDeath;
-        PlayerEvents.PostHurt += PostPlayerHurt;
         UpdateEvents.OnFixedUpdate += OnFixedUpdate;
         ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
     }
 
     private static void OnSceneWasLoaded(Scene scene, string sceneName)
     {
-        CybergrindActive = false;
+        IsActive = false;
     }
 
-    private static FixedTimeStamp CybergrindShuffleTimestamp;
     private static void OnFixedUpdate()
     {
-        var endlessGrid = LastStartedEndlessGrid;
-        if (CybergrindShuffleTimestamp.TimeSince > 6.0f && CybergrindActive && Cheats.IsCheatEnabled(Cheats.CybergrindShuffle))
-        {
-            PropertyPublisher<EndlessGrid, ArenaPattern[]> currentPatternPool = new PropertyPublisher<EndlessGrid, ArenaPattern[]>(endlessGrid, "CurrentPatternPool");
-            FieldPublisher<EndlessGrid, int> currentPatternNum = new FieldPublisher<EndlessGrid, int>(endlessGrid, "currentPatternNum");
-            MethodInfo loadPatternMI = typeof(EndlessGrid).GetMethod("LoadPattern", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo shuffleDecksMI = typeof(EndlessGrid).GetMethod("ShuffleDecks", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            if (currentPatternPool.Value.Length > currentPatternNum.Value)
-            {
-                loadPatternMI.Invoke(endlessGrid, new object[] {currentPatternPool.Value[currentPatternNum.Value]});
-            }
-            else
-            {
-                shuffleDecksMI.Invoke(endlessGrid, null);
-                loadPatternMI.Invoke(endlessGrid, new object[] {currentPatternPool.Value[currentPatternNum.Value]});
-            }
-
-            currentPatternNum.Value += 1;
-            CybergrindShuffleTimestamp.UpdateToNow();
-        }
     }
 
-    public static bool CybergrindActive { get; private set; } = false;
-    public static bool IsInCybergrind { get => LastStartedEndlessGrid != null; }
-
-    private static bool InvincibilityEnabledByUs = false;
-
-    private static void PrePlayerDeath(NewMovement newMovement, int damage)
-    {
-        if (Cheats.IsCheatEnabled(Cheats.CybergrindQuickRestart) && IsInCybergrind)
-        {
-            Cheats.Manager.ToggleCheat(Cheats.Manager.GetCheatInstance<KillAllEnemies>());
-            newMovement.ForceAntiHP(0.0f);
-            newMovement.FullHeal(false);
-            newMovement.FullStamina();
-            TimeScale.Controller.SlowDown(0.0f);
-            TimeScale.Controller.ParryFlash();
-            newMovement.antiHpFlash.Flash(1.0f);
-            
-            if (!Cheats.Manager.GetCheatInstance<Invincibility>().IsActive)
-            {
-                Cheats.Manager.ToggleCheat(Cheats.Manager.GetCheatInstance<Invincibility>());
-                InvincibilityEnabledByUs = true;
-            }
-
-            if (damage >= 99)
-            {
-                newMovement.gameObject.transform.position = new Vector3(0.0f, 100.0f, 64.0f);            
-            }
-
-            var endlessGrid = LastStartedEndlessGrid;
-
-            if (endlessGrid.enemyAmount > 0)
-            {
-                endlessGrid.enemyAmount = 0;
-                FieldInfo maxPointsFieldInfo = endlessGrid.GetType().GetField("maxPoints", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                var endlessGridMaxPoints = (int)maxPointsFieldInfo.GetValue(endlessGrid);
-                endlessGrid.currentWave = Math.Max(endlessGrid.startWave - 1, 0);
-                endlessGridMaxPoints = 10;
-                for (int i = 1; i <= endlessGrid.currentWave; i++)
-                {
-                    endlessGridMaxPoints += 3 + i / 3;
-                }
-
-                maxPointsFieldInfo.SetValue(endlessGrid, endlessGridMaxPoints);
-                endlessGrid.currentWave = CybergrindAdditions.LastStartedEndlessGrid.startWave - 1;
-            }
-        }
-    }
-
-    private static void PostPlayerHurt(NewMovement newMovement, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility)
-    {
-        if (InvincibilityEnabledByUs)
-        {
-            Cheats.Manager.ToggleCheat(Cheats.Manager.GetCheatInstance<Invincibility>());
-        }
-
-        InvincibilityEnabledByUs = false;
-    }
+    public static bool IsActive { get; private set; } = false;
+    public static bool IsInCybergrindLevel { get => EndlessGrid != null; }
 }

@@ -114,9 +114,9 @@ public class EnemyFriendIdentifier : EnemyModifier
 
     private void NonLeaderStart()
     {
-        if (CybergrindAdditions.CybergrindActive)
+        if (Cybergrind.IsActive)
         {
-            CybergrindAdditions.LastStartedEndlessGrid.tempEnemyAmount += 1;
+            Cybergrind.EndlessGrid.tempEnemyAmount += 1;
         }
     }
 

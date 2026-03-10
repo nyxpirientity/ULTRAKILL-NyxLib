@@ -13,11 +13,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static Action<NewMovement> PostUpdate = null;
         public static Action<NewMovement> PreFullStamina = null;
         public static Action<NewMovement> PostFullStamina = null;
-        public static Action<NewMovement, int> PreDeath = null;
-        // (NewMovement nm, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility)
-        public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PreHurt = null;
-        // (NewMovement nm, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility)
-        public static Action<NewMovement, int, bool, float, bool, bool, float, bool> PostHurt = null;
+
+        public delegate void PredictedDeathEventHandler(EventMethodCanceler canceler, PlayerComponents player, int damage);
+        public static event PredictedDeathEventHandler PredictedDeath;
+        public delegate void PreHurtEventHandler(EventMethodCanceler canceler, PlayerComponents player, int unprocessedDamage, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility);
+        public static event PreHurtEventHandler PreHurt;
+        public delegate void PostHurtEventHandler(EventMethodCancelInfo cancelInfo, PlayerComponents player, int unprocessedDamage, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility);
+        public static event PostHurtEventHandler PostHurt;
 
 
         [HarmonyPatch(typeof(NewMovement), "Awake", new Type[] { })]
@@ -38,13 +40,15 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             private static bool WasPreHurtCalled = false;
             private static int ProcessedDamage = 0;
-            
-            public static void Prefix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
             {
+                _cancellationTracker.Reset();
                 NewMovement newMovement = __instance;
                 if (newMovement.dead || newMovement.levelOver || !(!invincible || newMovement.gameObject.layer != 15 || ignoreInvincibility) || damage <= 0)
                 {
-                    return;
+                    return true;
                 }
 
                 ProcessedDamage = damage;
@@ -59,8 +63,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 {
                     ProcessedDamage = 0;
                 }
-
-                PlayerEvents.PreHurt?.Invoke(newMovement, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+                PlayerComponents player = newMovement.GetComponent<PlayerComponents>();
+                PlayerEvents.PreHurt?.Invoke(_cancellationTracker.GetCanceler(), player, damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
 
                 WasPreHurtCalled = true;
 
@@ -68,8 +72,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 if (newMovement.hp - ProcessedDamage <= 0 && mortal)
                 {
-                    PlayerEvents.PreDeath?.Invoke(newMovement, ProcessedDamage);
+                    PlayerEvents.PredictedDeath?.Invoke(_cancellationTracker.GetCanceler(), player, ProcessedDamage);
                 }
+                
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
 
             public static void Postfix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
@@ -81,7 +88,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     return;
                 }
 
-                PlayerEvents.PostHurt?.Invoke(newMovement, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+                PlayerEvents.PostHurt?.Invoke(_cancellationTracker.GetCancelInfo(), newMovement.GetComponent<PlayerComponents>(), damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
             }
         }
 

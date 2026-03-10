@@ -46,7 +46,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
 
         public const string OverrideCybergrindStartingWaveID = "ukaiw.cybergrind-start-wave-override";
-        public const string CybergrindQuickRestart = "ukaiw.cybergrind-quick-restart";
         public const string RadiantAllEnemies = "ukaiw.radiant-all-enemies";
         public const string SandAllEnemiesID = "ukaiw.sand-all-enemies";
         public const string BossBarAllEnemiesID = "ukaiw.boss-bar-all";
@@ -142,19 +141,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             ), "CYBERGRIND");
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Cybergrind Quick Restart", 
-                Cheats.CybergrindQuickRestart,
-                onDisable: (cheat) =>
-                {
-                    
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "CYBERGRIND");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Cybergrind Challenger", 
                 Cheats.CybergrindCheatRandomization,
                 onDisable: (cheat) =>
@@ -174,9 +160,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 onEnable: (cheat, manager) =>
                 {
                     Cheats.Manager.DisableCheat("ukaiw.force-next-cybergrind-wave");
-                    if (CybergrindAdditions.CybergrindActive && CybergrindAdditions.IsInCybergrind)
+                    if (Cybergrind.IsActive && Cybergrind.IsInCybergrindLevel)
                     {
-                        CybergrindAdditions.LastStartedEndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
+                        Cybergrind.EndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
                     }
                 }
             ), "CYBERGRIND");

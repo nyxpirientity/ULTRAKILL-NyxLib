@@ -39,7 +39,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Log.TraceExpectedInfo($"Start called!");
             Music.Initialize();
             LevelAdditionsManager.Initialize();
-            CybergrindAdditions.Initialize();
+            Cybergrind.Initialize();
             BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
             Heck.Initialize();
