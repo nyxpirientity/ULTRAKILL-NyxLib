@@ -35,7 +35,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static class CheatsManagerStartPatch
         {
 
-                public static void Prefix(CheatsManager __instance)
+            public static void Prefix(CheatsManager __instance)
             {
                 _manager = __instance;
             }
@@ -45,34 +45,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        public const string OverrideCybergrindStartingWaveID = "ukaiw.cybergrind-start-wave-override";
         public const string RadiantAllEnemies = "ukaiw.radiant-all-enemies";
         public const string SandAllEnemiesID = "ukaiw.sand-all-enemies";
         public const string BossBarAllEnemiesID = "ukaiw.boss-bar-all";
-        public const string GiveEnemiesFriends = "ukaiw.give-enemies-friends";
-        public const string HideCheatsHud = "ukaiw.hide-cheats-hud";
-        public const string Immortality = "ukaiw.immortality";
-        public const string MundaneMurder = "ukaiw.mundane-murder";
         public const string NoCorpses = "ukaiw.no-corpses";
         public const string DisableStops = "ukaiw.disable-stops";
         public const string DisableSlowdown = "ukaiw.disable-slowdown";
         public const string UltraStop = "ukaiw.ultra-stop";
         public const string ShortHitStop = "ukaiw.short-hit-stop";
-        public const string HitstopOnHeavyHydraLoad = "ukaiw.hitstop-on-heavy-hydra-load";
         public const string PlayCleanMusicWithBattle = "ukaiw.clean-music-with-battle";
         public const string AlwaysBattleMusic = "ukaiw.always-battle-music";
-        public const string BloodFueledEnemies = "ukaiw.blood-fueled-enemies";
-        public const string DemandingHell = "ukaiw.demanding-hell";
-        public const string SelfConscience = "ukaiw.self-conscious-v1";
         public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
-        public const string HeckPuppets = "ukaiw.heck-puppets";
-        public const string AggressiveAgony = "ukaiw.behavioural-mirror";
-        public const string BadGyro = "ukaiw.bad-gyro";
-        public const string FeedbackerForAll = "ukaiw.feedbacker-for-all";
-        public const string CybergrindShuffle = "ukaiw.cybergrind-shuffle";
-        public const string StrongerInNumbers = "ukaiw.stronger-in-numbers";
-        public const string Tymitosis = "ukaiw.tymitosis";
-        public const string SoleNemesis = "ukaiw.sole-nemesis";
         public const string LogEIDInfo = "ukaiw.dev.log-eid-info";
 
         public static bool IsCheatEnabled(string cheatID)
@@ -128,19 +111,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         private static void RegisterCheats()
         {
             Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Override Cybergrind Starting Wave (unimplemented)", 
-                Cheats.OverrideCybergrindStartingWaveID,
-                onDisable: (cheat) =>
-                {
-                    
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "CYBERGRIND");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Cybergrind Challenger", 
                 Cheats.CybergrindCheatRandomization,
                 onDisable: (cheat) =>
@@ -153,68 +123,19 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Force Next Wave", 
-                "ukaiw.force-next-cybergrind-wave",
+                "nyxpiri.force-next-cybergrind-wave",
                 onDisable: (cheat) =>
                 {
                 },
                 onEnable: (cheat, manager) =>
                 {
-                    Cheats.Manager.DisableCheat("ukaiw.force-next-cybergrind-wave");
+                    Cheats.Manager.DisableCheat("nyxpiri.force-next-cybergrind-wave");
                     if (Cybergrind.IsActive && Cybergrind.IsInCybergrindLevel)
                     {
                         Cybergrind.EndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
                     }
                 }
             ), "CYBERGRIND");
-
-            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Cybergrind Shuffle", 
-                Cheats.CybergrindShuffle,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "CYBERGRIND");*/
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Blood Fueled Enemies", 
-                Cheats.BloodFueledEnemies,
-                onDisable: (cheat) =>
-                {
-                    
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "FAIRNESS AND EQUALITY");
-            
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Feedbackers for Everyone!", 
-                Cheats.FeedbackerForAll,
-                onDisable: (cheat) =>
-                {
-                    
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "FAIRNESS AND EQUALITY");
-            
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Give Enemies Friend(s)", 
-                Cheats.GiveEnemiesFriends,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "THOUGHTFULNESS AND CARING");
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Radiant All Enemies", 
@@ -276,17 +197,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             ), "misc");
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Immortality (unimplemented)", 
-                Cheats.Immortality,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "SELF HATRED");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "ULTRASTOP (possible flashing lights!)", 
                 Cheats.UltraStop,
                 onDisable: (cheat) =>
@@ -330,17 +240,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             ), "music");
 
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "mundanemurder Mode", 
-                Cheats.MundaneMurder,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "THIS GAME IF IT SUCKED:");
-
             /*Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "No Corpses", 
                 Cheats.NoCorpses,
@@ -362,87 +261,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 {
                 }
             ), "???");*/ // why is this a cheat and not a setting?
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Heat of Heck", 
-                Cheats.DemandingHell,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "HELL'S IMPACT");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Heck Puppets", 
-                Cheats.HeckPuppets,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "HELL'S IMPACT");        
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Aggressive Agony", 
-                Cheats.AggressiveAgony,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "HELL'S IMPACT");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Self Conscience", 
-                Cheats.SelfConscience,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "V1'S MIND");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Bad Gyro", 
-                Cheats.BadGyro,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "???");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Tymitosis", 
-                Cheats.Tymitosis,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "MITOSIS");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Stronger in Numbers", 
-                Cheats.StrongerInNumbers,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    
-                }
-            ), "???");
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Log Eid Info On Start", 
@@ -512,7 +330,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 if (!Cheats.Enabled)
                 {
-                    //return; stopped working I noticed so trying commenting out this?
+                    return;
                 }
 
                 var activator = GameObject.FindAnyObjectByType<PlayerActivator>();

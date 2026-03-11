@@ -68,7 +68,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 WasPreHurtCalled = true;
 
-                bool mortal = !Invincibility.Enabled && !Cheats.IsCheatEnabled(Cheats.Immortality); 
+                bool mortal = !Invincibility.Enabled; 
 
                 if (newMovement.hp - ProcessedDamage <= 0 && mortal)
                 {

@@ -16,9 +16,6 @@ public class EnemyComponents : MonoBehaviour
     [SerializeField] private EnemyPrefabStore _PrefabStore = null;
     public EnemyPrefabStore PrefabStore { get => _PrefabStore; private set => _PrefabStore = value; }
 
-    [SerializeField] private EnemyFriendIdentifier _FriendID = null;
-    public EnemyFriendIdentifier FriendID { get => _FriendID; private set => _FriendID = value; }
-
     [SerializeField] private EnemyRadiance _Radiance = null;
     public EnemyRadiance Radiance { get => _Radiance; private set => _Radiance = value; }
 
@@ -36,6 +33,8 @@ public class EnemyComponents : MonoBehaviour
     public event Action<bool> PreDeath = null;
     // params: (bool instakill)
     public event Action<bool> PostDeath = null;
+
+    public bool IsEnemyCompInitializer { get => _isEnemyCompInitializer; }
 
     [SerializeField] public float InitialHealth { get; private set; } = -1.0f;
 
@@ -94,6 +93,7 @@ public class EnemyComponents : MonoBehaviour
 
     [SerializeField] private Collider[] _colliders = null; 
     [SerializeField] private List<MonoBehaviour> _monoBehaviours = null;
+    private bool _isEnemyCompInitializer = false;
 
     private void Awake()
     {
@@ -103,22 +103,28 @@ public class EnemyComponents : MonoBehaviour
         Enemy = GetComponent<Enemy>();
         RootGameObject.AddComponent<EnemyRoot>();
         Assert.IsNotNull(Eid);
+        
+        _isEnemyCompInitializer = false;
+
+        if (Radiance == null)
+        {
+            CreateMods();
+        }
     }
 
     private void Start()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
 
-        if (InitialHealth <= 0.0f)
-        {
-            InitialHealth = Health;
-        }
-
-        if (Radiance == null)
+        if (!_isEnemyCompInitializer)
         {
             _colliders = GetComponentsInChildren<Collider>();
             Eid.ForceGetHealth();
-            CreateMods();
+        }
+
+        if (InitialHealth <= 0.0f)
+        {
+            InitialHealth = Health;
         }
     }
 
@@ -176,6 +182,8 @@ public class EnemyComponents : MonoBehaviour
     private void CreateMods()
     {
         Log.TraceExpectedInfo($"{name}.EnemyAdditions is creating new modules...");
+        
+        _isEnemyCompInitializer = true;
 
         _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
 
@@ -184,18 +192,14 @@ public class EnemyComponents : MonoBehaviour
             _monoBehaviours.Add((MonoBehaviour)(gameObject.AddComponent(type)));
         }
 
-        FriendID = gameObject.AddComponent<EnemyFriendIdentifier>();
         Radiance = gameObject.AddComponent<EnemyRadiance>();
-        FriendID.IsLeader = false;
         PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
         PrefabStore.StorePrefab();
-        FriendID.IsLeader = true;
     }
 
     private void AssertModsNotNull()
     {
         Assert.IsNotNull(PrefabStore);
-        Assert.IsNotNull(FriendID);
         Assert.IsNotNull(Radiance);
     }
     
