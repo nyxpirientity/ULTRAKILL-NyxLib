@@ -13,7 +13,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             if (InstanceStores.Count > 0)
             {
-                for (int i = 0, j = 0; i < Options.HydraPrefabPoolGrowPerUpdate * 2 && j < Options.HydraPrefabPoolGrowPerUpdate; i++)
+                for (int i = 0, j = 0; i < 50 && j < 1; i++) // TODO: Make options for this
                 {
                     InstanceStoreTickIdx = (InstanceStoreTickIdx + 1) % InstanceStores.SoftCapacity;
 
