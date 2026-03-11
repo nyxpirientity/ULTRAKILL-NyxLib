@@ -17,8 +17,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static ConfigEntry<bool> ShowErrorNotification = null;
         public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
         public static ConfigEntry<bool> DisableQuickLoad = null;
-
-        static ConfigEntry<int> NumFriendsToSpawnEntry = null;
         
         static ConfigEntry<float> RadianceAllTierEntry = null;
         static ConfigEntry<float> RadianceAllSpeedTierEntry = null;
@@ -39,8 +37,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static public bool IncludeUnlikelyLogs { get => IncludeUnlikelyLogsEntry.Value; }
         static public bool IncludeUnexpectedLogs { get => IncludeUnexpectedLogsEntry.Value; }
 
-        static public int NumFriendsToSpawn { get => NumFriendsToSpawnEntry.Value; }
-
         static public float RadianceAllTier { get => RadianceAllTierEntry.Value; }
         static public float RadianceAllSpeedTier { get => RadianceAllSpeedTierEntry.Value; }
         static public float RadianceAllDamageTier { get => RadianceAllDamageTierEntry.Value; }
@@ -51,7 +47,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         const string DevCat = "Development";
         const string BugFixCat = "BugFixes";
         const string CheatsCat = "Cheats";
-        const string FriendsCat = "EnemyFriends";
         const string RadianceAllCat = "RadianceAllCat";
         const string BasicBloodOptimizerCat = "BasicBloodOptimizer";
 
@@ -70,8 +65,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             EnableStreetCleanerDodgeFix = Config.Bind($"{ModCat}.{BugFixCat}", "EnableStreetCleanerDodgeFix", true);
             EnableStreetCleanerDodgeFixOnlyWhenNeeded = Config.Bind($"{ModCat}.{BugFixCat}", "EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
             StreetCleanerDodgeFixInterpRate = Config.Bind($"{ModCat}.{BugFixCat}", "StreetCleanerDodgeFixInterpRate", 8.0f);
-
-            NumFriendsToSpawnEntry = Config.Bind($"{ModCat}.{CheatsCat}.{FriendsCat}", "NumFriendsToSpawn", 1);
             
             RadianceAllTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
             RadianceAllSpeedTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.5f);
