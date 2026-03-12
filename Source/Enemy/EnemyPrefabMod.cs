@@ -189,6 +189,11 @@ public class EnemyPrefabStore : EnemyModifier
 
         Prefab = UnityEngine.Object.Instantiate(templateGo, templateGo.transform.parent);
 
+        Assert.IsNotNull(templateGo);
+        Assert.IsNotNull(templateGo.transform);
+        Assert.IsNotNull(templateGo.transform.parent);
+        Assert.IsNotNull(templateGo.transform.parent.gameObject);
+
         _PrefabParent = templateGo.transform.parent.gameObject;
         Prefab.SetActive(false);
                 

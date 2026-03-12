@@ -5,6 +5,7 @@ using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
+using System.IO;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
@@ -23,6 +24,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Log.Logger = Logger;
             Options.Config = Config;
             Options.Initialize();
+
+            if (!File.Exists(Config.ConfigFilePath))
+            {
+                Config.Save();
+            }
+            
             Log.TraceExpectedInfo($"Awake called!");
             Assets.Initialize();
             Cheats.Initialize();

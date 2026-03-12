@@ -30,16 +30,18 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         protected void Awake()
         {
             Itself = this;
-        }
-
-        protected void Start()
-        {
+            
             _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
 
             foreach (var type in MonoRegistrar.RegisteredTypes)
             {
                 _monoBehaviours.Add((MonoBehaviour)(gameObject.AddComponent(type)));
             }
+        }
+
+        protected void Start()
+        {
+
         }
 
         protected void Update()

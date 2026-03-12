@@ -26,7 +26,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             return _monoBehaviours[idx] as T;
         }
 
-        protected void Start()
+        protected void Awake()
         {
             NewMovement = gameObject.GetComponent<NewMovement>();
 
@@ -34,7 +34,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             foreach (var type in MonoRegistrar.RegisteredTypes)
             {
-                _monoBehaviours.Add((MonoBehaviour)gameObject.AddComponent(type));
+                _monoBehaviours.Add((MonoBehaviour)gameObject.GetOrAddComponent(type));
             }
         }
 

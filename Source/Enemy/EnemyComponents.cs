@@ -101,13 +101,14 @@ public class EnemyComponents : MonoBehaviour
 
         Eid = GetComponent<EnemyIdentifier>();
         Enemy = GetComponent<Enemy>();
-        RootGameObject.AddComponent<EnemyRoot>();
         Assert.IsNotNull(Eid);
         
         _isEnemyCompInitializer = false;
 
         if (Radiance == null)
         {
+            RootGameObject.AddComponent<EnemyRoot>();
+            _colliders = GetComponentsInChildren<Collider>();
             CreateMods();
         }
     }
@@ -115,8 +116,8 @@ public class EnemyComponents : MonoBehaviour
     private void Start()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
-
-        if (!_isEnemyCompInitializer)
+        
+        if (_isEnemyCompInitializer)
         {
             _colliders = GetComponentsInChildren<Collider>();
             Eid.ForceGetHealth();
@@ -126,6 +127,8 @@ public class EnemyComponents : MonoBehaviour
         {
             InitialHealth = Health;
         }
+        
+        PrefabStore.StorePrefab();
     }
 
     /* to allow patching lol */
@@ -192,9 +195,8 @@ public class EnemyComponents : MonoBehaviour
             _monoBehaviours.Add((MonoBehaviour)(gameObject.AddComponent(type)));
         }
 
-        Radiance = gameObject.AddComponent<EnemyRadiance>();
+        Radiance = gameObject.GetOrAddComponent<EnemyRadiance>();
         PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
-        PrefabStore.StorePrefab();
     }
 
     private void AssertModsNotNull()
