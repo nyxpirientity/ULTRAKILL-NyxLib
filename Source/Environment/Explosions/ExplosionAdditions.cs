@@ -24,6 +24,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public float ExplosionSpeedScale = 1.0f;
         public float ExplosionDamageScale = 1.0f;
 
+        public bool ForceElectric = false;
+
         protected void Awake()
         {
             var explosions = GetComponentsInChildren<Explosion>();
@@ -61,7 +63,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         protected void FixedUpdate()
         {
-            ApplyValues(); // TODO: should this be here? in fixedupdate?
+            //ApplyValues(); // TODO: should this be here? in fixedupdate? Removed for now
         }
 
         public void ApplyValues()
@@ -72,6 +74,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 explosion.Explosion.speed = explosion.BaseSpeed * ExplosionSpeedScale;
                 explosion.Explosion.damage = Mathf.RoundToInt(explosion.BaseDamage * ExplosionDamageScale);
                 explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.BasePlayerDamageOverride * ExplosionDamageScale);
+                explosion.Explosion.electric = explosion.Explosion.electric || ForceElectric;
             }
         }
     }
