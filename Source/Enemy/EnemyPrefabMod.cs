@@ -8,18 +8,28 @@ public class EnemyPrefabStore : EnemyModifier
 {
     public class InstanceStore : ScriptableObject
     {
-        public void Initialize(GameObject prefab)
+        public void Initialize(GameObject prefab, GameObject prefabParent, string debugName)
         {
             Prefab = prefab;
+            PrefabParent = prefabParent;
+            _debugName = debugName;
+
+            Log.TraceExpectedInfo($"New instance store by the name of {debugName} being created with prefab {Prefab}");
+
+            Assert.IsNotNull(Prefab);
 
             RegistrationTracker = new RegistrationTracker(
                 registerAction: () =>
                 {
+                    Log.TraceExpectedInfo($"{_debugName}: Registering to prefab manager");
+                    Assert.IsNotNull(Prefab);
                     RegistrationIdx = EnemyPrefabManager.RegisterInstanceStore(this);
                     return true;
                 },
                 unregisterAction: () =>
                 {
+                    Log.TraceExpectedInfo($"{_debugName}: Unregistering from prefab manager");
+                    Assert.IsNotNull(Prefab);
                     EnemyPrefabManager.UnregisterInstanceStore(RegistrationIdx);
                     RegistrationIdx = -1;
                     return true;
@@ -32,7 +42,15 @@ public class EnemyPrefabStore : EnemyModifier
             if (Prefab == null)
             {
                 RegistrationTracker.Unregister();
-                Assert.IsNotNull(Prefab); // then just print this to the logs *once*
+                Log.Error($"{_debugName}: InstanceStore had instantiate and store called despite prefab being null, and thus destroyed.");
+                return;
+            }
+
+            if (PrefabParent == null)
+            {
+                RegistrationTracker.Unregister();
+                Log.Error($"{_debugName}: InstanceStore had instantiate and store called despite prefab parent being null, and thus destroyed.");
+                return;
             }
 
             if (IsFull)
@@ -40,14 +58,20 @@ public class EnemyPrefabStore : EnemyModifier
                 return;
             }
 
-            var newGo = Instantiate(Prefab, Prefab.transform.parent);
+            var newGo = Instantiate(Prefab, PrefabParent?.transform);
+
+            Log.TraceExpectedInfo($"{_debugName}: Instantiating and storing for prefab {Prefab}");
 
             Instances.Push(newGo);
 
             newGo.SetActive(false);
         }
 
-        private GameObject Prefab = null;
+        public GameObject Prefab = null;
+
+        public GameObject PrefabParent = null;
+
+        private string _debugName = "UNNAMED";
         Stack<GameObject> Instances = new Stack<GameObject>();
 
         public void RegisterStore(EnemyPrefabStore store)
@@ -58,6 +82,8 @@ public class EnemyPrefabStore : EnemyModifier
             {
                 RegistrationTracker.Register();
             }
+
+            Assert.IsNotNull(Prefab);
         }
 
         public void UnregisterStore(EnemyPrefabStore store)
@@ -68,6 +94,8 @@ public class EnemyPrefabStore : EnemyModifier
             {
                 RegistrationTracker.Unregister();
             }
+            
+            Assert.IsNotNull(Prefab);
         }
 
         public GameObject GetNewInstance()
@@ -93,10 +121,12 @@ public class EnemyPrefabStore : EnemyModifier
     public InstanceStore Instances { get => _Instances; }
     RegistrationTracker InstancesRegistrator = null;
     public GameObject Prefab = null;
-    private GameObject _PrefabParent = null;
+    [SerializeField] private GameObject _PrefabParent = null;
     public GameObject PrefabParent { get => _PrefabParent ?? null; }
-    private EnemyIdentifier Eid = null;
-    public EnemyComponents Enemy { get; private set; } = null;
+    [SerializeField] private EnemyIdentifier Eid = null;
+    [SerializeField] private EnemyComponents Enemy = null;
+
+    private bool IsPrefab { get; set; } = false;
 
     private static bool IsStoringPrefab = false;
 
@@ -109,7 +139,10 @@ public class EnemyPrefabStore : EnemyModifier
                 return false;
             }
             
+            Log.TraceExpectedInfo($"{gameObject} (EnemyPrefabStore): Registering self to InstanceStore");
+
             _Instances.RegisterStore(this);
+            
             return true;
         },
         unregisterAction: () =>
@@ -119,16 +152,22 @@ public class EnemyPrefabStore : EnemyModifier
                 return false;
             }
             
+            Log.TraceExpectedInfo($"{gameObject} (EnemyPrefabStore): Unregistering self to InstanceStore");
+
             _Instances.UnregisterStore(this);
-            
+
             return true;
         });
     }
 
     protected void Awake()
     {
-        Eid = GetComponent<EnemyIdentifier>();
-        Enemy = GetComponent<EnemyComponents>();
+        GetComps();
+
+        if (Prefab != null && _PrefabParent == null)
+        {
+            _PrefabParent = Enemy.RootGameObject.transform.parent?.gameObject;
+        }
     }
 
     protected void Start()
@@ -159,6 +198,15 @@ public class EnemyPrefabStore : EnemyModifier
         }
     }
 
+    private void OnDestroy()
+    {
+        if (IsPrefab)
+        {
+            Log.TraceExpectedInfo($"PREFAB object {gameObject} being destroyed...");
+            StackDebug.PrintStack();
+        }
+    }
+
     private void StorePrefabUnsafe(bool force = false)
     {
         if (IsStoringPrefab)
@@ -178,47 +226,53 @@ public class EnemyPrefabStore : EnemyModifier
         }
         else if (Prefab == null)
         {
-            Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} did not have a prefab, need to make a new one");            
+            Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} did not have a prefab, need to make a new one");
         }
 
+        GetComps();
+
         GameObject templateGo;
-        
+
         templateGo = Enemy.RootGameObject;
-        
+
         IsStoringPrefab = true;
 
-        Prefab = UnityEngine.Object.Instantiate(templateGo, templateGo.transform.parent);
+        Prefab = UnityEngine.Object.Instantiate(templateGo);
 
         Assert.IsNotNull(templateGo);
         Assert.IsNotNull(templateGo.transform);
-        Assert.IsNotNull(templateGo.transform.parent);
-        Assert.IsNotNull(templateGo.transform.parent.gameObject);
-
-        _PrefabParent = templateGo.transform.parent.gameObject;
+        _PrefabParent = templateGo.transform.parent?.gameObject;
         Prefab.SetActive(false);
-                
+
         if (_Instances == null)
         {
             _Instances = ScriptableObject.CreateInstance<InstanceStore>();
-            _Instances.Initialize(Prefab);
-            InstancesRegistrator.Register();
+            _Instances.Initialize(Prefab, _PrefabParent, $"InstanceStore For '{gameObject}'");
+
+            if (isActiveAndEnabled)
+            {
+                InstancesRegistrator.Register();                
+            }
         }
 
-        var prefabEid = Prefab.GetComponent<EnemyIdentifier>() ?? Prefab.GetComponentInChildren<EnemyIdentifier>();
-        var prefabEadd = Prefab.GetComponent<EnemyComponents>() ?? Prefab.GetComponentInChildren<EnemyComponents>();
+        _Instances.Prefab = Prefab;
+        _Instances.PrefabParent = _PrefabParent;
+
+        var prefabEadd = Prefab.GetComponent<EnemyComponents>() ?? Prefab.GetComponentInChildren<EnemyComponents>(true);
+        var prefabEid = prefabEadd.Eid;
 
         prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
         prefabEid.activateOnDeath = new GameObject[0];
         prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
         prefabEid.stuckMagnets = new System.Collections.Generic.List<Magnet>();
-        
+
         prefabEid.onDeath.RemoveAllListeners();
 
         if (prefabEid.machine != null)
         {
             prefabEid.machine.musicRequested = false;
         }
-        
+
         if (prefabEid.zombie != null)
         {
             prefabEid.zombie.musicRequested = false;
@@ -231,6 +285,7 @@ public class EnemyPrefabStore : EnemyModifier
 
         prefabEadd.PrefabStore._Instances = _Instances;
         prefabEadd.PrefabStore.Prefab = Prefab;
+        prefabEadd.PrefabStore.IsPrefab = true;
 
         if (prefabEid.enemyType == EnemyType.Swordsmachine)
         {
@@ -244,5 +299,18 @@ public class EnemyPrefabStore : EnemyModifier
         }
 
         IsStoringPrefab = false;
+    }
+
+    private void GetComps()
+    {
+        if (Enemy == null)
+        {
+            Enemy = GetComponent<EnemyComponents>();
+        }
+
+        if (Eid == null)
+        {
+            Eid = GetComponent<EnemyIdentifier>();
+        }
     }
 }
