@@ -19,6 +19,9 @@ public class EnemyComponents : MonoBehaviour
     [SerializeField] private EnemyRadiance _Radiance = null;
     public EnemyRadiance Radiance { get => _Radiance; private set => _Radiance = value; }
 
+    [SerializeField] private bool _hasDoneSetup = false;
+    public bool HasDoneSetup { get => _hasDoneSetup; }
+
     public bool UniquelySolo { get; private set; } = false;
 
     // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
@@ -67,8 +70,8 @@ public class EnemyComponents : MonoBehaviour
 
     [NonSerialized] public bool QueuedForDestruction = false;
     
-    [NonSerialized] public EnemyIdentifier Eid = null;
-    [NonSerialized] public Enemy Enemy = null;
+    public EnemyIdentifier Eid = null;
+    public Enemy Enemy = null;
     public IReadOnlyList<Collider> Colliders { get => _colliders; }
 
     public T GetMonoByIndex<T>(int idx) where T : MonoBehaviour
@@ -97,25 +100,35 @@ public class EnemyComponents : MonoBehaviour
 
     private void Awake()
     {
-        Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' awakens...");
+        Log.TraceExpectedInfo($"EnemyComponents '{name}:{gameObject.GetInstanceID()}' awakens...");
+        Setup();
+    }
 
+    internal void Setup()
+    {
+        if (HasDoneSetup)
+        {
+            return;
+        }
+
+        Log.TraceExpectedInfo($"EnemyComponents '{name}:{gameObject.GetInstanceID()}' is setting up...");
         Eid = GetComponent<EnemyIdentifier>();
         Enemy = GetComponent<Enemy>();
         Assert.IsNotNull(Eid);
         
-        _isEnemyCompInitializer = false;
-
-        if (Radiance == null)
-        {
-            RootGameObject.AddComponent<EnemyRoot>();
-            _colliders = GetComponentsInChildren<Collider>();
-            CreateMods();
-        }
+        _isEnemyCompInitializer = true;
+        _hasDoneSetup = true;
+        
+        RootGameObject.GetOrAddComponent<EnemyRoot>();
+        _colliders = GetComponentsInChildren<Collider>();
+        CreateMods();
     }
 
     private void Start()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
+        
+        PrefabStore.StorePrefab();
         
         if (_isEnemyCompInitializer)
         {
@@ -186,8 +199,6 @@ public class EnemyComponents : MonoBehaviour
     {
         Log.TraceExpectedInfo($"{name}.EnemyAdditions is creating new modules...");
         
-        _isEnemyCompInitializer = true;
-
         _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
 
         foreach (var type in MonoRegistrar.RegisteredTypes)

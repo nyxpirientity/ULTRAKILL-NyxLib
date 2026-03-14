@@ -16,7 +16,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             var hasHitGround = new FieldPublisher<SisyphusPrimeIntro, bool>(__instance, "hasHitGround");
             if (hasHitGround.Value)
             {
-                if (Cheats.IsHydraModeOn)
+                if (Cheats.Enabled) //if (Cheats.IsHydraModeOn) TODO: the original was based on hydramode being on, should probably reimplement in hydra mod
                 {
                     __instance.gameObject.GetComponent<Collider>().enabled = false;
                     __instance.GetComponent<Rigidbody>().detectCollisions = false;
@@ -139,7 +139,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 DisableBattleWithClean();
             }*/
 
-            if (enemy.Eid.enemyType == EnemyType.FleshPanopticon && Cheats.IsHydraModeOn)
+            if (enemy.Eid.enemyType == EnemyType.FleshPanopticon && Cheats.Enabled)//Cheats.IsHydraModeOn) TODO: same as before, should probably implement in hydra cheat
             {
                 createPanopticonRadioQueued = PanopticonRadio == null ? 20 : -1;
             }

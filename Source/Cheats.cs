@@ -45,9 +45,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        public const string RadiantAllEnemies = "ukaiw.radiant-all-enemies";
-        public const string SandAllEnemiesID = "ukaiw.sand-all-enemies";
-        public const string BossBarAllEnemiesID = "ukaiw.boss-bar-all";
+        public const string RadiantAllEnemies = "nyxpiri.radiant-all-enemies";
+        public const string SandAllEnemiesID = "nyxpiri.sand-all-enemies";
+        public const string BossBarAllEnemiesID = "nyxpiri.boss-bar-all";
         public const string NoCorpses = "ukaiw.no-corpses";
         public const string DisableStops = "ukaiw.disable-stops";
         public const string DisableSlowdown = "ukaiw.disable-slowdown";
@@ -55,7 +55,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public const string ShortHitStop = "ukaiw.short-hit-stop";
         public const string PlayCleanMusicWithBattle = "ukaiw.clean-music-with-battle";
         public const string AlwaysBattleMusic = "ukaiw.always-battle-music";
-        public const string CybergrindCheatRandomization = "ukaiw.cybergrind-cheat-randomization";
         public const string LogEIDInfo = "ukaiw.dev.log-eid-info";
 
         public static bool IsCheatEnabled(string cheatID)
@@ -105,22 +104,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RegisterCheats();
         }
 
-        public static bool IsHydraModeOn { get; private set; } = false;
         public static bool Enabled { get => (CheatsController.Instance?.cheatsEnabled).GetValueOrDefault(false); }
 
         private static void RegisterCheats()
         {
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Cybergrind Challenger", 
-                Cheats.CybergrindCheatRandomization,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "CYBERGRIND");
-
             Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Force Next Wave", 
                 "nyxpiri.force-next-cybergrind-wave",

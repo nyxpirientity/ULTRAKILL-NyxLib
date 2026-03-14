@@ -355,14 +355,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             var eid = __instance;
             var eidGo = eid.gameObject;
             
-            if (eidGo.GetComponent<EnemyComponents>() != null)
-            {
-                return;
-            }
-
             try
             {
-                var enemy = eidGo.AddComponent<EnemyComponents>();
+                var enemy = eidGo.GetOrAddComponent<EnemyComponents>();
             }
             catch (Exception e)
             {
