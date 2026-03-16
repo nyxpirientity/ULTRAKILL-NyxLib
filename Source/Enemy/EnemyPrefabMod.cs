@@ -265,6 +265,7 @@ public class EnemyPrefabStore : EnemyModifier
         prefabEid.activateOnDeath = new GameObject[0];
         prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
         prefabEid.stuckMagnets = new System.Collections.Generic.List<Magnet>();
+        prefabEid.blessed = false;
 
         prefabEid.onDeath.RemoveAllListeners();
 

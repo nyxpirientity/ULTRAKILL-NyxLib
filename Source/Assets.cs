@@ -211,6 +211,20 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     ParryFlashPrefab = possibleSwordsMachine.gunFlash;
                 }
             }
+
+            if (HuskEnrageSound_0 == null)
+            {
+                var possibleStatueBoss = UnityEngine.Object.FindAnyObjectByType<StatueBoss>(FindObjectsInactive.Include);
+                if (possibleStatueBoss != null)
+                {
+                    HuskEnrageSound_0 = GameObject.Instantiate(possibleStatueBoss.statueChargeSound2);
+                    HuskEnrageSound_0.SetActive(false);
+                    var removeOnTime = HuskEnrageSound_0.GetOrAddComponent<RemoveOnTime>();
+                    removeOnTime.time = 1.0f;
+
+                    UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
+                }
+            }
         }
 
         private static void EnemyStart(EnemyComponents enemy)
@@ -230,19 +244,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
                 break;
                 case EnemyType.Cerberus:
-                if (HuskEnrageSound_0 == null && enemy.GetComponent<StatueBoss>() != null)
-                {
-                    if (enemy.GetComponent<StatueBoss>().statueChargeSound2 != null)
-                    {
-                        HuskEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<StatueBoss>().statueChargeSound2, null, false);
-                        HuskEnrageSound_0.SetActive(false);
-                        UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
-                        if (HuskEnrageSound_0 != null)
-                        {
-                            Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
-                        }
-                    }
-                }
                 break;
                 case EnemyType.Streetcleaner:
                 if (MachineEnrageSound_1 == null)
