@@ -20,6 +20,9 @@ public class EnemyComponents : MonoBehaviour
     public EnemyRadiance Radiance { get => _Radiance; private set => _Radiance = value; }
 
     [SerializeField] private bool _hasDoneSetup = false;
+    [SerializeField] private EnemyRoot _enemyRootMono;
+    public EnemyRoot EnemyRootMono { get => _enemyRootMono; }
+
     public bool HasDoneSetup { get => _hasDoneSetup; }
 
     public bool UniquelySolo { get; private set; } = false;
@@ -40,6 +43,7 @@ public class EnemyComponents : MonoBehaviour
     public bool IsEnemyCompInitializer { get => _isEnemyCompInitializer; }
 
     [SerializeField] public float InitialHealth { get; private set; } = -1.0f;
+    [SerializeField] public float HighestHealth { get; private set; } = -1.0f;
 
     public float Health 
     { 
@@ -49,6 +53,8 @@ public class EnemyComponents : MonoBehaviour
             {
                 return Enemy.health;
             }
+            
+            Eid.ForceGetHealth();
 
             return Eid.health;
         } 
@@ -102,6 +108,7 @@ public class EnemyComponents : MonoBehaviour
     {
         Log.TraceExpectedInfo($"EnemyComponents '{name}:{gameObject.GetInstanceID()}' awakens...");
         Setup();
+        EnemyRootMono.Enemy = this;
     }
 
     internal void Setup()
@@ -119,9 +126,22 @@ public class EnemyComponents : MonoBehaviour
         _isEnemyCompInitializer = true;
         _hasDoneSetup = true;
         
-        RootGameObject.GetOrAddComponent<EnemyRoot>();
-        _colliders = GetComponentsInChildren<Collider>();
+        _enemyRootMono = RootGameObject.GetOrAddComponent<EnemyRoot>();
         CreateMods();
+
+        Eid.ForceGetHealth();
+        InitialHealth = Health;
+        UpdateHighestHealth();
+        
+        _colliders = GetComponentsInChildren<Collider>(true);
+    }
+
+    private void UpdateHighestHealth()
+    {
+        if (Health > HighestHealth)
+        {
+            HighestHealth = Health;
+        }
     }
 
     private void Start()
@@ -133,15 +153,16 @@ public class EnemyComponents : MonoBehaviour
         if (_isEnemyCompInitializer)
         {
             _colliders = GetComponentsInChildren<Collider>();
-            Eid.ForceGetHealth();
         }
 
         if (InitialHealth <= 0.0f)
         {
+            Eid.ForceGetHealth();
             InitialHealth = Health;
         }
         
         PrefabStore.StorePrefab();
+        UpdateHighestHealth();
     }
 
     /* to allow patching lol */
@@ -177,6 +198,7 @@ public class EnemyComponents : MonoBehaviour
 
     protected void FixedUpdate()
     {
+        UpdateHighestHealth();
     }
     
     private void OnDisable()

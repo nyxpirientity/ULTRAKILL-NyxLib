@@ -4,6 +4,7 @@ using TMPro;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.AddressableAssets;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
@@ -32,6 +33,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
         public static GameObject FleshPrisonPrefab { get; private set; } = null;
         public static GameObject FleshPanopticonPrefab { get; private set; } = null;
+
+        public static AssetReference ParryFlashPrefab { get; private set; } = null;
 
         public static void Initialize()
         {
@@ -196,6 +199,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 else
                 {
                     Log.ExpectedInfo($"We'd like a flesh prison in order to yoink it as a prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+
+            if (ParryFlashPrefab == null)
+            {
+                var possibleSwordsMachine = UnityEngine.Object.FindAnyObjectByType<SwordsMachine>(FindObjectsInactive.Include);
+
+                if (possibleSwordsMachine != null)
+                {
+                    ParryFlashPrefab = possibleSwordsMachine.gunFlash;
                 }
             }
         }

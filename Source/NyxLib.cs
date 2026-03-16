@@ -38,7 +38,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         protected void OnDestroy()
         {
-            Log.Error($"Got... destroyed?");
         }
 
         protected void Start()
