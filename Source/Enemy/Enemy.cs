@@ -124,7 +124,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             eid.DeliverDamage(eid.gameObject, force, hitPoint, multiplier, false, critMultiplier, sourceWeapon, false, fromExplosion);
         }
 
-        public static EnemyGameplayRank GetEnemyGameplayRank(EnemyIdentifier eid)
+        public static EnemyGameplayRank GetEnemyGameplayRank(this EnemyIdentifier eid)
         {
             return eid.enemyType switch
             {
