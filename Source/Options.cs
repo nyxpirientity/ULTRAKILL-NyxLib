@@ -1,9 +1,44 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using BepInEx.Configuration;
 using Nyxpiri.ULTRAKILL.NyxLib;
+using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
+    public class ConfigFileManager : MonoBehaviour
+    {
+        public Action OnReload;
+
+        public void Initialize(ConfigFile config)
+        {
+            Assert.IsNotNull(config);
+            Config = config;
+        }
+
+        protected void Start()
+        {
+            Assert.IsNotNull(Config, "Config should not be null when ConfigFIleManager Start is called, please call Initialize with a valid ConfigFile");
+
+            if (!File.Exists(Config.ConfigFilePath))
+            {
+                Config.Save();
+            }
+        }
+
+        protected void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                Config.Reload();
+                OnReload?.Invoke();
+            }
+        }
+
+        private ConfigFile Config = null;
+    }
+
     public static class Options
     {
         internal static ConfigFile Config = null;
