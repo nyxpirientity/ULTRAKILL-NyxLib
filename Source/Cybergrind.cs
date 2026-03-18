@@ -7,106 +7,127 @@ using ULTRAKILL.Cheats;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public static class Cybergrind
+namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    // calling EndlessGrid.Instance after endless grid has been not null once but is now null seems to cause lots of lag for some reason.
-    public static EndlessGrid EndlessGrid { get; private set; } = null;
-
-    public delegate void CybergrindPreBeginEventHandler(EventMethodCanceler canceler, EndlessGrid endlessGrid);
-    public static event CybergrindPreBeginEventHandler PreCybergrindBegin;
-    public delegate void CybergrindPostBeginEventHandler(EventMethodCancelInfo cancelInfo, EndlessGrid endlessGrid);
-    public static event CybergrindPostBeginEventHandler PostCybergrindBegin;
-
-    public delegate void CybergrindPreNextWaveEventHandler(EventMethodCanceler canceler, EndlessGrid endlessGrid);
-    public static event CybergrindPreNextWaveEventHandler PreCybergrindNextWave;
-    public delegate void CybergrindPostNextWaveEventHandler(EventMethodCancelInfo cancelInfo, EndlessGrid endlessGrid);
-    public static event CybergrindPostNextWaveEventHandler PostCybergrindNextWave;
-
-    [HarmonyPatch(typeof(EndlessGrid), "OnTriggerEnter", new Type[] { typeof(Collider) })]
-    static class CybergrindStartPatch
+    public static class Cybergrind
     {
-
-        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
-        
-        public static bool Prefix(EndlessGrid __instance, Collider other)
+        // calling EndlessGrid.Instance after endless grid has been not null once but is now null seems to cause lots of lag for some reason.
+        public static EndlessGrid EndlessGrid
         {
-            if (!other.CompareTag("Player"))
+            get
             {
-                return true;
+                if (_endlessGrid != null)
+                {
+                    return _endlessGrid;
+                }
+
+                _endlessGrid = EndlessGrid.Instance;
+                return _endlessGrid;
             }
 
-            _cancellationTracker.Reset();
-            PreCybergrindBegin?.Invoke(_cancellationTracker.GetCanceler(), __instance);
-            _cancellationTracker.TryInvokeReimplementation();
-            return !_cancellationTracker.Cancelled;
-        }
-
-        public static void Postfix(EndlessGrid __instance, Collider other)
-        {
-            if (!other.CompareTag("Player"))
+            set
             {
-                return;
+                _endlessGrid = value;
+            }
+        }
+        private static EndlessGrid _endlessGrid = null;
+
+        public delegate void CybergrindPreBeginEventHandler(EventMethodCanceler canceler, EndlessGrid endlessGrid);
+        public static event CybergrindPreBeginEventHandler PreCybergrindBegin;
+        public delegate void CybergrindPostBeginEventHandler(EventMethodCancelInfo cancelInfo, EndlessGrid endlessGrid);
+        public static event CybergrindPostBeginEventHandler PostCybergrindBegin;
+
+        public delegate void CybergrindPreNextWaveEventHandler(EventMethodCanceler canceler, EndlessGrid endlessGrid);
+        public static event CybergrindPreNextWaveEventHandler PreCybergrindNextWave;
+        public delegate void CybergrindPostNextWaveEventHandler(EventMethodCancelInfo cancelInfo, EndlessGrid endlessGrid);
+        public static event CybergrindPostNextWaveEventHandler PostCybergrindNextWave;
+
+        [HarmonyPatch(typeof(EndlessGrid), "OnTriggerEnter", new Type[] { typeof(Collider) })]
+        static class CybergrindStartPatch
+        {
+
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            
+            public static bool Prefix(EndlessGrid __instance, Collider other)
+            {
+                if (!other.CompareTag("Player"))
+                {
+                    return true;
+                }
+
+                _cancellationTracker.Reset();
+                PreCybergrindBegin?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
             }
 
-            PostCybergrindBegin?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+            public static void Postfix(EndlessGrid __instance, Collider other)
+            {
+                if (!other.CompareTag("Player"))
+                {
+                    return;
+                }
 
-            IsActive = true;
+                PostCybergrindBegin?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+
+                IsActive = true;
+            }
         }
-    }
 
-    [HarmonyPatch(typeof(EndlessGrid), "Start")]
-    static class EndlessGridStartPatch
-    {
-        public static void Prefix(EndlessGrid __instance)
+        [HarmonyPatch(typeof(EndlessGrid), "Start")]
+        static class EndlessGridStartPatch
+        {
+            public static void Prefix(EndlessGrid __instance)
+            {
+            }
+
+            public static void Postfix(EndlessGrid __instance)
+            {
+                EndlessGrid = __instance;
+            }
+        }
+
+        [HarmonyPatch(typeof(EndlessGrid), "NextWave", null)]
+        static class EndlessGridNextWavePatch
+        {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(EndlessGrid __instance)
+            {
+                _cancellationTracker.Reset();
+                PreCybergrindNextWave?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
+            }
+
+            public static void Postfix(EndlessGrid __instance)
+            {
+                PostCybergrindNextWave?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+            }
+        }
+
+        public static void Initialize()
+        {
+            UpdateEvents.OnFixedUpdate += OnFixedUpdate;
+            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+            ScenesEvents.OnSceneWasUnloaded += OnSceneWasUnloaded;
+        }
+
+        private static void OnSceneWasUnloaded(Scene scene, string arg2)
+        {
+            IsActive = false;
+        }
+
+        private static void OnSceneWasLoaded(Scene scene, string sceneName)
+        {
+            IsActive = false;
+        }
+
+        private static void OnFixedUpdate()
         {
         }
 
-        public static void Postfix(EndlessGrid __instance)
-        {
-            EndlessGrid = __instance;
-        }
+        public static bool IsActive { get; private set; } = false;
+        public static bool IsInCybergrindLevel { get => EndlessGrid != null; }
     }
-
-    [HarmonyPatch(typeof(EndlessGrid), "NextWave", null)]
-    static class EndlessGridNextWavePatch
-    {
-        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
-
-        public static bool Prefix(EndlessGrid __instance)
-        {
-            _cancellationTracker.Reset();
-            PreCybergrindNextWave?.Invoke(_cancellationTracker.GetCanceler(), __instance);
-            _cancellationTracker.TryInvokeReimplementation();
-            return !_cancellationTracker.Cancelled;
-        }
-
-        public static void Postfix(EndlessGrid __instance)
-        {
-            PostCybergrindNextWave?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
-        }
-    }
-
-    public static void Initialize()
-    {
-        UpdateEvents.OnFixedUpdate += OnFixedUpdate;
-        ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
-        ScenesEvents.OnSceneWasUnloaded += OnSceneWasUnloaded;
-    }
-
-    private static void OnSceneWasUnloaded(Scene scene, string arg2)
-    {
-        IsActive = false;
-    }
-
-    private static void OnSceneWasLoaded(Scene scene, string sceneName)
-    {
-        IsActive = false;
-    }
-
-    private static void OnFixedUpdate()
-    {
-    }
-
-    public static bool IsActive { get; private set; } = false;
-    public static bool IsInCybergrindLevel { get => EndlessGrid != null; }
 }
