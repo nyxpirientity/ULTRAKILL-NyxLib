@@ -77,7 +77,6 @@
 	</ItemGroup>
 	<Target Name="PostBuildUnix" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Unix'">
 	  <Exec Command="cp &quot;$(OutDir)/NyxLib.dll&quot; &quot;$ULTRAKILL_DIR/BepInEx/plugins&quot;" />
-	  <Exec Command="cp &quot;resources/ukaiw_assets&quot; &quot;$ULTRAKILL_DIR/BepInEx/plugins&quot; -r" />
 	</Target>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
 	  <Exec Command="copy &quot;$(OutDir)\NyxLib.dll&quot; &quot;%25ULTRAKILL_DIR%25\BepInEx\plugins&quot;" />

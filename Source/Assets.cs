@@ -10,8 +10,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 {
     public static class Assets
     {
-        public static Texture2D MundaneMurderIcon { get; private set; } = null;
-
         public static GameObject HuskEnrageSound_0 { get; private set; } = null;
         public static GameObject MachineEnrageSound_0 { get; private set; } = null;
         public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
@@ -38,13 +36,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static void Initialize()
         {
-            Log.TraceExpectedInfo($"Assets.Load called!");
-            var modsDir = BepInEx.Paths.PluginPath;
-            var assetsDir = $"{modsDir}/ukaiw_assets";
-            Log.TraceExpectedInfo($"Loading assets in {assetsDir}!");
-            
-            MundaneMurderIcon = LoadTexture($"{assetsDir}/mundane_murder.png");
-
             EnemyEvents.PostStart += EnemyStart;
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
         }
@@ -252,32 +243,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
                 break;
             }
-        }
-
-        private static Texture2D LoadTexture(string path)
-        {
-            Log.ExpectedInfo($"Attempting to load texture from '{path}'");
-            var fileBytes = File.ReadAllBytes(path);
-            var texture = new Texture2D(1, 1);
-            
-            if (fileBytes != null)
-            {
-                try
-                {
-                    if (!ImageConversion.LoadImage(texture, fileBytes))
-                    {
-                        Log.Error($"Failed to load asset '{path}'");
-                    }   
-                }
-                catch (System.Exception e)
-                {
-                    Log.Error($"Failed to load asset '{path}' error/exception: {e}");
-                    texture = new Texture2D(1, 1);
-                }
-            }
-
-            Log.ExpectedInfo($"Seemingly successfully loaded asset at '{path}'");
-            return texture;
         }
 
         [HarmonyPatch(typeof(ExplosionController), "Start")]
