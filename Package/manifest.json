@@ -1,0 +1,8 @@
+{
+    "name": "NyxLib",
+    "version_number": "0.0.0",
+    "website_url": "https://github.com/nyxpirientity/ULTRAKILL-NyxLib",
+    "description": "General Library for/used by mods made by Nixya/nyxpirientity. Probably not of much interest to you unless you're installing one of those",
+    "dependencies": [
+    ]
+}
