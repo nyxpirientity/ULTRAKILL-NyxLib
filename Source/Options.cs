@@ -82,32 +82,32 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         const string DevCat = "Development";
         const string BugFixCat = "BugFixes";
         const string CheatsCat = "Cheats";
-        const string RadianceAllCat = "RadianceAllCat";
+        const string RadianceAllCat = "RadianceAll";
         const string BasicBloodOptimizerCat = "BasicBloodOptimizer";
 
         public static void Initialize()
         {
-            ShowErrorNotification = Config.Bind($"{ModCat}.{DebugCat}", "ShowErrorNotification", false, "Shows text saying An Error has Occured! At the top of your screen as a 'QuickMsg', with a timestamp (using your locally set timezone!)");
-            IncludePerformanceLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludePerformanceLogs", false);
-            IncludeTraceExpectedLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeTraceExpectedLogs", false);
-            IncludeExpectedLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeExpectedLogs", false);
-            IncludeLikelyLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeLikelyLogs", false);
-            IncludeUnlikelyLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeUnlikelyLogs", false);
-            IncludeUnexpectedLogsEntry = Config.Bind($"{ModCat}.{DebugCat}", "IncludeUnexpectedLogs", false);
-            LogEnemyTypeOnStart = Config.Bind($"{ModCat}.{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
-            DisableQuickLoad = Config.Bind($"{ModCat}.{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
+            ShowErrorNotification = Config.Bind($"{DebugCat}", "ShowErrorNotification", false, "Shows text saying An Error has Occured! At the top of your screen as a 'QuickMsg', with a timestamp (using your locally set timezone!)");
+            IncludePerformanceLogsEntry = Config.Bind($"{DebugCat}", "IncludePerformanceLogs", false);
+            IncludeTraceExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeTraceExpectedLogs", false);
+            IncludeExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeExpectedLogs", false);
+            IncludeLikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeLikelyLogs", false);
+            IncludeUnlikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnlikelyLogs", false);
+            IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", false);
+            LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
+            DisableQuickLoad = Config.Bind($"{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
             
-            EnableStreetCleanerDodgeFix = Config.Bind($"{ModCat}.{BugFixCat}", "EnableStreetCleanerDodgeFix", true);
-            EnableStreetCleanerDodgeFixOnlyWhenNeeded = Config.Bind($"{ModCat}.{BugFixCat}", "EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
-            StreetCleanerDodgeFixInterpRate = Config.Bind($"{ModCat}.{BugFixCat}", "StreetCleanerDodgeFixInterpRate", 8.0f);
+            EnableStreetCleanerDodgeFix = Config.Bind($"{BugFixCat}", "EnableStreetCleanerDodgeFix", true);
+            EnableStreetCleanerDodgeFixOnlyWhenNeeded = Config.Bind($"{BugFixCat}", "EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
+            StreetCleanerDodgeFixInterpRate = Config.Bind($"{BugFixCat}", "StreetCleanerDodgeFixInterpRate", 8.0f);
             
-            RadianceAllTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
-            RadianceAllSpeedTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.5f);
-            RadianceAllDamageTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.5f);
-            RadianceAllHealthTierEntry = Config.Bind($"{ModCat}.{CheatsCat}.{RadianceAllCat}", "RadianceAllHealthTier", 1.5f);
+            RadianceAllTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
+            RadianceAllSpeedTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.25f);
+            RadianceAllDamageTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.1f);
+            RadianceAllHealthTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllHealthTier", 1.25f);
 
-            BloodOptimizerCapNumUpdatesPerTick =  Config.Bind($"{ModCat}.{CheatsCat}.{BasicBloodOptimizerCat}", "BloodOptimizerCapNumUpdatesPerTick", 90);
-            BloodHeavyModdedEnemiesCapNumBloodPerTick =  Config.Bind($"{ModCat}.{CheatsCat}.{BasicBloodOptimizerCat}", "BloodHeavyModdedEnemiesCapNumBloodPerTick", 2);
+            BloodOptimizerCapNumUpdatesPerTick =  Config.Bind($"{CheatsCat}.{BasicBloodOptimizerCat}", "BloodOptimizerCapNumUpdatesPerTick", 90);
+            BloodHeavyModdedEnemiesCapNumBloodPerTick =  Config.Bind($"{CheatsCat}.{BasicBloodOptimizerCat}", "BloodHeavyModdedEnemiesCapNumBloodPerTick", 2);
         }
     }
 }
