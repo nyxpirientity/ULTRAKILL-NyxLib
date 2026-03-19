@@ -202,8 +202,8 @@ public class EnemyPrefabStore : EnemyModifier
     {
         if (IsPrefab)
         {
-            Log.TraceExpectedInfo($"PREFAB object {gameObject} being destroyed...");
-            StackDebug.PrintStack();
+            //Log.TraceExpectedInfo($"PREFAB object {gameObject} being destroyed...");
+            //StackDebug.PrintStack();
         }
     }
 
