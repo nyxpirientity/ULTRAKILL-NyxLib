@@ -92,8 +92,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             IncludeTraceExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeTraceExpectedLogs", false);
             IncludeExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeExpectedLogs", false);
             IncludeLikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeLikelyLogs", false);
-            IncludeUnlikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnlikelyLogs", false);
-            IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", false);
+            IncludeUnlikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnlikelyLogs", true);
+            IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", true);
             LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
             DisableQuickLoad = Config.Bind($"{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
             
