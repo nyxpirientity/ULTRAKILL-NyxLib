@@ -47,15 +47,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public const string RadiantAllEnemies = "nyxpiri.radiant-all-enemies";
         public const string SandAllEnemiesID = "nyxpiri.sand-all-enemies";
-        public const string BossBarAllEnemiesID = "nyxpiri.boss-bar-all";
-        public const string NoCorpses = "ukaiw.no-corpses";
-        public const string DisableStops = "ukaiw.disable-stops";
-        public const string DisableSlowdown = "ukaiw.disable-slowdown";
-        public const string UltraStop = "ukaiw.ultra-stop";
-        public const string ShortHitStop = "ukaiw.short-hit-stop";
-        public const string PlayCleanMusicWithBattle = "ukaiw.clean-music-with-battle";
-        public const string AlwaysBattleMusic = "ukaiw.always-battle-music";
-        public const string LogEIDInfo = "ukaiw.dev.log-eid-info";
+        public const string DisableStops = "nyxpiri.disable-stops";
+        public const string DisableSlowdown = "nyxpiri.disable-slowdown";
+        public const string UltraStop = "nyxpiri.ultra-stop";
+        public const string ShortHitStop = "nyxpiri.short-hit-stop";
+        public const string PlayCleanMusicWithBattle = "nyxpiri.clean-music-with-battle";
+        public const string AlwaysBattleMusic = "nyxpiri.always-battle-music";
+        public const string LogEIDInfo = "nyxpiri.dev.log-eid-info";
 
         public static bool IsCheatEnabled(string cheatID)
         {
@@ -92,11 +90,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemiesID))
             {
                 OptionsManager.forceSand = true;
-            }
-
-            if (Cheats.Manager.GetCheatState(Cheats.BossBarAllEnemiesID))
-            {
-                OptionsManager.forceBossBars = true;
             }
 
             Cheats.Manager.RegisterCheat(new HideCheatsStatus(), "meta");
@@ -147,21 +140,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     OptionsManager.forceSand = true;
                 }
             ), "SELF SABOTAGE");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Give all Enemies Boss Bar", 
-                Cheats.BossBarAllEnemiesID,
-                onDisable: (cheat) =>
-                {
-                    OptionsManager.forceBossBars = false;
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    OptionsManager.forceBossBars = true;
-                }
-            ), "SELF SABOTAGE");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
+            
+            // TODO: many of these should probably be their own thing somewhere
+            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Disable Stops", 
                 Cheats.DisableStops,
                 onDisable: (cheat) =>
@@ -225,7 +206,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 onEnable: (cheat, manager) =>
                 {
                 }
-            ), "music");
+            ), "music");*/
 
             /*Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "No Corpses", 
@@ -249,7 +230,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             ), "???");*/ // why is this a cheat and not a setting?
 
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
+            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Log Eid Info On Start", 
             Cheats.LogEIDInfo,
             onDisable: (cheat) =>
@@ -258,7 +239,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             onEnable: (cheat, manager) =>
             {
             }
-            ), "dev stuff");
+            ), "dev stuff");*/
 
             /*Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Print the ALL!!!!", 
