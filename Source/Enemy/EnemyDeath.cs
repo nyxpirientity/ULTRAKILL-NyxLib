@@ -5,7 +5,6 @@ using HarmonyLib;
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {   
     
-    // TODO: changes made instakills with hydramod still let enemies split, this is not intended (at least, not currently intended..)
     [HarmonyPatch(typeof(SpiderBody), "Die", new Type[]{})]
     static class SpiderDiePatch
     {

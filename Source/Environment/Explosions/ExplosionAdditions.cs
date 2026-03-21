@@ -61,11 +61,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        protected void FixedUpdate()
-        {
-            //ApplyValues(); // TODO: should this be here? in fixedupdate? Removed for now
-        }
-
         public void ApplyValues()
         {
             foreach (var explosion in _Explosions)
