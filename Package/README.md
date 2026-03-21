@@ -1,6 +1,7 @@
 # About
 NyxLib is *mostly* a library I created for my own personal ULTRAKILL mods. It can technically be used by anyone, for any mods, but I, ESPECIALLY now, advise against it because I could change the API at anytime, as it's unfinished and also very probably not good. Fundamentally, this doesn't matter much for people to read up on, it's just a framework for me to make mods for ULTRAKILL.
 It features things for convenience and organization for my mods, such as a small system to organize the composition of radiance, events for various gameplay events (Player events, enemy events, projectile events) and ways for those events to be cancelled whilst other mods using the library can tell if and why those events were cancelled, and even a system for dropping messages to the player. In general, it's just convenience related things for my mods.
+There is no documentation at the moment.
 
 # Cheats
 It features a few cheats, most exotic cheats are part of my *other* (many not released on Thunderstore as I write this) ULTRAKILL mods, but I'll list what there is in this one here alongside some explanation/description.
