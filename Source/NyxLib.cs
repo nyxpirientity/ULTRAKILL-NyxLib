@@ -41,7 +41,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Music.Initialize();
             LevelAdditionsManager.Initialize();
             Cybergrind.Initialize();
-            BloodOptimizer.Initialize();
             QuickMsgPool.Initialize();
             Heck.Initialize();
             EnemyPrefabManager.Initialize();

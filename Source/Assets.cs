@@ -5,66 +5,84 @@ using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
+using System.Collections.Generic;
+using System;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
     public static class Assets
     {
-        public static GameObject HuskEnrageSound_0 { get; private set; } = null;
-        public static GameObject MachineEnrageSound_0 { get; private set; } = null;
-        public static AudioClip MachineEnrageSound_1 { get; private set; } = null;
-
-        public static GameObject HeatResistancePrefabWithoutHeatResistance { get; private set; } = null;
-        public static GameObject HeatResistancePrefab { get; private set; } = null;
         public static GameObject LabelPrefab { get; private set; } = null;
-        public static GameObject HeatResHurtSound { get; private set; }
-
-        public static GameObject EnemyRevolverBullet { get; private set; } = null;
-        public static GameObject EnemyRevolverAltBullet { get; private set; } = null;
 
         public static GameObject HarmlessExplosionPrefab { get; private set; } = null;
         public static GameObject ExplosionPrefab { get; private set; } = null;
         public static GameObject SuperExplosionPrefab { get; private set; } = null;
 
+        public static GameObject EnemyRevolverBullet { get; private set; } = null;
+        public static GameObject EnemyRevolverAltBullet { get; private set; } = null;
         public static GameObject RocketPrefab { get; private set; } = null;
         public static GameObject MortarPrefab { get; private set; } = null;
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
-        public static GameObject FleshPrisonPrefab { get; private set; } = null;
-        public static GameObject FleshPanopticonPrefab { get; private set; } = null;
 
-        public static AssetReference ParryFlashPrefab { get; private set; } = null;
-
-        public static void Initialize()
+        private static GameObject FleshPrisonPrefab { get; set; } = null;
+        private static GameObject FleshPanopticonPrefab { get; set; } = null;
+        
+        public static void EnableExplosionsPicking()
         {
-            EnemyEvents.PostStart += EnemyStart;
-            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+            LevelQuickLoader.AddQuickLoadLevel("uk_construct");
         }
+
+        public static void EnableProjectilePicking()
+        {
+            LevelQuickLoader.AddQuickLoadLevel("uk_construct");
+        }
+
+        public static void AddAssetPicker<ObjectType>(Func<ObjectType, bool> pickerFunc) where ObjectType : UnityEngine.Object
+        {
+            Func<bool> picker = () =>
+            {
+                var assetHolder = UnityEngine.Object.FindAnyObjectByType<ObjectType>(FindObjectsInactive.Include);
+                
+                if (assetHolder == null)
+                {
+                    return false;
+                }
+
+                return pickerFunc(assetHolder);
+            };
+
+            _assetPickers.Add(picker);
+        }
+
+        private static List<Func<bool>> _assetPickers = new List<Func<bool>>(64);
 
         private static void OnSceneWasLoaded(Scene scene, string sceneName)
         {
-            if (HeatResistancePrefab == null)
+            for (int i = 0; i < _assetPickers.Count; i++)
+            {
+                Func<bool> picker = _assetPickers[i];
+                
+                try
+                {
+                    if (picker())
+                    {
+                        _assetPickers.RemoveAt(i);
+                        i -= 1;
+                    } 
+                }
+                catch (System.Exception e)
+                {
+                    Log.Error($"Caught {e.GetType()} whilst trying to execute an asset picker!\n{e}\n");
+                }
+            }
+
+            if (LabelPrefab == null)
             {
                 var possibleHeatResistance = UnityEngine.Object.FindAnyObjectByType<HeatResistance>(FindObjectsInactive.Include);
                 if (possibleHeatResistance != null)
                 {
-                    Log.ExpectedInfo($"Heat Resistance object found in scene \"{SceneHelper.CurrentScene}\" yoinking it (instantiating/cloning it) as a prefab!");
-
-                    HeatResistancePrefab = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
-                    HeatResistancePrefab.SetActive(false);
-                    UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefab);
-
                     TextMeshProUGUI textMesh = null;
-                    var textMeshProGuis = HeatResistancePrefab.gameObject.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
-                    var heatRes = HeatResistancePrefab.gameObject.GetComponentInChildren<HeatResistance>(includeInactive: true);
-                    FieldPublisher<HeatResistance, GameObject> hurtingSound = new FieldPublisher<HeatResistance, GameObject>(heatRes, "hurtingSound");
-                    HeatResHurtSound = GameObject.Instantiate(hurtingSound.Value); 
-                    UnityEngine.Object.DontDestroyOnLoad(HeatResHurtSound);
-
-                    HeatResistancePrefabWithoutHeatResistance = UnityEngine.Object.Instantiate(possibleHeatResistance.gameObject.transform.parent.gameObject, null, false);
-                    HeatResistancePrefabWithoutHeatResistance.SetActive(false);
-                    UnityEngine.Object.DontDestroyOnLoad(HeatResistancePrefabWithoutHeatResistance);
-                    GameObject.Destroy(HeatResistancePrefabWithoutHeatResistance.GetComponentInChildren<HeatResistance>());
-                    
+                    var textMeshProGuis = possibleHeatResistance.gameObject.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
                     foreach (var elem in textMeshProGuis)
                     {
                         if (elem.text.Contains("COMPROMISED"))
@@ -80,10 +98,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     LabelPrefab.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(LabelPrefab);
                     LabelPrefab.GetComponent<TextMeshProUGUI>().text = "UKAIW-Label!";
-                }
-                else
-                {
-                    Log.ExpectedInfo($"We'd like a heat resistence prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
                 }
             }
 
@@ -192,122 +206,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     Log.ExpectedInfo($"We'd like a flesh prison in order to yoink it as a prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
                 }
             }
-
-            if (ParryFlashPrefab == null)
-            {
-                var possibleSwordsMachine = UnityEngine.Object.FindAnyObjectByType<SwordsMachine>(FindObjectsInactive.Include);
-
-                if (possibleSwordsMachine != null)
-                {
-                    ParryFlashPrefab = possibleSwordsMachine.gunFlash;
-                }
-            }
-
-            if (HuskEnrageSound_0 == null)
-            {
-                var possibleStatueBoss = UnityEngine.Object.FindAnyObjectByType<StatueBoss>(FindObjectsInactive.Include);
-                if (possibleStatueBoss != null)
-                {
-                    HuskEnrageSound_0 = GameObject.Instantiate(possibleStatueBoss.statueChargeSound2);
-                    HuskEnrageSound_0.SetActive(false);
-                    var removeOnTime = HuskEnrageSound_0.GetOrAddComponent<RemoveOnTime>();
-                    removeOnTime.time = 1.0f;
-
-                    UnityEngine.Object.DontDestroyOnLoad(HuskEnrageSound_0);
-                }
-            }
         }
 
-        private static void EnemyStart(EnemyComponents enemy)
+        internal static void Initialize()
         {
-            switch (enemy.Eid.enemyType)
-            {
-                case EnemyType.Swordsmachine:
-                if (MachineEnrageSound_0 == null)
-                {
-                    MachineEnrageSound_0 = UnityEngine.Object.Instantiate(enemy.GetComponent<SwordsMachine>().bigPainSound, null, false);
-                    MachineEnrageSound_0.SetActive(false);
-                    UnityEngine.Object.DontDestroyOnLoad(MachineEnrageSound_0);
-                    if (MachineEnrageSound_0 != null)
-                    {
-                        Log.TraceExpectedInfo($"Yoink, thanks {enemy.gameObject.name}, your enrage sound is mine and has been copied :) (you'll still keep yours though probably!)");
-                    }
-                }
-                break;
-                case EnemyType.Cerberus:
-                break;
-                case EnemyType.Streetcleaner:
-                if (MachineEnrageSound_1 == null)
-                {
-                    MachineEnrageSound_1 = UnityEngine.Object.Instantiate(enemy.Enemy.deathSound);
-                }
-                break;
-            }
-        }
-
-        [HarmonyPatch(typeof(ExplosionController), "Start")]
-        static class ExplosionAwakePatch
-        {
-            public static void Prefix(ExplosionController __instance)
-            {
-     
-            }
-
-            public static void Postfix(ExplosionController __instance)
-            {
-                Explosion instanceExplosion = __instance.GetComponentInChildren<Explosion>();
-
-                if (instanceExplosion == null)
-                {
-                    return;
-                }
-
-                if (instanceExplosion.electric)
-                {
-                    return;
-                }
-
-                if (instanceExplosion.isFup)
-                {
-                    return;
-                }
-
-                if (instanceExplosion.harmless)
-                {
-                    return;
-                }
-
-                /*if (ExplosionPrefab == null)
-                {
-                    Log.TraceExpectedInfo($"Yoinking (instantiating/cloning) explosion prefab {__instance.gameObject.name} thats about to start, as we needed an ExplosionPrefab!");
-                    ExplosionPrefab = UnityEngine.GameObject.Instantiate(__instance.gameObject, null, false);
-                    ExplosionPrefab.SetActive(false);
-                    Explosion explosion = ExplosionPrefab.GetComponentInChildren<Explosion>();
-                    ExplosionPrefab.GetComponentInChildren<ExplosionController>().enabled = true;
-                    explosion.damage = 0;
-                    explosion.enemy = false;
-                    explosion.harmless = true;
-                    explosion.lowQuality = false;
-                    explosion.speed = 1.0f;
-                    explosion.maxSize = 1.0f;
-                    explosion.enemyDamageMultiplier = 1.0f;
-                    explosion.playerDamageOverride = -1;
-                    explosion.ignite = true;
-                    explosion.friendlyFire = false;
-                    explosion.isFup = false;
-                    explosion.hitterWeapon = "";
-                    explosion.halved = false;
-                    explosion.canHit = AffectedSubjects.All;
-                    explosion.originEnemy = null;
-                    explosion.rocketExplosion = false;
-                    explosion.toIgnore = new System.Collections.Generic.List<EnemyType>();
-                    explosion.ultrabooster = false;
-                    explosion.unblockable = false;
-                    explosion.electric = false;
-                    explosion.enabled = true;
-                    UnityEngine.Object.DontDestroyOnLoad(ExplosionPrefab);
-                }*/
-            }
+            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+            LevelQuickLoader.AddQuickLoadLevel("Level 0-E");
         }
     }
 }

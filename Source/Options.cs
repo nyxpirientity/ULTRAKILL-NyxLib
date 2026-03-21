@@ -58,13 +58,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static ConfigEntry<float> RadianceAllDamageTierEntry = null;
         static ConfigEntry<float> RadianceAllHealthTierEntry = null;
 
-        public static ConfigEntry<int> BloodOptimizerCapNumUpdatesPerTick = null;
-        public static ConfigEntry<int> BloodHeavyModdedEnemiesCapNumBloodPerTick = null;
-
-        public static ConfigEntry<bool> EnableStreetCleanerDodgeFix = null;
-        public static ConfigEntry<bool> EnableStreetCleanerDodgeFixOnlyWhenNeeded = null;
-        public static ConfigEntry<float> StreetCleanerDodgeFixInterpRate = null;
-
         static public bool IncludePerformanceLogs { get => IncludePerformanceLogsEntry.Value; }
         static public bool IncludeTraceExpectedLogs { get => IncludeTraceExpectedLogsEntry.Value; }
         static public bool IncludeExpectedLogs { get => IncludeExpectedLogsEntry.Value; }
@@ -83,7 +76,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         const string BugFixCat = "BugFixes";
         const string CheatsCat = "Cheats";
         const string RadianceAllCat = "RadianceAll";
-        const string BasicBloodOptimizerCat = "BasicBloodOptimizer";
 
         public static void Initialize()
         {
@@ -97,17 +89,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
             DisableQuickLoad = Config.Bind($"{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
             
-            EnableStreetCleanerDodgeFix = Config.Bind($"{BugFixCat}", "EnableStreetCleanerDodgeFix", true);
-            EnableStreetCleanerDodgeFixOnlyWhenNeeded = Config.Bind($"{BugFixCat}", "EnableStreetCleanerDodgeFixOnlyWhenNeeded", true);
-            StreetCleanerDodgeFixInterpRate = Config.Bind($"{BugFixCat}", "StreetCleanerDodgeFixInterpRate", 8.0f);
-            
             RadianceAllTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
             RadianceAllSpeedTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.25f);
             RadianceAllDamageTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.1f);
             RadianceAllHealthTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllHealthTier", 1.25f);
-
-            BloodOptimizerCapNumUpdatesPerTick =  Config.Bind($"{CheatsCat}.{BasicBloodOptimizerCat}", "BloodOptimizerCapNumUpdatesPerTick", 90);
-            BloodHeavyModdedEnemiesCapNumBloodPerTick =  Config.Bind($"{CheatsCat}.{BasicBloodOptimizerCat}", "BloodHeavyModdedEnemiesCapNumBloodPerTick", 2);
         }
     }
 }

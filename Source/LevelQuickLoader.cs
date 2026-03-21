@@ -22,11 +22,6 @@ public static class LevelQuickLoader
 
     static Dictionary<string, LevelQuickLoadState> _quickLoadStates = new Dictionary<string, LevelQuickLoadState>
     {
-        /*{"Level 4-4", LevelQuickLoadState.Needed},
-        {"Level 0-E", LevelQuickLoadState.Needed},
-        {"Level P-1", LevelQuickLoadState.Needed},
-        {"Level P-2", LevelQuickLoadState.Needed},
-        {"Endless", LevelQuickLoadState.Needed}*/
     };
 
     private static bool _quickLoading = false;
