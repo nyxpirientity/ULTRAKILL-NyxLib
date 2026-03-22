@@ -11,6 +11,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public Explosion Explosion = null;
             public float BaseMaxSize = 0.0f;
             public float BaseSpeed = 0.0f;
+            public float BaseEnemyDamageMultiplier = 0.0f;
             public int BasePlayerDamageOverride = 0;
             public int BaseDamage = 0;
         }
@@ -23,6 +24,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public float ExplosionScale = 1.0f;
         public float ExplosionSpeedScale = 1.0f;
         public float ExplosionDamageScale = 1.0f;
+        public float ExplosionEnemyDamageMultiplierScale = 1.0f;
 
         public bool ForceElectric = false;
 
@@ -39,6 +41,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 mExplosion.BaseSpeed = explosion.speed;
                 mExplosion.BaseMaxSize = explosion.maxSize;
                 mExplosion.BaseDamage = explosion.damage;
+                mExplosion.BaseEnemyDamageMultiplier = explosion.enemyDamageMultiplier;
                 mExplosion.BasePlayerDamageOverride = explosion.playerDamageOverride;
                 _Explosions[i] = mExplosion;
             }
@@ -68,6 +71,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 explosion.Explosion.maxSize = explosion.BaseMaxSize * ExplosionScale;
                 explosion.Explosion.speed = explosion.BaseSpeed * ExplosionSpeedScale;
                 explosion.Explosion.damage = Mathf.RoundToInt(explosion.BaseDamage * ExplosionDamageScale);
+                explosion.Explosion.enemyDamageMultiplier = explosion.BaseEnemyDamageMultiplier * ExplosionEnemyDamageMultiplierScale;
                 explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.BasePlayerDamageOverride * ExplosionDamageScale);
                 explosion.Explosion.electric = explosion.Explosion.electric || ForceElectric;
             }

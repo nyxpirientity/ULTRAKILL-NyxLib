@@ -34,6 +34,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static void EnableProjectilePicking()
         {
+            LevelQuickLoader.AddQuickLoadLevel("Level 4-4");
             LevelQuickLoader.AddQuickLoadLevel("uk_construct");
         }
 
