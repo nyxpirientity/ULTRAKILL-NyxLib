@@ -18,8 +18,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject ExplosionPrefab { get; private set; } = null;
         public static GameObject SuperExplosionPrefab { get; private set; } = null;
 
-        public static GameObject EnemyRevolverBullet { get; private set; } = null;
-        public static GameObject EnemyRevolverAltBullet { get; private set; } = null;
         public static GameObject RocketPrefab { get; private set; } = null;
         public static GameObject MortarPrefab { get; private set; } = null;
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
@@ -34,8 +32,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static void EnableProjectilePicking()
         {
-            LevelQuickLoader.AddQuickLoadLevel("Level 4-4");
-            LevelQuickLoader.AddQuickLoadLevel("uk_construct");
+            LevelQuickLoader.AddQuickLoadLevel("Endless");
         }
 
         public static void AddAssetPicker<ObjectType>(Func<ObjectType, bool> pickerFunc) where ObjectType : UnityEngine.Object
@@ -142,21 +139,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     {
                         break;
                     }
-                }
-            }
-
-            if (EnemyRevolverBullet == null)
-            {
-                var possibleRevolver = UnityEngine.Object.FindAnyObjectByType<EnemyRevolver>(FindObjectsInactive.Include);
-                if (possibleRevolver != null)
-                {
-                    EnemyRevolverBullet = GameObject.Instantiate(possibleRevolver.bullet);
-                    EnemyRevolverBullet.SetActive(false);
-                    UnityEngine.Object.DontDestroyOnLoad(EnemyRevolverBullet);
-                
-                    EnemyRevolverAltBullet = GameObject.Instantiate(possibleRevolver.altBullet);
-                    EnemyRevolverAltBullet.SetActive(false);
-                    UnityEngine.Object.DontDestroyOnLoad(EnemyRevolverAltBullet);
                 }
             }
 
