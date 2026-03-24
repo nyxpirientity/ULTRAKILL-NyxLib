@@ -73,7 +73,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static void Initialize()
         {
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
-            UpdateEvents.OnLateUpdate += LateUpdate;
+            UpdateEvents.OnUpdate += LateUpdate;
         }
 
         private static void LateUpdate()
@@ -313,6 +313,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             ), "dev stuff");*/
 
             ReadyForCheatRegistration?.Invoke(Manager);
+            Cheats.Manager.RebuildMenu();
         }
 
         [HarmonyPatch(typeof(TeleportCheat), "Teleport")]
