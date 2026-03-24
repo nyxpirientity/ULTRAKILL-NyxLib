@@ -27,10 +27,17 @@ public class EnemyComponents : MonoBehaviour
 
     public bool UniquelySolo { get; private set; } = false;
 
-    // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
-    public event Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PreHurt = null;
-    // params: (GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion)
-    public event Action<GameObject, Vector3, Vector3?, float, bool, float, GameObject, bool, bool> PostHurt = null;
+    public delegate void PreHurtEventHandler(EventMethodCanceler canceler, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion);
+    public event PreHurtEventHandler PreHurt;
+
+    public delegate void PostHurtEventHandler(EventMethodCancelInfo cancelInfo, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion);
+    public event PostHurtEventHandler PostHurt;
+
+    public delegate void PreAnyEnemyHurtEventHandler(EventMethodCanceler canceler, EnemyComponents enemy, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion);
+    public static event PreAnyEnemyHurtEventHandler PreAnyEnemyHurt = null;
+
+    public delegate void PostAnyEnemyHurtEventHandler(EventMethodCancelInfo cancelInfo, EnemyComponents enemy, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion);
+    public static event PostAnyEnemyHurtEventHandler PostAnyEnemyHurt = null;
 
     public Action PreEnrage = null;
     public Action PreUnEnrage = null;
@@ -286,7 +293,7 @@ public class EnemyComponents : MonoBehaviour
 
     private bool InTheProcessOfHurting = false;
     private object HurtPatchCallerObject = null;
-    internal void NotifyOfPreHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
+    internal void NotifyOfPreHurt(EventMethodCanceler canceler, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
     {
         if (InTheProcessOfHurting)
         {
@@ -301,14 +308,14 @@ public class EnemyComponents : MonoBehaviour
             return;
         }
 
-        PreHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
-        EnemyEvents.PreHurt?.Invoke(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        PreHurt?.Invoke(canceler, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        PreAnyEnemyHurt?.Invoke(canceler, this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
         
         HurtPatchCallerObject = hurtPatchCallerObject;
         InTheProcessOfHurting = true;
     }
 
-    internal void NotifyOfPostHurt(GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
+    internal void NotifyOfPostHurt(EventMethodCancelInfo cancellationInfo, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, float critMultiplier, GameObject sourceWeapon, bool tryForExplode, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion, object hurtPatchCallerObject)
     {
         if (!InTheProcessOfHurting)
         {
@@ -323,8 +330,8 @@ public class EnemyComponents : MonoBehaviour
         }
 
 
-        PostHurt?.Invoke(target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
-        EnemyEvents.PostHurt?.Invoke(this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        PostHurt?.Invoke(cancellationInfo, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
+        PostAnyEnemyHurt?.Invoke(cancellationInfo, this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
         
         HurtPatchCallerObject = null;
         InTheProcessOfHurting = false;
