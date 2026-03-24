@@ -70,10 +70,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static public float RadianceAllDamageTier { get => RadianceAllDamageTierEntry.Value; }
         static public float RadianceAllHealthTier { get => RadianceAllHealthTierEntry.Value; }
 
-        const string ModCat = "NyxLib";
+        public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
+        public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
+        public static ConfigEntry<bool> RegisterForceNextWaveCheat { get; private set; } = null;
+
         const string DebugCat = "Debug";
         const string DevCat = "Development";
-        const string BugFixCat = "BugFixes";
         const string CheatsCat = "Cheats";
         const string RadianceAllCat = "RadianceAll";
 
@@ -93,6 +95,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RadianceAllSpeedTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.25f);
             RadianceAllDamageTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.1f);
             RadianceAllHealthTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllHealthTier", 1.25f);
+
+            RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
+            RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);
+            RegisterForceNextWaveCheat = Config.Bind($"{CheatsCat}", "RegisterForceNextWaveCheat", true);
         }
     }
 }

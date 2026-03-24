@@ -92,8 +92,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 OptionsManager.forceSand = true;
             }
 
-            Cheats.Manager.RegisterCheat(new HideCheatsStatus(), "meta");
-
             RegisterCheats();
         }
 
@@ -101,21 +99,29 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private static void RegisterCheats()
         {
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Force Next Wave", 
-                "nyxpiri.force-next-cybergrind-wave",
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    Cheats.Manager.DisableCheat("nyxpiri.force-next-cybergrind-wave");
-                    if (Cybergrind.IsActive && Cybergrind.IsInCybergrindLevel)
+            if (Options.RegisterHideCheatsStatusCheat.Value)
+            {
+                Cheats.Manager.RegisterCheat(new HideCheatsStatus(), "meta");
+            }
+
+            if (Options.RegisterForceNextWaveCheat.Value)
+            {
+                Cheats.Manager.RegisterCheat(new ToggleCheat(
+                    "Force Next Wave", 
+                    "nyxpiri.force-next-cybergrind-wave",
+                    onDisable: (cheat) =>
                     {
-                        Cybergrind.EndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
+                    },
+                    onEnable: (cheat, manager) =>
+                    {
+                        Cheats.Manager.DisableCheat("nyxpiri.force-next-cybergrind-wave");
+                        if (Cybergrind.IsActive && Cybergrind.IsInCybergrindLevel)
+                        {
+                            Cybergrind.EndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
+                        }
                     }
-                }
-            ), "CYBERGRIND");
+                ), "CYBERGRIND");
+            }
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Radiant All Enemies", 
@@ -128,19 +134,21 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             ), "SELF SABOTAGE");
 
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Sand All Enemies", 
-                Cheats.SandAllEnemiesID,
-                onDisable: (cheat) =>
-                {
-                    OptionsManager.forceSand = false;
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    OptionsManager.forceSand = true;
-                }
-            ), "SELF SABOTAGE");
-            
+            if (Options.RegisterSandAllEnemiesCheat.Value)
+            {
+                Cheats.Manager.RegisterCheat(new ToggleCheat(
+                    "Sand All Enemies", 
+                    Cheats.SandAllEnemiesID,
+                    onDisable: (cheat) =>
+                    {
+                        OptionsManager.forceSand = false;
+                    },
+                    onEnable: (cheat, manager) =>
+                    {
+                        OptionsManager.forceSand = true;
+                    }
+                ), "SELF SABOTAGE");
+            }
             // TODO: many of these should probably be their own thing somewhere
             /*Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Disable Stops", 
