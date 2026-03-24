@@ -73,8 +73,34 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static void Initialize()
         {
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+            UpdateEvents.OnLateUpdate += LateUpdate;
         }
 
+        private static void LateUpdate()
+        {
+            if (WaitingForCheatRegistration)
+            {
+                if (Cheats.Manager == null)
+                {
+                    return;
+                }
+
+                if (Cheats.Manager.GetCheatState(Cheats.RadiantAllEnemies))
+                {
+                    OptionsManager.forceRadiance = true;
+                }
+
+                if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemiesID))
+                {
+                    OptionsManager.forceSand = true;
+                }
+
+                RegisterCheats();
+                WaitingForCheatRegistration = false;
+            }
+        }
+
+        static bool WaitingForCheatRegistration = false;
         private static void OnSceneWasLoaded(Scene scene, string sceneName)
         {
             if (Cheats.Manager == null)
@@ -82,17 +108,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
-            if (Cheats.Manager.GetCheatState(Cheats.RadiantAllEnemies))
-            {
-                OptionsManager.forceRadiance = true;
-            }
-
-            if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemiesID))
-            {
-                OptionsManager.forceSand = true;
-            }
-
-            RegisterCheats();
+            WaitingForCheatRegistration = true;
         }
 
         public static bool Enabled { get => (CheatsController.Instance?.cheatsEnabled).GetValueOrDefault(false); }
