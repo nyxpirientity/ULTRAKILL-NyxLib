@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    [BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.0.0.1")]
+    [BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.0.1")]
     [BepInProcess("ULTRAKILL.exe")]
     public class NyxLib : BaseUnityPlugin
     {
