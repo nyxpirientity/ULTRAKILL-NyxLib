@@ -7,7 +7,7 @@
 ## ADJUSTMENTS
 - Made RegisterCheats (hopefully always!) get called *after* the game registers its cheats, so they appear on the bottom rather than the top of the cheats list
 
-# PACKAGE PAGE
+## PACKAGE PAGE
 - Updated readme c:
 - Added changelog (clearly)
 
