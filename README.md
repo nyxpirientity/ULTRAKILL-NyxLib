@@ -4,12 +4,13 @@ It features things for convenience and organization for my mods, such as a small
 There is no documentation at the moment.
 
 # Cheats
-It features a few cheats, most exotic cheats are part of my *other* (many not released on Thunderstore as I write this) ULTRAKILL mods, but I'll list what there is in this one here alongside some explanation/description.
+It features a few cheats, most exotic cheats are part of my *other* (many not released on Thunderstore as I write this) ULTRAKILL mods, but I'll list what there is in this one here alongside some explanation/description. Cheats labeled optional can be enabled/disabled in the configuration file.
 
 ## UTILITY:
 - Radiant All Enemies - Does what it says- similar to forcerad, but it uses it's own configuration settings, configured in the config file. Why? Well, simply because the base ULTRAKILL radiance system was a bit too simplistic for my mods to combine from what I could tell, so I had to make a layer on top of it which simply takes in multiple *radiance modifiers* and compounds them together as either additives or multipliers. This *will* interfere with base game radiance if anything is actually using it, but if cheats are off, then as long as all mods are respecting my general policy of leaving all gameplay altering things behind cheats, it'll make no difference (in theory, but like, software has bugs and all of my mods add to be a big solo-unpaid-personal-project)
-- Sand All Enemies - Just a convenience cheat for the sand all enemies command in the game
-- Force Next Wave - Tries to force the next cybergrind wave to occur.
+- Sand All Enemies - Just a convenience cheat for the sand all enemies command in the game (optional)
+- Force Next Wave - Tries to force the next cybergrind wave to occur. (optional)
+- Hide Cheats Enabled Status - Hides the cheats enabled status UI in the top left (optional)
 
 # Note
 It also features a feature named "Level Quick Loading" which loads levels at startup to allow mods to pick assets from those levels they may need. This causes startup to look a bit different, and can make it take longer. Frankly, I just don't know of a different way to do what I wanted lol
