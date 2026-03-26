@@ -10,6 +10,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static MonoRegistrar MonoRegistrar = new MonoRegistrar();
         public NewMovement NewMovement { get; private set; } = null;
+
+        public static PlayerComponents Instance { get; private set; } = null;
         
         public T GetMonoByIndex<T>(int idx) where T : MonoBehaviour
         {
@@ -36,6 +38,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 _monoBehaviours.Add((MonoBehaviour)gameObject.GetOrAddComponent(type));
             }
+
+            Instance = this;
         }
 
         private List<MonoBehaviour> _monoBehaviours = null;

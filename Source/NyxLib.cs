@@ -60,17 +60,18 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Log.TraceExpectedInfo($"Start finished!");
         }
 
-
         public void OnSceneWasLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode loadSceneMode) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
         {
             Log.TraceExpectedInfo($"------------- New Scene Loaded '{SceneHelper.CurrentScene}' -------------");
-            TryLog.Action(() => { ScenesEvents.OnSceneWasLoaded?.Invoke(scene, SceneHelper.CurrentScene); });
+            TryLog.Action(() => { ScenesEvents.NotifySceneWasLoaded(scene, SceneHelper.CurrentScene, scene.name); });
         }
 
+        private string _prevScene = SceneHelper.CurrentScene;
         public void OnSceneWasUnloaded(UnityEngine.SceneManagement.Scene scene)
         {
-            Log.TraceExpectedInfo($"------------- Scene Unloaded '{SceneHelper.CurrentScene}' -------------");
-            TryLog.Action(() => { ScenesEvents.OnSceneWasUnloaded?.Invoke(scene, SceneHelper.CurrentScene); });
+            Log.TraceExpectedInfo($"------------- Scene Unloaded '{_prevScene}' -------------");
+            TryLog.Action(() => { ScenesEvents.NotifySceneWasUnloaded(scene, _prevScene, scene.name); });
+            _prevScene = SceneHelper.CurrentScene;
         }
 
         protected void OnApplicationFocus(bool hasFocus)
@@ -83,17 +84,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         protected void Update()
         {
-            TryLog.Action(() => { UpdateEvents.OnUpdate?.Invoke(); });
+            TryLog.Action(() => { UpdateEvents.NotifyUpdate(); });
         }
 
         protected void FixedUpdate()
         {
-            TryLog.Action(() => { UpdateEvents.OnFixedUpdate?.Invoke(); });
+            TryLog.Action(() => { UpdateEvents.NotifyFixedUpdate(); });
         }
 
         protected void LateUpdate() 
         {
-            TryLog.Action(() => { UpdateEvents.OnLateUpdate?.Invoke(); });
+            TryLog.Action(() => { UpdateEvents.NotifyLateUpdate(); });
         }
     }
 }

@@ -75,6 +75,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     */
     public class EventMethodCancellationTracker
     {
+        public bool ShouldRunMethod { get => !_cancelled; }
         public bool Cancelled { get => _cancelled; }
         public EventMethodCancelReason? Reason 
         { 

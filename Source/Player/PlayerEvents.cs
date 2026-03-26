@@ -9,10 +9,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 {
     public static class PlayerEvents
     {
-        public static Action<NewMovement> PreUpdate = null;
-        public static Action<NewMovement> PostUpdate = null;
-        public static Action<NewMovement> PreFullStamina = null;
-        public static Action<NewMovement> PostFullStamina = null;
+        public delegate void PreUpdateEventHandler(EventMethodCanceler canceler, PlayerComponents player);
+        public static event PreUpdateEventHandler PreUpdate = null;
+
+        public delegate void PostUpdateEventHandler(EventMethodCancelInfo cancelInfo,  PlayerComponents player);
+        public static event PostUpdateEventHandler PostUpdate = null;
+
+        public delegate void PreFullStaminaEventHandler(EventMethodCanceler canceler, PlayerComponents player);
+        public static event PreFullStaminaEventHandler PreFullRefillStamina = null;
+
+        public delegate void PostFullStaminaEventHandler(EventMethodCancelInfo cancelInfo,  PlayerComponents player);
+        public static event PostFullStaminaEventHandler PostFullRefillStamina = null;
 
         public delegate void PredictedDeathEventHandler(EventMethodCanceler canceler, PlayerComponents player, int damage);
         public static event PredictedDeathEventHandler PredictedDeath;
@@ -95,28 +102,38 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [HarmonyPatch(typeof(NewMovement), "FullStamina")]
         static class PlayerFullStaminaPatch
         {
-            public static void Prefix(NewMovement __instance)
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(NewMovement __instance)
             {
-                PlayerEvents.PreFullStamina?.Invoke(__instance);
+                _cancellationTracker.Reset();
+                PlayerEvents.PreFullRefillStamina?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return _cancellationTracker.ShouldRunMethod;
             }
 
             public static void Postfix(NewMovement __instance)
             {
-                PlayerEvents.PostFullStamina?.Invoke(__instance);
+                PlayerEvents.PostFullRefillStamina?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
             }
         }
 
         [HarmonyPatch(typeof(NewMovement), "Update")]
         static class PlayerUpdatePatch
         {
-            public static void Prefix(NewMovement __instance)
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(NewMovement __instance)
             {
-                PlayerEvents.PreUpdate?.Invoke(__instance);
+                _cancellationTracker.Reset();
+                PlayerEvents.PreUpdate?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return _cancellationTracker.ShouldRunMethod;
             }
 
             public static void Postfix(NewMovement __instance)
             {
-                PlayerEvents.PostUpdate?.Invoke(__instance);
+                PlayerEvents.PostUpdate?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
             }
         }
     }
