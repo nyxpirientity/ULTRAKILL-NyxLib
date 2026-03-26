@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
@@ -20,14 +21,26 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         EnemyIdentifier Eid = null;
         EnemyComponents Enemy = null;
 
-        bool RequestedSpeedBuff = false;
-        bool RequestedHealthBuff = false;
-        bool RequestedDamageBuff = false;
+        [SerializeField] private bool _requestedSpeedBuff = false;
+        [SerializeField] private bool _requestedHealthBuff = false;
+        [SerializeField] private bool _requestedDamageBuff = false;
 
         public bool BuffsBase { get; private set; } = false;
         public bool BuffsSpeed { get; private set; } = false;
         public bool BuffsDamage { get; private set; } = false;
         public bool BuffsHealth { get; private set; } = false;
+
+        [SerializeField] private float _addedBase = 0.0f;
+        public float AddedBase{ get => _addedBase; private set => _addedBase = value; }
+
+        [SerializeField] private float _addedSpeed = 0.0f;
+        public float AddedSpeed { get => _addedSpeed; private set => _addedSpeed = value; }
+
+        [SerializeField] private float _addedDamage = 0.0f;
+        public float AddedDamage { get => _addedDamage; private set => _addedDamage = value; }
+
+        [SerializeField] private float _addedHealth = 0.0f;
+        public float AddedHealth { get => _addedHealth; private set => _addedHealth = value; }
 
         public HashSet<Modifier> Modifiers = new HashSet<Modifier>(8);
 
@@ -55,6 +68,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 RadiantAllModifier.SpeedEnabled = Options.RadianceAllSpeedTier >= 0.0f;
                 RadiantAllModifier.DamageEnabled = Options.RadianceAllDamageTier >= 0.0f;
                 RadiantAllModifier.HealthEnabled = Options.RadianceAllHealthTier >= 0.0f;
+                RadiantAllModifier.BaseEnabled = Options.RadianceAllTier >= 0.0f;
                 RadiantAllModifier.BaseMod = Options.RadianceAllTier - 1.0f;
                 RadiantAllModifier.SpeedMod = Options.RadianceAllSpeedTier - 1.0f;
                 RadiantAllModifier.HealthMod = Options.RadianceAllHealthTier - 1.0f;
@@ -63,6 +77,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
             else
             {
+                RadiantAllModifier.BaseEnabled = false;
                 RadiantAllModifier.SpeedEnabled = false;
                 RadiantAllModifier.DamageEnabled = false;
                 RadiantAllModifier.HealthEnabled = false;
@@ -77,6 +92,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             BuffsHealth = false;
             BuffsSpeed = false;
             BuffsBase = false;
+
+            // todo: add first, then multiply
 
             foreach (var modifier in Modifiers)
             {
@@ -106,58 +123,157 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             }
 
-            if (BuffsDamage && !RequestedDamageBuff)
-            {
-                Eid.DamageBuff();
-                RequestedDamageBuff = true;
-            }
-            else if (!BuffsDamage && RequestedDamageBuff)
-            {
-                Eid.DamageUnbuff();
-                RequestedDamageBuff = false;
-            }
-
-            if (BuffsHealth && !RequestedHealthBuff)
-            {
-                Eid.HealthBuff();
-                RequestedHealthBuff = true;
-            }
-            else if (!BuffsHealth && RequestedHealthBuff)
-            {
-                Eid.HealthUnbuff();
-                RequestedHealthBuff = false;
-            }
-
-            if (BuffsSpeed && !RequestedSpeedBuff)
-            {
-                Eid.SpeedBuff();
-                RequestedSpeedBuff = true;
-            }
-            else if (!BuffsSpeed && RequestedSpeedBuff)
-            {
-                Eid.SpeedUnbuff();
-                RequestedSpeedBuff = false;
-            }
-
             if (BuffsBase)
             {
-                Eid.radianceTier = radianceTier;
+                if (AddedBase > 0)
+                {
+                    AddBase(-AddedBase);
+                }
+                
+                AddBase(radianceTier - 1.0f);
+            }
+            else if (AddedBase > 0)
+            {
+                AddBase(-AddedSpeed);
             }
 
             if (BuffsSpeed)
             {
-                Eid.speedBuffModifier = speedValue;
+                if (AddedSpeed > 0)
+                {
+                    AddSpeed(-AddedSpeed);
+                }
+                
+                RequestSpeedBuff();
+                AddSpeed(speedValue - 1.0f);
+            }
+            else
+            {
+                AddSpeed(-AddedSpeed);
+                UnrequestSpeedBuff();
             }
 
             if (BuffsDamage)
             {
-                Eid.damageBuffModifier = damageValue;
+                if (AddedDamage > 0)
+                {
+                    AddDamage(-AddedDamage);
+                }
+
+                RequestDamageBuff();
+                AddDamage(damageValue - 1.0f);
+            }
+            else
+            {
+                AddDamage(-AddedDamage);
+                UnrequestDamageBuff();
             }
 
             if (BuffsHealth)
             {
-                Eid.healthBuffModifier = healthValue;
+                if (AddedHealth > 0)
+                {
+                    AddHealth(-AddedHealth);
+                }
+
+                RequestHealthBuff();
+                AddHealth(healthValue - 1.0f);
             }
+            else
+            {
+                AddHealth(-AddedHealth);
+                UnrequestHealthBuff();
+            }
+        }
+
+        private void RequestHealthBuff()
+        {
+            if (_requestedHealthBuff)
+            {
+                return;
+            }
+
+            Eid.HealthBuff();
+            _requestedHealthBuff = true;
+        }
+
+        private void UnrequestHealthBuff()
+        {
+            if (!_requestedHealthBuff)
+            {
+                return;
+            }
+
+            Eid.HealthUnbuff();
+            _requestedHealthBuff = false;
+        }
+        
+        private void RequestSpeedBuff()
+        {
+            if (_requestedSpeedBuff)
+            {
+                return;
+            }
+
+            Eid.SpeedBuff();
+            _requestedSpeedBuff = true;
+        }
+
+        private void UnrequestSpeedBuff()
+        {
+            if (!_requestedSpeedBuff)
+            {
+                return;
+            }
+
+            Eid.SpeedUnbuff();
+            _requestedSpeedBuff = false;
+        }
+
+        private void RequestDamageBuff()
+        {
+            if (_requestedDamageBuff)
+            {
+                return;
+            }
+
+            Eid.DamageBuff();
+            _requestedDamageBuff = true;
+        }
+
+        private void UnrequestDamageBuff()
+        {
+            if (!_requestedDamageBuff)
+            {
+                return;
+            }
+            
+            Eid.DamageUnbuff();
+            _requestedDamageBuff = false;
+        }
+
+        private void AddSpeed(float amount)
+        {
+            Eid.speedBuffModifier += amount;
+            AddedSpeed += amount;
+        }
+
+        private void AddDamage(float amount)
+        {
+            Eid.damageBuffModifier += amount;
+            AddedDamage += amount;
+        }
+
+        private void AddHealth(float amount)
+        {
+            Eid.healthBuffModifier += amount;
+            AddedHealth += amount;
+        }
+
+        private void AddBase(float amount)
+        {
+            Eid.radianceTier += amount;
+            AddedBase += amount;
         }
 
         private void Start()
@@ -167,6 +283,21 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             
             RadiantAllModifier = new EnemyRadiance.Modifier();
             AddModifier(RadiantAllModifier);
+            
+            if (!Eid.speedBuff)
+            {
+                Eid.speedBuffModifier = 1.0f;
+            }
+
+            if (!Eid.damageBuff)
+            {
+                Eid.damageBuffModifier = 1.0f;
+            }
+
+            if (!Eid.healthBuff)
+            {
+                Eid.healthBuffModifier = 1.0f;
+            }
         }
     }
 }
