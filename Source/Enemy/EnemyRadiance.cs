@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
@@ -123,6 +124,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             }
 
+            if ((BuffsHealth || BuffsDamage || BuffsSpeed) && Eid.radianceTier == 0.0f)
+            {
+                Eid.radianceTier = 1.0f;
+            }
+            
             if (BuffsBase)
             {
                 if (AddedBase > 0)
@@ -184,6 +190,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 AddHealth(-AddedHealth);
                 UnrequestHealthBuff();
             }
+
+            //Log.Message($"{this}: radianceTier: {Eid.radianceTier}\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}\ndamageBuff: {Eid.damageBuffModifier}\n");
         }
 
         private void RequestHealthBuff()
@@ -276,13 +284,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             AddedBase += amount;
         }
 
-        private void Start()
+        private void Awake()
         {
             Eid = GetComponent<EnemyIdentifier>();
             Enemy = GetComponent<EnemyComponents>();
-            
-            RadiantAllModifier = new EnemyRadiance.Modifier();
-            AddModifier(RadiantAllModifier);
             
             if (!Eid.speedBuff)
             {
@@ -298,6 +303,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 Eid.healthBuffModifier = 1.0f;
             }
+        }
+
+        private void Start()
+        {
+            RadiantAllModifier = new EnemyRadiance.Modifier();
+            AddModifier(RadiantAllModifier);
         }
     }
 }
