@@ -94,33 +94,40 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             BuffsSpeed = false;
             BuffsBase = false;
 
-            // todo: add first, then multiply
-
-            foreach (var modifier in Modifiers)
+            for (int i = 0; i < 2; i++)
             {
-                BuffsDamage = BuffsDamage || modifier.DamageEnabled;
-                BuffsHealth = BuffsHealth || modifier.HealthEnabled;
-                BuffsSpeed = BuffsSpeed || modifier.SpeedEnabled;
-                BuffsBase = BuffsBase || modifier.BaseEnabled;
+                bool adding = i == 0;
+                foreach (var modifier in Modifiers)
+                {
+                    if ((modifier.Multiplier && adding) || (!modifier.Multiplier && !adding))
+                    {
+                        continue;
+                    }
 
-                if (modifier.BaseEnabled)
-                {
-                    radianceTier = modifier.Multiplier ? radianceTier * modifier.BaseMod : radianceTier + modifier.BaseMod;
-                }
+                    BuffsDamage = BuffsDamage || modifier.DamageEnabled;
+                    BuffsHealth = BuffsHealth || modifier.HealthEnabled;
+                    BuffsSpeed = BuffsSpeed || modifier.SpeedEnabled;
+                    BuffsBase = BuffsBase || modifier.BaseEnabled;
 
-                if (modifier.HealthEnabled)
-                {
-                    healthValue = modifier.Multiplier ? healthValue * modifier.HealthMod : healthValue + modifier.HealthMod;
-                }
-                
-                if (modifier.SpeedEnabled)
-                {
-                    speedValue = modifier.Multiplier ? speedValue * modifier.SpeedMod : speedValue + modifier.SpeedMod;
-                }
+                    if (modifier.BaseEnabled)
+                    {
+                        radianceTier = modifier.Multiplier ? radianceTier * modifier.BaseMod : radianceTier + modifier.BaseMod;
+                    }
 
-                if (modifier.DamageEnabled)
-                {
-                    damageValue = modifier.Multiplier ? damageValue * modifier.DamageMod : damageValue + modifier.DamageMod;
+                    if (modifier.HealthEnabled)
+                    {
+                        healthValue = modifier.Multiplier ? healthValue * modifier.HealthMod : healthValue + modifier.HealthMod;
+                    }
+                    
+                    if (modifier.SpeedEnabled)
+                    {
+                        speedValue = modifier.Multiplier ? speedValue * modifier.SpeedMod : speedValue + modifier.SpeedMod;
+                    }
+
+                    if (modifier.DamageEnabled)
+                    {
+                        damageValue = modifier.Multiplier ? damageValue * modifier.DamageMod : damageValue + modifier.DamageMod;
+                    }
                 }
             }
 
