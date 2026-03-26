@@ -26,13 +26,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private static LevelAdditions CurrentAdditions = null;
 
-        private static void OnSceneLoad(Scene scene, string sceneName)
+        private static void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
         {
-            sceneName = SceneHelper.CurrentScene;
+            levelName = SceneHelper.CurrentScene;
             CurrentAdditions = null;
             Func<LevelAdditions> ctor = null;
-            LevelAdditionsCtorDict.TryGetValue(sceneName, out ctor);
-            Log.TraceExpectedInfo($"Level Additions OnSceneLoad called with sceneName {sceneName}, trying to find valid constructor...");
+            LevelAdditionsCtorDict.TryGetValue(levelName, out ctor);
+            Log.TraceExpectedInfo($"Level Additions OnSceneLoad called with sceneName {levelName}, trying to find valid constructor...");
             if (ctor != null)
             {
                 CurrentAdditions = ctor.Invoke();
@@ -45,7 +45,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        private static void OnSceneUnload(Scene scene, string sceneName)
+        private static void OnSceneUnload(Scene scene, string levelName, string unitySceneName)
         {
             CurrentAdditions?.OnSceneUnload();
             CurrentAdditions = null;

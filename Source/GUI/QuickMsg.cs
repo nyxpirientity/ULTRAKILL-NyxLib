@@ -103,13 +103,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        private static void OnSceneUnloaded(Scene scene, string sceneName)
+        private static void OnSceneUnloaded(Scene scene, string levelName, string unitySceneName)
         {
             Pool?.Clear();
             ActiveQuickMsgs?.Clear();
         }
 
-        private static void OnSceneLoaded(Scene scene, string sceneName)
+        private static void OnSceneLoaded(Scene scene, string levelName, string unitySceneName)
         {
             if (Assets.LabelPrefab != null && CanvasController.Instance.NullInvalid()?.gameObject != null)
             {

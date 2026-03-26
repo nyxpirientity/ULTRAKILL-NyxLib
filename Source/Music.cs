@@ -47,7 +47,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             UpdateEvents.OnUpdate += Update;
         }
 
-        private static void OnSceneLoad(Scene arg1, string arg2)
+        private static void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
         {
             PlayBattleWithCleanVotes = 0;
             HasVotedForBattleMusic = false;

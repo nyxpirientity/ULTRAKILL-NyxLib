@@ -101,7 +101,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
 
         static bool WaitingForCheatRegistration = false;
-        private static void OnSceneWasLoaded(Scene scene, string sceneName)
+        private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
         {
             if (Cheats.Manager == null)
             {

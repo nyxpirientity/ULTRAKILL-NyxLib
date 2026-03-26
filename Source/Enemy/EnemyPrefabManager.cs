@@ -9,7 +9,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             UpdateEvents.OnLateUpdate += LateUpdate;
 
-            ScenesEvents.OnSceneWasLoaded += (scene, sceneName) =>
+            ScenesEvents.OnSceneWasLoaded += (scene, levelName, unitySceneName) =>
             {
                 FindEIDs();
                 _findEidsFrameCountdown = 5;

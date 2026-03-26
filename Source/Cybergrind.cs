@@ -113,12 +113,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             ScenesEvents.OnSceneWasUnloaded += OnSceneWasUnloaded;
         }
 
-        private static void OnSceneWasUnloaded(Scene scene, string arg2)
+        private static void OnSceneWasUnloaded(Scene scene, string levelName, string unitySceneName)
         {
             IsActive = false;
         }
 
-        private static void OnSceneWasLoaded(Scene scene, string sceneName)
+        private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
         {
             IsActive = false;
         }

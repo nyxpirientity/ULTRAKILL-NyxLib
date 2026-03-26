@@ -54,7 +54,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private static List<Func<bool>> _assetPickers = new List<Func<bool>>(64);
 
-        private static void OnSceneWasLoaded(Scene scene, string sceneName)
+        private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
         {
             for (int i = 0; i < _assetPickers.Count; i++)
             {

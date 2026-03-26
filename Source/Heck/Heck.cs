@@ -71,7 +71,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         internal static void Initialize()
         {
-            ScenesEvents.OnSceneWasLoaded += (sceneIndex, sceneName) => { CreateHeck(); };
+            ScenesEvents.OnSceneWasLoaded += (sceneIndex, levelName, unitySceneName) => { CreateHeck(); };
         }
 
         private static void CreateHeck()
