@@ -43,6 +43,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [SerializeField] private float _addedHealth = 0.0f;
         public float AddedHealth { get => _addedHealth; private set => _addedHealth = value; }
 
+        private float _prevBaseBuff = 1.0f;
+        private float _prevHealthBuff = 1.0f;
+        private float _prevDamageBuff = 1.0f;
+        private float _prevSpeedBuff = 1.0f;
+
         public HashSet<Modifier> Modifiers = new HashSet<Modifier>(8);
 
         public void AddModifier(Modifier modifier)
@@ -52,6 +57,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private EnemyRadiance.Modifier RadiantAllModifier = new EnemyRadiance.Modifier();
 
+        
         protected void FixedUpdate()
         {
             if (Eid.Dead)
@@ -197,6 +203,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 AddHealth(-AddedHealth);
                 UnrequestHealthBuff();
             }
+
+            if ((Eid.radianceTier != _prevBaseBuff) || (Eid.speedBuffModifier != _prevSpeedBuff) || (Eid.damageBuffModifier != _prevDamageBuff) || (Eid.damageBuffModifier != _prevDamageBuff))
+            {
+                Eid.UpdateBuffs();
+            }
+
+            _prevBaseBuff = Eid.radianceTier;
+            _prevDamageBuff = Eid.damageBuffModifier;
+            _prevHealthBuff = Eid.healthBuffModifier;
+            _prevSpeedBuff = Eid.speedBuffModifier;
+
 
             //Log.Message($"{this}: radianceTier: {Eid.radianceTier}\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}\ndamageBuff: {Eid.damageBuffModifier}\n");
         }
