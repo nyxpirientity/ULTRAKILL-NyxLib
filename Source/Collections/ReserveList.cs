@@ -1,10 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Nyxpiri.Collections.Generic
 {
     /* list that allows indices to be reserved for individual elements, even if you remove elements at indices before that element */
-    public class ReserveList<T>
+    public class ReserveList<T> : IReadOnlyCollection<T>
     {
         private struct ReserveListElem
         {
@@ -133,6 +134,11 @@ namespace Nyxpiri.Collections.Generic
             }
 
             yield break;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

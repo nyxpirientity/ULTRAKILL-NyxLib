@@ -312,6 +312,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             Eid = GetComponent<EnemyIdentifier>();
             Enemy = GetComponent<EnemyComponents>();
+
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
             
             if (!Eid.speedBuff)
             {
