@@ -22,6 +22,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         EnemyIdentifier Eid = null;
         EnemyComponents Enemy = null;
 
+        [SerializeField] private bool _hasBuffedBefore = false;
+        [SerializeField] private bool _hasBuffedSpeedBefore = false;
+        [SerializeField] private bool _hasBuffedHealthBefore = false;
+        [SerializeField] private bool _hasBuffedDamageBefore = false;
+
         [SerializeField] private bool _requestedSpeedBuff = false;
         [SerializeField] private bool _requestedHealthBuff = false;
         [SerializeField] private bool _requestedDamageBuff = false;
@@ -137,8 +142,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             }
 
-            if ((BuffsHealth || BuffsDamage || BuffsSpeed) && Eid.radianceTier == 0.0f)
+            if ((BuffsHealth || BuffsDamage || BuffsSpeed) && (Eid.radianceTier == 0.0f || !_hasBuffedBefore) && (!Eid.speedBuff && !Eid.damageBuff && !Eid.healthBuff))
             {
+                _hasBuffedBefore = true;
                 Eid.radianceTier = 1.0f;
             }
             
@@ -148,7 +154,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 {
                     AddBase(-AddedBase);
                 }
-                
+
                 AddBase(radianceTier - 1.0f);
             }
             else if (AddedBase > 0)
@@ -158,6 +164,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             if (BuffsSpeed)
             {
+                if (!_hasBuffedSpeedBefore)
+                {
+                    Eid.speedBuffModifier = 1.0f;
+                }
+            
                 if (AddedSpeed > 0)
                 {
                     AddSpeed(-AddedSpeed);
@@ -174,6 +185,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             if (BuffsDamage)
             {
+                if (!_hasBuffedDamageBefore)
+                {
+                    Eid.damageBuffModifier = 1.0f;
+                }
+
                 if (AddedDamage > 0)
                 {
                     AddDamage(-AddedDamage);
@@ -190,6 +206,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             if (BuffsHealth)
             {
+                if (!_hasBuffedHealthBefore)
+                {
+                    Eid.healthBuffModifier = 1.0f;
+                }
+
                 if (AddedHealth > 0)
                 {
                     AddHealth(-AddedHealth);
@@ -225,6 +246,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
+            _hasBuffedHealthBefore = true;
             Eid.HealthBuff();
             _requestedHealthBuff = true;
         }
@@ -246,7 +268,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 return;
             }
-
+            
+            _hasBuffedSpeedBefore = true;
             Eid.SpeedBuff();
             _requestedSpeedBuff = true;
         }
@@ -269,6 +292,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
+            _hasBuffedDamageBefore = true;
             Eid.DamageBuff();
             _requestedDamageBuff = true;
         }
@@ -316,21 +340,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (!Cheats.Enabled)
             {
                 return;
-            }
-            
-            if (!Eid.speedBuff)
-            {
-                Eid.speedBuffModifier = 1.0f;
-            }
-
-            if (!Eid.damageBuff)
-            {
-                Eid.damageBuffModifier = 1.0f;
-            }
-
-            if (!Eid.healthBuff)
-            {
-                Eid.healthBuffModifier = 1.0f;
             }
         }
 
