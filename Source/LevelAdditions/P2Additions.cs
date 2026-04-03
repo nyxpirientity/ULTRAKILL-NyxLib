@@ -152,7 +152,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (!IsBattleWithClean)
             {
                 Log.ExpectedInfo($"Level Additions for P-2 trying to play battle music with clean!\nNumVirtues: {NumVirtues}\nNumMindflayers: {NumMindflayers}");
-                Music.PlayBattleWithCleanVotes += 1;
+                Music.AddPlayCleanWithBattleVote();
                 IsBattleWithClean = true;
             }
         }
@@ -162,7 +162,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (IsBattleWithClean)
             {
                 Log.ExpectedInfo($"Level Additions for P-2 trying to NOT play battle music with clean!");
-                Music.PlayBattleWithCleanVotes -= 1;
+                Music.SubtractPlayCleanWithBattleVote();
                 IsBattleWithClean = false;
             }
         }

@@ -73,9 +73,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
         public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
         public static ConfigEntry<bool> RegisterForceNextWaveCheat { get; private set; } = null;
+        public static ConfigEntry<bool> ForcePlayCleanMusicWithBattleMusic { get; private set; } = null;
 
         const string DebugCat = "Debug";
         const string DevCat = "Development";
+        const string ExtrasCat = "Extras";
         const string CheatsCat = "Cheats";
         const string RadianceAllCat = "RadianceAll";
 
@@ -99,6 +101,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
             RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);
             RegisterForceNextWaveCheat = Config.Bind($"{CheatsCat}", "RegisterForceNextWaveCheat", true);
+            ForcePlayCleanMusicWithBattleMusic = Config.Bind($"{ExtrasCat}", "ForcePlayCleanMusicWithBattleMusic", false);
         }
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Diagnostics;
 using HarmonyLib;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
@@ -26,20 +28,22 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        [HarmonyPatch(typeof(MusicManager), "OnEnable", new Type[] { })]
-        static class MusicManagerAwakePatch
+        public static void AddPlayCleanWithBattleVote()
         {
-            public static void Prefix(MusicManager __instance)
-            {
-            }
+            _playBattleWithCleanVotes += 1;
+        }
+        
+        public static void SubtractPlayCleanWithBattleVote()
+        {
+            _playBattleWithCleanVotes -= 1;
 
-            public static void Postfix(MusicManager __instance)
+            if (_playBattleWithCleanVotes < 0)
             {
-                _manager = __instance;
+                Log.Error($"_playBattleWithCleanVotes is {_playBattleWithCleanVotes}, which is considered such it should be impossible! :c\nI don't know what caused this. Here's the current stack which may not be relevant. {StackDebug.GetStackString()}");
             }
         }
 
-        public static int PlayBattleWithCleanVotes { get; set; } = 0;
+        public static int PlayCleanWithBattleVotes => _playBattleWithCleanVotes + (Options.ForcePlayCleanMusicWithBattleMusic.Value ? 1 : 0);
 
         internal static void Initialize()
         {
@@ -47,9 +51,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             UpdateEvents.OnUpdate += Update;
         }
 
+        private static int _playBattleWithCleanVotes = 0;
+
         private static void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
         {
-            PlayBattleWithCleanVotes = 0;
+            _playBattleWithCleanVotes = 0;
             HasVotedForBattleMusic = false;
         }
 
@@ -90,7 +96,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 UnvoteForBattleMusic();
             }
 
-            bool playCleanWithBattle = Cheats.IsCheatEnabled(Cheats.PlayCleanMusicWithBattle) || PlayBattleWithCleanVotes > 0;
+            bool playCleanWithBattle = Cheats.IsCheatEnabled(Cheats.PlayCleanMusicWithBattle) || PlayCleanWithBattleVotes > 0;
             
             if (Music.Manager.battleTheme == null || Music.Manager.cleanTheme == null)
             {
@@ -138,6 +144,19 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
 
             WasPlayCleanWithBattle = playCleanWithBattle;
+        }
+
+        [HarmonyPatch(typeof(MusicManager), "OnEnable", new Type[] { })]
+        static class MusicManagerAwakePatch
+        {
+            public static void Prefix(MusicManager __instance)
+            {
+            }
+
+            public static void Postfix(MusicManager __instance)
+            {
+                _manager = __instance;
+            }
         }
     }
 }
