@@ -161,7 +161,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 AddBase(radianceTier - 1.0f);
             }
-            else if (AddedBase > 0)
+            else if (AddedBase != 0)
             {
                 AddBase(-AddedSpeed);
             }
