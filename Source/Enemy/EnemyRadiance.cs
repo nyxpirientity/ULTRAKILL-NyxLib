@@ -31,10 +31,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [SerializeField] private bool _requestedHealthBuff = false;
         [SerializeField] private bool _requestedDamageBuff = false;
 
-        public bool BuffsBase { get; private set; } = false;
-        public bool BuffsSpeed { get; private set; } = false;
-        public bool BuffsDamage { get; private set; } = false;
-        public bool BuffsHealth { get; private set; } = false;
+        [SerializeField] private bool _buffsBase = false;
+        public bool BuffsBase => _buffsBase;
+        
+        [SerializeField] private bool _buffsSpeed = false;
+        public bool BuffsSpeed => _buffsSpeed;
+        
+        [SerializeField] private bool _buffsDamage = false;
+        public bool BuffsDamage => _buffsDamage;
+        
+        [SerializeField] private bool _buffsHealth = false;
+        public bool BuffsHealth => _buffsHealth;
 
         [SerializeField] private float _addedBase = 0.0f;
         public float AddedBase{ get => _addedBase; private set => _addedBase = value; }
@@ -48,10 +55,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [SerializeField] private float _addedHealth = 0.0f;
         public float AddedHealth { get => _addedHealth; private set => _addedHealth = value; }
 
-        private float _prevBaseBuff = 1.0f;
-        private float _prevHealthBuff = 1.0f;
-        private float _prevDamageBuff = 1.0f;
-        private float _prevSpeedBuff = 1.0f;
+        [SerializeField] private float _prevBaseBuff = 1.0f;
+        [SerializeField] private float _prevHealthBuff = 1.0f;
+        [SerializeField] private float _prevDamageBuff = 1.0f;
+        [SerializeField] private float _prevSpeedBuff = 1.0f;
 
         public HashSet<Modifier> Modifiers = new HashSet<Modifier>(8);
 
@@ -100,10 +107,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             float speedValue = 1.0f;
             float damageValue = 1.0f;
 
-            BuffsDamage = false;
-            BuffsHealth = false;
-            BuffsSpeed = false;
-            BuffsBase = false;
+            _buffsDamage = false;
+            _buffsHealth = false;
+            _buffsSpeed = false;
+            _buffsBase = false;
 
             for (int i = 0; i < 2; i++)
             {
@@ -115,10 +122,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                         continue;
                     }
 
-                    BuffsDamage = BuffsDamage || modifier.DamageEnabled;
-                    BuffsHealth = BuffsHealth || modifier.HealthEnabled;
-                    BuffsSpeed = BuffsSpeed || modifier.SpeedEnabled;
-                    BuffsBase = BuffsBase || modifier.BaseEnabled;
+                    _buffsDamage = BuffsDamage || modifier.DamageEnabled;
+                    _buffsHealth = BuffsHealth || modifier.HealthEnabled;
+                    _buffsSpeed = BuffsSpeed || modifier.SpeedEnabled;
+                    _buffsBase = BuffsBase || modifier.BaseEnabled;
 
                     if (modifier.BaseEnabled)
                     {
