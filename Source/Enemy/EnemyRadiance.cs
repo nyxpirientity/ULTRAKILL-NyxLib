@@ -157,10 +157,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             
             if (BuffsBase)
             {
-                if (AddedBase > 0)
-                {
-                    AddBase(-AddedBase);
-                }
+                AddBase(-AddedBase);
 
                 AddBase(radianceTier - 1.0f);
             }
@@ -176,10 +173,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     Eid.speedBuffModifier = 1.0f;
                 }
             
-                if (AddedSpeed > 0)
-                {
-                    AddSpeed(-AddedSpeed);
-                }
+                AddSpeed(-AddedSpeed);
                 
                 RequestSpeedBuff();
                 AddSpeed(speedValue - 1.0f);
@@ -197,10 +191,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     Eid.damageBuffModifier = 1.0f;
                 }
 
-                if (AddedDamage > 0)
-                {
-                    AddDamage(-AddedDamage);
-                }
+                AddDamage(-AddedDamage);
 
                 RequestDamageBuff();
                 AddDamage(damageValue - 1.0f);
@@ -217,11 +208,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 {
                     Eid.healthBuffModifier = 1.0f;
                 }
-
-                if (AddedHealth > 0)
-                {
-                    AddHealth(-AddedHealth);
-                }
+                
+                AddHealth(-AddedHealth);
 
                 RequestHealthBuff();
                 AddHealth(healthValue - 1.0f);
@@ -243,7 +231,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             _prevSpeedBuff = Eid.speedBuffModifier;
 
 
-            //Log.Message($"{this}: radianceTier: {Eid.radianceTier}\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}\ndamageBuff: {Eid.damageBuffModifier}\n");
+            if (Eid.puppet)
+            {
+                /*Log.Message($"{this}: radianceTier: {Eid.radianceTier}\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}\ndamageBuff: {Eid.damageBuffModifier}\n");
+                Log.Message($"{this}: AddedBase: {AddedBase}\nAddedSpeed: {AddedSpeed}\n speedValue: {speedValue}");*/
+            }
         }
 
         private void RequestHealthBuff()
