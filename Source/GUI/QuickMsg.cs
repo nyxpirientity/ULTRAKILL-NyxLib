@@ -43,7 +43,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static void Initialize()
         {
-            ScenesEvents.OnSceneWasUnloaded += OnSceneUnloaded;
             ScenesEvents.OnSceneWasLoaded += OnSceneLoaded;
             UpdateEvents.OnUpdate += OnUpdate;
 
@@ -103,14 +102,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        private static void OnSceneUnloaded(Scene scene, string levelName, string unitySceneName)
+        private static void OnSceneLoaded(Scene scene, string levelName, string unitySceneName)
         {
             Pool?.Clear();
             ActiveQuickMsgs?.Clear();
-        }
-
-        private static void OnSceneLoaded(Scene scene, string levelName, string unitySceneName)
-        {
             if (Assets.LabelPrefab != null && CanvasController.Instance.NullInvalid()?.gameObject != null)
             {
                 Pool.EnsureSize(32);
