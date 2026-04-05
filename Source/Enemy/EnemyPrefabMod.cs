@@ -261,13 +261,16 @@ public class EnemyPrefabStore : EnemyModifier
         var prefabEadd = Prefab.GetComponent<EnemyComponents>() ?? Prefab.GetComponentInChildren<EnemyComponents>(true);
         var prefabEid = prefabEadd.Eid;
 
-        prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
         prefabEid.activateOnDeath = new GameObject[0];
         prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
         prefabEid.stuckMagnets = new System.Collections.Generic.List<Magnet>();
         prefabEid.blessed = false;
+        prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
         
-        prefabEid.onDeath = new UnityEngine.Events.UnityEvent();
+        if (prefabEid.enemyType != EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
+        {
+            prefabEid.onDeath = new UnityEngine.Events.UnityEvent();
+        }
 
         if (prefabEid.machine != null)
         {
