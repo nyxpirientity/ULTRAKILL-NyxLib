@@ -12,7 +12,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         protected void Awake()
         {
             _projectile = GetComponent<Projectile>();        
+        }
+
+        protected void OnEnable()
+        {
             PlayerPunchEvents.PreParryProjectile += PreParryProjectile;
+        }
+
+        protected void OnDisable()
+        {
+            PlayerPunchEvents.PreParryProjectile -= PreParryProjectile;
         }
 
         private void PreParryProjectile(EventMethodCanceler canceler, Punch punch, Projectile proj)
