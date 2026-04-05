@@ -46,7 +46,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
 
         public const string RadiantAllEnemies = "nyxpiri.radiant-all-enemies";
-        public const string SandAllEnemiesID = "nyxpiri.sand-all-enemies";
+        public const string SandAllEnemies = "nyxpiri.sand-all-enemies";
+        public const string OverrideCybergrindStartingWave = "nyxpiri.override-cybergrind-starting-wave";
         public const string DisableStops = "nyxpiri.disable-stops";
         public const string DisableSlowdown = "nyxpiri.disable-slowdown";
         public const string UltraStop = "nyxpiri.ultra-stop";
@@ -90,7 +91,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     OptionsManager.forceRadiance = true;
                 }
 
-                if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemiesID))
+                if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemies))
                 {
                     OptionsManager.forceSand = true;
                 }
@@ -139,6 +140,20 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 ), "CYBERGRIND");
             }
 
+            if (Options.RegisterOverrideCybergrindStartingWaveCheat.Value)
+            {
+                Cheats.Manager.RegisterCheat(new ToggleCheat(
+                    "Override Starting Wave", 
+                    OverrideCybergrindStartingWave,
+                    onDisable: (cheat) =>
+                    {
+                    },
+                    onEnable: (cheat, manager) =>
+                    {
+                    }
+                ), "CYBERGRIND");
+            }
+
             Cheats.Manager.RegisterCheat(new ToggleCheat(
                 "Radiant All Enemies", 
                 Cheats.RadiantAllEnemies,
@@ -154,7 +169,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 Cheats.Manager.RegisterCheat(new ToggleCheat(
                     "Sand All Enemies", 
-                    Cheats.SandAllEnemiesID,
+                    Cheats.SandAllEnemies,
                     onDisable: (cheat) =>
                     {
                         OptionsManager.forceSand = false;

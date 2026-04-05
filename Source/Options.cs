@@ -73,6 +73,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
         public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
         public static ConfigEntry<bool> RegisterForceNextWaveCheat { get; private set; } = null;
+        public static ConfigEntry<bool> RegisterOverrideCybergrindStartingWaveCheat { get; private set; } = null;
+        public static ConfigEntry<int> CybergrindStartingWaveOverride { get; private set; } = null;
         public static ConfigEntry<bool> ForcePlayCleanMusicWithBattleMusic { get; private set; } = null;
 
         const string DebugCat = "Debug";
@@ -101,6 +103,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
             RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);
             RegisterForceNextWaveCheat = Config.Bind($"{CheatsCat}", "RegisterForceNextWaveCheat", true);
+            RegisterOverrideCybergrindStartingWaveCheat = Config.Bind($"{CheatsCat}", "RegisterOverrideCybergrindStartingWaveCheat", false);
+            CybergrindStartingWaveOverride = Config.Bind($"{CheatsCat}", "CybergrindStartingWaveOverride", 0, "Overrides cybergrind starting wave to this number, only works if cheats are enabled and the OverrideCybergrindStartingWave cheat is active.");
             ForcePlayCleanMusicWithBattleMusic = Config.Bind($"{ExtrasCat}", "ForcePlayCleanMusicWithBattleMusic", false);
         }
     }

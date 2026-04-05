@@ -111,6 +111,21 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             UpdateEvents.OnFixedUpdate += OnFixedUpdate;
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
             ScenesEvents.OnSceneWasUnloaded += OnSceneWasUnloaded;
+
+            PreCybergrindBegin += PreBegin;
+        }
+
+        private static void PreBegin(EventMethodCanceler canceler, EndlessGrid endlessGrid)
+        {
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (Cheats.IsCheatEnabled(Cheats.OverrideCybergrindStartingWave))
+            {
+                endlessGrid.startWave = Options.CybergrindStartingWaveOverride.Value;
+            }
         }
 
         private static void OnSceneWasUnloaded(Scene scene, string levelName, string unitySceneName)
