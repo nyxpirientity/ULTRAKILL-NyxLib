@@ -271,7 +271,7 @@ public class EnemyPrefabStore : EnemyModifier
         {
             prefabEid.onDeath = new UnityEngine.Events.UnityEvent();
         }
-
+        
         if (prefabEid.machine != null)
         {
             prefabEid.machine.musicRequested = false;

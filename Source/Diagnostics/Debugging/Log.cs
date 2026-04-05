@@ -34,7 +34,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug
 
         public static void DebugInfo(string message)
         {
-            Logger.LogDebug(message);
+            if (Options.IncludeTraceExpectedLogs)
+            {
+                Logger.LogDebug(message);
+            }
         }
 
         public static void ExpectedInfo(string message)
