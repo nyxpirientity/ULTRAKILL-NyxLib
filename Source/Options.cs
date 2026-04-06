@@ -52,6 +52,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static ConfigEntry<bool> ShowErrorNotification = null;
         public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
         public static ConfigEntry<bool> DisableQuickLoad = null;
+
+        public static ConfigEntry<int> EnemyPrefabInstanceStoreCapacityMax { get; private set; } = null;
         
         static ConfigEntry<float> RadianceAllTierEntry = null;
         static ConfigEntry<float> RadianceAllSpeedTierEntry = null;
@@ -99,6 +101,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RadianceAllSpeedTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.25f);
             RadianceAllDamageTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.1f);
             RadianceAllHealthTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllHealthTier", 1.25f);
+
+            EnemyPrefabInstanceStoreCapacityMax = Config.Bind("Performance", "EnemyPrefabInstanceStoreCapacityMax", 5);
 
             RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
             RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);

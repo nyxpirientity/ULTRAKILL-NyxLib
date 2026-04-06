@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Nyxpiri;
 using Nyxpiri.ULTRAKILL.NyxLib;
@@ -6,6 +7,14 @@ using UnityEngine;
 
 public class EnemyPrefabStore : EnemyModifier
 {
+    public static void RequestInstanceStoreCapacity(int requestedCapacity)
+    {
+        InstanceStoreCapacityModsAdditional = Math.Max(InstanceStoreCapacity, requestedCapacity);
+    }
+
+    public static int InstanceStoreCapacity => Mathf.Min(InstanceStoreCapacityModsAdditional, Options.EnemyPrefabInstanceStoreCapacityMax.Value);
+    public static int InstanceStoreCapacityModsAdditional { get; private set; } = 0;
+
     public class InstanceStore : ScriptableObject
     {
         public void Initialize(GameObject prefab, GameObject prefabParent, string debugName)
@@ -114,7 +123,7 @@ public class EnemyPrefabStore : EnemyModifier
         RegistrationTracker RegistrationTracker = null;
         private int RegistrationIdx = -1;
 
-        public bool IsFull { get => Instances.Count >= 5; }
+        public bool IsFull { get => Instances.Count >= InstanceStoreCapacity; }
     }
 
     [SerializeField] private InstanceStore _Instances = null;
