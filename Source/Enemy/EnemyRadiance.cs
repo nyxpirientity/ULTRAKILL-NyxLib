@@ -69,6 +69,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private EnemyRadiance.Modifier RadiantAllModifier = new EnemyRadiance.Modifier();
 
+        private bool _excluded = false;
         
         protected void FixedUpdate()
         {
@@ -82,6 +83,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
+            if (_excluded)
+            {
+                return;
+            }
+            
             if (Cheats.IsCheatEnabled(Cheats.RadiantAllEnemies))
             {
                 RadiantAllModifier.SpeedEnabled = Options.RadianceAllSpeedTier >= 0.0f;
@@ -335,6 +341,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             Eid = GetComponent<EnemyIdentifier>();
             Enemy = GetComponent<EnemyComponents>();
+
+            if (Eid.enemyType == EnemyType.MirrorReaper) // mirror reaper radiance is completely busted (in vanilla) so it literally doesn't matter. just forget it.
+            {
+                _excluded = true;
+            }
 
             if (!Cheats.Enabled)
             {
