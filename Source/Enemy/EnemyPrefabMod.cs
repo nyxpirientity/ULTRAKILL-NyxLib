@@ -127,15 +127,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 if (PrefabEadd.Eid.enemyType == EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
                 {
-                    Log.Message("PrePreTest!");
-                    instGo.GetComponent<EnemyComponents>().PreDeath += (instakill) => {Log.Message("PreTest!"); instGo.GetComponent<Stalker>().SandExplode(); Log.Message("PreTest 2!");};
-                    instGo.GetComponent<EnemyComponents>().PostDeath += (instakill) => { Log.Message("Test!"); instGo.GetComponent<EnemyComponents>().InstaDestroy(); Log.Message("Test 2!"); };
-                    Log.Message("PrePreTest 2!");
+                    instGo.GetComponent<EnemyComponents>().PreDeath += (instakill) => { instGo.GetComponent<Stalker>().SandExplode(); };
+                    instGo.GetComponent<EnemyComponents>().PostDeath += (instakill) => { instGo.GetComponent<EnemyComponents>().InstaDestroy(); };
                 }
-                else
-                {
-                    Log.Message($"{PrefabEadd.Eid.enemyType}");
-                }
+
                 return instGo;
             }
 
@@ -181,7 +176,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return true;
             });
         }
-        
+
         public void StorePrefab(bool force = false)
         {
             try
