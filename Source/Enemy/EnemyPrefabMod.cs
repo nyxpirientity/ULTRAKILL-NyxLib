@@ -19,10 +19,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public class InstanceStore : ScriptableObject
         {
-            public void Initialize(GameObject prefab, GameObject prefabParent, string debugName)
+            public void Initialize(GameObject prefab, GameObject prefabParent, EnemyComponents prefabEadd, string debugName)
             {
                 Prefab = prefab;
                 PrefabParent = prefabParent;
+                PrefabEadd = prefabEadd;
                 _debugName = debugName;
 
                 Log.TraceExpectedInfo($"New instance store by the name of {debugName} being created with prefab {Prefab}");
@@ -82,6 +83,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             public GameObject PrefabParent = null;
 
+            public EnemyComponents PrefabEadd { get; private set; }
+
             private string _debugName = "UNNAMED";
             Stack<GameObject> Instances = new Stack<GameObject>();
 
@@ -113,12 +116,27 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 Assert.IsNotNull(Prefab);
 
+                GameObject instGo = null;
+
                 if (Instances.Count > 0)
                 {
-                    return Instances.Pop();
+                    instGo = Instances.Pop();
                 }
+            
+                instGo ??= Instantiate(Prefab);
 
-                return Instantiate(Prefab);
+                if (PrefabEadd.Eid.enemyType == EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
+                {
+                    Log.Message("PrePreTest!");
+                    instGo.GetComponent<EnemyComponents>().PreDeath += (instakill) => {Log.Message("PreTest!"); instGo.GetComponent<Stalker>().SandExplode(); Log.Message("PreTest 2!");};
+                    instGo.GetComponent<EnemyComponents>().PostDeath += (instakill) => { Log.Message("Test!"); instGo.GetComponent<EnemyComponents>().InstaDestroy(); Log.Message("Test 2!"); };
+                    Log.Message("PrePreTest 2!");
+                }
+                else
+                {
+                    Log.Message($"{PrefabEadd.Eid.enemyType}");
+                }
+                return instGo;
             }
 
             HashSet<EnemyPrefabStore> RegisteredStores = new HashSet<EnemyPrefabStore>(32);
@@ -128,56 +146,62 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public bool IsFull { get => Instances.Count >= InstanceStoreCapacity; }
         }
 
-        [SerializeField] private InstanceStore _Instances = null;
-        public InstanceStore Instances { get => _Instances; }
+        public InstanceStore Instances { get => _instances; }
         RegistrationTracker InstancesRegistrator = null;
-        public GameObject Prefab = null;
-        [SerializeField] private GameObject _PrefabParent = null;
-        public GameObject PrefabParent { get => _PrefabParent ?? null; }
-        [SerializeField] private EnemyIdentifier Eid = null;
-        [SerializeField] private EnemyComponents Enemy = null;
-
-        private bool IsPrefab { get; set; } = false;
-
-        private static bool IsStoringPrefab = false;
+        /* direct access to the prefab game object, not actually recommended to be used for instantiating prefab instances, prefer Instances.GetNewInstance() instead */
+        public GameObject PrefabDirectGameObject => _prefab;
+        public GameObject PrefabParent { get => _prefabParent ?? null; }
 
         public EnemyPrefabStore()
         {
             InstancesRegistrator = new RegistrationTracker(registerAction: () =>
             {
-                if (_Instances == null)
+                if (_instances == null)
                 {
                     return false;
                 }
                 
                 Log.TraceExpectedInfo($"{gameObject} (EnemyPrefabStore): Registering self to InstanceStore");
 
-                _Instances.RegisterStore(this);
+                _instances.RegisterStore(this);
                 
                 return true;
             },
             unregisterAction: () =>
             {
-                if (_Instances == null)
+                if (_instances == null)
                 {
                     return false;
                 }
                 
                 Log.TraceExpectedInfo($"{gameObject} (EnemyPrefabStore): Unregistering self to InstanceStore");
 
-                _Instances.UnregisterStore(this);
+                _instances.UnregisterStore(this);
 
                 return true;
             });
+        }
+        
+        public void StorePrefab(bool force = false)
+        {
+            try
+            {
+                StorePrefabUnsafe(force);
+            }
+            catch (System.Exception)
+            {
+                IsStoringPrefab = false;
+                throw;
+            }
         }
 
         protected void Awake()
         {
             GetComps();
 
-            if (Prefab != null && _PrefabParent == null)
+            if (_prefab != null && _prefabParent == null)
             {
-                _PrefabParent = Enemy.RootGameObject.transform.parent?.gameObject;
+                _prefabParent = _enemy.RootGameObject.transform.parent?.gameObject;
             }
         }
 
@@ -196,18 +220,15 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             InstancesRegistrator.Unregister();
         }
 
-        public void StorePrefab(bool force = false)
-        {
-            try
-            {
-                StorePrefabUnsafe(force);
-            }
-            catch (System.Exception)
-            {
-                IsStoringPrefab = false;
-                throw;
-            }
-        }
+        [SerializeField] private InstanceStore _instances = null;
+        [SerializeField] private GameObject _prefabParent = null;
+        [SerializeField] private GameObject _prefab = null;
+        [SerializeField] private EnemyIdentifier _eid = null;
+        [SerializeField] private EnemyComponents _enemy = null;
+
+        private bool IsPrefab { get; set; } = false;
+
+        private static bool IsStoringPrefab = false;
 
         private void OnDestroy()
         {
@@ -226,16 +247,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
-            if (Prefab != null && !force)
+            if (_prefab != null && !force)
             {
                 Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} already had a prefab, and force is false, no need to make a new one");
                 return;
             }
-            else if (Prefab != null && force)
+            else if (_prefab != null && force)
             {
                 Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} already had a prefab, but force is true, need to make a new one");
             }
-            else if (Prefab == null)
+            else if (_prefab == null)
             {
                 Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} did not have a prefab, need to make a new one");
             }
@@ -244,21 +265,24 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             GameObject templateGo;
 
-            templateGo = Enemy.RootGameObject;
+            templateGo = _enemy.RootGameObject;
 
             IsStoringPrefab = true;
 
-            Prefab = UnityEngine.Object.Instantiate(templateGo);
+            _prefab = UnityEngine.Object.Instantiate(templateGo);
 
             Assert.IsNotNull(templateGo);
             Assert.IsNotNull(templateGo.transform);
-            _PrefabParent = templateGo.transform.parent?.gameObject;
-            Prefab.SetActive(false);
+            _prefabParent = templateGo.transform.parent?.gameObject;
+            _prefab.SetActive(false);
 
-            if (_Instances == null)
+            var prefabEadd = _prefab.GetComponent<EnemyComponents>() ?? _prefab.GetComponentInChildren<EnemyComponents>(true);
+            var prefabEid = prefabEadd.Eid;
+
+            if (_instances == null)
             {
-                _Instances = ScriptableObject.CreateInstance<InstanceStore>();
-                _Instances.Initialize(Prefab, _PrefabParent, $"InstanceStore For '{gameObject}'");
+                _instances = ScriptableObject.CreateInstance<InstanceStore>();
+                _instances.Initialize(_prefab, _prefabParent, prefabEadd, $"InstanceStore For '{gameObject}'");
 
                 if (isActiveAndEnabled)
                 {
@@ -266,11 +290,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             }
 
-            _Instances.Prefab = Prefab;
-            _Instances.PrefabParent = _PrefabParent;
-
-            var prefabEadd = Prefab.GetComponent<EnemyComponents>() ?? Prefab.GetComponentInChildren<EnemyComponents>(true);
-            var prefabEid = prefabEadd.Eid;
+            _instances.Prefab = _prefab;
+            _instances.PrefabParent = _prefabParent;
 
             prefabEid.activateOnDeath = new GameObject[0];
             prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
@@ -278,11 +299,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             prefabEid.blessed = false;
             prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
             
-            if (prefabEid.enemyType != EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
-            {
-                prefabEid.onDeath = new UnityEngine.Events.UnityEvent();
-            }
-            
+            prefabEid.onDeath = new UnityEngine.Events.UnityEvent();
+
             if (prefabEid.machine != null)
             {
                 prefabEid.machine.musicRequested = false;
@@ -298,8 +316,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 prefabEid.statue.musicRequested = false;
             }
 
-            prefabEadd.PrefabStore._Instances = _Instances;
-            prefabEadd.PrefabStore.Prefab = Prefab;
+            prefabEadd.PrefabStore._instances = _instances;
+            prefabEadd.PrefabStore._prefab = _prefab;
             prefabEadd.PrefabStore.IsPrefab = true;
 
             if (prefabEid.enemyType == EnemyType.Swordsmachine)
@@ -318,14 +336,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private void GetComps()
         {
-            if (Enemy == null)
+            if (_enemy == null)
             {
-                Enemy = GetComponent<EnemyComponents>();
+                _enemy = GetComponent<EnemyComponents>();
             }
 
-            if (Eid == null)
+            if (_eid == null)
             {
-                Eid = GetComponent<EnemyIdentifier>();
+                _eid = GetComponent<EnemyIdentifier>();
             }
         }
     }

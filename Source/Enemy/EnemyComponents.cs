@@ -107,6 +107,11 @@ public class EnemyComponents : MonoBehaviour
         UniquelySolo = true;
     }
 
+    public void InstaDestroy()
+    {
+        Destroy(RootGameObject);
+    }
+
     [SerializeField] private Collider[] _colliders = null; 
     [SerializeField] private List<MonoBehaviour> _monoBehaviours = null;
     private bool _isEnemyCompInitializer = false;
