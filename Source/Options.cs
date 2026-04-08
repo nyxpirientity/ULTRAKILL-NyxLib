@@ -50,6 +50,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static ConfigEntry<bool> IncludeUnlikelyLogsEntry = null;
         static ConfigEntry<bool> IncludeUnexpectedLogsEntry = null;
         public static ConfigEntry<bool> ShowErrorNotification = null;
+        public static ConfigEntry<bool> LogEnemyRadianceUpdates = null;
         public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
         public static ConfigEntry<bool> DisableQuickLoad = null;
 
@@ -96,6 +97,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", true);
             LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
             DisableQuickLoad = Config.Bind($"{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
+            LogEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdates", false);
             
             RadianceAllTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
             RadianceAllSpeedTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.25f);

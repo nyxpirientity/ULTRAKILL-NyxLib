@@ -229,19 +229,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if ((Eid.radianceTier != _prevBaseBuff) || (Eid.speedBuffModifier != _prevSpeedBuff) || (Eid.damageBuffModifier != _prevDamageBuff) || (Eid.damageBuffModifier != _prevDamageBuff))
             {
                 Eid.UpdateBuffs();
+                if (Options.LogEnemyRadianceUpdates.Value)
+                {
+                    Log.Message($"{this} updated radiance! radiance info: \nradianceTier: {Eid.radianceTier}\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}\ndamageBuff: {Eid.damageBuffModifier}\nAddedBase: {AddedBase}\nAddedSpeed: {AddedSpeed}\nspeedValue: {speedValue}\nAddedDamage: {AddedDamage}\ndamageValue: {damageValue}\nAddedHealth: {AddedHealth}\nhealthValue: {healthValue}");
+                }
             }
 
             _prevBaseBuff = Eid.radianceTier;
             _prevDamageBuff = Eid.damageBuffModifier;
             _prevHealthBuff = Eid.healthBuffModifier;
             _prevSpeedBuff = Eid.speedBuffModifier;
-
-
-            if (Eid.puppet)
-            {
-                /*Log.Message($"{this}: radianceTier: {Eid.radianceTier}\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}\ndamageBuff: {Eid.damageBuffModifier}\n");
-                Log.Message($"{this}: AddedBase: {AddedBase}\nAddedSpeed: {AddedSpeed}\n speedValue: {speedValue}");*/
-            }
         }
 
         private void RequestHealthBuff()
