@@ -93,7 +93,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 explosion.Explosion.enemyDamageMultiplier = explosion.BaseEnemyDamageMultiplier * ExplosionEnemyDamageMultiplierScale;
                 explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.BasePlayerDamageOverride * ExplosionDamageScale);
                 explosion.Explosion.electric = explosion.Explosion.electric || ForceElectric;
-                Log.Message($"explosionDmg = {explosion.Explosion.damage}");
             }
         }
     }
