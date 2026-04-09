@@ -43,7 +43,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 if (instr.Calls(typeof(TimeController).GetMethod(nameof(TimeController.SlowDown))))
                 {
-                    instr.operand = typeof(MinosPrime).GetMethod(nameof(SlowDownReplacement), BindingFlags.Static | BindingFlags.NonPublic);
+                    instr.operand = typeof(MinosPrimeDeathPatch).GetMethod(nameof(SlowDownReplacement), BindingFlags.Static | BindingFlags.NonPublic);
                 }
 
                 yield return instr;
