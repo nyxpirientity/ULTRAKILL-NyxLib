@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
@@ -21,6 +22,24 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public IReadOnlyCollection<ManagedExplosion> Explosions { get => _Explosions; }
         public IEnumerable<AudioSource> Audios { get; private set; }
 
+        [SerializeField] private float _baseDamageOverride = -1.0f;
+        public float? BaseDamageOverride
+        {
+            get
+            {
+                if (_baseDamageOverride >= 0.0f)
+                {
+                    return _baseDamageOverride;
+                }
+
+                return null;
+            }
+
+            set
+            {
+                _baseDamageOverride = value.GetValueOrDefault(-1.0f);
+            }
+        }
         public float ExplosionScale = 1.0f;
         public float ExplosionSpeedScale = 1.0f;
         public float ExplosionDamageScale = 1.0f;
@@ -70,10 +89,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 explosion.Explosion.maxSize = explosion.BaseMaxSize * ExplosionScale;
                 explosion.Explosion.speed = explosion.BaseSpeed * ExplosionSpeedScale;
-                explosion.Explosion.damage = Mathf.RoundToInt(explosion.BaseDamage * ExplosionDamageScale);
+                explosion.Explosion.damage = Mathf.RoundToInt((BaseDamageOverride.GetValueOrDefault(explosion.BaseDamage)) * ExplosionDamageScale);
                 explosion.Explosion.enemyDamageMultiplier = explosion.BaseEnemyDamageMultiplier * ExplosionEnemyDamageMultiplierScale;
                 explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.BasePlayerDamageOverride * ExplosionDamageScale);
                 explosion.Explosion.electric = explosion.Explosion.electric || ForceElectric;
+                Log.Message($"explosionDmg = {explosion.Explosion.damage}");
             }
         }
     }
