@@ -127,8 +127,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 if (PrefabEadd.Eid.enemyType == EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
                 {
-                    instGo.GetComponent<EnemyComponents>().PreDeath += (instakill) => { instGo.GetComponent<Stalker>().SandExplode(); };
-                    instGo.GetComponent<EnemyComponents>().PostDeath += (instakill) => { instGo.GetComponent<EnemyComponents>().InstaDestroy(); };
+                    var instEnemy = instGo.GetComponent<EnemyComponents>();
+                    instEnemy.PreDeath += (canceler, instakill) => { instGo.GetComponent<Stalker>().SandExplode(); };
+                    instEnemy.PostDeath += (cancelInfo, instakill) => { instGo.GetComponent<EnemyComponents>().InstaDestroy(); };
                 }
 
                 return instGo;

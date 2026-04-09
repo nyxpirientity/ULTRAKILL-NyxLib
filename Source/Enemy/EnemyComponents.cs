@@ -39,13 +39,20 @@ public class EnemyComponents : MonoBehaviour
     public delegate void PostAnyEnemyHurtEventHandler(EventMethodCancelInfo cancelInfo, EnemyComponents enemy, GameObject target, Vector3 force, Vector3? hitPoint, float multiplier, bool tryForExplode, float critMultiplier, GameObject sourceWeapon, bool ignoreTotalDamageTakenMultiplier, bool fromExplosion);
     public static event PostAnyEnemyHurtEventHandler PostAnyEnemyHurt = null;
 
-    public Action PreEnrage = null;
-    public Action PreUnEnrage = null;
+    public delegate void PreEnrageEventHandler(EventMethodCanceler canceler);
+    public event PreEnrageEventHandler PreEnrage = null;
+    public delegate void PostEnrageEventHandler(EventMethodCancelInfo cancelInfo);
+    public event PostEnrageEventHandler PostEnrage  = null;
+
+    public delegate void PreUnEnrageEventHandler(EventMethodCanceler canceler);
+    public event PreUnEnrageEventHandler PreUnEnrage = null;
+    public delegate void PostUnEnrageEventHandler(EventMethodCancelInfo cancelInfo);
+    public event PostUnEnrageEventHandler PostUnEnrage = null;
     
-    // params: (bool instakill)
-    public event Action<bool> PreDeath = null;
-    // params: (bool instakill)
-    public event Action<bool> PostDeath = null;
+    public delegate void PreDeathEventHandler(EventMethodCanceler canceler, bool instakill);
+    public event PreDeathEventHandler PreDeath;
+    public delegate void PostDeathEventHandler(EventMethodCancelInfo cancelInfo, bool instakill);
+    public event PostDeathEventHandler PostDeath;
 
     public bool IsEnemyCompInitializer { get => _isEnemyCompInitializer; }
 
@@ -252,7 +259,7 @@ public class EnemyComponents : MonoBehaviour
     
     object DeathPatchCallerObject = null;
     private bool PreDeathCalled = false;
-    internal void TryCallPreDeath(bool instakill, object patchCallerObject)
+    internal void TryCallPreDeath(EventMethodCanceler canceler, bool instakill, object patchCallerObject)
     {
         if (PreDeathCalled)
         {
@@ -262,12 +269,12 @@ public class EnemyComponents : MonoBehaviour
         DeathPatchCallerObject = patchCallerObject;
         PreDeathCalled = true;
         InstaKilled = instakill;
-        PreDeath?.Invoke(InstaKilled);
+        PreDeath?.Invoke(canceler, InstaKilled);
         EnemyEvents.PreDeath?.Invoke(this, InstaKilled);
     }
 
     private bool PostDeathCalled = false;
-    internal void TryCallPostDeath(object patchCallerObject)
+    internal void TryCallPostDeath(EventMethodCancelInfo cancelInfo, object patchCallerObject)
     {
         if (PostDeathCalled)
         {
@@ -280,7 +287,7 @@ public class EnemyComponents : MonoBehaviour
         }
 
         PostDeathCalled = true;
-        PostDeath?.Invoke(InstaKilled);
+        PostDeath?.Invoke(cancelInfo, InstaKilled);
         EnemyEvents.PostDeath?.Invoke(this, InstaKilled);
     }
     
@@ -341,4 +348,31 @@ public class EnemyComponents : MonoBehaviour
         HurtPatchCallerObject = null;
         InTheProcessOfHurting = false;
     }
+
+    internal bool CallPreEnrage(EventMethodCancellationTracker cancellationTracker)
+    {
+        cancellationTracker.Reset();
+        PreEnrage?.Invoke(cancellationTracker.GetCanceler());
+        cancellationTracker.TryInvokeReimplementation();
+        return cancellationTracker.ShouldRunMethod;
+    }
+
+    internal void CallPostEnrage(EventMethodCancellationTracker cancellationTracker)
+    {
+        PostEnrage?.Invoke(cancellationTracker.GetCancelInfo());
+    }
+    
+    internal bool CallPreUnEnrage(EventMethodCancellationTracker cancellationTracker)
+    {
+        cancellationTracker.Reset();
+        PreUnEnrage?.Invoke(cancellationTracker.GetCanceler());
+        cancellationTracker.TryInvokeReimplementation();
+        return cancellationTracker.ShouldRunMethod;
+    }
+
+    internal void CallPostUnEnrage(EventMethodCancellationTracker cancellationTracker)
+    {
+        PostUnEnrage?.Invoke(cancellationTracker.GetCancelInfo());
+    }
+    
 }
