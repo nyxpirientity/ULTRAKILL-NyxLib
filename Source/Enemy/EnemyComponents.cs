@@ -56,6 +56,8 @@ public class EnemyComponents : MonoBehaviour
 
     public bool IsEnemyCompInitializer { get => _isEnemyCompInitializer; }
 
+    public bool AvoidHealthBasedSlowDown = false;
+
     [SerializeField] public float InitialHealth { get; private set; } = -1.0f;
     [SerializeField] public float HighestHealth { get; private set; } = -1.0f;
 

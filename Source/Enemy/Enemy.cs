@@ -287,6 +287,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             return eid.enemyType.GetSpeciesType();
         }
 
+        public static Bounds SolveEnemyBounds(this EnemyComponents enemy)
+        {
+            return SolveEnemyBounds(enemy.gameObject);    
+        }
+
         public static Bounds SolveEnemyBounds(this GameObject enemyGo)
         {
             Bounds bounds = new Bounds();
