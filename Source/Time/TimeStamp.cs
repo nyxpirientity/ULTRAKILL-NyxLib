@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
@@ -15,10 +16,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     }
 
     /* represents a timestamp in fixedupdate time */
+    [Serializable]
     public struct FixedTimeStamp
     {
-        public double? TimeStamp { get; set; }
-        public readonly double TimeSince { get => Time.fixedTime - TimeStamp.GetValueOrDefault(0.0); }
+        [SerializeField] public double TimeStamp;
+        public readonly double TimeSince { get => Time.fixedTime - TimeStamp; }
 
         public void UpdateToNow()
         {
