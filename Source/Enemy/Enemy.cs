@@ -24,6 +24,18 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static int NumGameplayRanks = 4;
 
+        public static bool IsEnraged(this EnemyIdentifier eid)
+        {
+            if (eid.Dead)
+            {
+                return false;
+            }
+            
+            var enrage = eid.GetComponent<IEnrage>();
+
+            return (enrage?.isEnraged).GetValueOrDefault(false);
+        }
+
         public static bool TryEnrage(this EnemyIdentifier eid)
         {
             if (eid.Dead)
@@ -36,6 +48,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if ((enrage?.isEnraged).GetValueOrDefault(false))
             {
                 return false;
+            }
+
+            if (!(enrage is null))
+            {
+                enrage.Enrage();
+                return true;
             }
 
             switch (eid.enemyType)

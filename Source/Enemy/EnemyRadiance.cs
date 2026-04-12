@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 
@@ -12,6 +14,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public bool SpeedEnabled = false;
             public bool HealthEnabled = false;
             public bool DamageEnabled = false;
+            public bool Additive { get => !Multiplier; set => Multiplier = !value; }
             public bool Multiplier = false;
             public float BaseMod = 0.0f;
             public float SpeedMod = 0.0f;
@@ -21,6 +24,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     
         EnemyIdentifier Eid = null;
         EnemyComponents Enemy = null;
+
+        private static bool _expectingBuffCalls = false;
 
         [SerializeField] private bool _hasBuffedBefore = false;
         [SerializeField] private bool _hasBuffedSpeedBefore = false;
@@ -55,12 +60,31 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [SerializeField] private float _addedHealth = 0.0f;
         public float AddedHealth { get => _addedHealth; private set => _addedHealth = value; }
 
+        public bool IsActive => !Eid.Dead && Cheats.Enabled && !_excluded;
+
         [SerializeField] private float _prevBaseBuff = 1.0f;
         [SerializeField] private float _prevHealthBuff = 1.0f;
         [SerializeField] private float _prevDamageBuff = 1.0f;
         [SerializeField] private float _prevSpeedBuff = 1.0f;
 
+        [SerializeField] private float _externalBaseBuff = -1.0f;
+        [SerializeField] private float _externalHealthBuff = -1.0f;
+        [SerializeField] private float _externalDamageBuff = -1.0f;
+        [SerializeField] private float _externalSpeedBuff = -1.0f;
+
         public HashSet<Modifier> Modifiers = new HashSet<Modifier>(8);
+
+        public bool BuffsAny => BuffsHealth || BuffsDamage || BuffsSpeed || BuffsBase;
+
+        public int ExpectedSpeedBuffRequests => _requestedSpeedBuff ? 1 : 0;
+        public int ExpectedHealthBuffRequests => _requestedHealthBuff ? 1 : 0;
+        public int ExpectedDamageBuffRequests => _requestedDamageBuff ? 1 : 0;
+
+        public bool IsExternallySpeedBuffed => (Eid.speedBuffRequests - ExpectedSpeedBuffRequests) > 0;
+        public bool IsExternallyDamageBuffed => (Eid.damageBuffRequests - ExpectedDamageBuffRequests) > 0;
+        public bool IsExternallyHealthBuffed => (Eid.healthBuffRequests - ExpectedHealthBuffRequests) > 0;
+
+        public bool IsExternallyBuffed => IsExternallySpeedBuffed || IsExternallyDamageBuffed || IsExternallyHealthBuffed;
 
         public void AddModifier(Modifier modifier)
         {
@@ -68,22 +92,18 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
 
         private EnemyRadiance.Modifier RadiantAllModifier = new EnemyRadiance.Modifier();
+        private EnemyRadiance.Modifier ExternalBuffModifier = new EnemyRadiance.Modifier();
 
         private bool _excluded = false;
         
         protected void FixedUpdate()
         {
-            if (Eid.Dead)
-            {
-                return;
-            }
-            
             if (!Cheats.Enabled)
             {
                 return;
             }
 
-            if (_excluded)
+            if (!IsActive)
             {
                 return;
             }
@@ -118,20 +138,28 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             _buffsSpeed = false;
             _buffsBase = false;
 
-            for (int i = 0; i < 2; i++)
+            DisableExternalBuffMod();
+
+            for (int i = 0; i < 3; i++)
             {
-                bool adding = i == 0;
+                bool solvingBuffs = i == 0;
+                bool adding = i == 1;
+                bool multiplying = i == 2;
+
                 foreach (var modifier in Modifiers)
                 {
-                    if ((modifier.Multiplier && adding) || (!modifier.Multiplier && !adding))
+                    if (solvingBuffs || adding)
+                    {
+                        _buffsDamage = BuffsDamage || modifier.DamageEnabled;
+                        _buffsHealth = BuffsHealth || modifier.HealthEnabled;
+                        _buffsSpeed = BuffsSpeed || modifier.SpeedEnabled;
+                        _buffsBase = BuffsBase || modifier.BaseEnabled;
+                    }
+                    
+                    if (((modifier.Multiplier && !multiplying) || (modifier.Additive && !adding)) || solvingBuffs)
                     {
                         continue;
                     }
-
-                    _buffsDamage = BuffsDamage || modifier.DamageEnabled;
-                    _buffsHealth = BuffsHealth || modifier.HealthEnabled;
-                    _buffsSpeed = BuffsSpeed || modifier.SpeedEnabled;
-                    _buffsBase = BuffsBase || modifier.BaseEnabled;
 
                     if (modifier.BaseEnabled)
                     {
@@ -153,12 +181,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                         damageValue = modifier.Multiplier ? damageValue * modifier.DamageMod : damageValue + modifier.DamageMod;
                     }
                 }
-            }
 
-            if ((BuffsHealth || BuffsDamage || BuffsSpeed) && (Eid.radianceTier == 0.0f || !_hasBuffedBefore) && (!Eid.speedBuff && !Eid.damageBuff && !Eid.healthBuff))
-            {
-                _hasBuffedBefore = true;
-                Eid.radianceTier = 1.0f;
+                if (!BuffsAny && !_hasBuffedBefore)
+                {
+                    return;
+                }
+
+                if (solvingBuffs)
+                {
+                    HandleExternalBuffs();
+                }
             }
             
             if (BuffsBase)
@@ -174,11 +206,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             if (BuffsSpeed)
             {
-                if (!_hasBuffedSpeedBefore)
-                {
-                    Eid.speedBuffModifier = 1.0f;
-                }
-            
                 AddSpeed(-AddedSpeed);
                 
                 RequestSpeedBuff();
@@ -192,11 +219,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             if (BuffsDamage)
             {
-                if (!_hasBuffedDamageBefore)
-                {
-                    Eid.damageBuffModifier = 1.0f;
-                }
-
                 AddDamage(-AddedDamage);
 
                 RequestDamageBuff();
@@ -209,12 +231,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
 
             if (BuffsHealth)
-            {
-                if (!_hasBuffedHealthBefore)
-                {
-                    Eid.healthBuffModifier = 1.0f;
-                }
-                
+            {                
                 AddHealth(-AddedHealth);
 
                 RequestHealthBuff();
@@ -231,7 +248,34 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 Eid.UpdateBuffs();
                 if (Options.LogEnemyRadianceUpdates.Value)
                 {
-                    Log.Message($"{this} updated radiance! radiance info: \nradianceTier: {Eid.radianceTier}\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}\ndamageBuff: {Eid.damageBuffModifier}\nAddedBase: {AddedBase}\nAddedSpeed: {AddedSpeed}\nspeedValue: {speedValue}\nAddedDamage: {AddedDamage}\ndamageValue: {damageValue}\nAddedHealth: {AddedHealth}\nhealthValue: {healthValue}");
+                    Log.Message(
+                        $"{this} updated radiance! radiance info: \nradianceTier: {Eid.radianceTier}" + 
+                        $"\nspeedBuff: {Eid.speedBuffModifier}\nhealthBuff: {Eid.healthBuffModifier}" +
+                        $"\ndamageBuff: {Eid.damageBuffModifier}\nAddedBase: {AddedBase}" + 
+                        $"\nAddedSpeed: {AddedSpeed}\nspeedValue: {speedValue}\nAddedDamage: {AddedDamage}" +
+                        $"\ndamageValue: {damageValue}\nAddedHealth: {AddedHealth}\nhealthValue: {healthValue}" + 
+                        $"\nIsExternallyBuffed: {IsExternallyBuffed}\n" +
+                        $"IsExternallySpeedBuffed: {IsExternallySpeedBuffed}\n" +
+                        $"_externalSpeedBuff: {_externalSpeedBuff}\n" +
+                        $"IsExternallyDamageBuffed: {IsExternallyDamageBuffed}\n" +
+                        $"_externalDamageBuff: {_externalDamageBuff}\n" +
+                        $"IsExternallyHealthBuffed: {IsExternallyHealthBuffed}\n" +
+                        $"_externalHealthBuff: {_externalHealthBuff}\n" +
+                        $"ExpectedSpeedBuffRequests: {ExpectedSpeedBuffRequests}\n" +
+                        $"ExpectedDamageBuffRequests: {ExpectedDamageBuffRequests}\n" +
+                        $"ExpectedHealthBuffRequests: {ExpectedHealthBuffRequests}\n" +
+                        $"HealthBuffRequests: {Eid.healthBuffRequests}\n" +
+                        $"DamageBuffRequests: {Eid.damageBuffRequests}\n" +
+                        $"SpeedBuffRequests: {Eid.speedBuffRequests}\n" +
+                        $"ExternalBuffModifier.BaseEnabled: {ExternalBuffModifier.BaseEnabled}\n" +
+                        $"ExternalBuffModifier.BaseMod: {ExternalBuffModifier.BaseMod}\n" +
+                        $"ExternalBuffModifier.SpeedEnabled: {ExternalBuffModifier.SpeedEnabled}\n" +
+                        $"ExternalBuffModifier.SpeedMod: {ExternalBuffModifier.SpeedMod}\n" +
+                        $"ExternalBuffModifier.DamageEnabled: {ExternalBuffModifier.DamageEnabled}\n" +
+                        $"ExternalBuffModifier.DamageMod: {ExternalBuffModifier.DamageMod}\n" +
+                        $"ExternalBuffModifier.HealthEnabled: {ExternalBuffModifier.HealthEnabled}\n" +
+                        $"ExternalBuffModifier.HealthMod: {ExternalBuffModifier.HealthMod}\n"
+                    );
                 }
             }
 
@@ -241,6 +285,96 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             _prevSpeedBuff = Eid.speedBuffModifier;
         }
 
+        private void DisableExternalBuffMod()
+        {
+            ExternalBuffModifier.BaseEnabled = false;
+            ExternalBuffModifier.DamageEnabled = false;
+            ExternalBuffModifier.HealthEnabled = false;
+            ExternalBuffModifier.DamageEnabled = false;
+        }
+
+        private void HandleExternalBuffs()
+        {
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+            
+            if ((BuffsAny) && (Eid.radianceTier == 0.0f || !_hasBuffedBefore))
+            {
+                _hasBuffedBefore = true;
+                _externalBaseBuff = Eid.radianceTier;
+                
+                if (_externalBaseBuff == 0.0f && !_hasBuffedBefore)
+                {
+                    _externalBaseBuff = 1.0f;
+                }
+
+                Eid.radianceTier = 1.0f;
+
+                if (!_hasBuffedHealthBefore)
+                {
+                    PossiblyWarnOfCurrentMethod();
+                    _externalHealthBuff = Eid.healthBuffModifier;
+                    Eid.healthBuffModifier = 1.0f;
+                }
+
+                if (!_hasBuffedDamageBefore)
+                {
+                    PossiblyWarnOfCurrentMethod();
+                    _externalDamageBuff = Eid.damageBuffModifier;
+                    Eid.damageBuffModifier = 1.0f;
+                }
+
+                if (!_hasBuffedSpeedBefore)
+                {
+                    PossiblyWarnOfCurrentMethod();
+                    _externalSpeedBuff = Eid.speedBuffModifier;
+                    Eid.speedBuffModifier = 1.0f;
+                }
+            }
+
+            if (BuffsHealth)
+            {
+
+            }
+            
+            if (BuffsDamage)
+            {
+
+            }
+
+            if (BuffsSpeed)
+            {
+
+            }
+
+            ExternalBuffModifier.BaseMod = _externalBaseBuff - 1.0f;
+            
+            if (IsExternallyBuffed)
+            {
+                ExternalBuffModifier.BaseEnabled = true;
+            }
+
+            if (IsExternallyHealthBuffed)
+            {
+                ExternalBuffModifier.HealthEnabled = true;
+                ExternalBuffModifier.HealthMod = _externalHealthBuff - 1.0f;
+            }
+
+            if (IsExternallyDamageBuffed)
+            {
+                ExternalBuffModifier.DamageEnabled = true;
+                ExternalBuffModifier.DamageMod = _externalDamageBuff - 1.0f;
+            }
+
+            if (IsExternallySpeedBuffed)
+            {
+                ExternalBuffModifier.SpeedEnabled = true;
+                ExternalBuffModifier.SpeedMod = _externalSpeedBuff - 1.0f;
+            }
+        }
+
         private void RequestHealthBuff()
         {
             if (_requestedHealthBuff)
@@ -248,8 +382,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
+            PossiblyWarnOfCurrentMethod();
+
             _hasBuffedHealthBefore = true;
+            
+            _expectingBuffCalls = true;
             Eid.HealthBuff();
+            _expectingBuffCalls = false;
+
             _requestedHealthBuff = true;
         }
 
@@ -259,6 +399,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 return;
             }
+
+            PossiblyWarnOfCurrentMethod();
 
             Eid.HealthUnbuff();
             _requestedHealthBuff = false;
@@ -271,8 +413,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
             
+            PossiblyWarnOfCurrentMethod();
+
             _hasBuffedSpeedBefore = true;
+
+            _expectingBuffCalls = true;
             Eid.SpeedBuff();
+            _expectingBuffCalls = false;
+
             _requestedSpeedBuff = true;
         }
 
@@ -282,6 +430,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 return;
             }
+
+            PossiblyWarnOfCurrentMethod();
 
             Eid.SpeedUnbuff();
             _requestedSpeedBuff = false;
@@ -294,8 +444,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
+            PossiblyWarnOfCurrentMethod();
+
             _hasBuffedDamageBefore = true;
+
+            _expectingBuffCalls = true;
             Eid.DamageBuff();
+            _expectingBuffCalls = false;
+
             _requestedDamageBuff = true;
         }
 
@@ -306,30 +462,36 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
             
+            PossiblyWarnOfCurrentMethod();
+
             Eid.DamageUnbuff();
             _requestedDamageBuff = false;
         }
 
         private void AddSpeed(float amount)
         {
+            PossiblyWarnOfCurrentMethod();
             Eid.speedBuffModifier += amount;
             AddedSpeed += amount;
         }
 
         private void AddDamage(float amount)
         {
+            PossiblyWarnOfCurrentMethod();
             Eid.damageBuffModifier += amount;
             AddedDamage += amount;
         }
 
         private void AddHealth(float amount)
         {
+            PossiblyWarnOfCurrentMethod();
             Eid.healthBuffModifier += amount;
             AddedHealth += amount;
         }
 
         private void AddBase(float amount)
         {
+            PossiblyWarnOfCurrentMethod();
             Eid.radianceTier += amount;
             AddedBase += amount;
         }
@@ -353,7 +515,134 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         private void Start()
         {
             RadiantAllModifier = new EnemyRadiance.Modifier();
+            ExternalBuffModifier = new EnemyRadiance.Modifier();
             AddModifier(RadiantAllModifier);
+            AddModifier(ExternalBuffModifier);
+        }
+
+        private static void PossiblyWarnOfCurrentMethod()
+        {
+            if (!Options.WarnOfEnemyRadianceUpdates.Value)
+            {
+                return;
+            }
+
+            Log.Warning($"Enemy Radiance Method Seemingly Called!\n    Stack:\n{StackDebug.GetStackString()}");
+        }
+
+        [HarmonyPatch(typeof(EnemyIdentifier), "HealthBuff", new Type[]{typeof(float)})]
+        private static class EidHealthBuffPatch
+        {
+            public static void Prefix(EnemyIdentifier __instance, float modifier)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+            }
+
+            public static void Postfix(EnemyIdentifier __instance, float modifier)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+                
+                if (_expectingBuffCalls)
+                {
+                    return;
+                }
+
+                var rad = __instance.GetComponent<EnemyRadiance>();
+
+                if (!rad._hasBuffedHealthBefore)
+                {
+                    return;
+                }
+
+                PossiblyWarnOfCurrentMethod();
+
+                rad._externalHealthBuff = modifier;
+                __instance.healthBuffModifier = rad._prevHealthBuff;
+            }
+        }
+
+        [HarmonyPatch(typeof(EnemyIdentifier), "SpeedBuff", new Type[]{typeof(float)})]
+        private static class EidSpeedBuffPatch
+        {
+            public static void Prefix(EnemyIdentifier __instance, float modifier)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+                
+                
+            }
+
+            public static void Postfix(EnemyIdentifier __instance, float modifier)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+                
+                if (_expectingBuffCalls)
+                {
+                    return;
+                }
+                
+                var rad = __instance.GetComponent<EnemyRadiance>();
+
+                if (!rad._hasBuffedSpeedBefore)
+                {
+                    return;
+                }
+
+                PossiblyWarnOfCurrentMethod();
+                
+                rad._externalSpeedBuff = modifier;
+                __instance.speedBuffModifier = rad._prevSpeedBuff;
+            }
+        }
+
+        [HarmonyPatch(typeof(EnemyIdentifier), "DamageBuff", new Type[]{typeof(float)})]
+        private static class EidDamageBuffPatch
+        {
+            public static void Prefix(EnemyIdentifier __instance, float modifier)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+                
+                
+            }
+
+            public static void Postfix(EnemyIdentifier __instance, float modifier)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+
+                if (_expectingBuffCalls)
+                {
+                    return;
+                }
+
+                var rad = __instance.GetComponent<EnemyRadiance>();
+
+                if (!rad._hasBuffedDamageBefore)
+                {
+                    return;
+                }
+
+                PossiblyWarnOfCurrentMethod();
+
+                rad._externalHealthBuff = modifier;
+                __instance.damageBuffModifier = rad._prevDamageBuff;
+            }
         }
     }
 }
