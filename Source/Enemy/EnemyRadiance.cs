@@ -555,6 +555,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 var rad = __instance.GetComponent<EnemyRadiance>();
 
+                if (rad == null)
+                {
+                    return;
+                }
+
                 if (!rad._hasBuffedHealthBefore)
                 {
                     return;
@@ -593,6 +598,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
                 
                 var rad = __instance.GetComponent<EnemyRadiance>();
+
+                if (rad == null)
+                {
+                    return;
+                }
 
                 if (!rad._hasBuffedSpeedBefore)
                 {
@@ -633,6 +643,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 var rad = __instance.GetComponent<EnemyRadiance>();
 
+                if (rad == null)
+                {
+                    return;
+                }
+                
                 if (!rad._hasBuffedDamageBefore)
                 {
                     return;
