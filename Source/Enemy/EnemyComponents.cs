@@ -56,6 +56,8 @@ public class EnemyComponents : MonoBehaviour
 
     public bool IsEnemyCompInitializer { get => _isEnemyCompInitializer; }
 
+    public bool EidStarted { get; internal set; } = false;
+
     public bool AvoidHealthBasedSlowDown = false;
 
     [SerializeField] public float InitialHealth { get; private set; } = -1.0f;
@@ -376,5 +378,4 @@ public class EnemyComponents : MonoBehaviour
     {
         PostUnEnrage?.Invoke(cancellationTracker.GetCancelInfo());
     }
-    
 }

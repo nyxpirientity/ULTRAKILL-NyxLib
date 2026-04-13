@@ -60,7 +60,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         [SerializeField] private float _addedHealth = 0.0f;
         public float AddedHealth { get => _addedHealth; private set => _addedHealth = value; }
 
-        public bool IsActive => !Eid.Dead && Cheats.Enabled && !_excluded;
+        public bool IsActive => !Eid.Dead && Cheats.Enabled && !_excluded && _started && (Enemy?.EidStarted).GetValueOrDefault(false);
 
         [SerializeField] private float _prevBaseBuff = 1.0f;
         [SerializeField] private float _prevHealthBuff = 1.0f;
@@ -95,7 +95,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         private EnemyRadiance.Modifier ExternalBuffModifier = new EnemyRadiance.Modifier();
 
         private bool _excluded = false;
-        
+
         protected void FixedUpdate()
         {
             if (!Cheats.Enabled)
@@ -246,7 +246,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if ((Eid.radianceTier != _prevBaseBuff) || (Eid.speedBuffModifier != _prevSpeedBuff) || (Eid.damageBuffModifier != _prevDamageBuff) || (Eid.damageBuffModifier != _prevDamageBuff))
             {
                 Eid.UpdateBuffs();
-                if (Options.LogEnemyRadianceUpdates.Value)
+                if (Options.LogEnemyRadianceUpdates.Value && (!Options.LogEnemyRadianceUpdatesOnlyIfExternallyBuffed.Value || IsExternallyBuffed))
                 {
                     Log.Message(
                         $"{this} updated radiance! radiance info: \nradianceTier: {Eid.radianceTier}" + 
@@ -387,6 +387,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             _hasBuffedHealthBefore = true;
             
             _expectingBuffCalls = true;
+            LogBuffRequest("health", Eid.healthBuffRequests);
             Eid.HealthBuff();
             _expectingBuffCalls = false;
 
@@ -402,6 +403,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             PossiblyWarnOfCurrentMethod();
 
+            LogBuffUnrequest("health");
             Eid.HealthUnbuff();
             _requestedHealthBuff = false;
         }
@@ -418,6 +420,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             _hasBuffedSpeedBefore = true;
 
             _expectingBuffCalls = true;
+            LogBuffRequest("speed", Eid.speedBuffRequests);
             Eid.SpeedBuff();
             _expectingBuffCalls = false;
 
@@ -433,6 +436,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             PossiblyWarnOfCurrentMethod();
 
+            LogBuffUnrequest("speed");
             Eid.SpeedUnbuff();
             _requestedSpeedBuff = false;
         }
@@ -449,6 +453,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             _hasBuffedDamageBefore = true;
 
             _expectingBuffCalls = true;
+            LogBuffRequest("damage", Eid.damageBuffRequests);
             Eid.DamageBuff();
             _expectingBuffCalls = false;
 
@@ -465,6 +470,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             PossiblyWarnOfCurrentMethod();
 
             Eid.DamageUnbuff();
+            LogBuffUnrequest("damage");
             _requestedDamageBuff = false;
         }
 
@@ -496,6 +502,22 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             AddedBase += amount;
         }
 
+        private void LogBuffRequest(string type, int buffRequests)
+        {
+            if (Options.LogEnemyRadianceBuffRequests.Value)
+            {
+                Log.Message($"{name} is about to request a {type} buff! current have {buffRequests} requests!");
+            }
+        }
+
+        private void LogBuffUnrequest(string type)
+        {
+            if (Options.LogEnemyRadianceBuffRequests.Value)
+            {
+                Log.Message($"{name} UNREQUESTED a {type} buff!");
+            }
+        }
+
         private void Awake()
         {
             Eid = GetComponent<EnemyIdentifier>();
@@ -510,6 +532,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 return;
             }
+
         }
 
         private void Start()
@@ -518,7 +541,32 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             ExternalBuffModifier = new EnemyRadiance.Modifier();
             AddModifier(RadiantAllModifier);
             AddModifier(ExternalBuffModifier);
+            
+            _started = true;
+            
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+
+            // HACK(?): works around a weird quirk of how EnemyIdentifier was written, where on start if healthBuff, speedBuff, etc. are true it'll just blindly ++ the requests
+            if (_requestedHealthBuff && Eid.healthBuff)
+            {
+                Eid.healthBuffRequests -= 1;
+            }
+
+            if (_requestedSpeedBuff && Eid.speedBuff)
+            {
+                Eid.speedBuffRequests -= 1;
+            }
+
+            if (_requestedDamageBuff && Eid.damageBuff)
+            {
+                Eid.damageBuffRequests -= 1;
+            }
         }
+
+        private bool _started = false;
 
         private static void PossiblyWarnOfCurrentMethod()
         {
@@ -528,6 +576,33 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
 
             Log.Warning($"Enemy Radiance Method Seemingly Called!\n    Stack:\n{StackDebug.GetStackString()}");
+        }
+
+        [HarmonyPatch(typeof(EnemyIdentifier), "BuffAll", new Type[]{})]
+        private static class EidAllBuffPatch
+        {
+            public static void Prefix(EnemyIdentifier __instance)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+                
+                
+            }
+
+            public static void Postfix(EnemyIdentifier __instance)
+            {
+                if (!Cheats.Enabled)
+                {
+                    return;
+                }
+                
+                if (_expectingBuffCalls)
+                {
+                    return;
+                }
+            }
         }
 
         [HarmonyPatch(typeof(EnemyIdentifier), "HealthBuff", new Type[]{typeof(float)})]
@@ -659,5 +734,36 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 __instance.damageBuffModifier = rad._prevDamageBuff;
             }
         }
+
+            [HarmonyPatch(typeof(EnemyIdentifier), "Start", new Type[]{})]
+            private static class EidStartDebugPatch
+            {
+                static int prevValue = -1;
+                public static void Prefix(EnemyIdentifier __instance)
+                {
+                    if (!Cheats.Enabled)
+                    {
+                        return;
+                    }
+                    
+                    if (__instance.speedBuffRequests < 2)
+                    {
+                        prevValue = __instance.speedBuffRequests;
+                    }
+                }
+
+                public static void Postfix(EnemyIdentifier __instance)
+                {
+                    if (!Cheats.Enabled)
+                    {
+                        return;
+                    }
+
+                    if (__instance.speedBuffRequests >= 2)
+                    {
+                        Log.Message($"??? {prevValue}");
+                    }
+                }
+            }
     }
 }

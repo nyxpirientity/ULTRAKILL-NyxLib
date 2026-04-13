@@ -412,12 +412,15 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(enemy.GetComponent<EnemyComponents>());});
+            var ec = enemy.GetComponent<EnemyComponents>();
+            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(ec);});
             
             if (Cheats.IsCheatEnabled(Cheats.LogEIDInfo))
             {
-                enemyGo.GetComponent<EnemyComponents>().RootGameObject.DebugPrintChildren();
+                ec.RootGameObject.DebugPrintChildren();
             }
+
+            ec.EidStarted = true;
 
             if (Options.LogEnemyTypeOnStart.Value)
             {

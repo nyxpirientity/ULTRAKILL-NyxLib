@@ -50,6 +50,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static ConfigEntry<bool> IncludeUnlikelyLogsEntry = null;
         static ConfigEntry<bool> IncludeUnexpectedLogsEntry = null;
         public static ConfigEntry<bool> ShowErrorNotification = null;
+        public static ConfigEntry<bool> LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = null;
+        public static ConfigEntry<bool> LogEnemyRadianceBuffRequests = null;
         public static ConfigEntry<bool> LogEnemyRadianceUpdates = null;
         public static ConfigEntry<bool> WarnOfEnemyRadianceUpdates = null;
         public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
@@ -98,7 +100,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", true);
             LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
             DisableQuickLoad = Config.Bind($"{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
+            LogEnemyRadianceBuffRequests = Config.Bind($"{DebugCat}", "LogEnemyRadianceBuffRequests", false);
             LogEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdates", false);
+            LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdatesOnlyIfExternallyBuffed", false);
             WarnOfEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "WarnOfEnemyRadianceUpdates", false, "Logs method calls which modify enemy radiance when they happen relating to Nyxpiri.ULTRAKILL.EnemyRadiance, as warnings. Mostly intended for ensuring enemy radiance isn't tampering when it shouldn't be.");
             
             RadianceAllTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
