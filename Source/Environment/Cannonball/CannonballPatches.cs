@@ -25,6 +25,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public delegate void PostCannonballLaunchEventHandler(EventMethodCancelInfo cancelInfo, Cannonball cannonball);
         public static event PostCannonballLaunchEventHandler PostCannonballLaunch;
 
+        public delegate void PreCannonballExplodeEventHandler(EventMethodCanceler canceler, Cannonball cannonball);
+        public static event PreCannonballExplodeEventHandler PreCannonballExplode;
+        
+        public delegate void PostCannonballExplodeEventHandler(EventMethodCancelInfo cancelInfo, Cannonball cannonball);
+        public static event PostCannonballExplodeEventHandler PostCannonballExplode;
+
         [HarmonyPatch(typeof(Cannonball), "Start")]
         static class CannonballStartPatch
         {
@@ -79,6 +85,25 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public static void Postfix(Cannonball __instance)
             {
                 PostCannonballLaunch?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+            }
+        }
+
+        [HarmonyPatch(typeof(Cannonball), "Explode")]
+        static class CannonballExplodePatch
+        {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            
+            public static bool Prefix(Cannonball __instance)
+            {
+                _cancellationTracker.Reset();
+                PreCannonballExplode?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
+            }
+            
+            public static void Postfix(Cannonball __instance)
+            {
+                PostCannonballExplode?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
             }
         }
     }
