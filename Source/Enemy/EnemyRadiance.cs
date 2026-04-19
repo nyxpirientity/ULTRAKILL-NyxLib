@@ -734,7 +734,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 __instance.damageBuffModifier = rad._prevDamageBuff;
             }
         }
-
+/*
             [HarmonyPatch(typeof(EnemyIdentifier), "Start", new Type[]{})]
             private static class EidStartDebugPatch
             {
@@ -764,6 +764,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                         Log.Message($"??? {prevValue}");
                     }
                 }
-            }
+            }*/
     }
 }
