@@ -27,21 +27,34 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 _debugName = debugName;
 
                 Log.TraceExpectedInfo($"New instance store by the name of {debugName} being created with prefab {Prefab}");
-
-                Assert.IsNotNull(Prefab);
+                  
+                if (Cheats.Enabled)
+                {
+                    Assert.IsNotNull(Prefab);
+                }
 
                 RegistrationTracker = new RegistrationTracker(
                     registerAction: () =>
                     {
                         Log.TraceExpectedInfo($"{_debugName}: Registering to prefab manager");
-                        Assert.IsNotNull(Prefab);
+                        
+                        if (Cheats.Enabled)
+                        {
+                            Assert.IsNotNull(Prefab);
+                        }
+
                         RegistrationIdx = EnemyPrefabManager.RegisterInstanceStore(this);
                         return true;
                     },
                     unregisterAction: () =>
                     {
                         Log.TraceExpectedInfo($"{_debugName}: Unregistering from prefab manager");
-                        Assert.IsNotNull(Prefab);
+                        
+                        if (Cheats.Enabled)
+                        {
+                            Assert.IsNotNull(Prefab);
+                        }
+
                         EnemyPrefabManager.UnregisterInstanceStore(RegistrationIdx);
                         RegistrationIdx = -1;
                         return true;
@@ -235,6 +248,19 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
+        private void Update()
+        {
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+
+            if (_prefab == null)
+            {
+                StorePrefab();
+            }
+        }
+
         private void StorePrefabUnsafe(bool force = false)
         {
             if (IsStoringPrefab)
@@ -257,6 +283,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 Log.TraceExpectedInfo($"EnemyPrefabMod found that {name} did not have a prefab, need to make a new one");
             }
 
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+            
             GetComps();
 
             GameObject templateGo;
@@ -265,12 +296,25 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             IsStoringPrefab = true;
 
+            var templateActive = templateGo.activeSelf;
+            
+            if (templateActive)
+            {
+                templateGo.SetActive(false);
+            }
+
             _prefab = UnityEngine.Object.Instantiate(templateGo);
+            
+            if (templateActive)
+            {
+                templateGo.SetActive(true);
+            }
+
+            _prefab.SetActive(false);
 
             Assert.IsNotNull(templateGo);
             Assert.IsNotNull(templateGo.transform);
             _prefabParent = templateGo.transform.parent?.gameObject;
-            _prefab.SetActive(false);
 
             var prefabEadd = _prefab.GetComponent<EnemyComponents>() ?? _prefab.GetComponentInChildren<EnemyComponents>(true);
             var prefabEid = prefabEadd.Eid;
@@ -288,6 +332,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             _instances.Prefab = _prefab;
             _instances.PrefabParent = _prefabParent;
+            prefabEadd.PrefabStore.IsPrefab = true;
 
             prefabEid.activateOnDeath = new GameObject[0];
             prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
@@ -314,7 +359,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             prefabEadd.PrefabStore._instances = _instances;
             prefabEadd.PrefabStore._prefab = _prefab;
-            prefabEadd.PrefabStore.IsPrefab = true;
 
             if (prefabEid.enemyType == EnemyType.Swordsmachine)
             {

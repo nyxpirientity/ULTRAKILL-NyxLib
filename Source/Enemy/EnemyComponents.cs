@@ -72,7 +72,7 @@ public class EnemyComponents : MonoBehaviour
                 return Enemy.health;
             }
             
-            Eid.ForceGetHealth();
+            // Eid.ForceGetHealth();
 
             return Eid.health;
         } 
@@ -171,8 +171,6 @@ public class EnemyComponents : MonoBehaviour
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
         
-        PrefabStore.StorePrefab();
-        
         if (_isEnemyCompInitializer)
         {
             _colliders = GetComponentsInChildren<Collider>();
@@ -184,7 +182,7 @@ public class EnemyComponents : MonoBehaviour
             InitialHealth = Health;
         }
         
-        PrefabStore.StorePrefab();
+        PrefabStore?.StorePrefab();
         UpdateHighestHealth();
     }
 
@@ -192,16 +190,6 @@ public class EnemyComponents : MonoBehaviour
     private void OnDestroy()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets instantaneously obliterated (destroyed)...");
-
-        if (Eid.enemyType == EnemyType.Mindflayer)
-        {
-            var mindflayer = GetComponent<Mindflayer>();
-            
-            if (mindflayer.tempBeam != null)
-            {
-                mindflayer.tempBeam.DetachAndTurnOff();
-            }
-        }
     }
 
     protected void Update()
@@ -251,14 +239,15 @@ public class EnemyComponents : MonoBehaviour
             _monoBehaviours.Add((MonoBehaviour)(gameObject.AddComponent(type)));
         }
 
-        Radiance = gameObject.GetOrAddComponent<EnemyRadiance>();
-        PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
-    }
+        if (!Options.DontCreateEnemyRadianceComp.Value)
+        {
+            Radiance = gameObject.GetOrAddComponent<EnemyRadiance>();
+        }
 
-    private void AssertModsNotNull()
-    {
-        Assert.IsNotNull(PrefabStore);
-        Assert.IsNotNull(Radiance);
+        if (!Options.DontCreateEnemyPrefabComp.Value)
+        {
+            PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();            
+        }
     }
     
     object DeathPatchCallerObject = null;

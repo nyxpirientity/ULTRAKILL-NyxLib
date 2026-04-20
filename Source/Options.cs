@@ -56,7 +56,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static ConfigEntry<bool> WarnOfEnemyRadianceUpdates = null;
         public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
         public static ConfigEntry<bool> DisableQuickLoad = null;
+        public static ConfigEntry<bool> DontCreateEnemyPrefabComp = null;
+        public static ConfigEntry<bool> DontCreateEnemyRadianceComp = null;
 
+        public static ConfigEntry<bool> SkipPrefabManagerTicks { get; private set; } = null;
         public static ConfigEntry<int> EnemyPrefabInstanceStoreCapacityMax { get; private set; } = null;
         
         static ConfigEntry<float> RadianceAllTierEntry = null;
@@ -100,6 +103,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", true);
             LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
             DisableQuickLoad = Config.Bind($"{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
+            DontCreateEnemyPrefabComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyPrefabComp", false);
+            DontCreateEnemyRadianceComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyRadianceComp", false);
+            SkipPrefabManagerTicks = Config.Bind($"{DebugCat}.{DevCat}", "SkipPrefabManagerTicks", false);
             LogEnemyRadianceBuffRequests = Config.Bind($"{DebugCat}", "LogEnemyRadianceBuffRequests", false);
             LogEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdates", false);
             LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdatesOnlyIfExternallyBuffed", false);

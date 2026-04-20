@@ -35,6 +35,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static void LateUpdate()
         {
+            if (Options.SkipPrefabManagerTicks.Value)
+            {
+                return;
+            }
+
+            if (!Cheats.Enabled)
+            {
+                return;
+            }
+
             if (_findEidsFrameCountdown >= 0)
             {
                 if (_findEidsFrameCountdown == 0)
