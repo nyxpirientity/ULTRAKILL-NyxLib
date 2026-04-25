@@ -14,6 +14,10 @@ It features a few cheats, most exotic cheats are part of my *other* (many not re
 - Sand All Enemies - Just a convenience cheat for the sand all enemies command in the game (optional)
 - Force Next Wave - Tries to force the next cybergrind wave to occur. (optional)
 - Hide Cheats Enabled Status - Hides the cheats enabled status UI in the top left (optional)
+- Cybergrind Starting Wave Override - Allows you to override your cybergrind starting wave, being a cheat, this shouldn't be capable of saving as a highscore. (optional)
+
+# Options
+- Play Clean Music with Battle Music - tries to make the clean music track play with the battle music track, as in, at the same time
 
 # Note
 It also features a feature named "Level Quick Loading" which loads levels at startup to allow mods to pick assets from those levels they may need. This causes startup to look a bit different, and can make it take longer. Frankly, I just don't know of a different way to do what I wanted lol
