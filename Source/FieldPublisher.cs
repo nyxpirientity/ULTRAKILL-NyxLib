@@ -19,4 +19,24 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Fi = typeof(IT).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
         }
     }
+
+    public struct FieldAccess<ObjectType, FieldType>
+    {
+        FieldInfo Fi;
+
+        public FieldAccess(string fieldName, BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance)
+        {
+            Fi = typeof(ObjectType).GetField(fieldName, bindingFlags);
+        }
+
+        public FieldType GetValue(ObjectType objectType)
+        {
+            return (FieldType)Fi.GetValue(objectType);
+        }
+
+        public void SetValue(ObjectType objectType, FieldType value)
+        {
+            Fi.SetValue(objectType, value);
+        }
+    }
 }
