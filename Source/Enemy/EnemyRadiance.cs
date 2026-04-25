@@ -523,11 +523,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Eid = GetComponent<EnemyIdentifier>();
             Enemy = GetComponent<EnemyComponents>();
 
-            if (Eid.enemyType == EnemyType.MirrorReaper) // mirror reaper radiance is completely busted (in vanilla) so it literally doesn't matter. just forget it.
-            {
-                _excluded = true;
-            }
-
             if (!Cheats.Enabled)
             {
                 return;
