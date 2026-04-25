@@ -83,7 +83,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     return;
                 }
 
-                var newGo = Instantiate(Prefab, PrefabParent?.transform);
+                var newGo = Instantiate(Prefab);
 
                 Log.TraceExpectedInfo($"{_debugName}: Instantiating and storing for prefab {Prefab}");
 
@@ -137,6 +137,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             
                 instGo ??= Instantiate(Prefab);
+
+                instGo.transform.SetParent(PrefabParent?.transform);
 
                 if (PrefabEadd.Eid.enemyType == EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
                 {
@@ -297,17 +299,20 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             IsStoringPrefab = true;
 
             var templateActive = templateGo.activeSelf;
+            var prefabHolder = new GameObject();
+
+            prefabHolder.SetActive(false); 
             
             if (templateActive)
             {
-                templateGo.SetActive(false);
+                //templateGo.SetActive(false);
             }
 
-            _prefab = UnityEngine.Object.Instantiate(templateGo);
+            _prefab = UnityEngine.Object.Instantiate(templateGo, prefabHolder.transform);
             
             if (templateActive)
             {
-                templateGo.SetActive(true);
+                //templateGo.SetActive(true);
             }
 
             _prefab.SetActive(false);

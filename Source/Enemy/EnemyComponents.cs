@@ -157,6 +157,7 @@ public class EnemyComponents : MonoBehaviour
         UpdateHighestHealth();
         
         _colliders = GetComponentsInChildren<Collider>(true);
+        PrefabStore?.StorePrefab();
     }
 
     private void UpdateHighestHealth()
