@@ -7,7 +7,6 @@
 - Added optional Cybergrind Starting Wave Override cheat
 - Increased logging strictness to maybe possibly improve performance
 - Added radiance debug option (not too useful for users, but it's technically accessible)
-- 
 
 # BACK-END/INTERNAL/API
 - Updated many events to use the 'newer' pre/post event pattern
