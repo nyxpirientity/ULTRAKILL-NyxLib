@@ -346,6 +346,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
             
             prefabEid.onDeath = new UnityEngine.Events.UnityEvent();
+            var onDestroy = prefabEid.GetComponent<EventOnDestroy>();
+
+            if (onDestroy != null)
+            {
+                onDestroy.stuff = new UnityEngine.Events.UnityEvent();
+            }
 
             if (prefabEid.machine != null)
             {
