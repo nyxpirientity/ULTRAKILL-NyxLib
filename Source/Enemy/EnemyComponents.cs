@@ -160,6 +160,14 @@ public class EnemyComponents : MonoBehaviour
         PrefabStore?.StorePrefab();
     }
 
+    public void ResetHealthInfo()
+    {
+        Eid.ForceGetHealth();
+        InitialHealth = Health;
+        HighestHealth = -100;
+        UpdateHighestHealth();
+    }
+
     private void UpdateHighestHealth()
     {
         if (Health > HighestHealth)

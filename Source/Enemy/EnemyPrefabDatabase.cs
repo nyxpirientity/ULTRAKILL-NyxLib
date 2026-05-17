@@ -95,14 +95,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             
             var eid = prefab.GetComponentInChildren<EnemyIdentifier>();
             var enemyComp = eid.GetOrAddComponent<EnemyComponents>();
-            var spawnableInst = eid.GetComponent<EnemySpawnableInstance>();
+            //var spawnableInst = eid.GetComponent<EnemySpawnableInstance>();
             
             GameObject.DontDestroyOnLoad(prefab);
 
-            if (spawnableInst != null)
-            {
-                MonoBehaviour.Destroy(spawnableInst);
-            }
+            //if (spawnableInst != null)
+            //{
+            //    MonoBehaviour.Destroy(spawnableInst);
+            //}
 
             enemyComp.Setup();
         }
