@@ -26,6 +26,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
             
             Log.TraceExpectedInfo($"Awake called!");
+            gameObject.AddComponent<EnemyPrefabDatabase>();
             Assets.Initialize();
             Cheats.Initialize();
             Log.TraceExpectedInfo($"Awake finished!");

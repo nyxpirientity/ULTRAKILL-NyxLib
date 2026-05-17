@@ -15,6 +15,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public delegate void PostUpdateEventHandler(EventMethodCancelInfo cancelInfo,  PlayerComponents player);
         public static event PostUpdateEventHandler PostUpdate = null;
 
+        public delegate void PreStartEventHandler(EventMethodCanceler canceler, PlayerComponents player);
+        public static event PreStartEventHandler PreStart = null;
+
+        public delegate void PostStartEventHandler(EventMethodCancelInfo cancelInfo,  PlayerComponents player);
+        public static event PostStartEventHandler PostStart = null;
+
         public delegate void PreFullStaminaEventHandler(EventMethodCanceler canceler, PlayerComponents player);
         public static event PreFullStaminaEventHandler PreFullRefillStamina = null;
 
@@ -39,6 +45,25 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public static void Postfix(NewMovement __instance)
             {
                 __instance.gameObject.AddComponent<PlayerComponents>();
+            }
+        }
+
+        [HarmonyPatch(typeof(NewMovement), "Start", new Type[] { })]
+        static class NewMovementStartPatch
+        {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(NewMovement __instance)
+            {
+                _cancellationTracker.Reset();
+                PlayerEvents.PreStart?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
+                _cancellationTracker.TryInvokeReimplementation();
+                return _cancellationTracker.ShouldRunMethod;
+            }
+
+            public static void Postfix(NewMovement __instance)
+            {
+                PlayerEvents.PostStart?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
             }
         }
 

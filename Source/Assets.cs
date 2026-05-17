@@ -22,9 +22,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject MortarPrefab { get; private set; } = null;
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
 
-        private static GameObject FleshPrisonPrefab { get; set; } = null;
-        private static GameObject FleshPanopticonPrefab { get; set; } = null;
-        
         public static void EnableExplosionsPicking()
         {
             LevelQuickLoader.AddQuickLoadLevel("uk_construct");
@@ -164,29 +161,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 else
                 {
                     Log.ExpectedInfo($"We'd like a a hideous mass in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
-                }
-            }
-
-            if (FleshPrisonPrefab == null || FleshPanopticonPrefab == null)
-            {
-                var possibleFleshPrison = UnityEngine.Object.FindAnyObjectByType<FleshPrison>(FindObjectsInactive.Include);
-                
-                if (possibleFleshPrison != null)
-                {
-                    if (possibleFleshPrison.altVersion)
-                    {
-                        FleshPanopticonPrefab = GameObject.Instantiate(possibleFleshPrison.gameObject);
-                        GameObject.DontDestroyOnLoad(FleshPanopticonPrefab);
-                    }
-                    else
-                    {
-                        FleshPrisonPrefab = GameObject.Instantiate(possibleFleshPrison.gameObject);
-                        GameObject.DontDestroyOnLoad(FleshPrisonPrefab);
-                    }
-                }
-                else
-                {
-                    Log.ExpectedInfo($"We'd like a flesh prison in order to yoink it as a prefab, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
                 }
             }
         }

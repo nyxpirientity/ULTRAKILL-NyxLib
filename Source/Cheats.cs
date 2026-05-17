@@ -109,7 +109,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
-            WaitingForCheatRegistration = true;
+            WaitingForCheatRegistration = Cheats.Manager.GetCheatInstance<ToggleCheat>() == null;
         }
 
         public static bool Enabled { get => (CheatsController.Instance?.cheatsEnabled).GetValueOrDefault(false); }
