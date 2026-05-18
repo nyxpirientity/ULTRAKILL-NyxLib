@@ -295,7 +295,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             GameObject templateGo;
 
             templateGo = _enemy.RootGameObject;
-
+            
             IsStoringPrefab = true;
 
             var templateActive = templateGo.activeSelf;
@@ -310,6 +310,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             _prefab = UnityEngine.Object.Instantiate(templateGo, prefabHolder.transform);
             
+            if (_enemy.IsMarkedDontDestroyOnLoad)
+            {
+                DontDestroyOnLoad(_prefab);
+                DontDestroyOnLoad(prefabHolder);
+            }
+
             if (templateActive)
             {
                 //templateGo.SetActive(true);

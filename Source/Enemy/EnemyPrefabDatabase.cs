@@ -95,6 +95,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             
             var eid = prefab.GetComponentInChildren<EnemyIdentifier>();
             var enemyComp = eid.GetOrAddComponent<EnemyComponents>();
+            enemyComp.IsMarkedDontDestroyOnLoad = true;
             //var spawnableInst = eid.GetComponent<EnemySpawnableInstance>();
             
             GameObject.DontDestroyOnLoad(prefab);

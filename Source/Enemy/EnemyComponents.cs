@@ -98,6 +98,8 @@ public class EnemyComponents : MonoBehaviour
     public Enemy Enemy = null;
     public IReadOnlyList<Collider> Colliders { get => _colliders; }
 
+    [NonSerialized] public bool IsMarkedDontDestroyOnLoad = false;
+
     public T GetMonoByIndex<T>(int idx) where T : MonoBehaviour
     {
         if (idx < 0)
