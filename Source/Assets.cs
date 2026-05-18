@@ -22,16 +22,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject MortarPrefab { get; private set; } = null;
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
 
-        public static void EnableExplosionsPicking()
-        {
-            LevelQuickLoader.AddQuickLoadLevel("uk_construct");
-        }
-
-        public static void EnableProjectilePicking()
-        {
-            LevelQuickLoader.AddQuickLoadLevel("Endless");
-        }
-
         public static void AddAssetPicker<ObjectType>(Func<ObjectType, bool> pickerFunc) where ObjectType : UnityEngine.Object
         {
             Func<bool> picker = () =>
@@ -71,29 +61,23 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             }
 
+            if (_assetPickers.Count == 0)
+            {
+                Log.TraceExpectedInfo($"[Assets] Success! It seems! All asset pickers seem to be satisfied.");
+            }
+
             if (LabelPrefab == null)
             {
-                var possibleHeatResistance = UnityEngine.Object.FindAnyObjectByType<HeatResistance>(FindObjectsInactive.Include);
-                if (possibleHeatResistance != null)
-                {
-                    TextMeshProUGUI textMesh = null;
-                    var textMeshProGuis = possibleHeatResistance.gameObject.GetComponentsInChildren<TextMeshProUGUI>(includeInactive: true);
-                    foreach (var elem in textMeshProGuis)
-                    {
-                        if (elem.text.Contains("COMPROMISED"))
-                        {
-                            textMesh = elem;
-                            break;
-                        }
-                    }
-                    
-                    Assert.IsNotNull(textMesh);
+                var hc = HudController.Instance;
 
-                    LabelPrefab = UnityEngine.Object.Instantiate(textMesh.gameObject);
+                if (hc != null)
+                {
+                    var text = hc.speedometer.textMesh;
+                    LabelPrefab = GameObject.Instantiate(text.gameObject, PrefabHolder.transform);
                     LabelPrefab.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(LabelPrefab);
                     LabelPrefab.GetComponent<TextMeshProUGUI>().text = "UKAIW-Label!";
-                }
+                } 
             }
 
             if (RocketPrefab == null)
@@ -168,7 +152,22 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         internal static void Initialize()
         {
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
-            LevelQuickLoader.AddQuickLoadLevel("Level 0-E");
+        }
+
+        private static GameObject _prefabHolder = null;
+        public static GameObject PrefabHolder
+        {
+            get
+            {
+                if (_prefabHolder == null)
+                {
+                    _prefabHolder = new GameObject();
+                    GameObject.DontDestroyOnLoad(_prefabHolder);
+                    _prefabHolder.SetActive(false);
+                } 
+
+                return _prefabHolder;
+            }
         }
     }
 }
