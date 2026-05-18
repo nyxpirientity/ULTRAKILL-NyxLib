@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    public abstract class EnemyType
+    // I know prefixing abstract classes is not really a thing, but EnemyType is taken up in the global namespace unfortunately by ULTRAKILL
+    public abstract class AEnemyType
     {
         public string ReadableName { get; }
         public string Name { get; }
@@ -34,44 +35,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
     }
 
-    public class EnemyTypeDB : MonoSingleton<EnemyTypeDB>
-    {
-        public void RegisterType(EnemyType enemyType)
-        {
-            // TODO: error handling for unique name conflicts (really just give a more straight forward error)
-            dictTypes.Add(enemyType.UniqueName, enemyType);
-            hashTypes.Add(enemyType);
-            types = hashTypes.ToArray();
-            if (enemyType.VanillaEnumValue != null && !vanillaTypeDict.ContainsKey(enemyType.VanillaEnumValue.Value))
-            {
-                vanillaTypeDict.Add(enemyType.VanillaEnumValue.Value, enemyType);
-            }
-        }
-
-        public IReadOnlyList<EnemyType> GetValues()
-        {
-            return types;
-        }
-
-        public EnemyType GetVanillaType(global::EnemyType vanillaEnumType)
-        {
-            return vanillaTypeDict[vanillaEnumType];
-        }
-
-        protected void OnEnable()
-        {
-            GameObject.DontDestroyOnLoad(gameObject);
-        }
-
-        private EnemyType[] types = new EnemyType[0];
-        private HashSet<EnemyType> hashTypes = new HashSet<EnemyType>();
-        private Dictionary<string, EnemyType> dictTypes = new Dictionary<string, EnemyType>();
-        private Dictionary<global::EnemyType, EnemyType> vanillaTypeDict = new Dictionary<global::EnemyType, EnemyType>();
-    }
-
     namespace EnemyTypes
     {
-        public class VanillaEnemyType : EnemyType
+        public class VanillaEnemyType : AEnemyType
         {
             public VanillaEnemyType(string friendlyName, string name)
             {
@@ -110,7 +76,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 foreach (var valueGeneric in Enum.GetValues(typeof(global::EnemyType)))
                 {
                     var enemyType = (global::EnemyType)valueGeneric;
-                    EnemyType enemyTypeObj = null;
+                    AEnemyType enemyTypeObj = null;
 
                     switch (enemyType)
                     {
