@@ -88,7 +88,7 @@ public class EnemyComponents : MonoBehaviour
         } 
     }
 
-    public GameObject RootGameObject { get => Eid.enemyType == EnemyType.MaliciousFace ? transform.parent.gameObject : gameObject; }
+    public GameObject RootGameObject { get => Eid.enemyType == Nyxpiri.ULTRAKILL.NyxLib.EnemyType.MaliciousFace ? transform.parent.gameObject : gameObject; }
 
     public bool InstaKilled { get; private set; } = false;
 
