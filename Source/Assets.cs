@@ -26,14 +26,22 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             Func<bool> picker = () =>
             {
-                var assetHolder = UnityEngine.Object.FindAnyObjectByType<ObjectType>(FindObjectsInactive.Include);
+                var assetHolders = UnityEngine.Object.FindObjectsByType<ObjectType>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 
-                if (assetHolder == null)
+                if (assetHolders == null)
                 {
                     return false;
                 }
 
-                return pickerFunc(assetHolder);
+                foreach (var assetHolder in assetHolders)
+                {
+                    if (pickerFunc(assetHolder))
+                    {
+                        return true;
+                    }                    
+                }
+
+                return false;
             };
 
             _assetPickers.Add(picker);
