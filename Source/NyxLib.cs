@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
 using System.IO;
+using Nyxpiri.ULTRAKILL.NyxLib.EnemyTypes;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
@@ -26,6 +27,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
             
             Log.TraceExpectedInfo($"Awake called!");
+            EnemyTypeDB.Instance.transform.parent = transform;
+            VanillaEnemyType.Initialize();
             gameObject.AddComponent<EnemyPrefabDatabase>();
             Assets.Initialize();
             Cheats.Initialize();
