@@ -107,15 +107,15 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             switch (enemy.Eid.enemyType)
             {
-                case EnemyType.Mindflayer:
+                case global::EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer spawn!");
                     NumMindflayers += 1;
                     break;
-                case EnemyType.Virtue:
+                case global::EnemyType.Virtue:
                     Log.TraceExpectedInfo($"P2Additions Detected a Virtue spawn!");
                     NumVirtues += 1;
                     break;
-                case EnemyType.HideousMass:
+                case global::EnemyType.HideousMass:
                     Log.TraceExpectedInfo($"P2Additions Detected a HideousMass spawn!");
                     NumHideousMasses += 1;
                     break;
@@ -139,7 +139,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 DisableBattleWithClean();
             }*/
 
-            if (enemy.Eid.enemyType == EnemyType.FleshPanopticon && Cheats.Enabled)//Cheats.IsHydraModeOn) TODO: same as before, should probably implement in hydra cheat
+            if (enemy.Eid.enemyType == global::EnemyType.FleshPanopticon && Cheats.Enabled)//Cheats.IsHydraModeOn) TODO: same as before, should probably implement in hydra cheat
             {
                 createPanopticonRadioQueued = PanopticonRadio == null ? 20 : -1;
             }
@@ -171,19 +171,19 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             switch (enemy.Eid.enemyType)
             {
-                case EnemyType.Mindflayer:
+                case global::EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer death!");
                     NumMindflayers -= 1;
                     break;
-                case EnemyType.Virtue:
+                case global::EnemyType.Virtue:
                     Log.TraceExpectedInfo($"P2Additions Detected a Virtue death!");
                     NumVirtues -= 1;
                     break;
-                case EnemyType.HideousMass:
+                case global::EnemyType.HideousMass:
                     Log.TraceExpectedInfo($"P2Additions Detected a HideousMass death!");
                     NumHideousMasses -= 1;
                     break;
-                case EnemyType.FleshPanopticon:
+                case global::EnemyType.FleshPanopticon:
                 /*if (Cheats.IsHydraModeOn)
                 {
                     if (!PanopticonRadio.activeSelf)
@@ -212,15 +212,15 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             switch (enemy.Eid.enemyType)
             {
-                case EnemyType.Mindflayer:
+                case global::EnemyType.Mindflayer:
                     Log.TraceExpectedInfo($"P2Additions Detected a Mindflayer destruction!");
                     NumMindflayers -= 1;
                     break;
-                case EnemyType.Virtue:
+                case global::EnemyType.Virtue:
                     Log.TraceExpectedInfo($"P2Additions Detected a Virtue destruction!");
                     NumVirtues -= 1;
                     break;
-                case EnemyType.HideousMass:
+                case global::EnemyType.HideousMass:
                     Log.TraceExpectedInfo($"P2Additions Detected a HideousMass destruction!");
                     NumHideousMasses -= 1;
                     break;

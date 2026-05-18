@@ -15,17 +15,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static EnemyPrefabDatabase Instance { get; private set; } = null;
 
-        public static GameObject GetPrefab(IEnemyType enemyType)
+        public static GameObject GetPrefab(EnemyType enemyType)
         {
             return Instance.prefabs.GetValueOrDefault(enemyType, null);
         } 
 
-        public static GameObject GetPrefab(EnemyType enemyType)
+        public static GameObject GetPrefab(global::EnemyType enemyType)
         {
             return Instance.prefabs.GetValueOrDefault(EnemyTypeDB.Instance.GetVanillaType(enemyType), null);
         } 
 
-        public static EnemyComponents TrySpawnAt(EnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
+        public static EnemyComponents TrySpawnAt(global::EnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
         {
             var prefab = GetPrefab(enemyType);
             
@@ -41,7 +41,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             return enemy;
         }
 
-        public void RegisterPrefab(IEnemyType enemyType, GameObject prefab)
+        public void RegisterPrefab(EnemyType enemyType, GameObject prefab)
         {
             prefabs[enemyType] = prefab;
         }
@@ -84,17 +84,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 GameObject.DontDestroyOnLoad(PrefabHolder);
             }
             
-            foreach (var enemyTypeGeneric in Enum.GetValues(typeof(EnemyType)))
+            foreach (var enemyTypeGeneric in Enum.GetValues(typeof(global::EnemyType)))
             {
-                FindAndAddEnemyViaDb(spawnableObjectsDb, (EnemyType)enemyTypeGeneric);
-                Log.TraceExpectedInfo($"Trying to add enemy of type {(EnemyType)enemyTypeGeneric} prefab from the spawnableObjectsDb");
+                FindAndAddEnemyViaDb(spawnableObjectsDb, (global::EnemyType)enemyTypeGeneric);
+                Log.TraceExpectedInfo($"Trying to add enemy of type {((global::EnemyType)enemyTypeGeneric)} prefab from the spawnableObjectsDb");
             }
 
             SpawnMenuBasedInitializationFinished = true;
             Log.TraceExpectedInfo($"Finished(?) adding enemy prefabs from the spawnableObjectsDb");
         }
 
-        private void FindAndAddEnemyViaDb(SpawnableObjectsDatabase spawnableObjectsDb, EnemyType enemyType)
+        private void FindAndAddEnemyViaDb(SpawnableObjectsDatabase spawnableObjectsDb, global::EnemyType enemyType)
         {
             var go = spawnableObjectsDb.enemies.FirstOrDefault((obj) => obj.enemyType == enemyType)?.gameObject;
 
@@ -143,6 +143,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
 
         private GameObject PrefabHolder = null;
-        private Dictionary<IEnemyType, GameObject> prefabs = new Dictionary<IEnemyType, GameObject>();
+        private Dictionary<EnemyType, GameObject> prefabs = new Dictionary<EnemyType, GameObject>();
     }
 }

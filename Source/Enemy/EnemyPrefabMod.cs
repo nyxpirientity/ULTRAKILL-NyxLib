@@ -140,7 +140,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
                 instGo.transform.SetParent(PrefabParent?.transform);
 
-                if (PrefabEadd.Eid.enemyType == EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
+                if (PrefabEadd.Eid.enemyType == global::EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
                 {
                     var instEnemy = instGo.GetComponent<EnemyComponents>();
                     instEnemy.PreDeath += (canceler, instakill) => { instGo.GetComponent<Stalker>().SandExplode(); };
@@ -377,7 +377,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             prefabEadd.PrefabStore._instances = _instances;
             prefabEadd.PrefabStore._prefab = _prefab;
 
-            if (prefabEid.enemyType == EnemyType.Swordsmachine)
+            if (prefabEid.enemyType == global::EnemyType.Swordsmachine)
             {
                 var swordsMachine = prefabEid.GetComponent<SwordsMachine>();
                 swordsMachine.secondPhasePosTarget = null;

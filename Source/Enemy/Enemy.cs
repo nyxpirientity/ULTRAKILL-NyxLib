@@ -58,33 +58,33 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             switch (eid.enemyType)
             {
-                case EnemyType.Swordsmachine:
+                case global::EnemyType.Swordsmachine:
                     eid.GetComponent<SwordsMachine>()?.Enrage();
                     return true;
-                case EnemyType.Cerberus:
+                case global::EnemyType.Cerberus:
                     eid.GetComponent<StatueBoss>()?.Enrage();
                     return true;
-                case EnemyType.Virtue:
-                case EnemyType.Drone:
+                case global::EnemyType.Virtue:
+                case global::EnemyType.Drone:
                     eid.GetComponent<Drone>()?.Enrage();
                     return true;
-                case EnemyType.V2:
+                case global::EnemyType.V2:
                     eid.GetComponent<V2>()?.Enrage();
                     return true;
-                case EnemyType.Mindflayer:
+                case global::EnemyType.Mindflayer:
                     eid.GetComponent<Mindflayer>()?.Enrage();
                     return true;
-                case EnemyType.HideousMass:
+                case global::EnemyType.HideousMass:
                     if (!(eid.GetComponent<Mass>()?.GetComponentInChildren<EnemySimplifier>()?.enraged).GetValueOrDefault(true))
                     {
                         eid.GetComponent<Mass>()?.Enrage();
                         return true;
                     }
                     return false;
-                case EnemyType.MaliciousFace:
+                case global::EnemyType.MaliciousFace:
                     eid.GetComponent<SpiderBody>()?.Enrage();
                     return true;
-                case EnemyType.Gutterman:
+                case global::EnemyType.Gutterman:
                     if (!eid.dead)
                     {
                         eid.GetComponent<Gutterman>()?.Enrage();
@@ -105,26 +105,26 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             switch (eid.enemyType)
             {
-                case EnemyType.Swordsmachine:
+                case global::EnemyType.Swordsmachine:
                     eid.GetComponent<SwordsMachine>()?.UnEnrage();
                     return true;
-                case EnemyType.Cerberus:
+                case global::EnemyType.Cerberus:
                     eid.GetComponent<StatueBoss>()?.UnEnrage();
                     return true;
-                case EnemyType.Virtue:
-                case EnemyType.Drone:
+                case global::EnemyType.Virtue:
+                case global::EnemyType.Drone:
                     eid.GetComponent<Drone>()?.UnEnrage();
                     return true;
-                case EnemyType.V2:
+                case global::EnemyType.V2:
                     eid.GetComponent<V2>()?.UnEnrage();
                     return true;
-                case EnemyType.Mindflayer:
+                case global::EnemyType.Mindflayer:
                     eid.GetComponent<Mindflayer>()?.UnEnrage();
                     return true;
-                case EnemyType.MaliciousFace:
+                case global::EnemyType.MaliciousFace:
                     eid.GetComponent<SpiderBody>()?.UnEnrage();
                     return true;
-                case EnemyType.Gutterman:
+                case global::EnemyType.Gutterman:
                     if (!eid.dead)
                     {
                         eid.GetComponent<Gutterman>()?.UnEnrage();
@@ -146,151 +146,151 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             return eid.enemyType switch
             {
-                EnemyType.BigJohnator => EnemyGameplayRank.Ultraboss,
-                EnemyType.CancerousRodent => EnemyGameplayRank.Normal,
-                EnemyType.Centaur => EnemyGameplayRank.Boss,
-                EnemyType.Cerberus => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal,
-                EnemyType.Drone => EnemyGameplayRank.Normal,
-                EnemyType.Ferryman => EnemyGameplayRank.Miniboss,
-                EnemyType.Filth => EnemyGameplayRank.Normal,
-                EnemyType.FleshPanopticon => EnemyGameplayRank.Ultraboss,
-                EnemyType.FleshPrison => EnemyGameplayRank.Ultraboss,
-                EnemyType.Gabriel => EnemyGameplayRank.Boss,
-                EnemyType.GabrielSecond => EnemyGameplayRank.Boss,
-                EnemyType.Gutterman => EnemyGameplayRank.Normal,
-                EnemyType.Guttertank => EnemyGameplayRank.Normal,
-                EnemyType.HideousMass => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
-                EnemyType.Idol => EnemyGameplayRank.Normal,
-                EnemyType.Leviathan => EnemyGameplayRank.Boss,
-                EnemyType.MaliciousFace => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal,
-                EnemyType.Mandalore => EnemyGameplayRank.Ultraboss,
-                EnemyType.Mannequin => EnemyGameplayRank.Normal,
-                EnemyType.Mindflayer => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
-                EnemyType.Minos => EnemyGameplayRank.Ultraboss,
-                EnemyType.MinosPrime => EnemyGameplayRank.Ultraboss,
-                EnemyType.Minotaur => EnemyGameplayRank.Boss,
-                EnemyType.Puppet => EnemyGameplayRank.Normal,
-                EnemyType.Schism => EnemyGameplayRank.Normal,
-                EnemyType.Sisyphus => EnemyGameplayRank.Miniboss,
-                EnemyType.SisyphusPrime => EnemyGameplayRank.Ultraboss,
-                EnemyType.Soldier => EnemyGameplayRank.Normal,
-                EnemyType.Stalker => EnemyGameplayRank.Normal,
-                EnemyType.Stray => EnemyGameplayRank.Normal,
-                EnemyType.Streetcleaner => EnemyGameplayRank.Normal,
-                EnemyType.Swordsmachine => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
-                EnemyType.Turret => EnemyGameplayRank.Normal,
-                EnemyType.V2 => EnemyGameplayRank.Boss,
-                EnemyType.V2Second => EnemyGameplayRank.Boss,
-                EnemyType.VeryCancerousRodent => EnemyGameplayRank.Boss,
-                EnemyType.Virtue => EnemyGameplayRank.Normal,
-                EnemyType.Wicked => EnemyGameplayRank.Ultraboss,
-                EnemyType.Providence => EnemyGameplayRank.Normal,
-                EnemyType.Power => EnemyGameplayRank.Normal,
-                EnemyType.MirrorReaper => EnemyGameplayRank.Miniboss,
-                EnemyType.Geryon => EnemyGameplayRank.Boss,
-                EnemyType.Deathcatcher => EnemyGameplayRank.Normal,
+                global::EnemyType.BigJohnator => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.CancerousRodent => EnemyGameplayRank.Normal,
+                global::EnemyType.Centaur => EnemyGameplayRank.Boss,
+                global::EnemyType.Cerberus => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal,
+                global::EnemyType.Drone => EnemyGameplayRank.Normal,
+                global::EnemyType.Ferryman => EnemyGameplayRank.Miniboss,
+                global::EnemyType.Filth => EnemyGameplayRank.Normal,
+                global::EnemyType.FleshPanopticon => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.FleshPrison => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.Gabriel => EnemyGameplayRank.Boss,
+                global::EnemyType.GabrielSecond => EnemyGameplayRank.Boss,
+                global::EnemyType.Gutterman => EnemyGameplayRank.Normal,
+                global::EnemyType.Guttertank => EnemyGameplayRank.Normal,
+                global::EnemyType.HideousMass => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
+                global::EnemyType.Idol => EnemyGameplayRank.Normal,
+                global::EnemyType.Leviathan => EnemyGameplayRank.Boss,
+                global::EnemyType.MaliciousFace => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Normal,
+                global::EnemyType.Mandalore => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.Mannequin => EnemyGameplayRank.Normal,
+                global::EnemyType.Mindflayer => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
+                global::EnemyType.Minos => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.MinosPrime => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.Minotaur => EnemyGameplayRank.Boss,
+                global::EnemyType.Puppet => EnemyGameplayRank.Normal,
+                global::EnemyType.Schism => EnemyGameplayRank.Normal,
+                global::EnemyType.Sisyphus => EnemyGameplayRank.Miniboss,
+                global::EnemyType.SisyphusPrime => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.Soldier => EnemyGameplayRank.Normal,
+                global::EnemyType.Stalker => EnemyGameplayRank.Normal,
+                global::EnemyType.Stray => EnemyGameplayRank.Normal,
+                global::EnemyType.Streetcleaner => EnemyGameplayRank.Normal,
+                global::EnemyType.Swordsmachine => eid.isBoss ? EnemyGameplayRank.Boss : EnemyGameplayRank.Miniboss,
+                global::EnemyType.Turret => EnemyGameplayRank.Normal,
+                global::EnemyType.V2 => EnemyGameplayRank.Boss,
+                global::EnemyType.V2Second => EnemyGameplayRank.Boss,
+                global::EnemyType.VeryCancerousRodent => EnemyGameplayRank.Boss,
+                global::EnemyType.Virtue => EnemyGameplayRank.Normal,
+                global::EnemyType.Wicked => EnemyGameplayRank.Ultraboss,
+                global::EnemyType.Providence => EnemyGameplayRank.Normal,
+                global::EnemyType.Power => EnemyGameplayRank.Normal,
+                global::EnemyType.MirrorReaper => EnemyGameplayRank.Miniboss,
+                global::EnemyType.Geryon => EnemyGameplayRank.Boss,
+                global::EnemyType.Deathcatcher => EnemyGameplayRank.Normal,
                 _ => throw new NotImplementedException(),
             };
         }
 
-        public static EnemySpeciesType GetSpeciesType(this EnemyType enemyType)
+        public static EnemySpeciesType GetSpeciesType(this global::EnemyType enemyType)
         {
             return enemyType switch
             {
-                EnemyType.Filth => EnemySpeciesType.Husk,
-                EnemyType.BigJohnator => EnemySpeciesType.UltraUnknown,
-                EnemyType.CancerousRodent => EnemySpeciesType.UltraUnknown,
-                EnemyType.Centaur => EnemySpeciesType.Machine,
-                EnemyType.Cerberus => EnemySpeciesType.Demon,
-                EnemyType.Drone => EnemySpeciesType.Machine,
-                EnemyType.Ferryman => EnemySpeciesType.Husk,
-                EnemyType.FleshPanopticon => EnemySpeciesType.OrganicMachine,
-                EnemyType.FleshPrison => EnemySpeciesType.OrganicMachine,
-                EnemyType.Gabriel => EnemySpeciesType.Angel,
-                EnemyType.GabrielSecond => EnemySpeciesType.Angel,
-                EnemyType.Gutterman => EnemySpeciesType.Machine,
-                EnemyType.Guttertank => EnemySpeciesType.Machine,
-                EnemyType.HideousMass => EnemySpeciesType.Demon,
-                EnemyType.Idol => EnemySpeciesType.Demon,
-                EnemyType.Leviathan => EnemySpeciesType.Demon,
-                EnemyType.MaliciousFace => EnemySpeciesType.Demon,
-                EnemyType.Mandalore => EnemySpeciesType.UltraUnknown,
-                EnemyType.Mannequin => EnemySpeciesType.Demon,
-                EnemyType.Mindflayer => EnemySpeciesType.Machine,
-                EnemyType.Minos => EnemySpeciesType.Husk,
-                EnemyType.MinosPrime => EnemySpeciesType.Soul,
-                EnemyType.Minotaur => EnemySpeciesType.Demon,
-                EnemyType.Puppet => EnemySpeciesType.Puppet,
-                EnemyType.Schism => EnemySpeciesType.Husk,
-                EnemyType.Sisyphus => EnemySpeciesType.Husk,
-                EnemyType.SisyphusPrime => EnemySpeciesType.Soul,
-                EnemyType.Soldier => EnemySpeciesType.Husk,
-                EnemyType.Stalker => EnemySpeciesType.Husk,
-                EnemyType.Stray => EnemySpeciesType.Husk,
-                EnemyType.Streetcleaner => EnemySpeciesType.Machine,
-                EnemyType.Swordsmachine => EnemySpeciesType.Machine,
-                EnemyType.Turret => EnemySpeciesType.Machine,
-                EnemyType.V2 => EnemySpeciesType.Machine,
-                EnemyType.V2Second => EnemySpeciesType.Machine,
-                EnemyType.VeryCancerousRodent => EnemySpeciesType.UltraUnknown,
-                EnemyType.Virtue => EnemySpeciesType.Angel,
-                EnemyType.Providence => EnemySpeciesType.Angel,
-                EnemyType.Power => EnemySpeciesType.Angel,
-                EnemyType.MirrorReaper => EnemySpeciesType.Husk,
-                EnemyType.Geryon => EnemySpeciesType.Demon,
-                EnemyType.Deathcatcher => EnemySpeciesType.Demon,
-                EnemyType.Wicked => EnemySpeciesType.Unknown,
+                global::EnemyType.Filth => EnemySpeciesType.Husk,
+                global::EnemyType.BigJohnator => EnemySpeciesType.UltraUnknown,
+                global::EnemyType.CancerousRodent => EnemySpeciesType.UltraUnknown,
+                global::EnemyType.Centaur => EnemySpeciesType.Machine,
+                global::EnemyType.Cerberus => EnemySpeciesType.Demon,
+                global::EnemyType.Drone => EnemySpeciesType.Machine,
+                global::EnemyType.Ferryman => EnemySpeciesType.Husk,
+                global::EnemyType.FleshPanopticon => EnemySpeciesType.OrganicMachine,
+                global::EnemyType.FleshPrison => EnemySpeciesType.OrganicMachine,
+                global::EnemyType.Gabriel => EnemySpeciesType.Angel,
+                global::EnemyType.GabrielSecond => EnemySpeciesType.Angel,
+                global::EnemyType.Gutterman => EnemySpeciesType.Machine,
+                global::EnemyType.Guttertank => EnemySpeciesType.Machine,
+                global::EnemyType.HideousMass => EnemySpeciesType.Demon,
+                global::EnemyType.Idol => EnemySpeciesType.Demon,
+                global::EnemyType.Leviathan => EnemySpeciesType.Demon,
+                global::EnemyType.MaliciousFace => EnemySpeciesType.Demon,
+                global::EnemyType.Mandalore => EnemySpeciesType.UltraUnknown,
+                global::EnemyType.Mannequin => EnemySpeciesType.Demon,
+                global::EnemyType.Mindflayer => EnemySpeciesType.Machine,
+                global::EnemyType.Minos => EnemySpeciesType.Husk,
+                global::EnemyType.MinosPrime => EnemySpeciesType.Soul,
+                global::EnemyType.Minotaur => EnemySpeciesType.Demon,
+                global::EnemyType.Puppet => EnemySpeciesType.Puppet,
+                global::EnemyType.Schism => EnemySpeciesType.Husk,
+                global::EnemyType.Sisyphus => EnemySpeciesType.Husk,
+                global::EnemyType.SisyphusPrime => EnemySpeciesType.Soul,
+                global::EnemyType.Soldier => EnemySpeciesType.Husk,
+                global::EnemyType.Stalker => EnemySpeciesType.Husk,
+                global::EnemyType.Stray => EnemySpeciesType.Husk,
+                global::EnemyType.Streetcleaner => EnemySpeciesType.Machine,
+                global::EnemyType.Swordsmachine => EnemySpeciesType.Machine,
+                global::EnemyType.Turret => EnemySpeciesType.Machine,
+                global::EnemyType.V2 => EnemySpeciesType.Machine,
+                global::EnemyType.V2Second => EnemySpeciesType.Machine,
+                global::EnemyType.VeryCancerousRodent => EnemySpeciesType.UltraUnknown,
+                global::EnemyType.Virtue => EnemySpeciesType.Angel,
+                global::EnemyType.Providence => EnemySpeciesType.Angel,
+                global::EnemyType.Power => EnemySpeciesType.Angel,
+                global::EnemyType.MirrorReaper => EnemySpeciesType.Husk,
+                global::EnemyType.Geryon => EnemySpeciesType.Demon,
+                global::EnemyType.Deathcatcher => EnemySpeciesType.Demon,
+                global::EnemyType.Wicked => EnemySpeciesType.Unknown,
                 _ => throw new NotImplementedException(),
             };
         }
 
-        public static EnemySpeciesRank GetSpeciesRank(this EnemyType enemyType)
+        public static EnemySpeciesRank GetSpeciesRank(this global::EnemyType enemyType)
         {
             return enemyType switch
             {
-                EnemyType.BigJohnator => EnemySpeciesRank.NotApplicable,
-                EnemyType.CancerousRodent => EnemySpeciesRank.Supreme,
-                EnemyType.Centaur => EnemySpeciesRank.Supreme,
-                EnemyType.Cerberus => EnemySpeciesRank.Lesser,
-                EnemyType.Drone => EnemySpeciesRank.Lesser,
-                EnemyType.Ferryman => EnemySpeciesRank.Supreme,
-                EnemyType.Filth => EnemySpeciesRank.Lesser,
-                EnemyType.FleshPanopticon => EnemySpeciesRank.Greater,
-                EnemyType.FleshPrison => EnemySpeciesRank.Lesser,
-                EnemyType.Gabriel => EnemySpeciesRank.Supreme,
-                EnemyType.GabrielSecond => EnemySpeciesRank.Supreme,
-                EnemyType.Gutterman => EnemySpeciesRank.Greater,
-                EnemyType.Guttertank => EnemySpeciesRank.Greater,
-                EnemyType.HideousMass => EnemySpeciesRank.Greater,
-                EnemyType.Idol => EnemySpeciesRank.Lesser,
-                EnemyType.Leviathan => EnemySpeciesRank.Supreme,
-                EnemyType.MaliciousFace => EnemySpeciesRank.Lesser,
-                EnemyType.Mandalore => EnemySpeciesRank.NotApplicable,
-                EnemyType.Mannequin => EnemySpeciesRank.Lesser,
-                EnemyType.Mindflayer => EnemySpeciesRank.Greater,
-                EnemyType.Minos => EnemySpeciesRank.Supreme,
-                EnemyType.MinosPrime => EnemySpeciesRank.Prime,
-                EnemyType.Minotaur => EnemySpeciesRank.Supreme,
-                EnemyType.Puppet => EnemySpeciesRank.NotApplicable,
-                EnemyType.Schism => EnemySpeciesRank.Greater,
-                EnemyType.Sisyphus => EnemySpeciesRank.Supreme,
-                EnemyType.SisyphusPrime => EnemySpeciesRank.Prime,
-                EnemyType.Soldier => EnemySpeciesRank.Greater,
-                EnemyType.Stalker => EnemySpeciesRank.Lesser,
-                EnemyType.Stray => EnemySpeciesRank.Lesser,
-                EnemyType.Streetcleaner => EnemySpeciesRank.Lesser,
-                EnemyType.Swordsmachine => EnemySpeciesRank.Greater,
-                EnemyType.Turret => EnemySpeciesRank.Greater,
-                EnemyType.V2 => EnemySpeciesRank.Supreme,
-                EnemyType.V2Second => EnemySpeciesRank.Supreme,
-                EnemyType.VeryCancerousRodent => EnemySpeciesRank.Prime,
-                EnemyType.Virtue => EnemySpeciesRank.Lesser,
-                EnemyType.MirrorReaper => EnemySpeciesRank.Supreme,
-                EnemyType.Deathcatcher => EnemySpeciesRank.Lesser,
-                EnemyType.Geryon => EnemySpeciesRank.Supreme,
-                EnemyType.Providence => EnemySpeciesRank.Lesser,
-                EnemyType.Power => EnemySpeciesRank.Greater,
-                EnemyType.Wicked => EnemySpeciesRank.NotApplicable,
+                global::EnemyType.BigJohnator => EnemySpeciesRank.NotApplicable,
+                global::EnemyType.CancerousRodent => EnemySpeciesRank.Supreme,
+                global::EnemyType.Centaur => EnemySpeciesRank.Supreme,
+                global::EnemyType.Cerberus => EnemySpeciesRank.Lesser,
+                global::EnemyType.Drone => EnemySpeciesRank.Lesser,
+                global::EnemyType.Ferryman => EnemySpeciesRank.Supreme,
+                global::EnemyType.Filth => EnemySpeciesRank.Lesser,
+                global::EnemyType.FleshPanopticon => EnemySpeciesRank.Greater,
+                global::EnemyType.FleshPrison => EnemySpeciesRank.Lesser,
+                global::EnemyType.Gabriel => EnemySpeciesRank.Supreme,
+                global::EnemyType.GabrielSecond => EnemySpeciesRank.Supreme,
+                global::EnemyType.Gutterman => EnemySpeciesRank.Greater,
+                global::EnemyType.Guttertank => EnemySpeciesRank.Greater,
+                global::EnemyType.HideousMass => EnemySpeciesRank.Greater,
+                global::EnemyType.Idol => EnemySpeciesRank.Lesser,
+                global::EnemyType.Leviathan => EnemySpeciesRank.Supreme,
+                global::EnemyType.MaliciousFace => EnemySpeciesRank.Lesser,
+                global::EnemyType.Mandalore => EnemySpeciesRank.NotApplicable,
+                global::EnemyType.Mannequin => EnemySpeciesRank.Lesser,
+                global::EnemyType.Mindflayer => EnemySpeciesRank.Greater,
+                global::EnemyType.Minos => EnemySpeciesRank.Supreme,
+                global::EnemyType.MinosPrime => EnemySpeciesRank.Prime,
+                global::EnemyType.Minotaur => EnemySpeciesRank.Supreme,
+                global::EnemyType.Puppet => EnemySpeciesRank.NotApplicable,
+                global::EnemyType.Schism => EnemySpeciesRank.Greater,
+                global::EnemyType.Sisyphus => EnemySpeciesRank.Supreme,
+                global::EnemyType.SisyphusPrime => EnemySpeciesRank.Prime,
+                global::EnemyType.Soldier => EnemySpeciesRank.Greater,
+                global::EnemyType.Stalker => EnemySpeciesRank.Lesser,
+                global::EnemyType.Stray => EnemySpeciesRank.Lesser,
+                global::EnemyType.Streetcleaner => EnemySpeciesRank.Lesser,
+                global::EnemyType.Swordsmachine => EnemySpeciesRank.Greater,
+                global::EnemyType.Turret => EnemySpeciesRank.Greater,
+                global::EnemyType.V2 => EnemySpeciesRank.Supreme,
+                global::EnemyType.V2Second => EnemySpeciesRank.Supreme,
+                global::EnemyType.VeryCancerousRodent => EnemySpeciesRank.Prime,
+                global::EnemyType.Virtue => EnemySpeciesRank.Lesser,
+                global::EnemyType.MirrorReaper => EnemySpeciesRank.Supreme,
+                global::EnemyType.Deathcatcher => EnemySpeciesRank.Lesser,
+                global::EnemyType.Geryon => EnemySpeciesRank.Supreme,
+                global::EnemyType.Providence => EnemySpeciesRank.Lesser,
+                global::EnemyType.Power => EnemySpeciesRank.Greater,
+                global::EnemyType.Wicked => EnemySpeciesRank.NotApplicable,
                 _ => throw new NotImplementedException(),
             };
         }
