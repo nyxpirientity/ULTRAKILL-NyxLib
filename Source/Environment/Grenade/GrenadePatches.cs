@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using ULTRAKILL.Portal;
 using UnityEngine;
 
@@ -78,6 +79,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             public static bool Prefix(Grenade __instance, Vector3 targetPoint, GameObject newSourceWeapon = null)
             {
+                if (__instance == null)
+                {
+                    Log.Warning($"Congratulations! You triggered a bug that's in the base game, which I thusly cannot fix. You hit the Grenade object within 0.01 seconds before it exploded, and the ShotgunHammer has a 0.01 second delay before it converts a grenade into a beam. So, just before it converted into a beam, the Grenade exploded, and was thus destroyed.");
+                    return true;
+                }
+
                 _cancellationTracker.Reset();
                 PreGrenadeBeam?.Invoke(_cancellationTracker.GetCanceler(), __instance, targetPoint, newSourceWeapon);
                 _cancellationTracker.TryInvokeReimplementation();
@@ -86,6 +93,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             
             public static void Postfix(Grenade __instance, Vector3 targetPoint, GameObject newSourceWeapon = null)
             {
+                if (__instance == null)
+                {
+                    return;
+                }
+
                 PostGrenadeBeam?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, targetPoint, newSourceWeapon);
             }
         }
