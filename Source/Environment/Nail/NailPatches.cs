@@ -17,7 +17,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static event PreNailHitEnemyEventHandler PreNailHitEnemy;
 
         public delegate void PostNailHitEnemyEventHandler(EventMethodCancelInfo cancelInfo, Nail nail, Transform other, EnemyIdentifierIdentifier eidid);
-        public static event PostNailHitEnemyEventHandler PostNailHitEnemy;
+        public static event PostNailHitEnemyEventHandler PostNailHitEnemy;    
+
+        public delegate void PreNailTouchEnemyEventHandler(EventMethodCanceler canceler, Nail nail, Transform other);
+        public static event PreNailTouchEnemyEventHandler PreNailTouchEnemy;
+
+        public delegate void PostNailTouchEnemyEventHandler(EventMethodCancelInfo cancelInfo, Nail nail, Transform other);
+        public static event PostNailTouchEnemyEventHandler PostNailTouchEnemy;
 
         [HarmonyPatch(typeof(Nail), "Start")]
         static class NailStartPatch
@@ -35,6 +41,25 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public static void Postfix(Nail __instance)
             {
                 PostNailStart?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+            }
+        }
+
+        [HarmonyPatch(typeof(Nail), "TouchEnemy")]
+        public static class NailTouchEnemyPatch
+        {
+            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+            public static bool Prefix(Nail __instance, Transform other)
+            {
+                _cancellationTracker.Reset();
+                PreNailTouchEnemy?.Invoke(_cancellationTracker.GetCanceler(), __instance, other);
+                _cancellationTracker.TryInvokeReimplementation();
+                return !_cancellationTracker.Cancelled;
+            }
+            
+            public static void Postfix(Nail __instance, Transform other)
+            {
+                PostNailTouchEnemy?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, other);
             }
         }
 
