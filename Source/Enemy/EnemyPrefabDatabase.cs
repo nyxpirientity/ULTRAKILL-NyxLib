@@ -25,20 +25,23 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             return Instance.prefabs.GetValueOrDefault(EnemyTypeDB.Instance.GetVanillaType(enemyType), null);
         } 
 
-        public static EnemyComponents TrySpawnAt(global::EnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
+        public static GameObject TrySpawnAt(global::EnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
+        {
+            return TrySpawnAt(EnemyTypeDB.Instance.GetVanillaType(enemyType), position, rotation, parent, autoActivate);
+        }
+
+        public static GameObject TrySpawnAt(AEnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
         {
             var prefab = GetPrefab(enemyType);
             
             var go = Instantiate(prefab, parent);
             
-            var enemy = go.GetComponentInChildren<EnemyComponents>();
-
             go.transform.position = position;
             go.transform.rotation = rotation;
 
             go.SetActive(autoActivate);
 
-            return enemy;
+            return go;
         }
 
         public void RegisterPrefab(AEnemyType enemyType, GameObject prefab)
