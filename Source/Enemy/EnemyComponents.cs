@@ -42,13 +42,13 @@ public class EnemyComponents : MonoBehaviour
     public delegate void PreEnrageEventHandler(EventMethodCanceler canceler);
     public event PreEnrageEventHandler PreEnrage = null;
     public delegate void PostEnrageEventHandler(EventMethodCancelInfo cancelInfo);
-    public event PostEnrageEventHandler PostEnrage  = null;
+    public event PostEnrageEventHandler PostEnrage = null;
 
     public delegate void PreUnEnrageEventHandler(EventMethodCanceler canceler);
     public event PreUnEnrageEventHandler PreUnEnrage = null;
     public delegate void PostUnEnrageEventHandler(EventMethodCancelInfo cancelInfo);
     public event PostUnEnrageEventHandler PostUnEnrage = null;
-    
+
     public delegate void PreDeathEventHandler(EventMethodCanceler canceler, bool instakill);
     public event PreDeathEventHandler PreDeath;
     public delegate void PostDeathEventHandler(EventMethodCancelInfo cancelInfo, bool instakill);
@@ -63,21 +63,21 @@ public class EnemyComponents : MonoBehaviour
     [SerializeField] public float InitialHealth { get; private set; } = -1.0f;
     [SerializeField] public float HighestHealth { get; private set; } = -1.0f;
 
-    public float Health 
-    { 
-        get 
+    public float Health
+    {
+        get
         {
             if (Enemy != null)
             {
                 return Enemy.health;
             }
-            
+
             // Eid.ForceGetHealth();
 
             return Eid.health;
-        } 
+        }
         set
-        {   
+        {
             if (Enemy != null)
             {
                 Enemy.health = value;
@@ -85,7 +85,7 @@ public class EnemyComponents : MonoBehaviour
             }
 
             Eid.health = value;
-        } 
+        }
     }
 
     public GameObject RootGameObject { get => Eid.enemyType == EnemyType.MaliciousFace ? transform.parent.gameObject : gameObject; }
@@ -93,13 +93,13 @@ public class EnemyComponents : MonoBehaviour
     public bool InstaKilled { get; private set; } = false;
 
     [NonSerialized] public bool QueuedForDestruction = false;
-    
+
     public EnemyIdentifier Eid = null;
     public Enemy Enemy = null;
     public IReadOnlyList<Collider> Colliders { get => _colliders; }
 
     [NonSerialized] public bool IsMarkedDontDestroyOnLoad = false;
-    
+
     public string OverrideFullName { set => OverrideFullNameFA.SetValue(Eid, value); get => OverrideFullNameFA.GetValue(Eid); }
 
     public static FieldAccess<EnemyIdentifier, string> OverrideFullNameFA = new FieldAccess<EnemyIdentifier, string>("overrideFullName");
@@ -129,7 +129,7 @@ public class EnemyComponents : MonoBehaviour
         Destroy(RootGameObject);
     }
 
-    [SerializeField] private Collider[] _colliders = null; 
+    [SerializeField] private Collider[] _colliders = null;
     [SerializeField] private List<MonoBehaviour> _monoBehaviours = null;
     private bool _isEnemyCompInitializer = false;
 
@@ -151,17 +151,17 @@ public class EnemyComponents : MonoBehaviour
         Eid = GetComponent<EnemyIdentifier>();
         Enemy = GetComponent<Enemy>();
         Assert.IsNotNull(Eid);
-        
+
         _isEnemyCompInitializer = true;
         _hasDoneSetup = true;
-        
+
         _enemyRootMono = RootGameObject.GetOrAddComponent<EnemyRoot>();
         CreateMods();
 
         Eid.ForceGetHealth();
         InitialHealth = Health;
         UpdateHighestHealth();
-        
+
         _colliders = GetComponentsInChildren<Collider>(true);
         PrefabStore?.StorePrefab();
     }
@@ -185,7 +185,7 @@ public class EnemyComponents : MonoBehaviour
     private void Start()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' starts...");
-        
+
         if (_isEnemyCompInitializer)
         {
             _colliders = GetComponentsInChildren<Collider>();
@@ -196,7 +196,7 @@ public class EnemyComponents : MonoBehaviour
             Eid.ForceGetHealth();
             InitialHealth = Health;
         }
-        
+
         PrefabStore?.StorePrefab();
         UpdateHighestHealth();
     }
@@ -226,11 +226,11 @@ public class EnemyComponents : MonoBehaviour
     {
         UpdateHighestHealth();
     }
-    
+
     private void OnDisable()
     {
         Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' gets disabled...");
-        
+
         if (QueuedForDestruction)
         {
             Log.TraceExpectedInfo($"enemy '{name}:{gameObject.GetInstanceID()}' was queued for destruction, so its time has come.");
@@ -246,7 +246,7 @@ public class EnemyComponents : MonoBehaviour
     private void CreateMods()
     {
         Log.TraceExpectedInfo($"{name}.EnemyAdditions is creating new modules...");
-        
+
         _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
 
         foreach (var type in MonoRegistrar.RegisteredTypes)
@@ -261,10 +261,10 @@ public class EnemyComponents : MonoBehaviour
 
         if (!Options.DontCreateEnemyPrefabComp.Value)
         {
-            PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();            
+            PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
         }
     }
-    
+
     object DeathPatchCallerObject = null;
     private bool PreDeathCalled = false;
     internal void TryCallPreDeath(EventMethodCanceler canceler, bool instakill, object patchCallerObject)
@@ -298,7 +298,7 @@ public class EnemyComponents : MonoBehaviour
         PostDeath?.Invoke(cancelInfo, InstaKilled);
         EnemyEvents.PostDeath?.Invoke(this, InstaKilled);
     }
-    
+
     private bool DeathCalled = false;
     internal void TryCallDeath()
     {
@@ -330,7 +330,7 @@ public class EnemyComponents : MonoBehaviour
 
         PreHurt?.Invoke(canceler, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
         PreAnyEnemyHurt?.Invoke(canceler, this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
-        
+
         HurtPatchCallerObject = hurtPatchCallerObject;
         InTheProcessOfHurting = true;
     }
@@ -352,7 +352,7 @@ public class EnemyComponents : MonoBehaviour
 
         PostHurt?.Invoke(cancellationInfo, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
         PostAnyEnemyHurt?.Invoke(cancellationInfo, this, target, force, hitPoint, multiplier, tryForExplode, critMultiplier, sourceWeapon, ignoreTotalDamageTakenMultiplier, fromExplosion);
-        
+
         HurtPatchCallerObject = null;
         InTheProcessOfHurting = false;
     }
@@ -369,7 +369,7 @@ public class EnemyComponents : MonoBehaviour
     {
         PostEnrage?.Invoke(cancellationTracker.GetCancelInfo());
     }
-    
+
     internal bool CallPreUnEnrage(EventMethodCancellationTracker cancellationTracker)
     {
         cancellationTracker.Reset();

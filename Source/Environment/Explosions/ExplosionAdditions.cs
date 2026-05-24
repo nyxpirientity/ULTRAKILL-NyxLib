@@ -11,6 +11,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             public Explosion Explosion = null;
             public float BaseMaxSize = 0.0f;
+            public float BasePushScale = 0.0f;
             public float BaseSpeed = 0.0f;
             public float BaseEnemyDamageMultiplier = 0.0f;
             public int BasePlayerDamageOverride = 0;
@@ -23,6 +24,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public IEnumerable<AudioSource> Audios { get; private set; }
 
         [SerializeField] private float _baseDamageOverride = -1.0f;
+        [SerializeField] private sbyte _harmless = -1;
         public float? BaseDamageOverride
         {
             get
@@ -44,8 +46,26 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public float ExplosionSpeedScale = 1.0f;
         public float ExplosionDamageScale = 1.0f;
         public float ExplosionEnemyDamageMultiplierScale = 1.0f;
+        public float ExplosionPushScale = 1.0f;
 
         public bool ForceElectric = false;
+        public bool? Harmless
+        {
+            get
+            {
+                if (_harmless >= 0)
+                {
+                    return _harmless > 0;
+                }
+
+                return null;
+            }
+
+            set
+            {
+                _harmless = value.HasValue ? (value.Value ? (sbyte)1 : (sbyte)0) : (sbyte)-1;
+            }
+        }
 
         protected void Awake()
         {
@@ -60,6 +80,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 mExplosion.BaseSpeed = explosion.speed;
                 mExplosion.BaseMaxSize = explosion.maxSize;
                 mExplosion.BaseDamage = explosion.damage;
+                mExplosion.BasePushScale = explosion.pushForceMultiplier;
                 mExplosion.BaseEnemyDamageMultiplier = explosion.enemyDamageMultiplier;
                 mExplosion.BasePlayerDamageOverride = explosion.playerDamageOverride;
                 _Explosions[i] = mExplosion;
@@ -93,6 +114,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 explosion.Explosion.enemyDamageMultiplier = explosion.BaseEnemyDamageMultiplier * ExplosionEnemyDamageMultiplierScale;
                 explosion.Explosion.playerDamageOverride = Mathf.RoundToInt(explosion.BasePlayerDamageOverride * ExplosionDamageScale);
                 explosion.Explosion.electric = explosion.Explosion.electric || ForceElectric;
+                explosion.Explosion.harmless = Harmless.GetValueOrDefault(explosion.Explosion.harmless);
+                explosion.Explosion.pushForceMultiplier = explosion.BasePushScale * ExplosionPushScale;
             }
         }
     }

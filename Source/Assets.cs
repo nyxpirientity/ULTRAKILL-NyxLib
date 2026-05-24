@@ -22,6 +22,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject MortarPrefab { get; private set; } = null;
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
 
+        public static class HookPoints
+        {
+            public static GameObject HealingHookPoint { get; internal set; } = null;
+            public static GameObject SlingshotHookPoint { get; internal set; } = null;
+            public static GameObject NormalHookPoint { get; internal set; } = null;
+        }
+
         public static void AddAssetPicker<ObjectType>(Func<ObjectType, bool> pickerFunc) where ObjectType : UnityEngine.Object
         {
             Func<bool> picker = () =>
@@ -45,6 +52,28 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             };
 
             _assetPickers.Add(picker);
+        }
+
+        public static SpawnMenu TryGetSpawnMenu()
+        {
+            if (CanvasController.Instance == null)
+            {
+                return null;
+            }
+
+            return CanvasController.Instance.GetComponentInChildren<SpawnMenu>(includeInactive: true);
+        }
+
+        public static SpawnableObjectsDatabase TryGetSpawnableObjectsDb()
+        {
+            SpawnMenu spawnMenu = TryGetSpawnMenu();
+
+            if (spawnMenu == null)
+            {
+                return null;
+            }
+
+            return spawnableObjectsDbFA.GetValue(spawnMenu);
         }
 
         private static List<Func<bool>> _assetPickers = new List<Func<bool>>(64);
@@ -153,6 +182,52 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 else
                 {
                     Log.ExpectedInfo($"We'd like a a hideous mass in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
+                }
+            }
+
+            TryGetSpawnMenuPrefabs();
+        }
+
+        private static FieldAccess<SpawnMenu, SpawnableObjectsDatabase> spawnableObjectsDbFA = new FieldAccess<SpawnMenu, SpawnableObjectsDatabase>("objects");
+        private static bool _spawnMenuPrefabsGotten = false;
+        private static void TryGetSpawnMenuPrefabs()
+        {
+            var db = TryGetSpawnableObjectsDb();
+
+            if (db == null)
+            {
+                return;
+            }
+
+            _spawnMenuPrefabsGotten = true;
+
+            foreach (var obj in db.sandboxObjects)
+            {
+                var hookPoint = obj.gameObject.GetComponentInChildren<HookPoint>();
+
+                if (hookPoint != null)
+                {
+                    switch (hookPoint.type)
+                    {
+                        case hookPointType.Normal:
+                            HookPoints.NormalHookPoint = GameObject.Instantiate(obj.gameObject, PrefabHolder.transform);
+                            HookPoints.NormalHookPoint.SetActive(false);
+                            break;
+                        case hookPointType.Slingshot:
+                            if (hookPoint.healPlayer)
+                            {
+                                HookPoints.HealingHookPoint = GameObject.Instantiate(obj.gameObject, PrefabHolder.transform);
+                                HookPoints.HealingHookPoint.SetActive(false);
+                            }
+                            else
+                            {
+                                HookPoints.SlingshotHookPoint = GameObject.Instantiate(obj.gameObject, PrefabHolder.transform);
+                                HookPoints.SlingshotHookPoint.SetActive(false);
+                            }
+                            break;
+                        case hookPointType.Switch:
+                            break;
+                    }
                 }
             }
         }

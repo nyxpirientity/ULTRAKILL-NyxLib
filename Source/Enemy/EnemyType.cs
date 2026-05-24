@@ -30,8 +30,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     return true;
                 }
             }
-            
-            return base.Equals (obj);
+
+            return base.Equals(obj);
         }
 
         public override int GetHashCode()

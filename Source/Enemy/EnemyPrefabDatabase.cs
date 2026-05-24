@@ -18,12 +18,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject GetPrefab(AEnemyType enemyType)
         {
             return Instance.prefabs.GetValueOrDefault(enemyType, null);
-        } 
+        }
 
         public static GameObject GetPrefab(global::EnemyType enemyType)
         {
             return Instance.prefabs.GetValueOrDefault(EnemyTypeDB.Instance.GetVanillaType(enemyType), null);
-        } 
+        }
 
         public static GameObject TrySpawnAt(global::EnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
         {
@@ -33,9 +33,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject TrySpawnAt(AEnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
         {
             var prefab = GetPrefab(enemyType);
-            
+
             var go = Instantiate(prefab, parent);
-            
+
             go.transform.position = position;
             go.transform.rotation = rotation;
 
@@ -56,7 +56,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (SpawnMenuBasedInitializationFinished)
             {
                 return;
-            }          
+            }
 
             if (CanvasController.Instance == null)
             {
@@ -70,14 +70,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 return;
             }
 
-            SpawnMenuBasedInitializationFinished = true;
-
             var spawnableObjectsDb = spawnableObjectsDbFA.GetValue(spawnMenu);
-            
+
             if (spawnableObjectsDb == null)
             {
                 return;
             }
+
+            SpawnMenuBasedInitializationFinished = true;
 
             if (PrefabHolder == null)
             {
@@ -86,7 +86,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 PrefabHolder.transform.parent = transform;
                 GameObject.DontDestroyOnLoad(PrefabHolder);
             }
-            
+
             foreach (var enemyTypeGeneric in Enum.GetValues(typeof(global::EnemyType)))
             {
                 FindAndAddEnemyViaDb(spawnableObjectsDb, (global::EnemyType)enemyTypeGeneric);
@@ -112,6 +112,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
             var eid = prefab.GetComponentInChildren<EnemyIdentifier>();
             var enemyComp = eid.GetOrAddComponent<EnemyComponents>();
+            var gce = prefab.GetComponentInChildren<GroundCheckEnemy>();
+
+            if (gce != null)
+            {
+                gce.cols.Clear();
+            }
+
             enemyComp.IsMarkedDontDestroyOnLoad = true;
             //var spawnableInst = eid.GetComponent<EnemySpawnableInstance>();
 
@@ -135,7 +142,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         protected void Start()
         {
-            UpdateEvents.OnLateUpdate += () => 
+            UpdateEvents.OnLateUpdate += () =>
             {
             };
 

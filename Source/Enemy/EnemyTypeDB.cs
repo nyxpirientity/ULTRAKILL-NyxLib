@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
@@ -13,6 +14,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             dictTypes.Add(enemyType.UniqueName, enemyType);
             hashTypes.Add(enemyType);
             types = hashTypes.ToArray();
+
+            Log.TraceExpectedInfo($"[EnemyTypeDB]: Registered AEnemyType {enemyType}");
+
             if (enemyType.VanillaEnumValue != null && !vanillaTypeDict.ContainsKey(enemyType.VanillaEnumValue.Value))
             {
                 vanillaTypeDict.Add(enemyType.VanillaEnumValue.Value, enemyType);
