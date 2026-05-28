@@ -233,12 +233,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             add
             {
-                throw new NotImplementedException();
+                OnQuickLoad += value;
             }
 
             remove
             {
-                throw new NotImplementedException();
+                OnQuickLoad -= value;
             }
         }
 
