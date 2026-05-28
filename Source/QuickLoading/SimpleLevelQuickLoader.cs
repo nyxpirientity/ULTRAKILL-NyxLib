@@ -1,17 +1,20 @@
 using System.Collections.Generic;
 using Nyxpiri.ULTRAKILL.NyxLib;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
+using UnityEngine.SceneManagement;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    public static class LevelQuickLoader
+    public class SimpleLevelQuickLoader : ILevelQuickLoader
     {
-        public static void AddQuickLoadLevel(string levelName)
+        void ILevelQuickLoader.QuickLoadLevel(string levelName)
         {
             _quickLoadStates.TryAdd(levelName, LevelQuickLoadState.Needed);
         }
 
-        internal static void Initialize()
+        public event ILevelQuickLoader.OnQuickLoadEventHandler OnQuickLoad;
+
+        internal SimpleLevelQuickLoader()
         {
             if (Options.DisableQuickLoad.Value)
             {
@@ -22,16 +25,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             UpdateEvents.OnUpdate += Update;
         }
 
-        static Dictionary<string, LevelQuickLoadState> _quickLoadStates = new Dictionary<string, LevelQuickLoadState>
+        Dictionary<string, LevelQuickLoadState> _quickLoadStates = new Dictionary<string, LevelQuickLoadState>
         {
         };
 
-        private static bool _quickLoading = false;
-        private static bool _currentLevelIsFromQuickLoad = false;
-        private static string _quickLoadLevel = null;
-        private static string _preQuickLoadLevel = null;
+        private bool _quickLoading = false;
+        private bool _currentLevelIsFromQuickLoad = false;
+        private string _quickLoadLevel = null;
+        private string _preQuickLoadLevel = null;
 
-        private static bool TryFindQuickLoadLevel()
+        private bool TryFindQuickLoadLevel()
         {
             if ((SceneHelper.PendingScene == null) && !_quickLoading)
             {
@@ -44,7 +47,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                         break;
                     }
                 }
-                
+
                 if (_quickLoadLevel != null)
                 {
                     if (!_currentLevelIsFromQuickLoad)
@@ -59,11 +62,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     return true;
                 }
             }
-            
+
             return false;
         }
 
-        private static void Update()
+        private void Update()
         {
             TryFindQuickLoadLevel();
 
@@ -75,6 +78,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
                 else if (_quickLoadStates[_quickLoadLevel] is LevelQuickLoadState.WaitingToReturn)
                 {
+                    OnQuickLoad?.Invoke(SceneManager.GetActiveScene());
                     Log.TraceExpectedInfo($"{_quickLoadLevel} quick load done!");
                     _quickLoadStates[_quickLoadLevel] = LevelQuickLoadState.Done;
                     _quickLoadLevel = null;
@@ -88,6 +92,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     }
                 }
             }
+        }
+
+        void ILevelQuickLoader.PreInitQueueAdded()
+        {
+
         }
 
         enum LevelQuickLoadState

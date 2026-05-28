@@ -38,6 +38,9 @@
 		<Reference Include="UnityEngine.PhysicsModule">
 			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
 		</Reference>
+		<Reference Include="Unity.ResourceManager">
+			<HintPath>$(ULTRAKILL_DIR)\ULTRAKILL_Data\Managed\Unity.ResourceManager.dll</HintPath>
+		</Reference>
 		<Reference Include="Harmony">
 			<HintPath>$(ULTRAKILL_DIR)\BepInEx\core\0Harmony.dll</HintPath>
 		</Reference>

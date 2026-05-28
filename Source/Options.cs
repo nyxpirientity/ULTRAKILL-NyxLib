@@ -59,9 +59,15 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static ConfigEntry<bool> DontCreateEnemyPrefabComp = null;
         public static ConfigEntry<bool> DontCreateEnemyRadianceComp = null;
 
+        public enum LevelQuickLoaderTypes
+        {
+            Default, Simple, Additive
+        }
+        public static ConfigEntry<LevelQuickLoaderTypes> LevelQuickLoaderType = null;
+
         public static ConfigEntry<bool> SkipPrefabManagerTicks { get; private set; } = null;
         public static ConfigEntry<int> EnemyPrefabInstanceStoreCapacityMax { get; private set; } = null;
-        
+
         static ConfigEntry<float> RadianceAllTierEntry = null;
         static ConfigEntry<float> RadianceAllSpeedTierEntry = null;
         static ConfigEntry<float> RadianceAllDamageTierEntry = null;
@@ -102,7 +108,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             IncludeUnlikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnlikelyLogs", true);
             IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", true);
             LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
-            DisableQuickLoad = Config.Bind($"{DebugCat}.{DevCat}", "DisableGameInitLevelQuickLoad", false);
             DontCreateEnemyPrefabComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyPrefabComp", false);
             DontCreateEnemyRadianceComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyRadianceComp", false);
             SkipPrefabManagerTicks = Config.Bind($"{DebugCat}.{DevCat}", "SkipPrefabManagerTicks", false);
@@ -110,7 +115,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             LogEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdates", false);
             LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdatesOnlyIfExternallyBuffed", false);
             WarnOfEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "WarnOfEnemyRadianceUpdates", false, "Logs method calls which modify enemy radiance when they happen relating to Nyxpiri.ULTRAKILL.EnemyRadiance, as warnings. Mostly intended for ensuring enemy radiance isn't tampering when it shouldn't be.");
-            
+
             RadianceAllTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
             RadianceAllSpeedTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.25f);
             RadianceAllDamageTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.1f);
@@ -124,6 +129,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RegisterOverrideCybergrindStartingWaveCheat = Config.Bind($"{CheatsCat}", "RegisterOverrideCybergrindStartingWaveCheat", false);
             CybergrindStartingWaveOverride = Config.Bind($"{CheatsCat}", "CybergrindStartingWaveOverride", 0, "Overrides cybergrind starting wave to this number, only works if cheats are enabled and the OverrideCybergrindStartingWave cheat is active.");
             ForcePlayCleanMusicWithBattleMusic = Config.Bind($"{ExtrasCat}", "ForcePlayCleanMusicWithBattleMusic", false);
+
+            DisableQuickLoad = Config.Bind($"Misc.LevelQuickLoader", "DisableGameInitLevelQuickLoad", false);
+            LevelQuickLoaderType = Config.Bind($"Misc.LevelQuickLoader", "LevelQuickLoaderType", LevelQuickLoaderTypes.Default);
         }
     }
 }

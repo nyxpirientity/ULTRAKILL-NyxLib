@@ -31,21 +31,41 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static void AddAssetPicker<ObjectType>(Func<ObjectType, bool> pickerFunc) where ObjectType : UnityEngine.Object
         {
-            Func<bool> picker = () =>
+            Func<Scene, bool> picker = (scene) =>
             {
                 var assetHolders = UnityEngine.Object.FindObjectsByType<ObjectType>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-                
-                if (assetHolders == null)
+                List<ObjectType> assetHoldersComps = new List<ObjectType>();
+
+                if (typeof(ObjectType).IsSubclassOf(typeof(Component)) || typeof(ObjectType) == typeof(Component))
                 {
-                    return false;
+                    var gos = scene.GetRootGameObjects();
+
+                    foreach (var go in gos)
+                    {
+                        assetHoldersComps.AddRange(go.GetComponentsInChildren<ObjectType>());
+                    }
                 }
 
-                foreach (var assetHolder in assetHolders)
+                if (assetHoldersComps != null)
                 {
-                    if (pickerFunc(assetHolder))
+                    foreach (var assetHolder in assetHoldersComps)
                     {
-                        return true;
-                    }                    
+                        if (pickerFunc(assetHolder))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                if (assetHolders != null)
+                {
+                    foreach (var assetHolder in assetHolders)
+                    {
+                        if (pickerFunc(assetHolder))
+                        {
+                            return true;
+                        }
+                    }
                 }
 
                 return false;
@@ -76,21 +96,21 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             return spawnableObjectsDbFA.GetValue(spawnMenu);
         }
 
-        private static List<Func<bool>> _assetPickers = new List<Func<bool>>(64);
+        private static List<Func<Scene, bool>> _assetPickers = new List<Func<Scene, bool>>(64);
 
-        private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
+        private static void OnNewScene(Scene scene)
         {
             for (int i = 0; i < _assetPickers.Count; i++)
             {
-                Func<bool> picker = _assetPickers[i];
-                
+                Func<Scene, bool> picker = _assetPickers[i];
+
                 try
                 {
-                    if (picker())
+                    if (picker(scene))
                     {
                         _assetPickers.RemoveAt(i);
                         i -= 1;
-                    } 
+                    }
                 }
                 catch (System.Exception e)
                 {
@@ -114,7 +134,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     LabelPrefab.SetActive(false);
                     UnityEngine.Object.DontDestroyOnLoad(LabelPrefab);
                     LabelPrefab.GetComponent<TextMeshProUGUI>().text = "UKAIW-Label!";
-                } 
+                }
             }
 
             if (RocketPrefab == null)
@@ -136,7 +156,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                         HarmlessExplosionPrefab.SetActive(false);
                         HarmlessExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
                     }
-                    
+
                     if (ExplosionPrefab == null && grenade.explosion != null)
                     {
                         ExplosionPrefab = GameObject.Instantiate(grenade.explosion);
@@ -144,7 +164,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                         ExplosionPrefab.SetActive(false);
                         ExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
                     }
-                    
+
                     if (SuperExplosionPrefab == null && grenade.superExplosion != null)
                     {
                         SuperExplosionPrefab = GameObject.Instantiate(grenade.superExplosion);
@@ -163,18 +183,18 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (MortarPrefab == null)
             {
                 var possibleHideousMass = UnityEngine.Object.FindAnyObjectByType<Mass>(FindObjectsInactive.Include);
-                
+
                 if (possibleHideousMass != null)
                 {
                     MortarPrefab = GameObject.Instantiate(possibleHideousMass.explosiveProjectile);
                     GameObject.DontDestroyOnLoad(MortarPrefab);
                     MortarPrefab.SetActive(false);
-                    
+
                     ExplosionPrefab = GameObject.Instantiate(MortarPrefab.GetComponent<Projectile>().explosionEffect);
                     GameObject.DontDestroyOnLoad(ExplosionPrefab);
                     ExplosionPrefab.SetActive(false);
                     ExplosionPrefab.GetOrAddComponent<ExplosionAdditions>();
-                    
+
                     HomingProjectilePrefab = GameObject.Instantiate(possibleHideousMass.homingProjectile);
                     GameObject.DontDestroyOnLoad(HomingProjectilePrefab);
                     HomingProjectilePrefab.SetActive(false);
@@ -235,6 +255,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         internal static void Initialize()
         {
             ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+            LevelQuickLoader.OnQuickLoad += OnNewScene;
+        }
+
+        private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
+        {
+            OnNewScene(scene);
         }
 
         private static GameObject _prefabHolder = null;
@@ -247,7 +273,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     _prefabHolder = new GameObject();
                     GameObject.DontDestroyOnLoad(_prefabHolder);
                     _prefabHolder.SetActive(false);
-                } 
+                }
 
                 return _prefabHolder;
             }
