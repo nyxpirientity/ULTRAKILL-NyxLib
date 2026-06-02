@@ -21,7 +21,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private static Dictionary<string, Func<LevelAdditions>> LevelAdditionsCtorDict = new Dictionary<string, Func<LevelAdditions>>
         {
-            {"Level P-2", () => { return new P2Additions(); }}
+
         };
 
         private static LevelAdditions CurrentAdditions = null;
