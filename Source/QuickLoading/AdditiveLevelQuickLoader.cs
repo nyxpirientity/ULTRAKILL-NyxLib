@@ -227,6 +227,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public AdditiveLevelQuickLoader()
         {
             Log.Warning($"Using experimental AdditiveLevelQuickLoader");
+            Log.Error($"AdditiveLevelQuickLoader is specifically known to *not* be functional at the moment, and is not recommended at all!");
         }
 
         event ILevelQuickLoader.OnQuickLoadEventHandler ILevelQuickLoader.OnQuickLoad
