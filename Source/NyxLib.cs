@@ -10,7 +10,7 @@ using Nyxpiri.ULTRAKILL.NyxLib.EnemyTypes;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    [BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.1.0")]
+    [BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.2.0")]
     [BepInProcess("ULTRAKILL.exe")]
     public class NyxLib : BaseUnityPlugin
     {
@@ -25,7 +25,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 Config.Save();
             }
-            
+
             Log.TraceExpectedInfo($"Awake called!");
             EnemyTypeDB.Instance.transform.parent = transform;
             VanillaEnemyType.Initialize();
@@ -58,7 +58,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     QuickMsgPool.DisplayQuickMsg($"TIME: {DateTime.Now.Hour}:{DateTime.Now.Minute}", Color.red, 3.0f, Vector3.down * 200.0f, 32.0f, false);
                 }
             };
-            
+
             SceneManager.sceneLoaded += OnSceneWasLoaded;
             SceneManager.sceneUnloaded += OnSceneWasUnloaded;
             Log.TraceExpectedInfo($"Start finished!");
@@ -96,7 +96,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             TryLog.Action(() => { UpdateEvents.NotifyFixedUpdate(); });
         }
 
-        protected void LateUpdate() 
+        protected void LateUpdate()
         {
             TryLog.Action(() => { UpdateEvents.NotifyLateUpdate(); });
         }
