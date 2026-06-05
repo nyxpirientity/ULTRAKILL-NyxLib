@@ -131,7 +131,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             ForcePlayCleanMusicWithBattleMusic = Config.Bind($"{ExtrasCat}", "ForcePlayCleanMusicWithBattleMusic", false);
 
             DisableQuickLoad = Config.Bind($"Misc.LevelQuickLoader", "DisableGameInitLevelQuickLoad", false);
-            LevelQuickLoaderType = Config.Bind($"Misc.LevelQuickLoader", "LevelQuickLoaderType", LevelQuickLoaderTypes.Default);
+            LevelQuickLoaderType = Config.Bind($"Misc.LevelQuickLoader", "LevelQuickLoaderType", LevelQuickLoaderTypes.Default, "Changes the class used as the 'LevelQuickLoader' the default value of 'default' picks whichever one is recommended at the time and is *highly recommended*, it currenty uses the simple quick loader. The Additive quick loader is outright effectively non-functional and not at all recommended to be used as it might not even let your game start.");
         }
     }
 }
