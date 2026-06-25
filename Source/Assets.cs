@@ -32,41 +32,41 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static class Gear
         {
             /* revolvers :3 */
-            public static AssetReference Piercer => GunSetter.Instance.revolverPierce[0];
-            public static AssetReference Marksman => GunSetter.Instance.revolverRicochet[0];
-            public static AssetReference Sharpshooter => GunSetter.Instance.revolverTwirl[0];
+            public static AssetReference Piercer => GunSetter.Instance.NullInvalid()?.revolverPierce[0];
+            public static AssetReference Marksman => GunSetter.Instance.NullInvalid()?.revolverRicochet[0];
+            public static AssetReference Sharpshooter => GunSetter.Instance.NullInvalid()?.revolverTwirl[0];
 
-            public static AssetReference AltPiercer => GunSetter.Instance.revolverPierce[1];
-            public static AssetReference AltMarksman => GunSetter.Instance.revolverRicochet[1];
-            public static AssetReference AltSharpshooter => GunSetter.Instance.revolverTwirl[1];
+            public static AssetReference AltPiercer => GunSetter.Instance.NullInvalid()?.revolverPierce[1];
+            public static AssetReference AltMarksman => GunSetter.Instance.NullInvalid()?.revolverRicochet[1];
+            public static AssetReference AltSharpshooter => GunSetter.Instance.NullInvalid()?.revolverTwirl[1];
 
             /* shotguns :3 */
-            public static AssetReference CoreEject => GunSetter.Instance.shotgunGrenade[0];
-            public static AssetReference PumpCharge => GunSetter.Instance.shotgunPump[0];
-            public static AssetReference SawedOff => GunSetter.Instance.shotgunRed[0];
+            public static AssetReference CoreEject => GunSetter.Instance.NullInvalid()?.shotgunGrenade[0];
+            public static AssetReference PumpCharge => GunSetter.Instance.NullInvalid()?.shotgunPump[0];
+            public static AssetReference SawedOff => GunSetter.Instance.NullInvalid()?.shotgunRed[0];
 
-            public static AssetReference AltCoreEject => GunSetter.Instance.shotgunGrenade[1];
-            public static AssetReference AltPumpCharge => GunSetter.Instance.shotgunPump[1];
-            public static AssetReference AltSawedOff => GunSetter.Instance.shotgunRed[1];
+            public static AssetReference AltCoreEject => GunSetter.Instance.NullInvalid()?.shotgunGrenade[1];
+            public static AssetReference AltPumpCharge => GunSetter.Instance.NullInvalid()?.shotgunPump[1];
+            public static AssetReference AltSawedOff => GunSetter.Instance.NullInvalid()?.shotgunRed[1];
 
             /* nailguns :3 */
-            public static AssetReference Attractor => GunSetter.Instance.nailMagnet[0];
-            public static AssetReference Overheat => GunSetter.Instance.nailOverheat[0];
-            public static AssetReference Jumpstart => GunSetter.Instance.nailRed[0];
+            public static AssetReference Attractor => GunSetter.Instance.NullInvalid()?.nailMagnet[0];
+            public static AssetReference Overheat => GunSetter.Instance.NullInvalid()?.nailOverheat[0];
+            public static AssetReference Jumpstart => GunSetter.Instance.NullInvalid()?.nailRed[0];
 
-            public static AssetReference AltAttractor => GunSetter.Instance.nailMagnet[1];
-            public static AssetReference AltOverheat => GunSetter.Instance.nailOverheat[1];
-            public static AssetReference AltJumpstart => GunSetter.Instance.nailRed[1];
+            public static AssetReference AltAttractor => GunSetter.Instance.NullInvalid()?.nailMagnet[1];
+            public static AssetReference AltOverheat => GunSetter.Instance.NullInvalid()?.nailOverheat[1];
+            public static AssetReference AltJumpstart => GunSetter.Instance.NullInvalid()?.nailRed[1];
 
             /* railcannons :3 */
-            public static AssetReference ElectricRailCannon => GunSetter.Instance.railCannon[0];
-            public static AssetReference Screwdriver => GunSetter.Instance.railHarpoon[0];
-            public static AssetReference MaliciousRailCannon => GunSetter.Instance.railMalicious[0];
+            public static AssetReference ElectricRailCannon => GunSetter.Instance.NullInvalid()?.railCannon[0];
+            public static AssetReference Screwdriver => GunSetter.Instance.NullInvalid()?.railHarpoon[0];
+            public static AssetReference MaliciousRailCannon => GunSetter.Instance.NullInvalid()?.railMalicious[0];
 
             /* rocket launchers :3 */
-            public static AssetReference FreezeFrame => GunSetter.Instance.rocketBlue[0];
-            public static AssetReference SRSCannon => GunSetter.Instance.rocketGreen[0];
-            public static AssetReference Firestarter => GunSetter.Instance.rocketRed[0];
+            public static AssetReference FreezeFrame => GunSetter.Instance.NullInvalid()?.rocketBlue[0];
+            public static AssetReference SRSCannon => GunSetter.Instance.NullInvalid()?.rocketGreen[0];
+            public static AssetReference Firestarter => GunSetter.Instance.NullInvalid()?.rocketRed[0];
         }
 
         public static void AddAssetPicker<ObjectType>(Func<ObjectType, bool> pickerFunc) where ObjectType : UnityEngine.Object
