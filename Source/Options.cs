@@ -131,7 +131,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RadianceSpeedScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceSpeedScalar", 1.0f);
 
             RadiantAllDisableExternalDamageRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalDamageRadiance", true);
-            RadianceDamage = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamage", true);
+            RadianceDamage = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamage", false);
             RadianceDamageScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamageScalar", 1.0f);
 
             RadiantAllDisableExternalHealthRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalHealthRadiance", true);
