@@ -63,15 +63,27 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             Default, Simple, Additive
         }
+
         public static ConfigEntry<LevelQuickLoaderTypes> LevelQuickLoaderType = null;
 
         public static ConfigEntry<bool> SkipPrefabManagerTicks { get; private set; } = null;
         public static ConfigEntry<int> EnemyPrefabInstanceStoreCapacityMax { get; private set; } = null;
 
-        static ConfigEntry<float> RadianceAllTierEntry = null;
-        static ConfigEntry<float> RadianceAllSpeedTierEntry = null;
-        static ConfigEntry<float> RadianceAllDamageTierEntry = null;
-        static ConfigEntry<float> RadianceAllHealthTierEntry = null;
+        public static ConfigEntry<float> RadianceTier { get; private set; } = null;
+        public static ConfigEntry<bool> RadiantAllDisableExternalBaseRadiance { get; private set; } = null;
+
+        public static ConfigEntry<bool> RadianceSpeed { get; private set; } = null;
+        public static ConfigEntry<float> RadianceSpeedScalar { get; private set; } = null;
+        public static ConfigEntry<bool> RadiantAllDisableExternalSpeedRadiance { get; private set; } = null;
+
+        public static ConfigEntry<bool> RadianceDamage { get; private set; } = null;
+        public static ConfigEntry<float> RadianceDamageScalar { get; private set; } = null;
+        public static ConfigEntry<bool> RadiantAllDisableExternalDamageRadiance { get; private set; } = null;
+
+        public static ConfigEntry<bool> RadianceHealth { get; private set; } = null;
+        public static ConfigEntry<float> RadianceHealthScalar { get; private set; } = null;
+        public static ConfigEntry<bool> RadiantAllDisableExternalHealthRadiance { get; private set; } = null;
+
 
         static public bool IncludePerformanceLogs { get => IncludePerformanceLogsEntry.Value; }
         static public bool IncludeTraceExpectedLogs { get => IncludeTraceExpectedLogsEntry.Value; }
@@ -79,11 +91,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static public bool IncludeLikelyLogs { get => IncludeLikelyLogsEntry.Value; }
         static public bool IncludeUnlikelyLogs { get => IncludeUnlikelyLogsEntry.Value; }
         static public bool IncludeUnexpectedLogs { get => IncludeUnexpectedLogsEntry.Value; }
-
-        static public float RadianceAllTier { get => RadianceAllTierEntry.Value; }
-        static public float RadianceAllSpeedTier { get => RadianceAllSpeedTierEntry.Value; }
-        static public float RadianceAllDamageTier { get => RadianceAllDamageTierEntry.Value; }
-        static public float RadianceAllHealthTier { get => RadianceAllHealthTierEntry.Value; }
 
         public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
         public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
@@ -116,10 +123,20 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdatesOnlyIfExternallyBuffed", false);
             WarnOfEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "WarnOfEnemyRadianceUpdates", false, "Logs method calls which modify enemy radiance when they happen relating to Nyxpiri.ULTRAKILL.EnemyRadiance, as warnings. Mostly intended for ensuring enemy radiance isn't tampering when it shouldn't be.");
 
-            RadianceAllTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllTier", 1.0f);
-            RadianceAllSpeedTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllSpeedTier", 1.25f);
-            RadianceAllDamageTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllDamageTier", 1.1f);
-            RadianceAllHealthTierEntry = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceAllHealthTier", 1.25f);
+            RadianceTier = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceTier", 1.0f);
+            RadiantAllDisableExternalBaseRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalBaseRadiance", true);
+
+            RadiantAllDisableExternalSpeedRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalSpeedRadiance", true);
+            RadianceSpeed = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceSpeed", true);
+            RadianceSpeedScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceSpeedScalar", 1.0f);
+
+            RadiantAllDisableExternalDamageRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalDamageRadiance", true);
+            RadianceDamage = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamage", true);
+            RadianceDamageScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamageScalar", 1.0f);
+
+            RadiantAllDisableExternalHealthRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalHealthRadiance", true);
+            RadianceHealth = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceHealth", true);
+            RadianceHealthScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceHealthScalar", 1.0f);
 
             EnemyPrefabInstanceStoreCapacityMax = Config.Bind("Performance", "EnemyPrefabInstanceStoreCapacityMax", 5);
 
