@@ -16,7 +16,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         private static CheatsManager _manager = null;
         public static CheatsManager Manager
         {
-            get 
+            get
             {
                 if (_manager == null)
                 {
@@ -38,10 +38,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public static void Prefix(CheatsManager __instance)
             {
                 _manager = __instance;
+                MaybeWaitForCheatRegistration();
             }
 
             public static void Postfix(CheatsManager __instance)
             {
+                TryRegisterCheats();
             }
         }
 
@@ -62,7 +64,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 return false;
             }
-            
+
             return Cheats.Manager.GetCheatState(cheatID);
         }
 
@@ -78,6 +80,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
 
         private static void LateUpdate()
+        {
+            TryRegisterCheats();
+        }
+
+        private static void TryRegisterCheats()
         {
             if (WaitingForCheatRegistration)
             {
@@ -104,6 +111,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         static bool WaitingForCheatRegistration = false;
         private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
         {
+            MaybeWaitForCheatRegistration();
+        }
+
+        private static void MaybeWaitForCheatRegistration()
+        {
             if (Cheats.Manager == null)
             {
                 return;
@@ -124,7 +136,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (Options.RegisterForceNextWaveCheat.Value)
             {
                 Cheats.Manager.RegisterCheat(new ToggleCheat(
-                    "Force Next Wave", 
+                    "Force Next Wave",
                     "nyxpiri.force-next-cybergrind-wave",
                     onDisable: (cheat) =>
                     {
@@ -143,7 +155,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (Options.RegisterOverrideCybergrindStartingWaveCheat.Value)
             {
                 Cheats.Manager.RegisterCheat(new ToggleCheat(
-                    "Override Starting Wave", 
+                    "Override Starting Wave",
                     OverrideCybergrindStartingWave,
                     onDisable: (cheat) =>
                     {
@@ -155,7 +167,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
 
             Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Radiant All Enemies", 
+                "Radiant All Enemies",
                 Cheats.RadiantAllEnemies,
                 onDisable: (cheat) =>
                 {
@@ -168,7 +180,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             if (Options.RegisterSandAllEnemiesCheat.Value)
             {
                 Cheats.Manager.RegisterCheat(new ToggleCheat(
-                    "Sand All Enemies", 
+                    "Sand All Enemies",
                     Cheats.SandAllEnemies,
                     onDisable: (cheat) =>
                     {
@@ -347,21 +359,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     activator.transform.position = target.position;
                 }
             }
-            
+
             public static void Postfix(TeleportCheat __instance, Transform target)
-            {
-            }
-        }
-
-        [HarmonyPatch(typeof(HeatResistance), "Awake")]
-        static class APatch
-        {
-            public static void Prefix(HeatResistance __instance)
-            {
-
-            }
-            
-            public static void Postfix(HeatResistance __instance)
             {
             }
         }
