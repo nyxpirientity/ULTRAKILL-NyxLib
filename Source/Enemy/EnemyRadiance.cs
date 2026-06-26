@@ -25,64 +25,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             public bool HealthEnabled = false;
             public bool DamageEnabled = false;
 
-            public bool Additive
-            {
-                get => CompositionType == CompositionTypes.Additive;
-                set
-                {
-                    if (value)
-                    {
-                        CompositionType = CompositionTypes.Additive;
-                    }
-                    else
-                    {
-                        if (Additive)
-                        {
-                            Multiplier = true;
-                        }
-                    }
-                }
-            }
-
-            public bool Multiplier
-            {
-                get => CompositionType == CompositionTypes.Multiply || CompositionType == CompositionTypes.MultiplyAdded;
-                set
-                {
-                    if (value)
-                    {
-                        CompositionType = MultiplyAddedOnly ? CompositionType : CompositionTypes.Multiply;
-                    }
-                    else
-                    {
-                        Additive = true;
-                    }
-                }
-            }
-
-            public bool MultiplyAddedOnly
-            {
-                get => CompositionType == CompositionTypes.MultiplyAdded;
-                set
-                {
-                    if (value)
-                    {
-                        CompositionType = CompositionTypes.MultiplyAdded;
-                    }
-                    else
-                    {
-                        if (Multiplier)
-                        {
-                            CompositionType = CompositionTypes.Multiply;
-                        }
-                        else
-                        {
-                            CompositionType = CompositionTypes.Additive;
-                        }
-                    }
-                }
-            }
-
             public CompositionTypes CompositionType = CompositionTypes.Additive;
 
             public float BaseMod = 0.0f;
@@ -209,7 +151,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 RadiantAllMultiplierModifier.SpeedMod = Options.RadianceSpeedScalar.Value;
                 RadiantAllMultiplierModifier.HealthMod = Options.RadianceHealthScalar.Value;
                 RadiantAllMultiplierModifier.DamageMod = Options.RadianceDamageScalar.Value;
-                RadiantAllMultiplierModifier.MultiplyAddedOnly = true;
+                RadiantAllMultiplierModifier.CompositionType = Modifier.CompositionTypes.MultiplyAdded;
 
                 RadiantAllAdditiveModifier.SpeedEnabled = Options.RadianceSpeed.Value;
                 RadiantAllAdditiveModifier.DamageEnabled = Options.RadianceDamage.Value;
@@ -219,7 +161,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 RadiantAllAdditiveModifier.SpeedMod = ExternalSpeedBuff - 1.0f;
                 RadiantAllAdditiveModifier.HealthMod = ExternalHealthBuff - 1.0f;
                 RadiantAllAdditiveModifier.DamageMod = ExternalDamageBuff - 1.0f;
-                RadiantAllAdditiveModifier.Additive = true;
+                RadiantAllAdditiveModifier.CompositionType = Modifier.CompositionTypes.Additive;
 
                 if (Options.RadiantAllDisableExternalBaseRadiance.Value)
                 {
