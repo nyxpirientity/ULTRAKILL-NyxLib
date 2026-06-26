@@ -743,6 +743,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             AddModifier(RadiantAllMultiplierModifier);
             AddModifier(ExternalBuffModifier);
 
+            _initialBaseBuff = _initialBaseBuff < 0.0f ? (Eid.radianceTier == 0.0f ? 1.0f : Eid.radianceTier) : _initialBaseBuff;
+            _initialHealthBuff = _initialHealthBuff < 0.0f ? Eid.healthBuffModifier : _initialHealthBuff;
+            _initialSpeedBuff = _initialSpeedBuff < 0.0f ? Eid.speedBuffModifier : _initialSpeedBuff;
+            _initialDamageBuff = _initialDamageBuff < 0.0f ? Eid.damageBuffModifier : _initialDamageBuff;
+
             _started = true;
 
             if (!Cheats.Enabled)
@@ -766,10 +771,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 Eid.damageBuffRequests -= 1;
             }
 
-            _initialBaseBuff = _initialBaseBuff < 0.0f ? (Eid.radianceTier == 0.0f ? 1.0f : Eid.radianceTier) : _initialBaseBuff;
-            _initialHealthBuff = _initialHealthBuff < 0.0f ? Eid.healthBuffModifier : _initialHealthBuff;
-            _initialSpeedBuff = _initialSpeedBuff < 0.0f ? Eid.speedBuffModifier : _initialSpeedBuff;
-            _initialDamageBuff = _initialDamageBuff < 0.0f ? Eid.damageBuffModifier : _initialDamageBuff;
+            PossiblyWarnOfCurrentMethod();
         }
 
         private bool _started = false;
