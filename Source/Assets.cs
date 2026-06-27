@@ -147,29 +147,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private static void OnNewScene(Scene scene)
         {
-            for (int i = 0; i < _assetPickers.Count; i++)
-            {
-                Func<Scene, bool> picker = _assetPickers[i];
-
-                try
-                {
-                    if (picker(scene))
-                    {
-                        _assetPickers.RemoveAt(i);
-                        i -= 1;
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    Log.Error($"Caught {e.GetType()} whilst trying to execute an asset picker!\n{e}\n");
-                }
-            }
-
-            if (_assetPickers.Count == 0)
-            {
-                Log.TraceExpectedInfo($"[Assets] Success! It seems! All asset pickers seem to be satisfied.");
-            }
-
             if (LabelPrefab == null)
             {
                 var hc = HudController.Instance;
@@ -227,13 +204,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
             }
 
-            if (Projectiles.PlayerRocket == null && Gear.Firestarter != null)
-            {
-                var fs = Gear.Firestarter.ToAsset().GetComponent<RocketLauncher>();
-                var ce = Gear.CoreEject.ToAsset().GetComponent<Shotgun>();
-                Projectiles.PlayerRocket = GameObject.Instantiate(fs.rocket, PrefabHolder.transform);
-                Projectiles.Core = GameObject.Instantiate(ce.grenade, PrefabHolder.transform);
-            }
+            GameObject startNotifier = new GameObject();
+            startNotifier.AddComponent<NotifyAndDestroyOnStart>().OnStart += () => { TryLoadAssetsLate(scene); };
 
             if (MortarPrefab == null)
             {
@@ -261,6 +233,50 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
 
             TryGetSpawnMenuPrefabs();
+        }
+
+        private static void TryRunAssetPickers(Scene scene)
+        {
+            if (_assetPickers.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _assetPickers.Count; i++)
+            {
+                Func<Scene, bool> picker = _assetPickers[i];
+
+                try
+                {
+                    if (picker(scene))
+                    {
+                        _assetPickers.RemoveAt(i);
+                        i -= 1;
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Log.Error($"Caught {e.GetType()} whilst trying to execute an asset picker!\n{e}\n");
+                }
+            }
+
+            if (_assetPickers.Count == 0)
+            {
+                Log.TraceExpectedInfo($"[Assets] Success! It seems! All asset pickers seem to be satisfied.");
+            }
+        }
+
+        private static void TryLoadAssetsLate(Scene scene)
+        {
+            TryRunAssetPickers(scene);
+
+            if (Projectiles.PlayerRocket == null && Gear.Firestarter != null)
+            {
+                var fs = Gear.Firestarter.ToAsset().GetComponent<RocketLauncher>();
+                var ce = Gear.CoreEject.ToAsset().GetComponent<Shotgun>();
+                Projectiles.PlayerRocket = GameObject.Instantiate(fs.rocket, PrefabHolder.transform);
+                Projectiles.Core = GameObject.Instantiate(ce.grenade, PrefabHolder.transform);
+            }
         }
 
         private static FieldAccess<SpawnMenu, SpawnableObjectsDatabase> spawnableObjectsDbFA = new FieldAccess<SpawnMenu, SpawnableObjectsDatabase>("objects");
@@ -331,6 +347,17 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 }
 
                 return _prefabHolder;
+            }
+        }
+
+        private class NotifyAndDestroyOnStart : MonoBehaviour
+        {
+            public event Action OnStart;
+
+            protected void Start()
+            {
+                OnStart?.Invoke();
+                Destroy(gameObject);
             }
         }
     }
