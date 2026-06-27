@@ -18,9 +18,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static GameObject ExplosionPrefab { get; private set; } = null;
         public static GameObject SuperExplosionPrefab { get; private set; } = null;
 
+        [Obsolete]
         public static GameObject RocketPrefab { get; private set; } = null;
         public static GameObject MortarPrefab { get; private set; } = null;
         public static GameObject HomingProjectilePrefab { get; private set; } = null;
+
+        public static class Projectiles
+        {
+            public static GameObject PlayerRocket { get; internal set; } = null;
+            public static GameObject Core { get; internal set; } = null;
+        }
 
         public static class HookPoints
         {
@@ -218,6 +225,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                         break;
                     }
                 }
+            }
+
+            if (Projectiles.PlayerRocket == null && Gear.Firestarter != null)
+            {
+                var fs = Gear.Firestarter.ToAsset().GetComponent<RocketLauncher>();
+                var ce = Gear.CoreEject.ToAsset().GetComponent<Shotgun>();
+                Projectiles.PlayerRocket = GameObject.Instantiate(fs.rocket, PrefabHolder.transform);
+                Projectiles.Core = GameObject.Instantiate(ce.grenade, PrefabHolder.transform);
             }
 
             if (MortarPrefab == null)
