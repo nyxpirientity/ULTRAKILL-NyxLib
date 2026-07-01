@@ -13,13 +13,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
     [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
     public class Explosions : MonoSingleton<Explosions>
     {
-        public static PrefabAsset<GameObject> Harmless { get; private set; } = null;
-        public static PrefabAsset<GameObject> Normal { get; private set; } = null;
-        public static PrefabAsset<GameObject> Super { get; private set; } = null;
+        public static PrefabAsset<ExplosionRoot> Harmless { get; private set; } = null;
+        public static PrefabAsset<ExplosionRoot> Normal { get; private set; } = null;
+        public static PrefabAsset<ExplosionRoot> Super { get; private set; } = null;
 
-        private GameObject _harmless = null;
-        private GameObject _normal = null;
-        private GameObject _super = null;
+        private ExplosionRoot _harmless = null;
+        private ExplosionRoot _normal = null;
+        private ExplosionRoot _super = null;
 
         private void Awake()
         {
@@ -38,13 +38,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
             var rocket = fs.rocket.GetComponent<Grenade>();
             var grenade = ce.grenade.GetComponent<Grenade>();
 
-            _harmless = Instantiate(rocket.harmlessExplosion, AssetsRoot.Holder);
-            _normal = Instantiate(grenade.explosion, AssetsRoot.Holder);
-            _super = Instantiate(grenade.superExplosion, AssetsRoot.Holder);
+            _harmless = Instantiate(rocket.harmlessExplosion, AssetsRoot.Holder).AddComponent<ExplosionRoot>();
+            _normal = Instantiate(grenade.explosion, AssetsRoot.Holder).AddComponent<ExplosionRoot>();
+            _super = Instantiate(grenade.superExplosion, AssetsRoot.Holder).AddComponent<ExplosionRoot>();
 
-            Harmless = new PrefabAsset<GameObject>(_harmless);
-            Normal = new PrefabAsset<GameObject>(_normal);
-            Super = new PrefabAsset<GameObject>(_super);
+            Harmless = new PrefabAsset<ExplosionRoot>(_harmless);
+            Normal = new PrefabAsset<ExplosionRoot>(_normal);
+            Super = new PrefabAsset<ExplosionRoot>(_super);
         }
     }
 }
