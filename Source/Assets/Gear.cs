@@ -49,5 +49,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
         public static AssetReference FreezeFrame => GunSetter.Instance.NullInvalid()?.rocketBlue[0];
         public static AssetReference SRSCannon => GunSetter.Instance.NullInvalid()?.rocketGreen[0];
         public static AssetReference Firestarter => GunSetter.Instance.NullInvalid()?.rocketRed[0];
+
+        private void Awake()
+        {
+
+        }
     }
 }

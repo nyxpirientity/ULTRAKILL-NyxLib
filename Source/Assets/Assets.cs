@@ -27,10 +27,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
             SpawnDbPicker.Initialize();
             AssetPickingManager.Initialize();
 
+            gameObject.AddComponent<Gear>();
             gameObject.AddComponent<HookPoints>();
             gameObject.AddComponent<Projectiles>();
-            gameObject.AddComponent<Gear>();
             gameObject.AddComponent<UIElements>();
+            gameObject.AddComponent<Explosions>();
         }
     }
 }

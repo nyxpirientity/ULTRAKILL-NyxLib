@@ -13,16 +13,20 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
     [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
     public class HookPoints : MonoSingleton<HookPoints>
     {
-        public static GameObject HealingHookPoint { get; internal set; } = null;
-        public static GameObject SlingshotHookPoint { get; internal set; } = null;
-        public static GameObject NormalHookPoint { get; internal set; } = null;
+        public static PrefabAsset<GameObject> Normal { get; private set; } = null;
+        public static PrefabAsset<GameObject> Slingshot { get; private set; } = null;
+        public static PrefabAsset<GameObject> Healing { get; private set; } = null;
+
+        private GameObject _normalHookPoint = null;
+        private GameObject _slingshotHookPoint = null;
+        private GameObject _healingHookPoint = null;
 
         private void Awake()
         {
             SpawnDbPicker.OnGettingPrefabs += GetPrefabs;
         }
 
-        private static void GetPrefabs(SpawnableObjectsDatabase db)
+        private void GetPrefabs(SpawnableObjectsDatabase db)
         {
             foreach (var obj in db.sandboxObjects)
             {
@@ -33,19 +37,16 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                     switch (hookPoint.type)
                     {
                         case hookPointType.Normal:
-                            HookPoints.NormalHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
-                            HookPoints.NormalHookPoint.SetActive(false);
+                            _normalHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
                             break;
                         case hookPointType.Slingshot:
                             if (hookPoint.healPlayer)
                             {
-                                HookPoints.HealingHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
-                                HookPoints.HealingHookPoint.SetActive(false);
+                                _healingHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
                             }
                             else
                             {
-                                HookPoints.SlingshotHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
-                                HookPoints.SlingshotHookPoint.SetActive(false);
+                                _slingshotHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
                             }
                             break;
                         case hookPointType.Switch:
