@@ -19,8 +19,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
         private void Awake()
         {
+            Log.ExpectedInfo("AssetsRoot Awakening!");
             AssetHolder = new GameObject();
-            transform.parent = AssetHolder.transform;
+            AssetHolder.transform.parent = transform;
             AssetHolder.name = "AssetHolder";
             AssetHolder.SetActive(false);
 

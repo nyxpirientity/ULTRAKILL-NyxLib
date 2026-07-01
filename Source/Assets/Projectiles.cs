@@ -33,6 +33,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
         private void GetSpawnDbPrefabs(SpawnableObjectsDatabase db)
         {
+            Log.ExpectedInfo($"Getting spawndb projectiles...");
             if (_mortar == null)
             {
                 var hideousMass = db.enemies.First((spawnable) => spawnable.enemyType == EnemyType.HideousMass).gameObject.GetComponentInChildren<Mass>();

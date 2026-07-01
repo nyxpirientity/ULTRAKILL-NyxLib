@@ -28,6 +28,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
         private void GetPrefabs(SpawnableObjectsDatabase db)
         {
+            Log.ExpectedInfo($"Getting hookpoints...");
             foreach (var obj in db.sandboxObjects)
             {
                 var hookPoint = obj.gameObject.GetComponentInChildren<HookPoint>();

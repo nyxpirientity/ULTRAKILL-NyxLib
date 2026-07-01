@@ -42,7 +42,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                 return;
             }
 
-            OnGettingPrefabs?.Invoke(db);
+            if (!_spawnMenuPrefabsGotten)
+            {
+                OnGettingPrefabs?.Invoke(db);
+            }
+
             _spawnMenuPrefabsGotten = true;
         }
 

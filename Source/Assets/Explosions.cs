@@ -33,6 +33,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                 return;
             }
 
+            Log.ExpectedInfo($"Getting explosions...");
+
             var fs = Gear.Firestarter.ToAsset().GetComponent<RocketLauncher>();
             var ce = Gear.CoreEject.ToAsset().GetComponent<Shotgun>();
             var rocket = fs.rocket.GetComponent<Grenade>();
