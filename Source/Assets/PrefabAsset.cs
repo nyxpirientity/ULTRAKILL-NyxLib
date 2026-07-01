@@ -12,21 +12,39 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 {
     public class PrefabAsset<T> where T : UnityEngine.Object
     {
-        internal PrefabAsset(T prefab)
+        internal PrefabAsset(Func<T> getter)
         {
-            _prefab = prefab;
+            _getter = getter;
         }
 
-        public T Instantiate(Vector3 position, Quaternion rotation, Transform parent = null)
+        public T Instantiate(bool active, Vector3 position, Quaternion rotation, Transform parent = null)
         {
-            return UnityEngine.Object.Instantiate(_prefab, position, rotation, parent);
+            SetPrefabActive(active);
+
+            return UnityEngine.Object.Instantiate(DirectPrefab, position, rotation, parent);
         }
 
-        public T Instantiate(Transform parent)
+        public T Instantiate(bool active, Transform parent)
         {
-            return UnityEngine.Object.Instantiate(_prefab, parent);
+            SetPrefabActive(active);
+
+            return UnityEngine.Object.Instantiate(DirectPrefab, parent);
         }
 
-        private T _prefab = null;
+        public T DirectPrefab => _getter?.Invoke();
+
+        private void SetPrefabActive(bool active)
+        {
+            if (DirectPrefab is GameObject prefabGo)
+            {
+                prefabGo.SetActive(active);
+            }
+            else if (DirectPrefab is Component prefabComp)
+            {
+                prefabComp.gameObject.SetActive(active);
+            }
+        }
+
+        private Func<T> _getter = null;
     }
 }

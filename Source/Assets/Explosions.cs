@@ -13,13 +13,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
     [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
     public class Explosions : MonoSingleton<Explosions>
     {
-        public static PrefabAsset<ExplosionRoot> Harmless { get; private set; } = null;
-        public static PrefabAsset<ExplosionRoot> Normal { get; private set; } = null;
-        public static PrefabAsset<ExplosionRoot> Super { get; private set; } = null;
+        public static PrefabAsset<ExplosionRoot> Harmless { get; private set; } = new PrefabAsset<ExplosionRoot>(() => Instance?._harmless);
+        public static PrefabAsset<ExplosionRoot> Normal { get; private set; } = new PrefabAsset<ExplosionRoot>(() => Instance?._normal);
+        public static PrefabAsset<ExplosionRoot> Super { get; private set; } = new PrefabAsset<ExplosionRoot>(() => Instance?._super);
 
-        private ExplosionRoot _harmless = null;
-        private ExplosionRoot _normal = null;
-        private ExplosionRoot _super = null;
+        [SerializeField] private ExplosionRoot _harmless = null;
+        [SerializeField] private ExplosionRoot _normal = null;
+        [SerializeField] private ExplosionRoot _super = null;
 
         private void Awake()
         {
@@ -35,8 +35,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
             Log.ExpectedInfo($"Getting explosions...");
 
-            var fs = Gear.Firestarter.ToAsset().GetComponent<RocketLauncher>();
-            var ce = Gear.CoreEject.ToAsset().GetComponent<Shotgun>();
+            var fs = Gear.Firestarter.DirectPrefab.GetComponent<RocketLauncher>();
+            var ce = Gear.CoreEject.DirectPrefab.GetComponent<Shotgun>();
             var rocket = fs.rocket.GetComponent<Grenade>();
             var grenade = ce.grenade.GetComponent<Grenade>();
 
@@ -47,10 +47,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
             _harmless.SetMaxPlayerDamageOverride(-1);
             _normal.SetMaxPlayerDamageOverride(-1);
             _super.SetMaxPlayerDamageOverride(-1);
-
-            Harmless = new PrefabAsset<ExplosionRoot>(_harmless);
-            Normal = new PrefabAsset<ExplosionRoot>(_normal);
-            Super = new PrefabAsset<ExplosionRoot>(_super);
         }
     }
 }

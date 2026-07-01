@@ -13,13 +13,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
     [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
     public class HookPoints : MonoSingleton<HookPoints>
     {
-        public static PrefabAsset<GameObject> Normal { get; private set; } = null;
-        public static PrefabAsset<GameObject> Slingshot { get; private set; } = null;
-        public static PrefabAsset<GameObject> Healing { get; private set; } = null;
+        public static PrefabAsset<GameObject> Normal { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._normalHookPoint);
+        public static PrefabAsset<GameObject> Slingshot { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._slingshotHookPoint);
+        public static PrefabAsset<GameObject> Healing { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._healingHookPoint);
 
-        private GameObject _normalHookPoint = null;
-        private GameObject _slingshotHookPoint = null;
-        private GameObject _healingHookPoint = null;
+        [SerializeField] private GameObject _normalHookPoint = null;
+        [SerializeField] private GameObject _slingshotHookPoint = null;
+        [SerializeField] private GameObject _healingHookPoint = null;
 
         private void Awake()
         {
@@ -55,10 +55,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                     }
                 }
             }
-
-            Normal = new PrefabAsset<GameObject>(_normalHookPoint);
-            Slingshot = new PrefabAsset<GameObject>(_slingshotHookPoint);
-            Healing = new PrefabAsset<GameObject>(_healingHookPoint);
         }
     }
 }

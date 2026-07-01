@@ -13,8 +13,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
     [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
     public class UIElements : MonoSingleton<UIElements>
     {
-        public static PrefabAsset<TextMeshProUGUI> Label { get; private set; } = null;
-        private TextMeshProUGUI _labelPrefab = null;
+        public static PrefabAsset<TextMeshProUGUI> Label { get; private set; } = new PrefabAsset<TextMeshProUGUI>(() => Instance?._labelPrefab);
+        [SerializeField] private TextMeshProUGUI _labelPrefab = null;
 
         private void Awake()
         {
@@ -34,7 +34,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                     labelGo.SetActive(true);
                     _labelPrefab = labelGo.GetComponent<TextMeshProUGUI>();
                     _labelPrefab.text = "UKAIW-Label!";
-                    Label = new PrefabAsset<TextMeshProUGUI>(_labelPrefab);
                 }
             }
         }
