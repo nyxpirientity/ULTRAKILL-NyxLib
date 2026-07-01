@@ -32,7 +32,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                     var text = hc.speedometer.textMesh;
                     var labelGo = GameObject.Instantiate(text.gameObject, AssetsRoot.Holder);
                     labelGo.SetActive(true);
-                    _labelPrefab.GetComponent<TextMeshProUGUI>().text = "UKAIW-Label!";
+                    _labelPrefab = labelGo.GetComponent<TextMeshProUGUI>();
+                    _labelPrefab.text = "UKAIW-Label!";
                     Label = new PrefabAsset<TextMeshProUGUI>(_labelPrefab);
                 }
             }

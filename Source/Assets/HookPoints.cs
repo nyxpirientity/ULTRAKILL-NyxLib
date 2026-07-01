@@ -55,6 +55,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                     }
                 }
             }
+
+            Normal = new PrefabAsset<GameObject>(_normalHookPoint);
+            Slingshot = new PrefabAsset<GameObject>(_slingshotHookPoint);
+            Healing = new PrefabAsset<GameObject>(_healingHookPoint);
         }
     }
 }
