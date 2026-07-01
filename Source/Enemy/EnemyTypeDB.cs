@@ -8,7 +8,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 {
     public class EnemyTypeDB : MonoSingleton<EnemyTypeDB>
     {
-        public void RegisterType(AEnemyType enemyType)
+        public void RegisterType(EnemyTypeData enemyType)
         {
             // TODO: error handling for unique name conflicts (really just give a more straight forward error)
             dictTypes.Add(enemyType.UniqueName, enemyType);
@@ -23,12 +23,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        public IReadOnlyList<AEnemyType> GetValues()
+        public IReadOnlyList<EnemyTypeData> GetValues()
         {
             return types;
         }
 
-        public AEnemyType GetVanillaType(global::EnemyType vanillaEnumType)
+        public EnemyTypeData GetVanillaType(global::EnemyType vanillaEnumType)
         {
             return vanillaTypeDict[vanillaEnumType];
         }
@@ -38,9 +38,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             GameObject.DontDestroyOnLoad(gameObject);
         }
 
-        private AEnemyType[] types = new AEnemyType[0];
-        private HashSet<AEnemyType> hashTypes = new HashSet<AEnemyType>();
-        private Dictionary<string, AEnemyType> dictTypes = new Dictionary<string, AEnemyType>();
-        private Dictionary<global::EnemyType, AEnemyType> vanillaTypeDict = new Dictionary<global::EnemyType, AEnemyType>();
+        private EnemyTypeData[] types = new EnemyTypeData[0];
+        private HashSet<EnemyTypeData> hashTypes = new HashSet<EnemyTypeData>();
+        private Dictionary<string, EnemyTypeData> dictTypes = new Dictionary<string, EnemyTypeData>();
+        private Dictionary<global::EnemyType, EnemyTypeData> vanillaTypeDict = new Dictionary<global::EnemyType, EnemyTypeData>();
     }
 }

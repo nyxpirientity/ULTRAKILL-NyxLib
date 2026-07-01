@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nyxpiri.ULTRAKILL.NyxLib;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
-using Nyxpiri.ULTRAKILL.NyxLib.EnemyTypes;
 using Sandbox;
 using Sandbox.Arm;
 using ULTRAKILL.Cheats;
@@ -15,7 +14,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static EnemyPrefabDatabase Instance { get; private set; } = null;
 
-        public static GameObject GetPrefab(AEnemyType enemyType)
+        public static GameObject GetPrefab(EnemyTypeData enemyType)
         {
             return Instance.prefabs.GetValueOrDefault(enemyType, null);
         }
@@ -30,7 +29,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             return TrySpawnAt(EnemyTypeDB.Instance.GetVanillaType(enemyType), position, rotation, parent, autoActivate);
         }
 
-        public static GameObject TrySpawnAt(AEnemyType enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
+        public static GameObject TrySpawnAt(EnemyTypeData enemyType, Vector3 position, Quaternion rotation, Transform parent, bool autoActivate)
         {
             var prefab = GetPrefab(enemyType);
 
@@ -44,7 +43,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             return go;
         }
 
-        public void RegisterPrefab(AEnemyType enemyType, GameObject prefab)
+        public void RegisterPrefab(EnemyTypeData enemyType, GameObject prefab)
         {
             prefabs[enemyType] = prefab;
         }
@@ -153,6 +152,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
 
         private GameObject PrefabHolder = null;
-        private Dictionary<AEnemyType, GameObject> prefabs = new Dictionary<AEnemyType, GameObject>();
+        private Dictionary<EnemyTypeData, GameObject> prefabs = new Dictionary<EnemyTypeData, GameObject>();
     }
 }

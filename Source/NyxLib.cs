@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
 using System.IO;
-using Nyxpiri.ULTRAKILL.NyxLib.EnemyTypes;
+using Nyxpiri.ULTRAKILL.NyxLib.Assets;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
@@ -30,7 +30,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             EnemyTypeDB.Instance.transform.parent = transform;
             VanillaEnemyType.Initialize();
             gameObject.AddComponent<EnemyPrefabDatabase>();
-            Assets.Initialize();
+            GameObject assetsGo = new GameObject("Assets");
+            assetsGo.transform.parent = transform;
+            assetsGo.AddComponent<AssetsRoot>();
             Cheats.Initialize();
             Log.TraceExpectedInfo($"Awake finished!");
         }
@@ -67,14 +69,14 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public void OnSceneWasLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode loadSceneMode) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
         {
             Log.TraceExpectedInfo($"------------- New Scene Loaded '{SceneHelper.CurrentScene}' -------------");
-            TryLog.Action(() => { ScenesEvents.NotifySceneWasLoaded(scene, SceneHelper.CurrentScene, scene.name); });
+            TryLog.Action(() => { SceneEvents.NotifySceneLoad(scene, SceneHelper.CurrentScene, scene.name); });
         }
 
         private string _prevScene = SceneHelper.CurrentScene;
         public void OnSceneWasUnloaded(UnityEngine.SceneManagement.Scene scene)
         {
             Log.TraceExpectedInfo($"------------- Scene Unloaded '{_prevScene}' -------------");
-            TryLog.Action(() => { ScenesEvents.NotifySceneWasUnloaded(scene, _prevScene, scene.name); });
+            TryLog.Action(() => { SceneEvents.NotifySceneUnload(scene, _prevScene, scene.name); });
             _prevScene = SceneHelper.CurrentScene;
         }
 

@@ -47,7 +47,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
 
             private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
-            
+
             public static bool Prefix(EndlessGrid __instance, Collider other)
             {
                 if (!other.CompareTag("Player"))
@@ -109,8 +109,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static void Initialize()
         {
             UpdateEvents.OnFixedUpdate += OnFixedUpdate;
-            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
-            ScenesEvents.OnSceneWasUnloaded += OnSceneWasUnloaded;
+            SceneEvents.OnSceneLoad += OnSceneWasLoaded;
+            SceneEvents.OnSceneUnload += OnSceneWasUnloaded;
 
             PreCybergrindBegin += PreBegin;
         }

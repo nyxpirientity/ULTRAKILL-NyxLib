@@ -75,7 +75,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static void Initialize()
         {
-            ScenesEvents.OnSceneWasLoaded += OnSceneWasLoaded;
+            SceneEvents.OnSceneLoad += OnSceneWasLoaded;
             UpdateEvents.OnUpdate += LateUpdate;
         }
 

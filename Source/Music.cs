@@ -13,7 +13,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         private static MusicManager _manager = null;
         public static MusicManager Manager
         {
-            get 
+            get
             {
                 if (_manager == null)
                 {
@@ -32,7 +32,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             _playBattleWithCleanVotes += 1;
         }
-        
+
         public static void SubtractPlayCleanWithBattleVote()
         {
             _playBattleWithCleanVotes -= 1;
@@ -47,7 +47,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         internal static void Initialize()
         {
-            ScenesEvents.OnSceneWasLoaded += OnSceneLoad;
+            SceneEvents.OnSceneLoad += OnSceneLoad;
             UpdateEvents.OnUpdate += Update;
         }
 
@@ -97,7 +97,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
 
             bool playCleanWithBattle = Cheats.IsCheatEnabled(Cheats.PlayCleanMusicWithBattle) || PlayCleanWithBattleVotes > 0;
-            
+
             if (Music.Manager.battleTheme == null || Music.Manager.cleanTheme == null)
             {
                 return;
@@ -115,7 +115,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     if (Mathf.Abs(Music.Manager.cleanTheme.time - Music.Manager.battleTheme.time) > 0.1f)
                     {
                         Music.Manager.cleanTheme.time = Music.Manager.battleTheme.time;
-                        
+
                         if (!Music.Manager.cleanTheme.isPlaying)
                         {
                             Music.Manager.cleanTheme.Play();
@@ -127,7 +127,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     Music.Manager.battleTheme.volume = Mathf.MoveTowards(Music.Manager.battleTheme.volume, 0f, Music.Manager.fadeSpeed * Time.deltaTime);
                 }
             }
-            else if (Music.Manager.off || Music.Manager.targetTheme.volume == Music.Manager.volume) 
+            else if (Music.Manager.off || Music.Manager.targetTheme.volume == Music.Manager.volume)
             {
                 if (Music.Manager.targetTheme == Music.Manager.bossTheme)
                 {

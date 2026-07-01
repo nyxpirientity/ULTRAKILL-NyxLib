@@ -5,14 +5,22 @@ using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib
 {
-    // I know prefixing abstract classes is not really a thing, but EnemyType is taken up in the global namespace unfortunately by ULTRAKILL
-    public abstract class AEnemyType
+    public class EnemyTypeData
     {
-        public abstract string ReadableName { get; }
-        public abstract string Name { get; }
-        public abstract string UniqueName { get; }
-        public abstract global::EnemyType? VanillaEnumValue { get; }
-        public abstract bool IsVanilla { get; }
+        public string ReadableName { get; private set; }
+        public string Name { get; private set; }
+        public string UniqueName { get; private set; }
+        public global::EnemyType? VanillaEnumValue { get; private set; }
+        public bool IsVanilla { get; private set; } = false;
+
+        public EnemyTypeData(string readableName, string name, string uniqueName, global::EnemyType? vanillaEnumValue = null, bool isVanilla = false)
+        {
+            ReadableName = readableName;
+            Name = name;
+            UniqueName = uniqueName;
+            VanillaEnumValue = vanillaEnumValue;
+            IsVanilla = isVanilla;
+        }
 
         public override string ToString()
         {
@@ -40,276 +48,239 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         }
     }
 
-    namespace EnemyTypes
+    public static class VanillaEnemyType
     {
-        public class VanillaEnemyType : AEnemyType
+        public static EnemyTypeData BigJohnator { get; private set; }
+        public static EnemyTypeData CancerousRodent { get; private set; }
+        public static EnemyTypeData Centaur { get; private set; }
+        public static EnemyTypeData Cerberus { get; private set; }
+        public static EnemyTypeData Deathcatcher { get; private set; }
+        public static EnemyTypeData Drone { get; private set; }
+        public static EnemyTypeData Ferryman { get; private set; }
+        public static EnemyTypeData Filth { get; private set; }
+        public static EnemyTypeData FleshPanopticon { get; private set; }
+        public static EnemyTypeData Gabriel { get; private set; }
+        public static EnemyTypeData FleshPrison { get; private set; }
+        public static EnemyTypeData GabrielSecond { get; private set; }
+        public static EnemyTypeData Geryon { get; private set; }
+        public static EnemyTypeData Gutterman { get; private set; }
+        public static EnemyTypeData Guttertank { get; private set; }
+        public static EnemyTypeData HideousMass { get; private set; }
+        public static EnemyTypeData Idol { get; private set; }
+        public static EnemyTypeData Leviathan { get; private set; }
+        public static EnemyTypeData MaliciousFace { get; private set; }
+        public static EnemyTypeData Mandalore { get; private set; }
+        public static EnemyTypeData Mannequin { get; private set; }
+        public static EnemyTypeData Mindflayer { get; private set; }
+        public static EnemyTypeData Minos { get; private set; }
+        public static EnemyTypeData MinosPrime { get; private set; }
+        public static EnemyTypeData Minotaur { get; private set; }
+        public static EnemyTypeData MirrorReaper { get; private set; }
+        public static EnemyTypeData Power { get; private set; }
+        public static EnemyTypeData Providence { get; private set; }
+        public static EnemyTypeData Puppet { get; private set; }
+        public static EnemyTypeData Schism { get; private set; }
+        public static EnemyTypeData Sisyphus { get; private set; }
+        public static EnemyTypeData SisyphusPrime { get; private set; }
+        public static EnemyTypeData Soldier { get; private set; }
+        public static EnemyTypeData Stalker { get; private set; }
+        public static EnemyTypeData Stray { get; private set; }
+        public static EnemyTypeData Streetcleaner { get; private set; }
+        public static EnemyTypeData Swordsmachine { get; private set; }
+        public static EnemyTypeData Turret { get; private set; }
+        public static EnemyTypeData V2 { get; private set; }
+        public static EnemyTypeData V2Second { get; private set; }
+        public static EnemyTypeData VeryCancerousRodent { get; private set; }
+        public static EnemyTypeData Virtue { get; private set; }
+        public static EnemyTypeData Wicked { get; private set; }
+
+        internal static void Initialize()
         {
-            public VanillaEnemyType(string friendlyName, string name)
+            var etdb = EnemyTypeDB.Instance;
+            var prefix = "nyxlib.vanilla-ultrakill.";
+
+            foreach (var valueGeneric in Enum.GetValues(typeof(global::EnemyType)))
             {
-                readableName = friendlyName;
-                this.name = name;
-                uniqueName = $"nyxlib.vanilla-ultrakill.{name}";
-            }
+                var enemyType = (global::EnemyType)valueGeneric;
+                EnemyTypeData enemyTypeObj = null;
 
-            public VanillaEnemyType(string friendlyName, string name, global::EnemyType vanillaEnumValue)
-            {
-                readableName = friendlyName;
-                this.name = name;
-                uniqueName = $"NyxLib.Vanilla.ULTRAKILL.{name}";
-                this.vanillaEnumValue = vanillaEnumValue;
-            }
-
-            public VanillaEnemyType(string friendlyName, string name, string uniqueName, global::EnemyType vanillaEnumValue)
-            {
-                readableName = friendlyName;
-                this.name = name;
-                this.uniqueName = uniqueName;
-                this.vanillaEnumValue = vanillaEnumValue;
-            }
-
-            private string readableName = "???";
-            private string name = "???";
-            private string uniqueName = "???";
-            private global::EnemyType? vanillaEnumValue = null;
-
-            public override string ReadableName => readableName;
-            public override string Name => name;
-            public override string UniqueName => uniqueName;
-            public override global::EnemyType? VanillaEnumValue => vanillaEnumValue;
-
-            public override bool IsVanilla => true;
-
-            public static AEnemyType BigJohnator { get; private set; }
-            public static AEnemyType CancerousRodent { get; private set; }
-            public static AEnemyType Centaur { get; private set; }
-            public static AEnemyType Cerberus { get; private set; }
-            public static AEnemyType Deathcatcher { get; private set; }
-            public static AEnemyType Drone { get; private set; }
-            public static AEnemyType Ferryman { get; private set; }
-            public static AEnemyType Filth { get; private set; }
-            public static AEnemyType FleshPanopticon { get; private set; }
-            public static AEnemyType Gabriel { get; private set; }
-            public static AEnemyType FleshPrison { get; private set; }
-            public static AEnemyType GabrielSecond { get; private set; }
-            public static AEnemyType Geryon { get; private set; }
-            public static AEnemyType Gutterman { get; private set; }
-            public static AEnemyType Guttertank { get; private set; }
-            public static AEnemyType HideousMass { get; private set; }
-            public static AEnemyType Idol { get; private set; }
-            public static AEnemyType Leviathan { get; private set; }
-            public static AEnemyType MaliciousFace { get; private set; }
-            public static AEnemyType Mandalore { get; private set; }
-            public static AEnemyType Mannequin { get; private set; }
-            public static AEnemyType Mindflayer { get; private set; }
-            public static AEnemyType Minos { get; private set; }
-            public static AEnemyType MinosPrime { get; private set; }
-            public static AEnemyType Minotaur { get; private set; }
-            public static AEnemyType MirrorReaper { get; private set; }
-            public static AEnemyType Power { get; private set; }
-            public static AEnemyType Providence { get; private set; }
-            public static AEnemyType Puppet { get; private set; }
-            public static AEnemyType Schism { get; private set; }
-            public static AEnemyType Sisyphus { get; private set; }
-            public static AEnemyType SisyphusPrime { get; private set; }
-            public static AEnemyType Soldier { get; private set; }
-            public static AEnemyType Stalker { get; private set; }
-            public static AEnemyType Stray { get; private set; }
-            public static AEnemyType Streetcleaner { get; private set; }
-            public static AEnemyType Swordsmachine { get; private set; }
-            public static AEnemyType Turret { get; private set; }
-            public static AEnemyType V2 { get; private set; }
-            public static AEnemyType V2Second { get; private set; }
-            public static AEnemyType VeryCancerousRodent { get; private set; }
-            public static AEnemyType Virtue { get; private set; }
-            public static AEnemyType Wicked { get; private set; }
-
-            internal static void Initialize()
-            {
-                var etdb = EnemyTypeDB.Instance;
-
-                foreach (var valueGeneric in Enum.GetValues(typeof(global::EnemyType)))
+                switch (enemyType)
                 {
-                    var enemyType = (global::EnemyType)valueGeneric;
-                    AEnemyType enemyTypeObj = null;
-
-                    switch (enemyType)
-                    {
-                        case global::EnemyType.BigJohnator:
-                            enemyTypeObj = new VanillaEnemyType("Big Johninator", "BigJohnator", global::EnemyType.BigJohnator);
-                            BigJohnator = enemyTypeObj;
-                            break;
-                        case global::EnemyType.CancerousRodent:
-                            enemyTypeObj = new VanillaEnemyType("Cancerous Rodent", "CancerousRodent", global::EnemyType.CancerousRodent);
-                            CancerousRodent = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Centaur:
-                            enemyTypeObj = new VanillaEnemyType("Earth Mover", "Centaur", global::EnemyType.Centaur);
-                            Centaur = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Cerberus:
-                            enemyTypeObj = new VanillaEnemyType("Cerberus", "Cerberus", global::EnemyType.Cerberus);
-                            Cerberus = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Deathcatcher:
-                            enemyTypeObj = new VanillaEnemyType("Deathcatcher", "Deathcatcher", global::EnemyType.Deathcatcher);
-                            Deathcatcher = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Drone:
-                            enemyTypeObj = new VanillaEnemyType("Drone", "Drone", global::EnemyType.Drone);
-                            Drone = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Ferryman:
-                            enemyTypeObj = new VanillaEnemyType("Ferryman", "Ferryman", global::EnemyType.Ferryman);
-                            Ferryman = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Filth:
-                            enemyTypeObj = new VanillaEnemyType("Filth", "Filth", global::EnemyType.Filth);
-                            Filth = enemyTypeObj;
-                            break;
-                        case global::EnemyType.FleshPanopticon:
-                            enemyTypeObj = new VanillaEnemyType("Flesh Panopticon", "FleshPanopticon", global::EnemyType.FleshPanopticon);
-                            FleshPanopticon = enemyTypeObj;
-                            break;
-                        case global::EnemyType.FleshPrison:
-                            enemyTypeObj = new VanillaEnemyType("Flesh Prison", "FleshPrison", global::EnemyType.FleshPrison);
-                            FleshPrison = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Gabriel:
-                            enemyTypeObj = new VanillaEnemyType("Gabrie - Judge of Hell", "Gabriel", global::EnemyType.Gabriel);
-                            Gabriel = enemyTypeObj;
-                            break;
-                        case global::EnemyType.GabrielSecond:
-                            enemyTypeObj = new VanillaEnemyType("Gabriel - Apostate of Hate", "GabrielSecond", global::EnemyType.GabrielSecond);
-                            GabrielSecond = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Geryon:
-                            enemyTypeObj = new VanillaEnemyType("Geryon", "Geryon", global::EnemyType.Geryon);
-                            Geryon = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Gutterman:
-                            enemyTypeObj = new VanillaEnemyType("Gutterman", "Gutterman", global::EnemyType.Gutterman);
-                            Gutterman = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Guttertank:
-                            enemyTypeObj = new VanillaEnemyType("Guttertank", "Guttertank", global::EnemyType.Guttertank);
-                            Guttertank = enemyTypeObj;
-                            break;
-                        case global::EnemyType.HideousMass:
-                            enemyTypeObj = new VanillaEnemyType("Hideous Mass", "HideousMass", global::EnemyType.HideousMass);
-                            HideousMass = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Idol:
-                            enemyTypeObj = new VanillaEnemyType("Idol", "Idol", global::EnemyType.Idol);
-                            Idol = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Leviathan:
-                            enemyTypeObj = new VanillaEnemyType("Leviathan", "Leviathan", global::EnemyType.Leviathan);
-                            Leviathan = enemyTypeObj;
-                            break;
-                        case global::EnemyType.MaliciousFace:
-                            enemyTypeObj = new VanillaEnemyType("Malicious Face", "MaliciousFace", global::EnemyType.MaliciousFace);
-                            MaliciousFace = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Mandalore:
-                            enemyTypeObj = new VanillaEnemyType("Mandalore", "Mandalore", global::EnemyType.Mandalore);
-                            Mandalore = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Mannequin:
-                            enemyTypeObj = new VanillaEnemyType("Mannequin", "Mannequin", global::EnemyType.Mannequin);
-                            Mannequin = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Mindflayer:
-                            enemyTypeObj = new VanillaEnemyType("Mindflayer", "Mindflayer", global::EnemyType.Mindflayer);
-                            Mindflayer = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Minos:
-                            enemyTypeObj = new VanillaEnemyType("Corpse of King Minos", "Minos", global::EnemyType.Minos);
-                            Minos = enemyTypeObj;
-                            break;
-                        case global::EnemyType.MinosPrime:
-                            enemyTypeObj = new VanillaEnemyType("Minos Prime", "MinosPrime", global::EnemyType.MinosPrime);
-                            MinosPrime = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Minotaur:
-                            enemyTypeObj = new VanillaEnemyType("Minotaur", "Minotaur", global::EnemyType.Minotaur);
-                            Minotaur = enemyTypeObj;
-                            break;
-                        case global::EnemyType.MirrorReaper:
-                            enemyTypeObj = new VanillaEnemyType("Mirror Reaper", "MirrorReaper", global::EnemyType.MirrorReaper);
-                            MirrorReaper = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Power:
-                            enemyTypeObj = new VanillaEnemyType("Power", "Power", global::EnemyType.Power);
-                            Power = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Providence:
-                            enemyTypeObj = new VanillaEnemyType("Providence", "Providence", global::EnemyType.Providence);
-                            Providence = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Puppet:
-                            enemyTypeObj = new VanillaEnemyType("Puppet", "Puppet", global::EnemyType.Puppet);
-                            Puppet = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Schism:
-                            enemyTypeObj = new VanillaEnemyType("Schism", "Schism", global::EnemyType.Schism);
-                            Schism = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Sisyphus:
-                            enemyTypeObj = new VanillaEnemyType("Sisyphus", "Sisyphus", global::EnemyType.Sisyphus);
-                            Sisyphus = enemyTypeObj;
-                            break;
-                        case global::EnemyType.SisyphusPrime:
-                            enemyTypeObj = new VanillaEnemyType("Sisyphus Prime", "SisyphusPrime", global::EnemyType.SisyphusPrime);
-                            SisyphusPrime = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Soldier:
-                            enemyTypeObj = new VanillaEnemyType("Soldier", "Soldier", global::EnemyType.Soldier);
-                            Soldier = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Stalker:
-                            enemyTypeObj = new VanillaEnemyType("Stalker", "Stalker", global::EnemyType.Stalker);
-                            Stalker = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Stray:
-                            enemyTypeObj = new VanillaEnemyType("Stray", "Stray", global::EnemyType.Stray);
-                            Stray = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Streetcleaner:
-                            enemyTypeObj = new VanillaEnemyType("Street Cleaner", "Streetcleaner", global::EnemyType.Streetcleaner);
-                            Streetcleaner = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Swordsmachine:
-                            enemyTypeObj = new VanillaEnemyType("Swords Machine", "Swordsmachine", global::EnemyType.Swordsmachine);
-                            Swordsmachine = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Turret:
-                            enemyTypeObj = new VanillaEnemyType("Turret", "Turret", global::EnemyType.Turret);
-                            Turret = enemyTypeObj;
-                            break;
-                        case global::EnemyType.V2:
-                            enemyTypeObj = new VanillaEnemyType("V2", "V2", global::EnemyType.V2);
-                            V2 = enemyTypeObj;
-                            break;
-                        case global::EnemyType.V2Second:
-                            enemyTypeObj = new VanillaEnemyType("V2... 2!", "V2Second", global::EnemyType.V2Second);
-                            V2Second = enemyTypeObj;
-                            break;
-                        case global::EnemyType.VeryCancerousRodent:
-                            enemyTypeObj = new VanillaEnemyType("Very Cancerous Rodent", "VeryCancerousRodent", global::EnemyType.VeryCancerousRodent);
-                            VeryCancerousRodent = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Virtue:
-                            enemyTypeObj = new VanillaEnemyType("Virtue", "Virtue", global::EnemyType.Virtue);
-                            Virtue = enemyTypeObj;
-                            break;
-                        case global::EnemyType.Wicked:
-                            enemyTypeObj = new VanillaEnemyType("Something Wicked", "Wicked", global::EnemyType.Wicked);
-                            Wicked = enemyTypeObj;
-                            break;
-                    }
-
-                    etdb.RegisterType(enemyTypeObj);
+                    case global::EnemyType.BigJohnator:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Big Johninator", name: "BigJohnator", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.BigJohnator, isVanilla: true);
+                        BigJohnator = enemyTypeObj;
+                        break;
+                    case global::EnemyType.CancerousRodent:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Cancerous Rodent", name: "CancerousRodent", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.CancerousRodent, isVanilla: true);
+                        CancerousRodent = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Centaur:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Earth Mover", name: "Centaur", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Centaur, isVanilla: true);
+                        Centaur = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Cerberus:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Cerberus", name: "Cerberus", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Cerberus, isVanilla: true);
+                        Cerberus = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Deathcatcher:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Deathcatcher", name: "Deathcatcher", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Deathcatcher, isVanilla: true);
+                        Deathcatcher = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Drone:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Drone", name: "Drone", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Drone, isVanilla: true);
+                        Drone = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Ferryman:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Ferryman", name: "Ferryman", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Ferryman, isVanilla: true);
+                        Ferryman = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Filth:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Filth", name: "Filth", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Filth, isVanilla: true);
+                        Filth = enemyTypeObj;
+                        break;
+                    case global::EnemyType.FleshPanopticon:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Flesh Panopticon", name: "FleshPanopticon", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.FleshPanopticon, isVanilla: true);
+                        FleshPanopticon = enemyTypeObj;
+                        break;
+                    case global::EnemyType.FleshPrison:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Flesh Prison", name: "FleshPrison", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.FleshPrison, isVanilla: true);
+                        FleshPrison = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Gabriel:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Gabrie - Judge of Hell", name: "Gabriel", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Gabriel, isVanilla: true);
+                        Gabriel = enemyTypeObj;
+                        break;
+                    case global::EnemyType.GabrielSecond:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Gabriel - Apostate of Hate", name: "GabrielSecond", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.GabrielSecond, isVanilla: true);
+                        GabrielSecond = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Geryon:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Geryon", name: "Geryon", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Geryon, isVanilla: true);
+                        Geryon = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Gutterman:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Gutterman", name: "Gutterman", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Gutterman, isVanilla: true);
+                        Gutterman = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Guttertank:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Guttertank", name: "Guttertank", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Guttertank, isVanilla: true);
+                        Guttertank = enemyTypeObj;
+                        break;
+                    case global::EnemyType.HideousMass:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Hideous Mass", name: "HideousMass", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.HideousMass, isVanilla: true);
+                        HideousMass = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Idol:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Idol", name: "Idol", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Idol, isVanilla: true);
+                        Idol = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Leviathan:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Leviathan", name: "Leviathan", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Leviathan, isVanilla: true);
+                        Leviathan = enemyTypeObj;
+                        break;
+                    case global::EnemyType.MaliciousFace:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Malicious Face", name: "MaliciousFace", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.MaliciousFace, isVanilla: true);
+                        MaliciousFace = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Mandalore:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Mandalore", name: "Mandalore", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Mandalore, isVanilla: true);
+                        Mandalore = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Mannequin:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Mannequin", name: "Mannequin", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Mannequin, isVanilla: true);
+                        Mannequin = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Mindflayer:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Mindflayer", name: "Mindflayer", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Mindflayer, isVanilla: true);
+                        Mindflayer = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Minos:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Corpse of King Minos", name: "Minos", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Minos, isVanilla: true);
+                        Minos = enemyTypeObj;
+                        break;
+                    case global::EnemyType.MinosPrime:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Minos Prime", name: "MinosPrime", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.MinosPrime, isVanilla: true);
+                        MinosPrime = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Minotaur:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Minotaur", name: "Minotaur", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Minotaur, isVanilla: true);
+                        Minotaur = enemyTypeObj;
+                        break;
+                    case global::EnemyType.MirrorReaper:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Mirror Reaper", name: "MirrorReaper", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.MirrorReaper, isVanilla: true);
+                        MirrorReaper = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Power:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Power", name: "Power", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Power, isVanilla: true);
+                        Power = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Providence:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Providence", name: "Providence", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Providence, isVanilla: true);
+                        Providence = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Puppet:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Puppet", name: "Puppet", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Puppet, isVanilla: true);
+                        Puppet = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Schism:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Schism", name: "Schism", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Schism, isVanilla: true);
+                        Schism = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Sisyphus:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Sisyphus", name: "Sisyphus", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Sisyphus, isVanilla: true);
+                        Sisyphus = enemyTypeObj;
+                        break;
+                    case global::EnemyType.SisyphusPrime:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Sisyphus Prime", name: "SisyphusPrime", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.SisyphusPrime, isVanilla: true);
+                        SisyphusPrime = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Soldier:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Soldier", name: "Soldier", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Soldier, isVanilla: true);
+                        Soldier = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Stalker:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Stalker", name: "Stalker", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Stalker, isVanilla: true);
+                        Stalker = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Stray:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Stray", name: "Stray", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Stray, isVanilla: true);
+                        Stray = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Streetcleaner:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Street Cleaner", name: "Streetcleaner", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Streetcleaner, isVanilla: true);
+                        Streetcleaner = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Swordsmachine:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Swords Machine", name: "Swordsmachine", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Swordsmachine, isVanilla: true);
+                        Swordsmachine = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Turret:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Turret", name: "Turret", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Turret, isVanilla: true);
+                        Turret = enemyTypeObj;
+                        break;
+                    case global::EnemyType.V2:
+                        enemyTypeObj = new EnemyTypeData(readableName: "V2", name: "V2", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.V2, isVanilla: true);
+                        V2 = enemyTypeObj;
+                        break;
+                    case global::EnemyType.V2Second:
+                        enemyTypeObj = new EnemyTypeData(readableName: "V2... 2!", name: "V2Second", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.V2Second, isVanilla: true);
+                        V2Second = enemyTypeObj;
+                        break;
+                    case global::EnemyType.VeryCancerousRodent:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Very Cancerous Rodent", name: "VeryCancerousRodent", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.VeryCancerousRodent, isVanilla: true);
+                        VeryCancerousRodent = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Virtue:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Virtue", name: "Virtue", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Virtue, isVanilla: true);
+                        Virtue = enemyTypeObj;
+                        break;
+                    case global::EnemyType.Wicked:
+                        enemyTypeObj = new EnemyTypeData(readableName: "Something Wicked", name: "Wicked", uniqueName: $"{prefix}.{enemyType}", global::EnemyType.Wicked, isVanilla: true);
+                        Wicked = enemyTypeObj;
+                        break;
                 }
+
+                etdb.RegisterType(enemyTypeObj);
             }
         }
     }

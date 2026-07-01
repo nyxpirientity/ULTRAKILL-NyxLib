@@ -36,7 +36,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             return b + ((a - b) * Mathf.Exp(-decay * delta));
         }
-            
+
         public static Vector2 EaseInterpTo(Vector2 a, Vector2 b, float decay, float delta)
         {
             return b + ((a - b) * Mathf.Exp(-decay * delta));
@@ -50,6 +50,18 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         public static double EaseInterpTo(double a, double b, double decay, double delta)
         {
             return b + ((a - b) * Math.Exp(-decay * delta));
+        }
+
+        public static Quaternion InterpTo(this Quaternion from, Quaternion to, float speed, float delta)
+        {
+            float angularDist = Quaternion.Angle(from, to);
+
+            if (angularDist <= speed * (float)delta || angularDist is float.NaN)
+            {
+                return to;
+            }
+
+            return Quaternion.Slerp(from, to, ((Math.Min(speed * delta, angularDist)) / angularDist));
         }
     }
 }

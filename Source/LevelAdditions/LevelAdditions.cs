@@ -15,8 +15,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static void Initialize()
         {
-            ScenesEvents.OnSceneWasLoaded += OnSceneLoad;
-            ScenesEvents.OnSceneWasUnloaded += OnSceneUnload;
+            SceneEvents.OnSceneLoad += OnSceneLoad;
+            SceneEvents.OnSceneUnload += OnSceneUnload;
         }
 
         private static Dictionary<string, Func<LevelAdditions>> LevelAdditionsCtorDict = new Dictionary<string, Func<LevelAdditions>>

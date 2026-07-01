@@ -30,7 +30,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         protected void Awake()
         {
             Itself = this;
-            
+
             _monoBehaviours = new List<MonoBehaviour>(MonoRegistrar.RegisteredTypes.Count);
 
             foreach (var type in MonoRegistrar.RegisteredTypes)
@@ -51,27 +51,27 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         protected void FixedUpdate()
         {
-            
+
         }
 
         protected void OnDestroy()
         {
-            
+
         }
 
         protected void OnEnable()
         {
-            
+
         }
-        
+
         protected void OnDisable()
         {
-            
+
         }
 
         internal static void Initialize()
         {
-            ScenesEvents.OnSceneWasLoaded += (sceneIndex, levelName, unitySceneName) => { CreateHeck(); };
+            SceneEvents.OnSceneLoad += (sceneIndex, levelName, unitySceneName) => { CreateHeck(); };
         }
 
         private static void CreateHeck()

@@ -32,10 +32,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             RectTransform = GetComponent<RectTransform>();
             TextMesh = GetComponent<TextMeshProUGUI>();
         }
-        
+
         protected void OnDisable()
         {
-            
+
         }
     }
 
@@ -43,32 +43,32 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static void Initialize()
         {
-            ScenesEvents.OnSceneWasLoaded += OnSceneLoaded;
+            SceneEvents.OnSceneLoad += OnSceneLoaded;
             UpdateEvents.OnUpdate += OnUpdate;
 
-            Pool = new ObjPool<GameObject>(() => 
-            { 
-                var go = GameObject.Instantiate(Assets.LabelPrefab, CanvasController.Instance.gameObject.transform);
+            Pool = new ObjPool<GameObject>(() =>
+            {
+                var textMesh = Assets.UIElements.Label.Instantiate(CanvasController.Instance.gameObject.transform);
+                var go = textMesh.gameObject;
                 go.AddComponent<QuickMsg>();
-                var textMesh = go.GetComponent<TextMeshProUGUI>();
                 var rectTransform = go.GetComponent<RectTransform>();
                 textMesh.text = "UKAIW QuickMsg default";
                 textMesh.color = Color.white;
                 textMesh.fontSize = 24.0f;
                 textMesh.horizontalAlignment = HorizontalAlignmentOptions.Center;
-                
+
                 rectTransform.pivot = new Vector2(0.5f, 0.5f);
                 rectTransform.anchorMin = new Vector2(0.5f, 1.0f);
                 rectTransform.anchorMax = new Vector2(0.5f, 1.0f);
                 rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1000.0f);
 
                 return go;
-            }, 
-            (go) => 
-            { 
-                GameObject.Destroy(go); 
+            },
+            (go) =>
+            {
+                GameObject.Destroy(go);
             });
-            
+
             Pool.PrepareObject = (go) =>
             {
             };
@@ -106,12 +106,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             Pool?.Clear();
             ActiveQuickMsgs?.Clear();
-            if (Assets.LabelPrefab != null && CanvasController.Instance.NullInvalid()?.gameObject != null)
+            if (Assets.UIElements.Label != null && CanvasController.Instance.NullInvalid()?.gameObject != null)
             {
                 Pool.EnsureSize(32);
             }
         }
-        
+
         public static void DisplayQuickMsg(string text, Color color, float duration, Vector3 velocity, float fontSize, bool flashing = false)
         {
             var poolObj = Pool.Take();
