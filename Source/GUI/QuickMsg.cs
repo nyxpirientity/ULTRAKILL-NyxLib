@@ -49,6 +49,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             Pool = new ObjPool<GameObject>(() =>
             {
                 var textMesh = Assets.UIElements.Label.Instantiate(CanvasController.Instance.gameObject.transform);
+                textMesh.gameObject.SetActive(false);
                 var go = textMesh.gameObject;
                 go.AddComponent<QuickMsg>();
                 var rectTransform = go.GetComponent<RectTransform>();
