@@ -14,6 +14,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
     public class Gear : MonoSingleton<Gear>
     {
         public static bool AssetsLoaded => (Instance?._assetsLoaded).GetValueOrDefault(false);
+        public static event Action PostAssetsLoaded;
 
         public static PrefabAsset<GameObject> Piercer => new PrefabAsset<GameObject>(() => Instance?._piercer);
         public static PrefabAsset<GameObject> Marksman => new PrefabAsset<GameObject>(() => Instance?._marksman);
@@ -180,6 +181,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
             _firestarter = GameObject.Instantiate(AssetRefs.Firestarter.ToAsset(), holder);
 
             _assetsLoaded = true;
+
+            PostAssetsLoaded?.Invoke();
         }
     }
 }
