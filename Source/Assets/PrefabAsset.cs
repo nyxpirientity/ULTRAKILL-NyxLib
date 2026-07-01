@@ -17,7 +17,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
             _prefab = prefab;
         }
 
-        public T Instantiate(Vector3 position, Quaternion rotation, Transform parent)
+        public T Instantiate(Vector3 position, Quaternion rotation, Transform parent = null)
         {
             return UnityEngine.Object.Instantiate(_prefab, position, rotation, parent);
         }

@@ -42,6 +42,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
             _normal = Instantiate(grenade.explosion, AssetsRoot.Holder).AddComponent<ExplosionRoot>();
             _super = Instantiate(grenade.superExplosion, AssetsRoot.Holder).AddComponent<ExplosionRoot>();
 
+            _harmless.SetMaxPlayerDamageOverride(-1);
+            _normal.SetMaxPlayerDamageOverride(-1);
+            _super.SetMaxPlayerDamageOverride(-1);
+
             Harmless = new PrefabAsset<ExplosionRoot>(_harmless);
             Normal = new PrefabAsset<ExplosionRoot>(_normal);
             Super = new PrefabAsset<ExplosionRoot>(_super);
