@@ -28,8 +28,20 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
         private void Awake()
         {
-            SceneEvents.OnSceneStart += OnNewSceneStart;
             SpawnDbPicker.OnGettingPrefabs += GetSpawnDbPrefabs;
+            Gear.PostAssetsLoaded += LoadGearAssets;
+        }
+
+        private void LoadGearAssets()
+        {
+            if (_playerRocket == null)
+            {
+                var fs = Gear.Firestarter.DirectPrefab.GetComponent<RocketLauncher>();
+                var ce = Gear.CoreEject.DirectPrefab.GetComponent<Shotgun>();
+
+                _playerRocket = Instantiate(fs.rocket, AssetsRoot.Holder).GetComponent<Grenade>();
+                _core = Instantiate(ce.grenade, AssetsRoot.Holder).GetComponent<Grenade>();
+            }
         }
 
         private void GetSpawnDbPrefabs(SpawnableObjectsDatabase db)
@@ -48,18 +60,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                 {
                     Log.ExpectedInfo($"We'd like a a hideous mass in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
                 }
-            }
-        }
-
-        private void OnNewSceneStart(Scene scene, string levelName, string unitySceneName)
-        {
-            if (PlayerRocket == null && Gear.Firestarter != null)
-            {
-                var fs = Gear.Firestarter.DirectPrefab.GetComponent<RocketLauncher>();
-                var ce = Gear.CoreEject.DirectPrefab.GetComponent<Shotgun>();
-
-                _playerRocket = Instantiate(fs.rocket, AssetsRoot.Holder).GetComponentInChildren<Grenade>();
-                _core = Instantiate(ce.grenade, AssetsRoot.Holder).GetComponentInChildren<Grenade>();
             }
         }
     }

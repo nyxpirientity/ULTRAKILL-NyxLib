@@ -28,7 +28,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
         private void OnNewSceneStart(Scene scene, string levelName, string unitySceneName)
         {
-            if (_harmless != null || Gear.Firestarter == null)
+            if (_harmless != null || !Gear.AssetsLoaded)
             {
                 return;
             }

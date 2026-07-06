@@ -18,10 +18,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
         private void Awake()
         {
-            SceneEvents.OnSceneStart += OnNewSceneStart;
+            SceneEvents.OnSceneLoad += OnSceneLoad;
         }
 
-        private void OnNewSceneStart(Scene scene, string levelName, string unitySceneName)
+        private void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
         {
             if (_labelPrefab == null)
             {

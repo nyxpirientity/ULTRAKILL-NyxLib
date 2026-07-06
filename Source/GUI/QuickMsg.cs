@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Nyxpiri;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -43,7 +45,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         public static void Initialize()
         {
-            SceneEvents.OnSceneLoad += OnSceneLoaded;
+            SceneEvents.OnSceneUnload += OnSceneUnload;
+            SceneEvents.OnSceneStart += OnSceneStart;
             UpdateEvents.OnUpdate += OnUpdate;
 
             Pool = new ObjPool<GameObject>(() =>
@@ -79,6 +82,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             };
         }
 
+        private static void OnSceneUnload(Scene scene, string levelName, string unitySceneName)
+        {
+            Pool?.Clear();
+            ActiveQuickMsgs?.Clear();
+        }
+
         private static ObjPool<GameObject> Pool = null;
         private static List<(PoolObject<GameObject>, QuickMsg)> ActiveQuickMsgs = new List<(PoolObject<GameObject>, QuickMsg)>(32);
 
@@ -102,10 +111,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             }
         }
 
-        private static void OnSceneLoaded(Scene scene, string levelName, string unitySceneName)
+        private static void OnSceneStart(Scene scene, string levelName, string unitySceneName)
         {
-            Pool?.Clear();
-            ActiveQuickMsgs?.Clear();
             if (Assets.UIElements.Label != null && CanvasController.Instance.NullInvalid()?.gameObject != null)
             {
                 Pool.EnsureSize(32);
@@ -114,6 +121,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static void DisplayQuickMsg(string text, Color color, float duration, Vector3 velocity, float fontSize, bool flashing = false)
         {
+            if (Pool.Size == 0)
+            {
+                Log.Warning($"Tried to display a quickmsg but Pool.Size == 0");
+                return;
+            }
+
             var poolObj = Pool.Take();
             var go = poolObj.Value;
             go.SetActive(true);
