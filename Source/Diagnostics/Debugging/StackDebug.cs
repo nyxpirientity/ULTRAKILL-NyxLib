@@ -9,9 +9,9 @@ public static class StackDebug
         return $"{trace}";
     }
 
-    public static void PrintStack()
+    public static void PrintStack(bool includeFileInfo = false)
     {
-        StackTrace trace = new StackTrace(1, false);
+        StackTrace trace = new StackTrace(1, includeFileInfo);
         Log.Message($"Stack debug! {trace}");
     }
 }
