@@ -6,7 +6,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
     {
         PropertyInfo Fi = null;
         IT Instance = null;
-        
+
         public VT Value
         {
             get => (VT)Fi.GetValue(Instance);
@@ -17,6 +17,26 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             Instance = instance;
             Fi = typeof(IT).GetProperty(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+    }
+
+    public struct PropertyAccess<ObjectType, PropertyType>
+    {
+        PropertyInfo Pi;
+
+        public PropertyAccess(string propertyName, BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance)
+        {
+            Pi = typeof(ObjectType).GetProperty(propertyName, bindingFlags);
+        }
+
+        public PropertyType GetValue(ObjectType objectType)
+        {
+            return (PropertyType)Pi.GetValue(objectType);
+        }
+
+        public void SetValue(ObjectType objectType, PropertyType value)
+        {
+            Pi.SetValue(objectType, value);
         }
     }
 }
