@@ -86,6 +86,11 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         private static void TryRegisterCheats()
         {
+            if (CheatsController.Instance == null)
+            {
+                return;
+            }
+
             if (WaitingForCheatRegistration)
             {
                 if (Cheats.Manager == null)
@@ -103,8 +108,9 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     OptionsManager.forceSand = true;
                 }
 
-                RegisterCheats();
                 WaitingForCheatRegistration = false;
+
+                RegisterCheats();
             }
         }
 
@@ -192,94 +198,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     }
                 ), "SELF SABOTAGE");
             }
-            // TODO: many of these should probably be their own thing somewhere
-            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Disable Stops", 
-                Cheats.DisableStops,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "misc");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Disable Slowdown", 
-                Cheats.DisableSlowdown,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "misc");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "ULTRASTOP (possible flashing lights!)", 
-                Cheats.UltraStop,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "???");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Shortened Hitstop", 
-                Cheats.ShortHitStop,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "misc");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Always Play Battle Music", 
-                Cheats.AlwaysBattleMusic,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "music");
-
-            Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Play Clean Music with Battle Music", 
-                Cheats.PlayCleanMusicWithBattle,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "music");*/
-
-            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "No Corpses", 
-                Cheats.NoCorpses,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "???");*/
-
-            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Hitstop On Heavy Hydra Load", 
-                Cheats.HitstopOnHeavyHydraLoad,
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                }
-            ), "???");*/ // why is this a cheat and not a setting?
 
             /*Cheats.Manager.RegisterCheat(new ToggleCheat(
             "Log Eid Info On Start", 
@@ -306,35 +224,6 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     foreach (var root in roots)
                     {
                         root.DebugPrintChildren();
-                    }
-                }
-            ), "dev stuff");*/
-
-            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "dev-button-0", 
-                "ukaiw.dev.button-0",
-                onDisable: (cheat) =>
-                {
-                },
-                onEnable: (cheat, manager) =>
-                {
-                    Cheats.Manager.DisableCheat("ukaiw.dev.button-0");
-                    var objects = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>();
-                    HashSet<GameObject> printedObjects = new HashSet<GameObject>(256);
-                    foreach (var obj in objects)
-                    {
-                        if (!obj.text.Contains("INTRUDER"))
-                        {
-                            continue;
-                        }
-                        
-                        MelonLogger.Msg($"Found {obj.gameObject}!");
-                        if (printedObjects.Contains(obj.gameObject.transform.root.gameObject))
-                        {
-                            continue;
-                        }
-                        obj.gameObject.transform.root.gameObject.DebugPrintChildren();
-                        printedObjects.Add(obj.gameObject.transform.root.gameObject);
                     }
                 }
             ), "dev stuff");*/
