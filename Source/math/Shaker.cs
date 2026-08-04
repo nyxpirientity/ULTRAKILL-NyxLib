@@ -3,6 +3,123 @@ using UnityEngine;
 
 namespace NyxpiriOS // made for my godot game, yoinked it and converted it to this version of C# for this project AND to unity, and to stop using the many convenience libraries I wrote for godot and maths...
 {
+    public class Shaker1D
+    {
+        [SerializeField] private float _MinScale = 0.0f;
+        public float MinScale
+        {
+            get => _MinScale;
+            set
+            {
+                _MinScale = value;
+            }
+        }
+
+        [SerializeField] private float _MaxScale = 1.0f;
+        public float MaxScale
+        {
+            get => _MaxScale;
+            set
+            {
+                _MaxScale = value;
+            }
+        }
+
+        [SerializeField] private float _MinDistance = 1.0f;
+        public float MinDistance
+        {
+            get => _MinDistance;
+            set
+            {
+                _MinDistance = value;
+            }
+        }
+
+        [SerializeField] private float _Rate = 50.0f;
+        public float Rate
+        {
+            get => _Rate;
+            set
+            {
+                _Rate = Mathf.Max(0.0f, value);
+            }
+        }
+
+        [SerializeField] private float _positionA = 0.0f;
+        public float PositionA { get => _positionA; private set => _positionA = value; }
+
+        [SerializeField] private float _positionB = 0.0f;
+        public float PositionB { get => _positionB; private set => _positionB = value; }
+
+        [SerializeField] private float _alpha = 0.0f;
+        public float Alpha { get => _alpha; private set => _alpha = value; }
+
+        public float Position
+        {
+            get
+            {
+                float processedAlpha = Alpha;
+
+                processedAlpha = Mathf.Sin((processedAlpha + 0.5f) * ((float)Math.PI));
+
+                if (Alpha < 0.5f)
+                {
+                    processedAlpha = (1.0f - processedAlpha) * 0.5f;
+                }
+                else
+                {
+                    processedAlpha = 0.5f + (Mathf.Abs(processedAlpha) * 0.5f);
+                }
+
+                return Mathf.Lerp(PositionA, PositionB, processedAlpha);
+            }
+        }
+
+        public void NextPosition()
+        {
+            PositionA = PositionB;
+
+            for (int i = 0; (i < 10 && Mathf.Abs(PositionB - PositionA) < MinDistance) || i < 1; i++)
+            {
+                PositionB = UnityEngine.Random.Range(MinScale, MaxScale);
+
+                if (Mathf.Abs(PositionB - PositionA) < MinDistance)
+                {
+                    var diff = (PositionB - PositionA);
+
+                    if (diff == 0)
+                    {
+                        PositionB = 0.0f;
+                        continue;
+                    }
+
+                    PositionB += (diff / diff) * (MinDistance - Mathf.Abs(diff));
+
+                    if (Mathf.Abs(PositionB) > MaxScale || Mathf.Abs(PositionB) < MinScale)
+                    {
+                        PositionB = 0.0f;
+                        continue;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void Process(float delta)
+        {
+            Alpha += (delta * (Rate));
+
+            if (Alpha > 1.0f)
+            {
+                Alpha %= 1.0f;
+                NextPosition();
+            }
+        }
+    }
+
     public class Shaker2D
     {
         public float _MinScale = 0.0f;
