@@ -104,6 +104,9 @@ public class EnemyComponents : MonoBehaviour
 
     public static FieldAccess<EnemyIdentifier, string> OverrideFullNameFA = new FieldAccess<EnemyIdentifier, string>("overrideFullName");
 
+    public Vector3 CollisionCenterOffset = Vector3.zero;
+    public Vector3 CollisionCenter => transform.TransformPoint(CollisionCenterOffset);
+
     public T GetMonoByIndex<T>(int idx) where T : MonoBehaviour
     {
         if (idx < 0)
@@ -199,6 +202,8 @@ public class EnemyComponents : MonoBehaviour
 
         PrefabStore?.StorePrefab();
         UpdateHighestHealth();
+
+        CollisionCenterOffset = transform.InverseTransformPoint(this.SolveEnemyBounds().center);
     }
 
     /* to allow patching lol */

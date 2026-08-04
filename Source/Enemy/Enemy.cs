@@ -30,7 +30,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 return false;
             }
-            
+
             var enrage = eid.GetComponent<IEnrage>();
 
             return (enrage?.isEnraged).GetValueOrDefault(false);
@@ -42,7 +42,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             {
                 return false;
             }
-            
+
             var enrage = eid.GetComponent<IEnrage>();
 
             if ((enrage?.isEnraged).GetValueOrDefault(false))
@@ -307,20 +307,20 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
 
         public static Bounds SolveEnemyBounds(this EnemyComponents enemy)
         {
-            return SolveEnemyBounds(enemy.gameObject);    
+            return SolveEnemyBounds(enemy.gameObject);
         }
 
         public static Bounds SolveEnemyBounds(this GameObject enemyGo)
         {
             Bounds bounds = new Bounds();
             var mainCollider = enemyGo.GetComponent<Collider>();
-            var colliders = enemyGo.GetComponents<Collider>().AddRangeToArray(enemyGo.GetComponentsInChildren<Collider>());
+            var colliders = enemyGo.GetComponentsInChildren<Collider>();
 
             if (mainCollider != null)
             {
                 bounds = mainCollider.bounds;
             }
-            
+
             if (bounds.extents.magnitude > 2.0f)
             {
                 return bounds;
@@ -331,12 +331,12 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                 {
                     Vector3 boundsMin = bounds.min;
                     Vector3 boundsMax = bounds.max;
-                    
+
                     if (boundsMin.x > collider.bounds.min.x)
                     {
                         boundsMin.x = collider.bounds.min.x;
                     }
-                    
+
                     if (boundsMin.y > collider.bounds.min.y)
                     {
                         boundsMin.y = collider.bounds.min.y;
@@ -345,13 +345,13 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
                     if (boundsMin.z > collider.bounds.min.z)
                     {
                         boundsMin.z = collider.bounds.min.z;
-                    }                
-                
+                    }
+
                     if (boundsMax.x < collider.bounds.max.x)
                     {
                         boundsMax.x = collider.bounds.max.x;
                     }
-                    
+
                     if (boundsMax.y < collider.bounds.max.y)
                     {
                         boundsMax.y = collider.bounds.max.y;
@@ -377,7 +377,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
         {
             var eid = __instance;
             var eidGo = eid.gameObject;
-            
+
             try
             {
                 var enemy = eidGo.GetOrAddComponent<EnemyComponents>();
@@ -413,8 +413,8 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             var enemyGo = enemy.gameObject;
 
             var ec = enemy.GetComponent<EnemyComponents>();
-            TryLog.Action(() => {EnemyEvents.PostStart?.Invoke(ec);});
-            
+            TryLog.Action(() => { EnemyEvents.PostStart?.Invoke(ec); });
+
             if (Cheats.IsCheatEnabled(Cheats.LogEIDInfo))
             {
                 ec.RootGameObject.DebugPrintChildren();
@@ -437,7 +437,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDisabled?.Invoke(__instance);});
+            TryLog.Action(() => { EnemyEvents.PreDisabled?.Invoke(__instance); });
         }
 
         public static void Postfix(EnemyComponents __instance)
@@ -455,7 +455,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib
             var enemy = __instance;
             var enemyGo = enemy.gameObject;
 
-            TryLog.Action(() => {EnemyEvents.PreDestroy?.Invoke(__instance);});
+            TryLog.Action(() => { EnemyEvents.PreDestroy?.Invoke(__instance); });
         }
 
         public static void Postfix(EnemyComponents __instance)
