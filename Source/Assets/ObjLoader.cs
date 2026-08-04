@@ -49,7 +49,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
 
                     Vector3 val;
 
-                    val.x = parseFloat(tokens[tokenStart]) * -1.0f;
+                    val.x = parseFloat(tokens[tokenStart]);
                     val.y = parseFloat(tokens[tokenStart + 1]);
                     val.z = parseFloat(tokens[tokenStart + 2]) * -1.0f;
 
@@ -127,7 +127,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
                     faceData.UVIndices = new Range(activeObj.UVIndices.Count, 0);
                     faceData.NormalIndices = new Range(activeObj.NormalIndices.Count, 0);
 
-                    for (int i = 1; i < tokens.Length; i++)
+                    for (int i = tokens.Length - 1; i >= 1; i--)
                     {
                         faceIndicesTempStore.Clear();
                         parseIndexArray(tokens[i], faceIndicesTempStore);
