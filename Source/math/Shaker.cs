@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-namespace NyxpiriOS // made for my godot game, yoinked it and converted it to this version of C# for this project AND to unity, and to stop using the many convenience libraries I wrote for godot and maths...
+// made for my godot game, yoinked it and converted it to this version of C# for this project AND to unity, and to stop using the many convenience libraries I wrote for godot and maths...
+namespace Nyxpiri.ULTRAKILL.NyxLib
 {
     public class Shaker1D
     {
