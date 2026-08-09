@@ -2,140 +2,139 @@ using System;
 using UnityEngine;
 using HarmonyLib;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+public enum StyleRanks
 {
-    public enum StyleRanks
+    Null = -1,
+    Destructive = 0,
+    Chaotic = 1,
+    Brutal = 2,
+    Anarchic = 3,
+    Supreme = 4,
+    SSadistic = 5,
+    SSSensoredStorm = 6,
+    ULTRAKILL = 7,
+}
+
+public static class Style
+{
+    public static int NumStyleRanks = 8;
+
+    public delegate void PreAddPointsEventHandler(EventMethodCanceler canceler, StyleHUD shud, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "");
+    public static event PreAddPointsEventHandler PreAddPoints;
+
+    public delegate void PostAddPointsEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "");
+    public static event PostAddPointsEventHandler PostAddPoints;
+
+    public delegate void PreRemovePointsEventHandler(EventMethodCanceler canceler, StyleHUD shud, int points);
+    public static event PreRemovePointsEventHandler PreRemovePoints;
+
+    public delegate void PostRemovePointsEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud, int points);
+    public static event PostRemovePointsEventHandler PostRemovePoints;
+
+    public delegate void PreShudUpdateEventHandler(EventMethodCanceler canceler, StyleHUD shud);
+    public static event PreShudUpdateEventHandler PreShudUpdate;
+
+    public delegate void PostShudUpdateEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud);
+    public static event PostShudUpdateEventHandler PostShudUpdate;
+
+    public static StyleRanks GetStyleRank(this StyleHUD self)
     {
-        Null = -1,
-        Destructive = 0,
-        Chaotic = 1,
-        Brutal = 2,
-        Anarchic = 3,
-        Supreme = 4,
-        SSadistic = 5,
-        SSSensoredStorm = 6,
-        ULTRAKILL = 7,
+        return (StyleRanks)self.rankIndex;
     }
 
-    public static class Style
+    [HarmonyPatch(typeof(StyleHUD), "AddPoints")]
+    static class AddPointsPatch
     {
-        public static int NumStyleRanks = 8;
-        
-        public delegate void PreAddPointsEventHandler(EventMethodCanceler canceler, StyleHUD shud, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "");
-        public static event PreAddPointsEventHandler PreAddPoints;
+        private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
 
-        public delegate void PostAddPointsEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "");
-        public static event PostAddPointsEventHandler PostAddPoints;
-        
-        public delegate void PreRemovePointsEventHandler(EventMethodCanceler canceler, StyleHUD shud, int points);
-        public static event PreRemovePointsEventHandler PreRemovePoints;
-
-        public delegate void PostRemovePointsEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud, int points);
-        public static event PostRemovePointsEventHandler PostRemovePoints;
-        
-        public delegate void PreShudUpdateEventHandler(EventMethodCanceler canceler, StyleHUD shud);
-        public static event PreShudUpdateEventHandler PreShudUpdate;
-
-        public delegate void PostShudUpdateEventHandler(EventMethodCancelInfo cancelled, StyleHUD shud);
-        public static event PostShudUpdateEventHandler PostShudUpdate;
-
-        public static StyleRanks GetStyleRank(this StyleHUD self)
+        public static bool Prefix(StyleHUD __instance, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "")
         {
-            return (StyleRanks)self.rankIndex;
+            CancellationTracker.Reset();
+
+            PreAddPoints?.Invoke(CancellationTracker.GetCanceler(), __instance, points, pointID, sourceWeapon, eid, count, prefix, postfix);
+
+            CancellationTracker.TryInvokeReimplementation();
+
+            return !CancellationTracker.Cancelled;
         }
 
-        [HarmonyPatch(typeof(StyleHUD), "AddPoints")]
-        static class AddPointsPatch
+        public static void Postfix(StyleHUD __instance, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "")
         {
-            private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
+            PostAddPoints?.Invoke(CancellationTracker.GetCancelInfo(), __instance, points, pointID, sourceWeapon, eid, count, prefix, postfix);
+        }
+    }
 
-            public static bool Prefix(StyleHUD __instance, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "")
-            {
-                CancellationTracker.Reset();
+    [HarmonyPatch(typeof(StyleHUD), "RemovePoints")]
+    static class RemovePointsPatch
+    {
+        private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
 
-                PreAddPoints?.Invoke(CancellationTracker.GetCanceler(), __instance, points, pointID, sourceWeapon, eid, count, prefix, postfix);
-                
-                CancellationTracker.TryInvokeReimplementation();
+        public static bool Prefix(StyleHUD __instance, int points)
+        {
+            CancellationTracker.Reset();
 
-                return !CancellationTracker.Cancelled;
-            }
+            PreRemovePoints?.Invoke(CancellationTracker.GetCanceler(), __instance, points);
 
-            public static void Postfix(StyleHUD __instance, int points, string pointID, GameObject sourceWeapon = null, EnemyIdentifier eid = null, int count = -1, string prefix = "", string postfix = "")
-            {
-                PostAddPoints?.Invoke(CancellationTracker.GetCancelInfo(), __instance, points, pointID, sourceWeapon, eid, count, prefix, postfix);
-            }
+            CancellationTracker.TryInvokeReimplementation();
+
+            return !CancellationTracker.Cancelled;
         }
 
-        [HarmonyPatch(typeof(StyleHUD), "RemovePoints")]
-        static class RemovePointsPatch
+        public static void Postfix(StyleHUD __instance, int points)
         {
-            private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
-            
-            public static bool Prefix(StyleHUD __instance, int points)
-            {
-                CancellationTracker.Reset();
+            PostRemovePoints?.Invoke(CancellationTracker.GetCancelInfo(), __instance, points);
+        }
+    }
 
-                PreRemovePoints?.Invoke(CancellationTracker.GetCanceler(), __instance, points);
+    [HarmonyPatch(typeof(StyleHUD), "AscendRank")]
+    static class AscendRankPatch
+    {
+        public static void Prefix(StyleHUD __instance)
+        {
 
-                CancellationTracker.TryInvokeReimplementation();
-                
-                return !CancellationTracker.Cancelled;
-            }
-
-            public static void Postfix(StyleHUD __instance, int points)
-            {
-                PostRemovePoints?.Invoke(CancellationTracker.GetCancelInfo(), __instance, points);
-            }
         }
 
-        [HarmonyPatch(typeof(StyleHUD), "AscendRank")]
-        static class AscendRankPatch
+        public static void Postfix(StyleHUD __instance)
         {
-            public static void Prefix(StyleHUD __instance)
-            {
 
-            }
+        }
+    }
 
-            public static void Postfix(StyleHUD __instance)
-            {
+    [HarmonyPatch(typeof(StyleHUD), "DescendRank")]
+    static class DescendRankPatch
+    {
+        public static void Prefix(StyleHUD __instance)
+        {
 
-            }
         }
 
-        [HarmonyPatch(typeof(StyleHUD), "DescendRank")]
-        static class DescendRankPatch
+        public static void Postfix(StyleHUD __instance)
         {
-            public static void Prefix(StyleHUD __instance)
-            {
 
-            }
+        }
+    }
 
-            public static void Postfix(StyleHUD __instance)
-            {
+    [HarmonyPatch(typeof(StyleHUD), "Update")]
+    static class StyleUpdatePatch
+    {
+        private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
 
-            }
+        public static bool Prefix(StyleHUD __instance)
+        {
+            CancellationTracker.Reset();
+
+            PreShudUpdate?.Invoke(CancellationTracker.GetCanceler(), __instance);
+
+            CancellationTracker.TryInvokeReimplementation();
+
+            return !CancellationTracker.Cancelled;
         }
 
-        [HarmonyPatch(typeof(StyleHUD), "Update")]
-        static class StyleUpdatePatch
+        public static void Postfix(StyleHUD __instance)
         {
-            private static EventMethodCancellationTracker CancellationTracker = new EventMethodCancellationTracker();
-
-            public static bool Prefix(StyleHUD __instance)
-            {
-                CancellationTracker.Reset();
-
-                PreShudUpdate?.Invoke(CancellationTracker.GetCanceler(), __instance);
-
-                CancellationTracker.TryInvokeReimplementation();
-
-                return !CancellationTracker.Cancelled;
-            }
-
-            public static void Postfix(StyleHUD __instance)
-            {
-                PostShudUpdate?.Invoke(CancellationTracker.GetCancelInfo(), __instance);
-            }
-        } 
+            PostShudUpdate?.Invoke(CancellationTracker.GetCancelInfo(), __instance);
+        }
     }
 }

@@ -8,68 +8,67 @@ using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
 using System;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
+namespace Nyxpiri.ULTRAKILL.NyxLib.Assets;
+
+public static class SpawnDbPicker
 {
-    public static class SpawnDbPicker
+    public delegate void OnGettingPrefabsEventHandler(SpawnableObjectsDatabase db);
+    public static event OnGettingPrefabsEventHandler OnGettingPrefabs;
+
+    internal static void Initialize()
     {
-        public delegate void OnGettingPrefabsEventHandler(SpawnableObjectsDatabase db);
-        public static event OnGettingPrefabsEventHandler OnGettingPrefabs;
+        SceneEvents.OnSceneLoad += OnSceneWasLoaded;
+        LevelQuickLoader.OnQuickLoad += OnNewScene;
+    }
 
-        internal static void Initialize()
+    private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
+    {
+        OnNewScene(scene);
+    }
+
+    private static void OnNewScene(Scene scene)
+    {
+        TryGetSpawnMenuPrefabs();
+    }
+
+    private static FieldAccess<SpawnMenu, SpawnableObjectsDatabase> spawnableObjectsDbFA = new FieldAccess<SpawnMenu, SpawnableObjectsDatabase>("objects");
+    private static bool _spawnMenuPrefabsGotten = false;
+    private static void TryGetSpawnMenuPrefabs()
+    {
+        var db = TryGetSpawnableObjectsDb();
+
+        if (db == null)
         {
-            SceneEvents.OnSceneLoad += OnSceneWasLoaded;
-            LevelQuickLoader.OnQuickLoad += OnNewScene;
+            return;
         }
 
-        private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
+        if (!_spawnMenuPrefabsGotten)
         {
-            OnNewScene(scene);
+            OnGettingPrefabs?.Invoke(db);
         }
 
-        private static void OnNewScene(Scene scene)
+        _spawnMenuPrefabsGotten = true;
+    }
+
+    public static SpawnMenu TryGetSpawnMenu()
+    {
+        if (CanvasController.Instance == null)
         {
-            TryGetSpawnMenuPrefabs();
+            return null;
         }
 
-        private static FieldAccess<SpawnMenu, SpawnableObjectsDatabase> spawnableObjectsDbFA = new FieldAccess<SpawnMenu, SpawnableObjectsDatabase>("objects");
-        private static bool _spawnMenuPrefabsGotten = false;
-        private static void TryGetSpawnMenuPrefabs()
+        return CanvasController.Instance.GetComponentInChildren<SpawnMenu>(includeInactive: true);
+    }
+
+    public static SpawnableObjectsDatabase TryGetSpawnableObjectsDb()
+    {
+        SpawnMenu spawnMenu = TryGetSpawnMenu();
+
+        if (spawnMenu == null)
         {
-            var db = TryGetSpawnableObjectsDb();
-
-            if (db == null)
-            {
-                return;
-            }
-
-            if (!_spawnMenuPrefabsGotten)
-            {
-                OnGettingPrefabs?.Invoke(db);
-            }
-
-            _spawnMenuPrefabsGotten = true;
+            return null;
         }
 
-        public static SpawnMenu TryGetSpawnMenu()
-        {
-            if (CanvasController.Instance == null)
-            {
-                return null;
-            }
-
-            return CanvasController.Instance.GetComponentInChildren<SpawnMenu>(includeInactive: true);
-        }
-
-        public static SpawnableObjectsDatabase TryGetSpawnableObjectsDb()
-        {
-            SpawnMenu spawnMenu = TryGetSpawnMenu();
-
-            if (spawnMenu == null)
-            {
-                return null;
-            }
-
-            return spawnableObjectsDbFA.GetValue(spawnMenu);
-        }
+        return spawnableObjectsDbFA.GetValue(spawnMenu);
     }
 }

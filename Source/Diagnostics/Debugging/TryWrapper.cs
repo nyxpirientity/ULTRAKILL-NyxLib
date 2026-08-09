@@ -1,21 +1,20 @@
 using System;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+public static class TryLog
 {
-    public static class TryLog
+    public static void Action(Action action)
     {
-        public static void Action(Action action)
+        try
         {
-            try
-            {            
-                action.Invoke();
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"Exception caught! :c\n{e}");
-                throw;
-            }
+            action.Invoke();
+        }
+        catch (System.Exception e)
+        {
+            Log.Error($"Exception caught! :c\n{e}");
+            throw;
         }
     }
 }

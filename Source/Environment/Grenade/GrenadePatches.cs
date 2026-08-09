@@ -5,121 +5,120 @@ using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using ULTRAKILL.Portal;
 using UnityEngine;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+public static class GrenadeEvents
 {
-    public static class GrenadeEvents
+    public delegate void PreGrenadeStartEventHandler(EventMethodCanceler canceler, Grenade grenade);
+    public static event PreGrenadeStartEventHandler PreGrenadeStart;
+
+    public delegate void PostGrenadeStartEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade);
+    public static event PostGrenadeStartEventHandler PostGrenadeStart;
+
+    public delegate void PreGrenadeBeamEventHandler(EventMethodCanceler canceler, Grenade grenade, Vector3 targetPoint, GameObject newSourceWeapon = null);
+    public static event PreGrenadeBeamEventHandler PreGrenadeBeam;
+
+    public delegate void PostGrenadeBeamEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade, Vector3 targetPoint, GameObject newSourceWeapon = null);
+    public static event PostGrenadeBeamEventHandler PostGrenadeBeam;
+
+    public delegate void PreGrenadeCollisionEventHandler(EventMethodCanceler canceler, Grenade grenade, Collider other, Vector3 velocity);
+    public static event PreGrenadeCollisionEventHandler PreGrenadeCollision;
+
+    public delegate void PostGrenadeCollisionEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade, Collider other, Vector3 velocity);
+    public static event PostGrenadeCollisionEventHandler PostGrenadeCollision;
+
+    public delegate void PreGrenadeExplodeEventHandler(EventMethodCanceler canceler, Grenade grenade, bool big, bool harmless, bool super, float sizeMultiplier, bool ultrabooster, GameObject exploderWeapon, bool fup);
+    public static event PreGrenadeExplodeEventHandler PreGrenadeExplode;
+
+    public delegate void PostGrenadeExplodeEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade, bool big, bool harmless, bool super, float sizeMultiplier, bool ultrabooster, GameObject exploderWeapon, bool fup);
+    public static event PostGrenadeExplodeEventHandler PostGrenadeExplode;
+
+    [HarmonyPatch(typeof(Grenade), "Start")]
+    static class GrenadeStartPatch
     {
-        public delegate void PreGrenadeStartEventHandler(EventMethodCanceler canceler, Grenade grenade);
-        public static event PreGrenadeStartEventHandler PreGrenadeStart;
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-        public delegate void PostGrenadeStartEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade);
-        public static event PostGrenadeStartEventHandler PostGrenadeStart;
-    
-        public delegate void PreGrenadeBeamEventHandler(EventMethodCanceler canceler, Grenade grenade, Vector3 targetPoint, GameObject newSourceWeapon = null);
-        public static event PreGrenadeBeamEventHandler PreGrenadeBeam;
-
-        public delegate void PostGrenadeBeamEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade, Vector3 targetPoint, GameObject newSourceWeapon = null);
-        public static event PostGrenadeBeamEventHandler PostGrenadeBeam;
-
-        public delegate void PreGrenadeCollisionEventHandler(EventMethodCanceler canceler, Grenade grenade, Collider other, Vector3 velocity);
-        public static event PreGrenadeCollisionEventHandler PreGrenadeCollision;
-
-        public delegate void PostGrenadeCollisionEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade, Collider other, Vector3 velocity);
-        public static event PostGrenadeCollisionEventHandler PostGrenadeCollision;
-
-        public delegate void PreGrenadeExplodeEventHandler(EventMethodCanceler canceler, Grenade grenade, bool big, bool harmless, bool super, float sizeMultiplier, bool ultrabooster, GameObject exploderWeapon, bool fup);
-        public static event PreGrenadeExplodeEventHandler PreGrenadeExplode;
-
-        public delegate void PostGrenadeExplodeEventHandler(EventMethodCancelInfo cancelInfo, Grenade grenade, bool big, bool harmless, bool super, float sizeMultiplier, bool ultrabooster, GameObject exploderWeapon, bool fup);
-        public static event PostGrenadeExplodeEventHandler PostGrenadeExplode;
-        
-        [HarmonyPatch(typeof(Grenade), "Start")]
-        static class GrenadeStartPatch
+        public static bool Prefix(Grenade __instance)
         {
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
-
-            public static bool Prefix(Grenade __instance)
-            {
-                _cancellationTracker.Reset();
-                PreGrenadeStart?.Invoke(_cancellationTracker.GetCanceler(), __instance);
-                _cancellationTracker.TryInvokeReimplementation();
-                return !_cancellationTracker.Cancelled;
-            }
-            
-            public static void Postfix(Grenade __instance)
-            {
-                PostGrenadeStart?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
-            }
-        } 
-
-        [HarmonyPatch(typeof(Grenade), "Explode", new Type[]{typeof(bool), typeof(bool), typeof(bool), typeof(float), typeof(bool), typeof(GameObject), typeof(bool)})]
-        static class GrenadeExplodePatch
-        {
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
-
-            public static bool Prefix(Grenade __instance, bool big = false, bool harmless = false, bool super = false, float sizeMultiplier = 1f, bool ultrabooster = false, GameObject exploderWeapon = null, bool fup = false)
-            {
-                _cancellationTracker.Reset();
-                PreGrenadeExplode?.Invoke(_cancellationTracker.GetCanceler(), __instance, big, harmless, super, sizeMultiplier, ultrabooster, exploderWeapon, fup);
-                _cancellationTracker.TryInvokeReimplementation();
-                return !_cancellationTracker.Cancelled;
-            }
-            
-            public static void Postfix(Grenade __instance, bool big = false, bool harmless = false, bool super = false, float sizeMultiplier = 1f, bool ultrabooster = false, GameObject exploderWeapon = null, bool fup = false)
-            {
-                PostGrenadeExplode?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, big, harmless, super, sizeMultiplier, ultrabooster, exploderWeapon, fup);
-            }
+            _cancellationTracker.Reset();
+            PreGrenadeStart?.Invoke(_cancellationTracker.GetCanceler(), __instance);
+            _cancellationTracker.TryInvokeReimplementation();
+            return !_cancellationTracker.Cancelled;
         }
 
-
-        [HarmonyPatch(typeof(Grenade), "GrenadeBeam")]
-        static class GrenadeBeamPatch
+        public static void Postfix(Grenade __instance)
         {
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            PostGrenadeStart?.Invoke(_cancellationTracker.GetCancelInfo(), __instance);
+        }
+    }
 
-            public static bool Prefix(Grenade __instance, Vector3 targetPoint, GameObject newSourceWeapon = null)
-            {
-                if (__instance == null)
-                {
-                    Log.Warning($"Congratulations! You triggered a bug that's in the base game, which I thusly cannot fix. You hit the Grenade object within 0.01 seconds before it exploded, and the ShotgunHammer has a 0.01 second delay before it converts a grenade into a beam. So, just before it converted into a beam, the Grenade exploded, and was thus destroyed.");
-                    return true;
-                }
+    [HarmonyPatch(typeof(Grenade), "Explode", new Type[] { typeof(bool), typeof(bool), typeof(bool), typeof(float), typeof(bool), typeof(GameObject), typeof(bool) })]
+    static class GrenadeExplodePatch
+    {
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-                _cancellationTracker.Reset();
-                PreGrenadeBeam?.Invoke(_cancellationTracker.GetCanceler(), __instance, targetPoint, newSourceWeapon);
-                _cancellationTracker.TryInvokeReimplementation();
-                return !_cancellationTracker.Cancelled;
-            }
-            
-            public static void Postfix(Grenade __instance, Vector3 targetPoint, GameObject newSourceWeapon = null)
-            {
-                if (__instance == null)
-                {
-                    return;
-                }
-
-                PostGrenadeBeam?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, targetPoint, newSourceWeapon);
-            }
+        public static bool Prefix(Grenade __instance, bool big = false, bool harmless = false, bool super = false, float sizeMultiplier = 1f, bool ultrabooster = false, GameObject exploderWeapon = null, bool fup = false)
+        {
+            _cancellationTracker.Reset();
+            PreGrenadeExplode?.Invoke(_cancellationTracker.GetCanceler(), __instance, big, harmless, super, sizeMultiplier, ultrabooster, exploderWeapon, fup);
+            _cancellationTracker.TryInvokeReimplementation();
+            return !_cancellationTracker.Cancelled;
         }
 
-
-        [HarmonyPatch(typeof(Grenade), "Collision", new Type[]{typeof(Collider), typeof(Vector3)})]
-        static class GrenadeCollisionPatch
+        public static void Postfix(Grenade __instance, bool big = false, bool harmless = false, bool super = false, float sizeMultiplier = 1f, bool ultrabooster = false, GameObject exploderWeapon = null, bool fup = false)
         {
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            PostGrenadeExplode?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, big, harmless, super, sizeMultiplier, ultrabooster, exploderWeapon, fup);
+        }
+    }
 
-            public static bool Prefix(Grenade __instance, Collider other, Vector3 velocity)
+
+    [HarmonyPatch(typeof(Grenade), "GrenadeBeam")]
+    static class GrenadeBeamPatch
+    {
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+        public static bool Prefix(Grenade __instance, Vector3 targetPoint, GameObject newSourceWeapon = null)
+        {
+            if (__instance == null)
             {
-                _cancellationTracker.Reset();
-                PreGrenadeCollision?.Invoke(_cancellationTracker.GetCanceler(), __instance, other, velocity);
-                _cancellationTracker.TryInvokeReimplementation();
-                return !_cancellationTracker.Cancelled;
+                Log.Warning($"Congratulations! You triggered a bug that's in the base game, which I thusly cannot fix. You hit the Grenade object within 0.01 seconds before it exploded, and the ShotgunHammer has a 0.01 second delay before it converts a grenade into a beam. So, just before it converted into a beam, the Grenade exploded, and was thus destroyed.");
+                return true;
             }
 
-            public static void Postfix(Grenade __instance, Collider other, Vector3 velocity)
+            _cancellationTracker.Reset();
+            PreGrenadeBeam?.Invoke(_cancellationTracker.GetCanceler(), __instance, targetPoint, newSourceWeapon);
+            _cancellationTracker.TryInvokeReimplementation();
+            return !_cancellationTracker.Cancelled;
+        }
+
+        public static void Postfix(Grenade __instance, Vector3 targetPoint, GameObject newSourceWeapon = null)
+        {
+            if (__instance == null)
             {
-                PostGrenadeCollision?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, other, velocity);
+                return;
             }
+
+            PostGrenadeBeam?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, targetPoint, newSourceWeapon);
+        }
+    }
+
+
+    [HarmonyPatch(typeof(Grenade), "Collision", new Type[] { typeof(Collider), typeof(Vector3) })]
+    static class GrenadeCollisionPatch
+    {
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+        public static bool Prefix(Grenade __instance, Collider other, Vector3 velocity)
+        {
+            _cancellationTracker.Reset();
+            PreGrenadeCollision?.Invoke(_cancellationTracker.GetCanceler(), __instance, other, velocity);
+            _cancellationTracker.TryInvokeReimplementation();
+            return !_cancellationTracker.Cancelled;
+        }
+
+        public static void Postfix(Grenade __instance, Collider other, Vector3 velocity)
+        {
+            PostGrenadeCollision?.Invoke(_cancellationTracker.GetCancelInfo(), __instance, other, velocity);
         }
     }
 }

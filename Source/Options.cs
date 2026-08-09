@@ -5,150 +5,149 @@ using BepInEx.Configuration;
 using Nyxpiri.ULTRAKILL.NyxLib;
 using UnityEngine;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+public class ConfigFileManager : MonoBehaviour
 {
-    public class ConfigFileManager : MonoBehaviour
+    public Action OnReload;
+
+    public void Initialize(ConfigFile config)
     {
-        public Action OnReload;
-
-        public void Initialize(ConfigFile config)
-        {
-            Assert.IsNotNull(config);
-            Config = config;
-        }
-
-        protected void Start()
-        {
-            Assert.IsNotNull(Config, "Config should not be null when ConfigFIleManager Start is called, please call Initialize with a valid ConfigFile");
-
-            if (!File.Exists(Config.ConfigFilePath))
-            {
-                Config.Save();
-            }
-        }
-
-        protected void OnApplicationFocus(bool hasFocus)
-        {
-            if (hasFocus)
-            {
-                Config.Reload();
-                OnReload?.Invoke();
-            }
-        }
-
-        private ConfigFile Config = null;
+        Assert.IsNotNull(config);
+        Config = config;
     }
 
-    public static class Options
+    protected void Start()
     {
-        internal static ConfigFile Config = null;
+        Assert.IsNotNull(Config, "Config should not be null when ConfigFIleManager Start is called, please call Initialize with a valid ConfigFile");
 
-        static ConfigEntry<bool> IncludePerformanceLogsEntry = null;
-        static ConfigEntry<bool> IncludeTraceExpectedLogsEntry = null;
-        static ConfigEntry<bool> IncludeExpectedLogsEntry = null;
-        static ConfigEntry<bool> IncludeLikelyLogsEntry = null;
-        static ConfigEntry<bool> IncludeUnlikelyLogsEntry = null;
-        static ConfigEntry<bool> IncludeUnexpectedLogsEntry = null;
-        public static ConfigEntry<bool> ShowErrorNotification = null;
-        public static ConfigEntry<bool> LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = null;
-        public static ConfigEntry<bool> LogEnemyRadianceBuffRequests = null;
-        public static ConfigEntry<bool> LogEnemyRadianceUpdates = null;
-        public static ConfigEntry<bool> WarnOfEnemyRadianceUpdates = null;
-        public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
-        public static ConfigEntry<bool> DisableQuickLoad = null;
-        public static ConfigEntry<bool> DontCreateEnemyPrefabComp = null;
-        public static ConfigEntry<bool> DontCreateEnemyRadianceComp = null;
-
-        public enum LevelQuickLoaderTypes
+        if (!File.Exists(Config.ConfigFilePath))
         {
-            Default, Simple, Additive
+            Config.Save();
         }
+    }
 
-        public static ConfigEntry<LevelQuickLoaderTypes> LevelQuickLoaderType = null;
-
-        public static ConfigEntry<bool> SkipPrefabManagerTicks { get; private set; } = null;
-        public static ConfigEntry<int> EnemyPrefabInstanceStoreCapacityMax { get; private set; } = null;
-
-        public static ConfigEntry<float> RadianceTier { get; private set; } = null;
-        public static ConfigEntry<bool> RadiantAllDisableExternalBaseRadiance { get; private set; } = null;
-
-        public static ConfigEntry<bool> RadianceSpeed { get; private set; } = null;
-        public static ConfigEntry<float> RadianceSpeedScalar { get; private set; } = null;
-        public static ConfigEntry<bool> RadiantAllDisableExternalSpeedRadiance { get; private set; } = null;
-
-        public static ConfigEntry<bool> RadianceDamage { get; private set; } = null;
-        public static ConfigEntry<float> RadianceDamageScalar { get; private set; } = null;
-        public static ConfigEntry<bool> RadiantAllDisableExternalDamageRadiance { get; private set; } = null;
-
-        public static ConfigEntry<bool> RadianceHealth { get; private set; } = null;
-        public static ConfigEntry<float> RadianceHealthScalar { get; private set; } = null;
-        public static ConfigEntry<bool> RadiantAllDisableExternalHealthRadiance { get; private set; } = null;
-
-
-        static public bool IncludePerformanceLogs { get => IncludePerformanceLogsEntry.Value; }
-        static public bool IncludeTraceExpectedLogs { get => IncludeTraceExpectedLogsEntry.Value; }
-        static public bool IncludeExpectedLogs { get => IncludeExpectedLogsEntry.Value; }
-        static public bool IncludeLikelyLogs { get => IncludeLikelyLogsEntry.Value; }
-        static public bool IncludeUnlikelyLogs { get => IncludeUnlikelyLogsEntry.Value; }
-        static public bool IncludeUnexpectedLogs { get => IncludeUnexpectedLogsEntry.Value; }
-
-        public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
-        public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
-        public static ConfigEntry<bool> RegisterForceNextWaveCheat { get; private set; } = null;
-        public static ConfigEntry<bool> RegisterOverrideCybergrindStartingWaveCheat { get; private set; } = null;
-        public static ConfigEntry<int> CybergrindStartingWaveOverride { get; private set; } = null;
-        public static ConfigEntry<bool> ForcePlayCleanMusicWithBattleMusic { get; private set; } = null;
-
-        const string DebugCat = "Debug";
-        const string DevCat = "Development";
-        const string ExtrasCat = "Extras";
-        const string CheatsCat = "Cheats";
-        const string RadianceAllCat = "RadianceAll";
-
-        public static void Initialize()
+    protected void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
         {
-            ShowErrorNotification = Config.Bind($"{DebugCat}", "ShowErrorNotification", false, "Shows text saying An Error has Occured! At the top of your screen as a 'QuickMsg', with a timestamp (using your locally set timezone!)");
-            IncludePerformanceLogsEntry = Config.Bind($"{DebugCat}", "IncludePerformanceLogs", false);
-            IncludeTraceExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeTraceExpectedLogs", false);
-            IncludeExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeExpectedLogs", false);
-            IncludeLikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeLikelyLogs", false);
-            IncludeUnlikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnlikelyLogs", true);
-            IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", true);
-            LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
-            DontCreateEnemyPrefabComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyPrefabComp", false);
-            DontCreateEnemyRadianceComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyRadianceComp", false);
-            SkipPrefabManagerTicks = Config.Bind($"{DebugCat}.{DevCat}", "SkipPrefabManagerTicks", false);
-            LogEnemyRadianceBuffRequests = Config.Bind($"{DebugCat}", "LogEnemyRadianceBuffRequests", false);
-            LogEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdates", false);
-            LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdatesOnlyIfExternallyBuffed", false);
-            WarnOfEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "WarnOfEnemyRadianceUpdates", false, "Logs method calls which modify enemy radiance when they happen relating to Nyxpiri.ULTRAKILL.EnemyRadiance, as warnings. Mostly intended for ensuring enemy radiance isn't tampering when it shouldn't be.");
-
-            RadianceTier = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceTier", 1.0f);
-            RadiantAllDisableExternalBaseRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalBaseRadiance", true);
-
-            RadiantAllDisableExternalSpeedRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalSpeedRadiance", true);
-            RadianceSpeed = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceSpeed", true);
-            RadianceSpeedScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceSpeedScalar", 1.0f);
-
-            RadiantAllDisableExternalDamageRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalDamageRadiance", true);
-            RadianceDamage = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamage", false);
-            RadianceDamageScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamageScalar", 1.0f);
-
-            RadiantAllDisableExternalHealthRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalHealthRadiance", true);
-            RadianceHealth = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceHealth", true);
-            RadianceHealthScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceHealthScalar", 1.0f);
-
-            EnemyPrefabInstanceStoreCapacityMax = Config.Bind("Performance", "EnemyPrefabInstanceStoreCapacityMax", 5);
-
-            RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
-            RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);
-            RegisterForceNextWaveCheat = Config.Bind($"{CheatsCat}", "RegisterForceNextWaveCheat", true);
-            RegisterOverrideCybergrindStartingWaveCheat = Config.Bind($"{CheatsCat}", "RegisterOverrideCybergrindStartingWaveCheat", false);
-            CybergrindStartingWaveOverride = Config.Bind($"{CheatsCat}", "CybergrindStartingWaveOverride", 0, "Overrides cybergrind starting wave to this number, only works if cheats are enabled and the OverrideCybergrindStartingWave cheat is active.");
-            ForcePlayCleanMusicWithBattleMusic = Config.Bind($"{ExtrasCat}", "ForcePlayCleanMusicWithBattleMusic", false);
-
-            DisableQuickLoad = Config.Bind($"Misc.LevelQuickLoader", "DisableGameInitLevelQuickLoad", false);
-            LevelQuickLoaderType = Config.Bind($"Misc.LevelQuickLoader", "LevelQuickLoaderType", LevelQuickLoaderTypes.Default, "Changes the class used as the 'LevelQuickLoader' the default value of 'default' picks whichever one is recommended at the time and is *highly recommended*, it currenty uses the simple quick loader. The Additive quick loader is outright effectively non-functional and not at all recommended to be used as it might not even let your game start.");
+            Config.Reload();
+            OnReload?.Invoke();
         }
+    }
+
+    private ConfigFile Config = null;
+}
+
+public static class Options
+{
+    internal static ConfigFile Config = null;
+
+    static ConfigEntry<bool> IncludePerformanceLogsEntry = null;
+    static ConfigEntry<bool> IncludeTraceExpectedLogsEntry = null;
+    static ConfigEntry<bool> IncludeExpectedLogsEntry = null;
+    static ConfigEntry<bool> IncludeLikelyLogsEntry = null;
+    static ConfigEntry<bool> IncludeUnlikelyLogsEntry = null;
+    static ConfigEntry<bool> IncludeUnexpectedLogsEntry = null;
+    public static ConfigEntry<bool> ShowErrorNotification = null;
+    public static ConfigEntry<bool> LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = null;
+    public static ConfigEntry<bool> LogEnemyRadianceBuffRequests = null;
+    public static ConfigEntry<bool> LogEnemyRadianceUpdates = null;
+    public static ConfigEntry<bool> WarnOfEnemyRadianceUpdates = null;
+    public static ConfigEntry<bool> LogEnemyTypeOnStart = null;
+    public static ConfigEntry<bool> DisableQuickLoad = null;
+    public static ConfigEntry<bool> DontCreateEnemyPrefabComp = null;
+    public static ConfigEntry<bool> DontCreateEnemyRadianceComp = null;
+
+    public enum LevelQuickLoaderTypes
+    {
+        Default, Simple, Additive
+    }
+
+    public static ConfigEntry<LevelQuickLoaderTypes> LevelQuickLoaderType = null;
+
+    public static ConfigEntry<bool> SkipPrefabManagerTicks { get; private set; } = null;
+    public static ConfigEntry<int> EnemyPrefabInstanceStoreCapacityMax { get; private set; } = null;
+
+    public static ConfigEntry<float> RadianceTier { get; private set; } = null;
+    public static ConfigEntry<bool> RadiantAllDisableExternalBaseRadiance { get; private set; } = null;
+
+    public static ConfigEntry<bool> RadianceSpeed { get; private set; } = null;
+    public static ConfigEntry<float> RadianceSpeedScalar { get; private set; } = null;
+    public static ConfigEntry<bool> RadiantAllDisableExternalSpeedRadiance { get; private set; } = null;
+
+    public static ConfigEntry<bool> RadianceDamage { get; private set; } = null;
+    public static ConfigEntry<float> RadianceDamageScalar { get; private set; } = null;
+    public static ConfigEntry<bool> RadiantAllDisableExternalDamageRadiance { get; private set; } = null;
+
+    public static ConfigEntry<bool> RadianceHealth { get; private set; } = null;
+    public static ConfigEntry<float> RadianceHealthScalar { get; private set; } = null;
+    public static ConfigEntry<bool> RadiantAllDisableExternalHealthRadiance { get; private set; } = null;
+
+
+    static public bool IncludePerformanceLogs { get => IncludePerformanceLogsEntry.Value; }
+    static public bool IncludeTraceExpectedLogs { get => IncludeTraceExpectedLogsEntry.Value; }
+    static public bool IncludeExpectedLogs { get => IncludeExpectedLogsEntry.Value; }
+    static public bool IncludeLikelyLogs { get => IncludeLikelyLogsEntry.Value; }
+    static public bool IncludeUnlikelyLogs { get => IncludeUnlikelyLogsEntry.Value; }
+    static public bool IncludeUnexpectedLogs { get => IncludeUnexpectedLogsEntry.Value; }
+
+    public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
+    public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
+    public static ConfigEntry<bool> RegisterForceNextWaveCheat { get; private set; } = null;
+    public static ConfigEntry<bool> RegisterOverrideCybergrindStartingWaveCheat { get; private set; } = null;
+    public static ConfigEntry<int> CybergrindStartingWaveOverride { get; private set; } = null;
+    public static ConfigEntry<bool> ForcePlayCleanMusicWithBattleMusic { get; private set; } = null;
+
+    const string DebugCat = "Debug";
+    const string DevCat = "Development";
+    const string ExtrasCat = "Extras";
+    const string CheatsCat = "Cheats";
+    const string RadianceAllCat = "RadianceAll";
+
+    public static void Initialize()
+    {
+        ShowErrorNotification = Config.Bind($"{DebugCat}", "ShowErrorNotification", false, "Shows text saying An Error has Occured! At the top of your screen as a 'QuickMsg', with a timestamp (using your locally set timezone!)");
+        IncludePerformanceLogsEntry = Config.Bind($"{DebugCat}", "IncludePerformanceLogs", false);
+        IncludeTraceExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeTraceExpectedLogs", false);
+        IncludeExpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeExpectedLogs", false);
+        IncludeLikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeLikelyLogs", false);
+        IncludeUnlikelyLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnlikelyLogs", true);
+        IncludeUnexpectedLogsEntry = Config.Bind($"{DebugCat}", "IncludeUnexpectedLogs", true);
+        LogEnemyTypeOnStart = Config.Bind($"{DebugCat}.{DevCat}", "LogEnemyTypeOnEnemyStart", false);
+        DontCreateEnemyPrefabComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyPrefabComp", false);
+        DontCreateEnemyRadianceComp = Config.Bind($"{DebugCat}.{DevCat}", "DontCreateEnemyRadianceComp", false);
+        SkipPrefabManagerTicks = Config.Bind($"{DebugCat}.{DevCat}", "SkipPrefabManagerTicks", false);
+        LogEnemyRadianceBuffRequests = Config.Bind($"{DebugCat}", "LogEnemyRadianceBuffRequests", false);
+        LogEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdates", false);
+        LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdatesOnlyIfExternallyBuffed", false);
+        WarnOfEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "WarnOfEnemyRadianceUpdates", false, "Logs method calls which modify enemy radiance when they happen relating to Nyxpiri.ULTRAKILL.EnemyRadiance, as warnings. Mostly intended for ensuring enemy radiance isn't tampering when it shouldn't be.");
+
+        RadianceTier = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceTier", 1.0f);
+        RadiantAllDisableExternalBaseRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalBaseRadiance", true);
+
+        RadiantAllDisableExternalSpeedRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalSpeedRadiance", true);
+        RadianceSpeed = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceSpeed", true);
+        RadianceSpeedScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceSpeedScalar", 1.0f);
+
+        RadiantAllDisableExternalDamageRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalDamageRadiance", true);
+        RadianceDamage = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamage", false);
+        RadianceDamageScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceDamageScalar", 1.0f);
+
+        RadiantAllDisableExternalHealthRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalHealthRadiance", true);
+        RadianceHealth = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceHealth", true);
+        RadianceHealthScalar = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceHealthScalar", 1.0f);
+
+        EnemyPrefabInstanceStoreCapacityMax = Config.Bind("Performance", "EnemyPrefabInstanceStoreCapacityMax", 5);
+
+        RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
+        RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);
+        RegisterForceNextWaveCheat = Config.Bind($"{CheatsCat}", "RegisterForceNextWaveCheat", true);
+        RegisterOverrideCybergrindStartingWaveCheat = Config.Bind($"{CheatsCat}", "RegisterOverrideCybergrindStartingWaveCheat", false);
+        CybergrindStartingWaveOverride = Config.Bind($"{CheatsCat}", "CybergrindStartingWaveOverride", 0, "Overrides cybergrind starting wave to this number, only works if cheats are enabled and the OverrideCybergrindStartingWave cheat is active.");
+        ForcePlayCleanMusicWithBattleMusic = Config.Bind($"{ExtrasCat}", "ForcePlayCleanMusicWithBattleMusic", false);
+
+        DisableQuickLoad = Config.Bind($"Misc.LevelQuickLoader", "DisableGameInitLevelQuickLoad", false);
+        LevelQuickLoaderType = Config.Bind($"Misc.LevelQuickLoader", "LevelQuickLoaderType", LevelQuickLoaderTypes.Default, "Changes the class used as the 'LevelQuickLoader' the default value of 'default' picks whichever one is recommended at the time and is *highly recommended*, it currenty uses the simple quick loader. The Additive quick loader is outright effectively non-functional and not at all recommended to be used as it might not even let your game start.");
     }
 }

@@ -5,49 +5,48 @@ using HarmonyLib;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+[HarmonyPatch(typeof(MinosPrime), nameof(MinosPrime.Death))]
+static class MinosPrimeDeathPatch
 {
-    [HarmonyPatch(typeof(MinosPrime), nameof(MinosPrime.Death))]
-    static class MinosPrimeDeathPatch
+    private static MinosPrime _minosPrime = null;
+
+    static void SlowDownReplacement(TimeController tc, float amount)
     {
-        private static MinosPrime _minosPrime = null;
-        
-        static void SlowDownReplacement(TimeController tc, float amount)
+        var enemy = _minosPrime.GetComponent<EnemyComponents>();
+
+        Action originalMethod = () => tc.SlowDown(amount);
+
+        if (enemy == null)
         {
-            var enemy = _minosPrime.GetComponent<EnemyComponents>();
-
-            Action originalMethod = () => tc.SlowDown(amount);
-
-            if (enemy == null)
-            {
-                originalMethod.Invoke();
-                return;
-            }
-
-            if (enemy.AvoidHealthBasedSlowDown)
-            {
-                return;
-            }
-
             originalMethod.Invoke();
+            return;
         }
 
-        static void Prefix(MinosPrime __instance)
+        if (enemy.AvoidHealthBasedSlowDown)
         {
-            _minosPrime = __instance;
+            return;
         }
 
-        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        originalMethod.Invoke();
+    }
+
+    static void Prefix(MinosPrime __instance)
+    {
+        _minosPrime = __instance;
+    }
+
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+    {
+        foreach (var instr in instructions)
         {
-            foreach (var instr in instructions)
+            if (instr.Calls(typeof(TimeController).GetMethod(nameof(TimeController.SlowDown))))
             {
-                if (instr.Calls(typeof(TimeController).GetMethod(nameof(TimeController.SlowDown))))
-                {
-                    instr.operand = typeof(MinosPrimeDeathPatch).GetMethod(nameof(SlowDownReplacement), BindingFlags.Static | BindingFlags.NonPublic);
-                }
-
-                yield return instr;
+                instr.operand = typeof(MinosPrimeDeathPatch).GetMethod(nameof(SlowDownReplacement), BindingFlags.Static | BindingFlags.NonPublic);
             }
+
+            yield return instr;
         }
     }
 }

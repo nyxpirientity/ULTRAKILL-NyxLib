@@ -8,33 +8,32 @@ using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
 using System;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
+namespace Nyxpiri.ULTRAKILL.NyxLib.Assets;
+
+[ConfigureSingleton(SingletonFlags.NoAutoInstance)]
+public class UIElements : MonoSingleton<UIElements>
 {
-    [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
-    public class UIElements : MonoSingleton<UIElements>
+    public static PrefabAsset<TextMeshProUGUI> Label { get; private set; } = new PrefabAsset<TextMeshProUGUI>(() => Instance?._labelPrefab);
+    [SerializeField] private TextMeshProUGUI _labelPrefab = null;
+
+    private void Awake()
     {
-        public static PrefabAsset<TextMeshProUGUI> Label { get; private set; } = new PrefabAsset<TextMeshProUGUI>(() => Instance?._labelPrefab);
-        [SerializeField] private TextMeshProUGUI _labelPrefab = null;
+        SceneEvents.OnSceneLoad += OnSceneLoad;
+    }
 
-        private void Awake()
+    private void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
+    {
+        if (_labelPrefab == null)
         {
-            SceneEvents.OnSceneLoad += OnSceneLoad;
-        }
+            var hc = HudController.Instance;
 
-        private void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
-        {
-            if (_labelPrefab == null)
+            if (hc != null)
             {
-                var hc = HudController.Instance;
-
-                if (hc != null)
-                {
-                    var text = hc.speedometer.textMesh;
-                    var labelGo = GameObject.Instantiate(text.gameObject, AssetsRoot.Holder);
-                    labelGo.SetActive(true);
-                    _labelPrefab = labelGo.GetComponent<TextMeshProUGUI>();
-                    _labelPrefab.text = "UKAIW-Label!";
-                }
+                var text = hc.speedometer.textMesh;
+                var labelGo = GameObject.Instantiate(text.gameObject, AssetsRoot.Holder);
+                labelGo.SetActive(true);
+                _labelPrefab = labelGo.GetComponent<TextMeshProUGUI>();
+                _labelPrefab.text = "UKAIW-Label!";
             }
         }
     }

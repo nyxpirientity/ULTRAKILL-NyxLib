@@ -6,252 +6,251 @@ using ULTRAKILL.Cheats;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+public static class Cheats
 {
-    public static class Cheats
+    public delegate void ReadyForCheatRegistrationEventHandler(CheatsManager cheatsManager);
+    public static event ReadyForCheatRegistrationEventHandler ReadyForCheatRegistration;
+
+    private static CheatsManager _manager = null;
+    public static CheatsManager Manager
     {
-        public delegate void ReadyForCheatRegistrationEventHandler(CheatsManager cheatsManager);
-        public static event ReadyForCheatRegistrationEventHandler ReadyForCheatRegistration;
-
-        private static CheatsManager _manager = null;
-        public static CheatsManager Manager
+        get
         {
-            get
+            if (_manager == null)
             {
-                if (_manager == null)
+                if (CheatsManager.Instance != null)
                 {
-                    if (CheatsManager.Instance != null)
-                    {
-                        Log.ExpectedInfo($"Had to get CheatsManager via CheatsManager.Instance (then cached the value)");
-                        _manager = CheatsManager.Instance;
-                    }
+                    Log.ExpectedInfo($"Had to get CheatsManager via CheatsManager.Instance (then cached the value)");
+                    _manager = CheatsManager.Instance;
                 }
-
-                return _manager;
-            }
-        }
-
-        [HarmonyPatch(typeof(CheatsManager), "Start", new Type[] { })]
-        static class CheatsManagerStartPatch
-        {
-
-            public static void Prefix(CheatsManager __instance)
-            {
-                _manager = __instance;
-                MaybeWaitForCheatRegistration();
             }
 
-            public static void Postfix(CheatsManager __instance)
-            {
-                TryRegisterCheats();
-            }
+            return _manager;
         }
+    }
 
-        public const string RadiantAllEnemies = "nyxpiri.radiant-all-enemies";
-        public const string SandAllEnemies = "nyxpiri.sand-all-enemies";
-        public const string OverrideCybergrindStartingWave = "nyxpiri.override-cybergrind-starting-wave";
-        public const string DisableStops = "nyxpiri.disable-stops";
-        public const string DisableSlowdown = "nyxpiri.disable-slowdown";
-        public const string UltraStop = "nyxpiri.ultra-stop";
-        public const string ShortHitStop = "nyxpiri.short-hit-stop";
-        public const string PlayCleanMusicWithBattle = "nyxpiri.clean-music-with-battle";
-        public const string AlwaysBattleMusic = "nyxpiri.always-battle-music";
-        public const string LogEIDInfo = "nyxpiri.dev.log-eid-info";
+    [HarmonyPatch(typeof(CheatsManager), "Start", new Type[] { })]
+    static class CheatsManagerStartPatch
+    {
 
-        public static bool IsCheatEnabled(string cheatID)
+        public static void Prefix(CheatsManager __instance)
         {
-            if (!Enabled)
-            {
-                return false;
-            }
-
-            return Cheats.Manager.GetCheatState(cheatID);
-        }
-
-        public static bool IsCheatDisabled(string cheatID)
-        {
-            return !IsCheatEnabled(cheatID);
-        }
-
-        public static void Initialize()
-        {
-            SceneEvents.OnSceneLoad += OnSceneWasLoaded;
-            UpdateEvents.OnUpdate += LateUpdate;
-        }
-
-        private static void LateUpdate()
-        {
-            TryRegisterCheats();
-        }
-
-        private static void TryRegisterCheats()
-        {
-            if (CheatsController.Instance == null)
-            {
-                return;
-            }
-
-            if (WaitingForCheatRegistration)
-            {
-                if (Cheats.Manager == null)
-                {
-                    return;
-                }
-
-                if (Cheats.Manager.GetCheatState(Cheats.RadiantAllEnemies))
-                {
-                    OptionsManager.forceRadiance = true;
-                }
-
-                if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemies))
-                {
-                    OptionsManager.forceSand = true;
-                }
-
-                WaitingForCheatRegistration = false;
-
-                RegisterCheats();
-            }
-        }
-
-        static bool WaitingForCheatRegistration = false;
-        private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
-        {
+            _manager = __instance;
             MaybeWaitForCheatRegistration();
         }
 
-        private static void MaybeWaitForCheatRegistration()
+        public static void Postfix(CheatsManager __instance)
+        {
+            TryRegisterCheats();
+        }
+    }
+
+    public const string RadiantAllEnemies = "nyxpiri.radiant-all-enemies";
+    public const string SandAllEnemies = "nyxpiri.sand-all-enemies";
+    public const string OverrideCybergrindStartingWave = "nyxpiri.override-cybergrind-starting-wave";
+    public const string DisableStops = "nyxpiri.disable-stops";
+    public const string DisableSlowdown = "nyxpiri.disable-slowdown";
+    public const string UltraStop = "nyxpiri.ultra-stop";
+    public const string ShortHitStop = "nyxpiri.short-hit-stop";
+    public const string PlayCleanMusicWithBattle = "nyxpiri.clean-music-with-battle";
+    public const string AlwaysBattleMusic = "nyxpiri.always-battle-music";
+    public const string LogEIDInfo = "nyxpiri.dev.log-eid-info";
+
+    public static bool IsCheatEnabled(string cheatID)
+    {
+        if (!Enabled)
+        {
+            return false;
+        }
+
+        return Cheats.Manager.GetCheatState(cheatID);
+    }
+
+    public static bool IsCheatDisabled(string cheatID)
+    {
+        return !IsCheatEnabled(cheatID);
+    }
+
+    public static void Initialize()
+    {
+        SceneEvents.OnSceneLoad += OnSceneWasLoaded;
+        UpdateEvents.OnUpdate += LateUpdate;
+    }
+
+    private static void LateUpdate()
+    {
+        TryRegisterCheats();
+    }
+
+    private static void TryRegisterCheats()
+    {
+        if (CheatsController.Instance == null)
+        {
+            return;
+        }
+
+        if (WaitingForCheatRegistration)
         {
             if (Cheats.Manager == null)
             {
                 return;
             }
 
-            WaitingForCheatRegistration = Cheats.Manager.GetCheatInstance<ToggleCheat>() == null;
+            if (Cheats.Manager.GetCheatState(Cheats.RadiantAllEnemies))
+            {
+                OptionsManager.forceRadiance = true;
+            }
+
+            if (Cheats.Manager.GetCheatState(Cheats.SandAllEnemies))
+            {
+                OptionsManager.forceSand = true;
+            }
+
+            WaitingForCheatRegistration = false;
+
+            RegisterCheats();
+        }
+    }
+
+    static bool WaitingForCheatRegistration = false;
+    private static void OnSceneWasLoaded(Scene scene, string levelName, string unitySceneName)
+    {
+        MaybeWaitForCheatRegistration();
+    }
+
+    private static void MaybeWaitForCheatRegistration()
+    {
+        if (Cheats.Manager == null)
+        {
+            return;
         }
 
-        public static bool Enabled { get => (CheatsController.Instance?.cheatsEnabled).GetValueOrDefault(false); }
+        WaitingForCheatRegistration = Cheats.Manager.GetCheatInstance<ToggleCheat>() == null;
+    }
 
-        private static void RegisterCheats()
+    public static bool Enabled { get => (CheatsController.Instance?.cheatsEnabled).GetValueOrDefault(false); }
+
+    private static void RegisterCheats()
+    {
+        if (Options.RegisterHideCheatsStatusCheat.Value)
         {
-            if (Options.RegisterHideCheatsStatusCheat.Value)
-            {
-                Cheats.Manager.RegisterCheat(new HideCheatsStatus(), "meta");
-            }
+            Cheats.Manager.RegisterCheat(new HideCheatsStatus(), "meta");
+        }
 
-            if (Options.RegisterForceNextWaveCheat.Value)
-            {
-                Cheats.Manager.RegisterCheat(new ToggleCheat(
-                    "Force Next Wave",
-                    "nyxpiri.force-next-cybergrind-wave",
-                    onDisable: (cheat) =>
-                    {
-                    },
-                    onEnable: (cheat, manager) =>
-                    {
-                        Cheats.Manager.DisableCheat("nyxpiri.force-next-cybergrind-wave");
-                        if (Cybergrind.IsActive && Cybergrind.IsInCybergrindLevel)
-                        {
-                            Cybergrind.EndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
-                        }
-                    }
-                ), "CYBERGRIND");
-            }
-
-            if (Options.RegisterOverrideCybergrindStartingWaveCheat.Value)
-            {
-                Cheats.Manager.RegisterCheat(new ToggleCheat(
-                    "Override Starting Wave",
-                    OverrideCybergrindStartingWave,
-                    onDisable: (cheat) =>
-                    {
-                    },
-                    onEnable: (cheat, manager) =>
-                    {
-                    }
-                ), "CYBERGRIND");
-            }
-
+        if (Options.RegisterForceNextWaveCheat.Value)
+        {
             Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Radiant All Enemies",
-                Cheats.RadiantAllEnemies,
+                "Force Next Wave",
+                "nyxpiri.force-next-cybergrind-wave",
+                onDisable: (cheat) =>
+                {
+                },
+                onEnable: (cheat, manager) =>
+                {
+                    Cheats.Manager.DisableCheat("nyxpiri.force-next-cybergrind-wave");
+                    if (Cybergrind.IsActive && Cybergrind.IsInCybergrindLevel)
+                    {
+                        Cybergrind.EndlessGrid.GetComponent<ActivateNextWave>().deadEnemies = 99999;
+                    }
+                }
+            ), "CYBERGRIND");
+        }
+
+        if (Options.RegisterOverrideCybergrindStartingWaveCheat.Value)
+        {
+            Cheats.Manager.RegisterCheat(new ToggleCheat(
+                "Override Starting Wave",
+                OverrideCybergrindStartingWave,
                 onDisable: (cheat) =>
                 {
                 },
                 onEnable: (cheat, manager) =>
                 {
                 }
-            ), "SELF SABOTAGE");
+            ), "CYBERGRIND");
+        }
 
-            if (Options.RegisterSandAllEnemiesCheat.Value)
-            {
-                Cheats.Manager.RegisterCheat(new ToggleCheat(
-                    "Sand All Enemies",
-                    Cheats.SandAllEnemies,
-                    onDisable: (cheat) =>
-                    {
-                        OptionsManager.forceSand = false;
-                    },
-                    onEnable: (cheat, manager) =>
-                    {
-                        OptionsManager.forceSand = true;
-                    }
-                ), "SELF SABOTAGE");
-            }
-
-            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
-            "Log Eid Info On Start", 
-            Cheats.LogEIDInfo,
+        Cheats.Manager.RegisterCheat(new ToggleCheat(
+            "Radiant All Enemies",
+            Cheats.RadiantAllEnemies,
             onDisable: (cheat) =>
             {
             },
             onEnable: (cheat, manager) =>
             {
             }
-            ), "dev stuff");*/
+        ), "SELF SABOTAGE");
 
-            /*Cheats.Manager.RegisterCheat(new ToggleCheat(
-                "Print the ALL!!!!", 
-                "ukaiw.dev.print-all-children",
+        if (Options.RegisterSandAllEnemiesCheat.Value)
+        {
+            Cheats.Manager.RegisterCheat(new ToggleCheat(
+                "Sand All Enemies",
+                Cheats.SandAllEnemies,
                 onDisable: (cheat) =>
                 {
+                    OptionsManager.forceSand = false;
                 },
                 onEnable: (cheat, manager) =>
                 {
-                    Cheats.Manager.DisableCheat("ukaiw.dev.print-all-children");
-                    var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-                    var roots = scene.GetRootGameObjects();
-                    foreach (var root in roots)
-                    {
-                        root.DebugPrintChildren();
-                    }
+                    OptionsManager.forceSand = true;
                 }
-            ), "dev stuff");*/
-
-            ReadyForCheatRegistration?.Invoke(Manager);
-            Cheats.Manager.RebuildMenu();
+            ), "SELF SABOTAGE");
         }
 
-        [HarmonyPatch(typeof(TeleportCheat), "Teleport")]
-        static class TeleportCheatTeleportPatch
+        /*Cheats.Manager.RegisterCheat(new ToggleCheat(
+        "Log Eid Info On Start", 
+        Cheats.LogEIDInfo,
+        onDisable: (cheat) =>
         {
-            public static void Prefix(TeleportCheat __instance, Transform target)
-            {
-                if (!Cheats.Enabled)
-                {
-                    return;
-                }
+        },
+        onEnable: (cheat, manager) =>
+        {
+        }
+        ), "dev stuff");*/
 
-                var activator = GameObject.FindAnyObjectByType<PlayerActivator>();
-                if (activator != null)
+        /*Cheats.Manager.RegisterCheat(new ToggleCheat(
+            "Print the ALL!!!!", 
+            "ukaiw.dev.print-all-children",
+            onDisable: (cheat) =>
+            {
+            },
+            onEnable: (cheat, manager) =>
+            {
+                Cheats.Manager.DisableCheat("ukaiw.dev.print-all-children");
+                var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                var roots = scene.GetRootGameObjects();
+                foreach (var root in roots)
                 {
-                    activator.transform.position = target.position;
+                    root.DebugPrintChildren();
                 }
             }
+        ), "dev stuff");*/
 
-            public static void Postfix(TeleportCheat __instance, Transform target)
+        ReadyForCheatRegistration?.Invoke(Manager);
+        Cheats.Manager.RebuildMenu();
+    }
+
+    [HarmonyPatch(typeof(TeleportCheat), "Teleport")]
+    static class TeleportCheatTeleportPatch
+    {
+        public static void Prefix(TeleportCheat __instance, Transform target)
+        {
+            if (!Cheats.Enabled)
             {
+                return;
             }
+
+            var activator = GameObject.FindAnyObjectByType<PlayerActivator>();
+            if (activator != null)
+            {
+                activator.transform.position = target.position;
+            }
+        }
+
+        public static void Postfix(TeleportCheat __instance, Transform target)
+        {
         }
     }
 }

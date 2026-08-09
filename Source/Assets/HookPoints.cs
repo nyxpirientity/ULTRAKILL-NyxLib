@@ -8,51 +8,50 @@ using UnityEngine.AddressableAssets;
 using System.Collections.Generic;
 using System;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
+namespace Nyxpiri.ULTRAKILL.NyxLib.Assets;
+
+[ConfigureSingleton(SingletonFlags.NoAutoInstance)]
+public class HookPoints : MonoSingleton<HookPoints>
 {
-    [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
-    public class HookPoints : MonoSingleton<HookPoints>
+    public static PrefabAsset<GameObject> Normal { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._normalHookPoint);
+    public static PrefabAsset<GameObject> Slingshot { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._slingshotHookPoint);
+    public static PrefabAsset<GameObject> Healing { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._healingHookPoint);
+
+    [SerializeField] private GameObject _normalHookPoint = null;
+    [SerializeField] private GameObject _slingshotHookPoint = null;
+    [SerializeField] private GameObject _healingHookPoint = null;
+
+    private void Awake()
     {
-        public static PrefabAsset<GameObject> Normal { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._normalHookPoint);
-        public static PrefabAsset<GameObject> Slingshot { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._slingshotHookPoint);
-        public static PrefabAsset<GameObject> Healing { get; private set; } = new PrefabAsset<GameObject>(() => Instance?._healingHookPoint);
+        SpawnDbPicker.OnGettingPrefabs += GetPrefabs;
+    }
 
-        [SerializeField] private GameObject _normalHookPoint = null;
-        [SerializeField] private GameObject _slingshotHookPoint = null;
-        [SerializeField] private GameObject _healingHookPoint = null;
-
-        private void Awake()
+    private void GetPrefabs(SpawnableObjectsDatabase db)
+    {
+        Log.ExpectedInfo($"Getting hookpoints...");
+        foreach (var obj in db.sandboxObjects)
         {
-            SpawnDbPicker.OnGettingPrefabs += GetPrefabs;
-        }
+            var hookPoint = obj.gameObject.GetComponentInChildren<HookPoint>();
 
-        private void GetPrefabs(SpawnableObjectsDatabase db)
-        {
-            Log.ExpectedInfo($"Getting hookpoints...");
-            foreach (var obj in db.sandboxObjects)
+            if (hookPoint != null)
             {
-                var hookPoint = obj.gameObject.GetComponentInChildren<HookPoint>();
-
-                if (hookPoint != null)
+                switch (hookPoint.type)
                 {
-                    switch (hookPoint.type)
-                    {
-                        case hookPointType.Normal:
-                            _normalHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
-                            break;
-                        case hookPointType.Slingshot:
-                            if (hookPoint.healPlayer)
-                            {
-                                _healingHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
-                            }
-                            else
-                            {
-                                _slingshotHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
-                            }
-                            break;
-                        case hookPointType.Switch:
-                            break;
-                    }
+                    case hookPointType.Normal:
+                        _normalHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
+                        break;
+                    case hookPointType.Slingshot:
+                        if (hookPoint.healPlayer)
+                        {
+                            _healingHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
+                        }
+                        else
+                        {
+                            _slingshotHookPoint = GameObject.Instantiate(obj.gameObject, AssetsRoot.Holder);
+                        }
+                        break;
+                    case hookPointType.Switch:
+                        break;
                 }
             }
         }

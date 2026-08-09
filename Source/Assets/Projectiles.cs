@@ -9,57 +9,56 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib.Assets
+namespace Nyxpiri.ULTRAKILL.NyxLib.Assets;
+
+[ConfigureSingleton(SingletonFlags.NoAutoInstance)]
+public class Projectiles : MonoSingleton<Projectiles>
 {
-    [ConfigureSingleton(SingletonFlags.NoAutoInstance)]
-    public class Projectiles : MonoSingleton<Projectiles>
+    public static PrefabAsset<Grenade> Core { get; private set; } = new PrefabAsset<Grenade>(() => Instance?._core);
+    public static PrefabAsset<Grenade> PlayerRocket { get; private set; } = new PrefabAsset<Grenade>(() => Instance?._playerRocket);
+
+    public static PrefabAsset<Projectile> Homing { get; private set; } = new PrefabAsset<Projectile>(() => Instance?._homing);
+    public static PrefabAsset<Projectile> Mortar { get; private set; } = new PrefabAsset<Projectile>(() => Instance?._mortar);
+
+    [SerializeField] private Projectile _mortar = null;
+    [SerializeField] private Projectile _homing = null;
+
+    [SerializeField] private Grenade _playerRocket = null;
+    [SerializeField] private Grenade _core = null;
+
+    private void Awake()
     {
-        public static PrefabAsset<Grenade> Core { get; private set; } = new PrefabAsset<Grenade>(() => Instance?._core);
-        public static PrefabAsset<Grenade> PlayerRocket { get; private set; } = new PrefabAsset<Grenade>(() => Instance?._playerRocket);
+        SpawnDbPicker.OnGettingPrefabs += GetSpawnDbPrefabs;
+        Gear.PostAssetsLoaded += LoadGearAssets;
+    }
 
-        public static PrefabAsset<Projectile> Homing { get; private set; } = new PrefabAsset<Projectile>(() => Instance?._homing);
-        public static PrefabAsset<Projectile> Mortar { get; private set; } = new PrefabAsset<Projectile>(() => Instance?._mortar);
-
-        [SerializeField] private Projectile _mortar = null;
-        [SerializeField] private Projectile _homing = null;
-
-        [SerializeField] private Grenade _playerRocket = null;
-        [SerializeField] private Grenade _core = null;
-
-        private void Awake()
+    private void LoadGearAssets()
+    {
+        if (_playerRocket == null)
         {
-            SpawnDbPicker.OnGettingPrefabs += GetSpawnDbPrefabs;
-            Gear.PostAssetsLoaded += LoadGearAssets;
+            var fs = Gear.Firestarter.DirectPrefab.GetComponent<RocketLauncher>();
+            var ce = Gear.CoreEject.DirectPrefab.GetComponent<Shotgun>();
+
+            _playerRocket = Instantiate(fs.rocket, AssetsRoot.Holder).GetComponent<Grenade>();
+            _core = Instantiate(ce.grenade, AssetsRoot.Holder).GetComponent<Grenade>();
         }
+    }
 
-        private void LoadGearAssets()
+    private void GetSpawnDbPrefabs(SpawnableObjectsDatabase db)
+    {
+        Log.ExpectedInfo($"Getting spawndb projectiles...");
+        if (_mortar == null)
         {
-            if (_playerRocket == null)
-            {
-                var fs = Gear.Firestarter.DirectPrefab.GetComponent<RocketLauncher>();
-                var ce = Gear.CoreEject.DirectPrefab.GetComponent<Shotgun>();
+            var hideousMass = db.enemies.First((spawnable) => spawnable.enemyType == EnemyType.HideousMass).gameObject.GetComponentInChildren<Mass>();
 
-                _playerRocket = Instantiate(fs.rocket, AssetsRoot.Holder).GetComponent<Grenade>();
-                _core = Instantiate(ce.grenade, AssetsRoot.Holder).GetComponent<Grenade>();
+            if (hideousMass != null)
+            {
+                _mortar = GameObject.Instantiate(hideousMass.explosiveProjectile, AssetsRoot.Holder).GetComponent<Projectile>();
+                _homing = GameObject.Instantiate(hideousMass.homingProjectile, AssetsRoot.Holder).GetComponent<Projectile>();
             }
-        }
-
-        private void GetSpawnDbPrefabs(SpawnableObjectsDatabase db)
-        {
-            Log.ExpectedInfo($"Getting spawndb projectiles...");
-            if (_mortar == null)
+            else
             {
-                var hideousMass = db.enemies.First((spawnable) => spawnable.enemyType == EnemyType.HideousMass).gameObject.GetComponentInChildren<Mass>();
-
-                if (hideousMass != null)
-                {
-                    _mortar = GameObject.Instantiate(hideousMass.explosiveProjectile, AssetsRoot.Holder).GetComponent<Projectile>();
-                    _homing = GameObject.Instantiate(hideousMass.homingProjectile, AssetsRoot.Holder).GetComponent<Projectile>();
-                }
-                else
-                {
-                    Log.ExpectedInfo($"We'd like a a hideous mass in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
-                }
+                Log.ExpectedInfo($"We'd like a a hideous mass in order to yoink it's projectile prefabs, but this scene \"{SceneHelper.CurrentScene}\" didn't have it yet!");
             }
         }
     }

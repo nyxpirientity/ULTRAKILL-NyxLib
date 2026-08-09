@@ -1,41 +1,40 @@
 using System;
 using UnityEngine;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+/* represents a timestamp relative to the time the current scene was loaded */
+public struct SceneTimeStamp
 {
-    /* represents a timestamp relative to the time the current scene was loaded */
-    public struct SceneTimeStamp
-    {
-        public double? TimeStamp { get; set; }
-        public readonly double TimeSince { get => Time.timeSinceLevelLoadAsDouble - TimeStamp.GetValueOrDefault(0.0); }
+    public double? TimeStamp { get; set; }
+    public readonly double TimeSince { get => Time.timeSinceLevelLoadAsDouble - TimeStamp.GetValueOrDefault(0.0); }
 
-        public void UpdateToNow()
-        {
-            TimeStamp = Time.timeSinceLevelLoadAsDouble;
-        }
+    public void UpdateToNow()
+    {
+        TimeStamp = Time.timeSinceLevelLoadAsDouble;
     }
+}
 
-    /* represents a timestamp in fixedupdate time */
-    [Serializable]
-    public struct FixedTimeStamp
+/* represents a timestamp in fixedupdate time */
+[Serializable]
+public struct FixedTimeStamp
+{
+    [SerializeField] public double TimeStamp;
+    public readonly double TimeSince { get => Time.fixedTime - TimeStamp; }
+
+    public void UpdateToNow()
     {
-        [SerializeField] public double TimeStamp;
-        public readonly double TimeSince { get => Time.fixedTime - TimeStamp; }
-
-        public void UpdateToNow()
-        {
-            TimeStamp = Time.fixedTime;
-        }
+        TimeStamp = Time.fixedTime;
     }
+}
 
-    public struct GlobalTimeStamp
+public struct GlobalTimeStamp
+{
+    public double? TimeStamp { get; set; }
+    public readonly double TimeSince { get => Time.timeAsDouble - TimeStamp.GetValueOrDefault(0.0); }
+
+    public void UpdateToNow()
     {
-        public double? TimeStamp { get; set; }
-        public readonly double TimeSince { get => Time.timeAsDouble - TimeStamp.GetValueOrDefault(0.0); }
-
-        public void UpdateToNow()
-        {
-            TimeStamp = Time.timeAsDouble;
-        }
+        TimeStamp = Time.timeAsDouble;
     }
 }

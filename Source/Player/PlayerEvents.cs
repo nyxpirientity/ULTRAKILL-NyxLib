@@ -5,161 +5,160 @@ using ULTRAKILL.Cheats;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+public static class PlayerEvents
 {
-    public static class PlayerEvents
+    public delegate void PreUpdateEventHandler(EventMethodCanceler canceler, PlayerComponents player);
+    public static event PreUpdateEventHandler PreUpdate = null;
+
+    public delegate void PostUpdateEventHandler(EventMethodCancelInfo cancelInfo, PlayerComponents player);
+    public static event PostUpdateEventHandler PostUpdate = null;
+
+    public delegate void PreStartEventHandler(EventMethodCanceler canceler, PlayerComponents player);
+    public static event PreStartEventHandler PreStart = null;
+
+    public delegate void PostStartEventHandler(EventMethodCancelInfo cancelInfo, PlayerComponents player);
+    public static event PostStartEventHandler PostStart = null;
+
+    public delegate void PreFullStaminaEventHandler(EventMethodCanceler canceler, PlayerComponents player);
+    public static event PreFullStaminaEventHandler PreFullRefillStamina = null;
+
+    public delegate void PostFullStaminaEventHandler(EventMethodCancelInfo cancelInfo, PlayerComponents player);
+    public static event PostFullStaminaEventHandler PostFullRefillStamina = null;
+
+    public delegate void PredictedDeathEventHandler(EventMethodCanceler canceler, PlayerComponents player, int damage);
+    public static event PredictedDeathEventHandler PredictedDeath;
+    public delegate void PreHurtEventHandler(EventMethodCanceler canceler, PlayerComponents player, int unprocessedDamage, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility);
+    public static event PreHurtEventHandler PreHurt;
+    public delegate void PostHurtEventHandler(EventMethodCancelInfo cancelInfo, PlayerComponents player, int unprocessedDamage, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility);
+    public static event PostHurtEventHandler PostHurt;
+
+
+    [HarmonyPatch(typeof(NewMovement), "Awake", new Type[] { })]
+    static class NewMovementAwakePatch
     {
-        public delegate void PreUpdateEventHandler(EventMethodCanceler canceler, PlayerComponents player);
-        public static event PreUpdateEventHandler PreUpdate = null;
-
-        public delegate void PostUpdateEventHandler(EventMethodCancelInfo cancelInfo,  PlayerComponents player);
-        public static event PostUpdateEventHandler PostUpdate = null;
-
-        public delegate void PreStartEventHandler(EventMethodCanceler canceler, PlayerComponents player);
-        public static event PreStartEventHandler PreStart = null;
-
-        public delegate void PostStartEventHandler(EventMethodCancelInfo cancelInfo,  PlayerComponents player);
-        public static event PostStartEventHandler PostStart = null;
-
-        public delegate void PreFullStaminaEventHandler(EventMethodCanceler canceler, PlayerComponents player);
-        public static event PreFullStaminaEventHandler PreFullRefillStamina = null;
-
-        public delegate void PostFullStaminaEventHandler(EventMethodCancelInfo cancelInfo,  PlayerComponents player);
-        public static event PostFullStaminaEventHandler PostFullRefillStamina = null;
-
-        public delegate void PredictedDeathEventHandler(EventMethodCanceler canceler, PlayerComponents player, int damage);
-        public static event PredictedDeathEventHandler PredictedDeath;
-        public delegate void PreHurtEventHandler(EventMethodCanceler canceler, PlayerComponents player, int unprocessedDamage, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility);
-        public static event PreHurtEventHandler PreHurt;
-        public delegate void PostHurtEventHandler(EventMethodCancelInfo cancelInfo, PlayerComponents player, int unprocessedDamage, int processedDamage, bool invincible, float scoreLossMultiplier, bool explosion, bool instablack, float hardDamageMultiplier, bool ignoreInvincibility);
-        public static event PostHurtEventHandler PostHurt;
-
-
-        [HarmonyPatch(typeof(NewMovement), "Awake", new Type[] { })]
-        static class NewMovementAwakePatch
+        public static void Prefix(NewMovement __instance)
         {
-            public static void Prefix(NewMovement __instance)
-            {
-            }
-
-            public static void Postfix(NewMovement __instance)
-            {
-                __instance.gameObject.AddComponent<PlayerComponents>();
-            }
         }
 
-        [HarmonyPatch(typeof(NewMovement), "Start", new Type[] { })]
-        static class NewMovementStartPatch
+        public static void Postfix(NewMovement __instance)
         {
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            __instance.gameObject.AddComponent<PlayerComponents>();
+        }
+    }
 
-            public static bool Prefix(NewMovement __instance)
-            {
-                _cancellationTracker.Reset();
-                PlayerEvents.PreStart?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
-                _cancellationTracker.TryInvokeReimplementation();
-                return _cancellationTracker.ShouldRunMethod;
-            }
+    [HarmonyPatch(typeof(NewMovement), "Start", new Type[] { })]
+    static class NewMovementStartPatch
+    {
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-            public static void Postfix(NewMovement __instance)
-            {
-                PlayerEvents.PostStart?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
-            }
+        public static bool Prefix(NewMovement __instance)
+        {
+            _cancellationTracker.Reset();
+            PlayerEvents.PreStart?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
+            _cancellationTracker.TryInvokeReimplementation();
+            return _cancellationTracker.ShouldRunMethod;
         }
 
-        [HarmonyPatch(typeof(NewMovement), "GetHurt", new Type[] { typeof(int), typeof(bool), typeof(float), typeof(bool), typeof(bool), typeof(float), typeof(bool) })]
-        static class PlayerHurtPatch
+        public static void Postfix(NewMovement __instance)
         {
-            private static bool WasPreHurtCalled = false;
-            private static int ProcessedDamage = 0;
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            PlayerEvents.PostStart?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
+        }
+    }
 
-            public static bool Prefix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
+    [HarmonyPatch(typeof(NewMovement), "GetHurt", new Type[] { typeof(int), typeof(bool), typeof(float), typeof(bool), typeof(bool), typeof(float), typeof(bool) })]
+    static class PlayerHurtPatch
+    {
+        private static bool WasPreHurtCalled = false;
+        private static int ProcessedDamage = 0;
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+        public static bool Prefix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
+        {
+            _cancellationTracker.Reset();
+            NewMovement newMovement = __instance;
+            if (newMovement.dead || newMovement.levelOver || !(!invincible || newMovement.gameObject.layer != 15 || ignoreInvincibility) || damage <= 0)
             {
-                _cancellationTracker.Reset();
-                NewMovement newMovement = __instance;
-                if (newMovement.dead || newMovement.levelOver || !(!invincible || newMovement.gameObject.layer != 15 || ignoreInvincibility) || damage <= 0)
-                {
-                    return true;
-                }
-
-                ProcessedDamage = damage;
-                
-                var assistController = AssistController.Instance;
-                if (assistController.majorEnabled)
-                {
-                    ProcessedDamage = Mathf.RoundToInt((float)ProcessedDamage * assistController.damageTaken);
-                }
-                
-                if (Invincibility.Enabled)
-                {
-                    ProcessedDamage = 0;
-                }
-                PlayerComponents player = newMovement.GetComponent<PlayerComponents>();
-                PlayerEvents.PreHurt?.Invoke(_cancellationTracker.GetCanceler(), player, damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
-
-                WasPreHurtCalled = true;
-
-                bool mortal = !Invincibility.Enabled; 
-
-                if (newMovement.hp - ProcessedDamage <= 0 && mortal)
-                {
-                    PlayerEvents.PredictedDeath?.Invoke(_cancellationTracker.GetCanceler(), player, ProcessedDamage);
-                }
-                
-                _cancellationTracker.TryInvokeReimplementation();
-                return !_cancellationTracker.Cancelled;
+                return true;
             }
 
-            public static void Postfix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
-            {
-                NewMovement newMovement = __instance;
-                
-                if (!WasPreHurtCalled)
-                {
-                    return;
-                }
+            ProcessedDamage = damage;
 
-                PlayerEvents.PostHurt?.Invoke(_cancellationTracker.GetCancelInfo(), newMovement.GetComponent<PlayerComponents>(), damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+            var assistController = AssistController.Instance;
+            if (assistController.majorEnabled)
+            {
+                ProcessedDamage = Mathf.RoundToInt((float)ProcessedDamage * assistController.damageTaken);
             }
+
+            if (Invincibility.Enabled)
+            {
+                ProcessedDamage = 0;
+            }
+            PlayerComponents player = newMovement.GetComponent<PlayerComponents>();
+            PlayerEvents.PreHurt?.Invoke(_cancellationTracker.GetCanceler(), player, damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+
+            WasPreHurtCalled = true;
+
+            bool mortal = !Invincibility.Enabled;
+
+            if (newMovement.hp - ProcessedDamage <= 0 && mortal)
+            {
+                PlayerEvents.PredictedDeath?.Invoke(_cancellationTracker.GetCanceler(), player, ProcessedDamage);
+            }
+
+            _cancellationTracker.TryInvokeReimplementation();
+            return !_cancellationTracker.Cancelled;
         }
 
-        [HarmonyPatch(typeof(NewMovement), "FullStamina")]
-        static class PlayerFullStaminaPatch
+        public static void Postfix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
         {
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            NewMovement newMovement = __instance;
 
-            public static bool Prefix(NewMovement __instance)
+            if (!WasPreHurtCalled)
             {
-                _cancellationTracker.Reset();
-                PlayerEvents.PreFullRefillStamina?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
-                _cancellationTracker.TryInvokeReimplementation();
-                return _cancellationTracker.ShouldRunMethod;
+                return;
             }
 
-            public static void Postfix(NewMovement __instance)
-            {
-                PlayerEvents.PostFullRefillStamina?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
-            }
+            PlayerEvents.PostHurt?.Invoke(_cancellationTracker.GetCancelInfo(), newMovement.GetComponent<PlayerComponents>(), damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+        }
+    }
+
+    [HarmonyPatch(typeof(NewMovement), "FullStamina")]
+    static class PlayerFullStaminaPatch
+    {
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+
+        public static bool Prefix(NewMovement __instance)
+        {
+            _cancellationTracker.Reset();
+            PlayerEvents.PreFullRefillStamina?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
+            _cancellationTracker.TryInvokeReimplementation();
+            return _cancellationTracker.ShouldRunMethod;
         }
 
-        [HarmonyPatch(typeof(NewMovement), "Update")]
-        static class PlayerUpdatePatch
+        public static void Postfix(NewMovement __instance)
         {
-            private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
+            PlayerEvents.PostFullRefillStamina?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
+        }
+    }
 
-            public static bool Prefix(NewMovement __instance)
-            {
-                _cancellationTracker.Reset();
-                PlayerEvents.PreUpdate?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
-                _cancellationTracker.TryInvokeReimplementation();
-                return _cancellationTracker.ShouldRunMethod;
-            }
+    [HarmonyPatch(typeof(NewMovement), "Update")]
+    static class PlayerUpdatePatch
+    {
+        private static EventMethodCancellationTracker _cancellationTracker = new EventMethodCancellationTracker();
 
-            public static void Postfix(NewMovement __instance)
-            {
-                PlayerEvents.PostUpdate?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
-            }
+        public static bool Prefix(NewMovement __instance)
+        {
+            _cancellationTracker.Reset();
+            PlayerEvents.PreUpdate?.Invoke(_cancellationTracker.GetCanceler(), PlayerComponents.Instance);
+            _cancellationTracker.TryInvokeReimplementation();
+            return _cancellationTracker.ShouldRunMethod;
+        }
+
+        public static void Postfix(NewMovement __instance)
+        {
+            PlayerEvents.PostUpdate?.Invoke(_cancellationTracker.GetCancelInfo(), PlayerComponents.Instance);
         }
     }
 }

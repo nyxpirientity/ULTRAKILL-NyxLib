@@ -3,52 +3,51 @@ using System.Collections.Generic;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine.SceneManagement;
 
-namespace Nyxpiri.ULTRAKILL.NyxLib
+namespace Nyxpiri.ULTRAKILL.NyxLib;
+
+public abstract class LevelAdditions
 {
-    public abstract class LevelAdditions
+    internal abstract void OnSceneLoad();
+    internal abstract void OnSceneUnload();
+}
+
+public static class LevelAdditionsManager
+{
+    public static void Initialize()
     {
-        internal abstract void OnSceneLoad();
-        internal abstract void OnSceneUnload();
+        SceneEvents.OnSceneLoad += OnSceneLoad;
+        SceneEvents.OnSceneUnload += OnSceneUnload;
     }
 
-    public static class LevelAdditionsManager
+    private static Dictionary<string, Func<LevelAdditions>> LevelAdditionsCtorDict = new Dictionary<string, Func<LevelAdditions>>
     {
-        public static void Initialize()
+
+    };
+
+    private static LevelAdditions CurrentAdditions = null;
+
+    private static void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
+    {
+        levelName = SceneHelper.CurrentScene;
+        CurrentAdditions = null;
+        Func<LevelAdditions> ctor = null;
+        LevelAdditionsCtorDict.TryGetValue(levelName, out ctor);
+        Log.TraceExpectedInfo($"Level Additions OnSceneLoad called with sceneName {levelName}, trying to find valid constructor...");
+        if (ctor != null)
         {
-            SceneEvents.OnSceneLoad += OnSceneLoad;
-            SceneEvents.OnSceneUnload += OnSceneUnload;
+            CurrentAdditions = ctor.Invoke();
+            Log.ExpectedInfo($"Loading New LevelAdditions of type {CurrentAdditions.GetType()}!");
+            CurrentAdditions.OnSceneLoad();
         }
-
-        private static Dictionary<string, Func<LevelAdditions>> LevelAdditionsCtorDict = new Dictionary<string, Func<LevelAdditions>>
+        else
         {
-
-        };
-
-        private static LevelAdditions CurrentAdditions = null;
-
-        private static void OnSceneLoad(Scene scene, string levelName, string unitySceneName)
-        {
-            levelName = SceneHelper.CurrentScene;
-            CurrentAdditions = null;
-            Func<LevelAdditions> ctor = null;
-            LevelAdditionsCtorDict.TryGetValue(levelName, out ctor);
-            Log.TraceExpectedInfo($"Level Additions OnSceneLoad called with sceneName {levelName}, trying to find valid constructor...");
-            if (ctor != null)
-            {
-                CurrentAdditions = ctor.Invoke();
-                Log.ExpectedInfo($"Loading New LevelAdditions of type {CurrentAdditions.GetType()}!");
-                CurrentAdditions.OnSceneLoad();
-            }
-            else
-            {
-                Log.ExpectedInfo($"No constructor for Level Additions found!");
-            }
+            Log.ExpectedInfo($"No constructor for Level Additions found!");
         }
+    }
 
-        private static void OnSceneUnload(Scene scene, string levelName, string unitySceneName)
-        {
-            CurrentAdditions?.OnSceneUnload();
-            CurrentAdditions = null;
-        }
+    private static void OnSceneUnload(Scene scene, string levelName, string unitySceneName)
+    {
+        CurrentAdditions?.OnSceneUnload();
+        CurrentAdditions = null;
     }
 }
