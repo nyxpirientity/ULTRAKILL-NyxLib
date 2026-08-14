@@ -22,7 +22,7 @@ public class EnemyPrefabStore : EnemyModifier
         public void Initialize(GameObject prefab, GameObject prefabParent, EnemyComponents prefabEadd, string debugName)
         {
             Prefab = prefab;
-            PrefabParent = prefabParent;
+            InstanceParent = prefabParent;
             PrefabEadd = prefabEadd;
             _debugName = debugName;
 
@@ -71,13 +71,6 @@ public class EnemyPrefabStore : EnemyModifier
                 return;
             }
 
-            if (PrefabParent == null)
-            {
-                RegistrationTracker.Unregister();
-                Log.Error($"{_debugName}: InstanceStore had instantiate and store called despite prefab parent being null, and thus destroyed.");
-                return;
-            }
-
             if (IsFull)
             {
                 return;
@@ -94,7 +87,7 @@ public class EnemyPrefabStore : EnemyModifier
 
         public GameObject Prefab = null;
 
-        public GameObject PrefabParent = null;
+        public GameObject InstanceParent = null;
 
         public EnemyComponents PrefabEadd { get; private set; }
 
@@ -121,8 +114,6 @@ public class EnemyPrefabStore : EnemyModifier
             {
                 RegistrationTracker.Unregister();
             }
-
-            Assert.IsNotNull(Prefab);
         }
 
         public GameObject GetNewInstance()
@@ -138,7 +129,7 @@ public class EnemyPrefabStore : EnemyModifier
 
             instGo ??= Instantiate(Prefab);
 
-            instGo.transform.SetParent(PrefabParent?.transform);
+            instGo.transform.SetParent(InstanceParent?.transform);
 
             if (PrefabEadd.Eid.enemyType == global::EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
             {
@@ -161,7 +152,8 @@ public class EnemyPrefabStore : EnemyModifier
     RegistrationTracker InstancesRegistrator = null;
     /* direct access to the prefab game object, not actually recommended to be used for instantiating prefab instances, prefer Instances.GetNewInstance() instead */
     public GameObject PrefabDirectGameObject => _prefab;
-    public GameObject PrefabParent { get => _prefabParent ?? null; }
+    public GameObject InstanceParent { get => _prefabParent ?? null; }
+    [SerializeField] private GameObject _prefabHolder = null;
 
     public EnemyPrefabStore()
     {
@@ -213,6 +205,13 @@ public class EnemyPrefabStore : EnemyModifier
         if (_prefab != null && _prefabParent == null)
         {
             _prefabParent = _enemy.RootGameObject.transform.parent?.gameObject;
+        }
+
+        if (_prefabHolder == null && !IsPrefab)
+        {
+            _prefabHolder = new GameObject();
+            _prefabHolder.SetActive(false);
+            _prefabHolder.transform.parent = _enemy.RootGameObject.transform.parent;
         }
     }
 
@@ -298,28 +297,7 @@ public class EnemyPrefabStore : EnemyModifier
 
         IsStoringPrefab = true;
 
-        var templateActive = templateGo.activeSelf;
-        var prefabHolder = new GameObject();
-
-        prefabHolder.SetActive(false);
-
-        if (templateActive)
-        {
-            //templateGo.SetActive(false);
-        }
-
-        _prefab = UnityEngine.Object.Instantiate(templateGo, prefabHolder.transform);
-
-        if (_enemy.IsMarkedDontDestroyOnLoad)
-        {
-            DontDestroyOnLoad(_prefab);
-            DontDestroyOnLoad(prefabHolder);
-        }
-
-        if (templateActive)
-        {
-            //templateGo.SetActive(true);
-        }
+        _prefab = UnityEngine.Object.Instantiate(templateGo, _prefabHolder.transform);
 
         _prefab.SetActive(false);
 
@@ -342,7 +320,7 @@ public class EnemyPrefabStore : EnemyModifier
         }
 
         _instances.Prefab = _prefab;
-        _instances.PrefabParent = _prefabParent;
+        _instances.InstanceParent = _prefabParent;
         prefabEadd.PrefabStore.IsPrefab = true;
 
         prefabEid.activateOnDeath = new GameObject[0];

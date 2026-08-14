@@ -121,6 +121,7 @@ public static class PlayerEvents
             }
 
             PlayerEvents.PostHurt?.Invoke(_cancellationTracker.GetCancelInfo(), newMovement.GetComponent<PlayerComponents>(), damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+            WasPreHurtCalled = false;
         }
     }
 

@@ -98,8 +98,6 @@ public class EnemyComponents : MonoBehaviour
     public Enemy Enemy = null;
     public IReadOnlyList<Collider> Colliders { get => _colliders; }
 
-    [NonSerialized] public bool IsMarkedDontDestroyOnLoad = false;
-
     public string OverrideFullName { set => OverrideFullNameFA.SetValue(Eid, value); get => OverrideFullNameFA.GetValue(Eid); }
 
     public static FieldAccess<EnemyIdentifier, string> OverrideFullNameFA = new FieldAccess<EnemyIdentifier, string>("overrideFullName");

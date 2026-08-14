@@ -118,10 +118,7 @@ public class EnemyPrefabDatabase : MonoBehaviour
             gce.cols.Clear();
         }
 
-        enemyComp.IsMarkedDontDestroyOnLoad = true;
         //var spawnableInst = eid.GetComponent<EnemySpawnableInstance>();
-
-        GameObject.DontDestroyOnLoad(prefab);
 
         //if (spawnableInst != null)
         //{
