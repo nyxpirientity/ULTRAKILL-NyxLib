@@ -10,7 +10,7 @@ using Nyxpiri.ULTRAKILL.NyxLib.Assets;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib;
 
-[BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.2.0")]
+[BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.3.0")]
 [BepInProcess("ULTRAKILL.exe")]
 public class NyxLib : BaseUnityPlugin
 {
@@ -45,7 +45,7 @@ public class NyxLib : BaseUnityPlugin
     {
         Log.TraceExpectedInfo($"Start called!");
         Music.Initialize();
-        LevelAdditionsManager.Initialize();
+        LevelModder.Initialize();
         Cybergrind.Initialize();
         QuickMsgPool.Initialize();
         Heck.Initialize();
