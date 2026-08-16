@@ -19,10 +19,10 @@ public class EnemyPrefabStore : EnemyModifier
 
     public class InstanceStore : ScriptableObject
     {
-        public void Initialize(GameObject prefab, GameObject prefabParent, EnemyComponents prefabEadd, string debugName)
+        public void Initialize(GameObject prefab, Transform prefabParent, EnemyComponents prefabEadd, string debugName)
         {
             Prefab = prefab;
-            InstanceParent = prefabParent;
+            SpawnedInstanceParent = prefabParent;
             PrefabEadd = prefabEadd;
             _debugName = debugName;
 
@@ -76,7 +76,10 @@ public class EnemyPrefabStore : EnemyModifier
                 return;
             }
 
-            var newGo = Instantiate(Prefab);
+            Assert.IsNotNull(PrefabHolder);
+
+            PrefabHolder.gameObject.SetActive(false);
+            var newGo = Instantiate(Prefab, PrefabHolder);
 
             Log.TraceExpectedInfo($"{_debugName}: Instantiating and storing for prefab {Prefab}");
 
@@ -86,8 +89,9 @@ public class EnemyPrefabStore : EnemyModifier
         }
 
         public GameObject Prefab = null;
+        public Transform PrefabHolder = null;
 
-        public GameObject InstanceParent = null;
+        public Transform SpawnedInstanceParent = null;
 
         public EnemyComponents PrefabEadd { get; private set; }
 
@@ -116,7 +120,7 @@ public class EnemyPrefabStore : EnemyModifier
             }
         }
 
-        public GameObject GetNewInstance()
+        public GameObject GetNewInstance(bool overrideParent = false, Transform parent = null)
         {
             Assert.IsNotNull(Prefab);
 
@@ -129,7 +133,7 @@ public class EnemyPrefabStore : EnemyModifier
 
             instGo ??= Instantiate(Prefab);
 
-            instGo.transform.SetParent(InstanceParent?.transform);
+            instGo.transform.parent = parent ?? SpawnedInstanceParent;
 
             if (PrefabEadd.Eid.enemyType == global::EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
             {
@@ -152,8 +156,24 @@ public class EnemyPrefabStore : EnemyModifier
     RegistrationTracker InstancesRegistrator = null;
     /* direct access to the prefab game object, not actually recommended to be used for instantiating prefab instances, prefer Instances.GetNewInstance() instead */
     public GameObject PrefabDirectGameObject => _prefab;
-    public GameObject InstanceParent { get => _prefabParent ?? null; }
+    public GameObject InstanceParent { get => _spawnedInstanceParent ?? null; }
     [SerializeField] private GameObject _prefabHolder = null;
+    [SerializeField] private ActivateNextWave _activateNextWave = null;
+
+    public ActivateNextWave ActivateNextWave
+    {
+        get
+        {
+            if (_activateNextWave != null)
+            {
+                return _activateNextWave;
+            }
+
+            _activateNextWave = GetComponentInParent<ActivateNextWave>();
+
+            return _activateNextWave;
+        }
+    }
 
     public EnemyPrefabStore()
     {
@@ -202,16 +222,10 @@ public class EnemyPrefabStore : EnemyModifier
     {
         GetComps();
 
-        if (_prefab != null && _prefabParent == null)
+        if (_prefab != null && _spawnedInstanceParent == null)
         {
-            _prefabParent = _enemy.RootGameObject.transform.parent?.gameObject;
-        }
-
-        if (_prefabHolder == null && !IsPrefab)
-        {
-            _prefabHolder = new GameObject();
-            _prefabHolder.SetActive(false);
-            _prefabHolder.transform.parent = _enemy.RootGameObject.transform.parent;
+            GameObject parent = ((MonoBehaviour)ActivateNextWave ?? _enemy.RootGameObject.GetComponentInParent<GoreZone>())?.gameObject;
+            _spawnedInstanceParent = parent;
         }
     }
 
@@ -231,7 +245,7 @@ public class EnemyPrefabStore : EnemyModifier
     }
 
     [SerializeField] private InstanceStore _instances = null;
-    [SerializeField] private GameObject _prefabParent = null;
+    [SerializeField] private GameObject _spawnedInstanceParent = null;
     [SerializeField] private GameObject _prefab = null;
     [SerializeField] private EnemyIdentifier _eid = null;
     [SerializeField] private EnemyComponents _enemy = null;
@@ -289,6 +303,12 @@ public class EnemyPrefabStore : EnemyModifier
             return;
         }
 
+        if (_prefabHolder == null)
+        {
+            _prefabHolder = new GameObject();
+            _prefabHolder.SetActive(false);
+        }
+
         GetComps();
 
         GameObject templateGo;
@@ -303,7 +323,6 @@ public class EnemyPrefabStore : EnemyModifier
 
         Assert.IsNotNull(templateGo);
         Assert.IsNotNull(templateGo.transform);
-        _prefabParent = templateGo.transform.parent?.gameObject;
 
         var prefabEadd = _prefab.GetComponent<EnemyComponents>() ?? _prefab.GetComponentInChildren<EnemyComponents>(true);
         var prefabEid = prefabEadd.Eid;
@@ -311,7 +330,7 @@ public class EnemyPrefabStore : EnemyModifier
         if (_instances == null)
         {
             _instances = ScriptableObject.CreateInstance<InstanceStore>();
-            _instances.Initialize(_prefab, _prefabParent, prefabEadd, $"InstanceStore For '{gameObject}'");
+            _instances.Initialize(_prefab, ActivateNextWave?.transform, prefabEadd, $"InstanceStore For '{gameObject}'");
 
             if (isActiveAndEnabled)
             {
@@ -320,7 +339,8 @@ public class EnemyPrefabStore : EnemyModifier
         }
 
         _instances.Prefab = _prefab;
-        _instances.InstanceParent = _prefabParent;
+        _instances.PrefabHolder = _prefabHolder.transform;
+        _instances.SpawnedInstanceParent = ActivateNextWave?.transform;
         prefabEadd.PrefabStore.IsPrefab = true;
 
         prefabEid.activateOnDeath = new GameObject[0];
@@ -330,6 +350,7 @@ public class EnemyPrefabStore : EnemyModifier
         prefabEid.destroyOnDeath = new System.Collections.Generic.List<GameObject>();
 
         prefabEid.onDeath = new UnityEngine.Events.UnityEvent();
+
         var onDestroy = prefabEid.GetComponent<EventOnDestroy>();
 
         if (onDestroy != null)
