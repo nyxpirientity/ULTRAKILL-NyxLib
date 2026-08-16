@@ -49,7 +49,7 @@ public class NyxLib : BaseUnityPlugin
         Cybergrind.Initialize();
         QuickMsgPool.Initialize();
         Heck.Initialize();
-        EnemyPrefabManager.Initialize();
+        EnemyCloneManager.Initialize();
         LevelQuickLoader.Initialize();
 
         GameConsole.Console.Instance.onError += () =>

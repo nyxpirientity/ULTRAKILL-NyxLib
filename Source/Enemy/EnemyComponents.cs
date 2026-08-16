@@ -13,8 +13,8 @@ public class EnemyComponents : MonoBehaviour
 {
     public static MonoRegistrar MonoRegistrar = new MonoRegistrar();
 
-    [SerializeField] private EnemyPrefabStore _PrefabStore = null;
-    public EnemyPrefabStore PrefabStore { get => _PrefabStore; private set => _PrefabStore = value; }
+    [SerializeField] private EnemyCloning _Cloning = null;
+    public EnemyCloning Cloning { get => _Cloning; private set => _Cloning = value; }
 
     [SerializeField] private EnemyRadiance _Radiance = null;
     public EnemyRadiance Radiance { get => _Radiance; private set => _Radiance = value; }
@@ -164,7 +164,7 @@ public class EnemyComponents : MonoBehaviour
         UpdateHighestHealth();
 
         _colliders = GetComponentsInChildren<Collider>(true);
-        PrefabStore?.StorePrefab();
+        Cloning?.StorePrefab();
     }
 
     public void ResetHealthInfo()
@@ -198,7 +198,7 @@ public class EnemyComponents : MonoBehaviour
             InitialHealth = Health;
         }
 
-        PrefabStore?.StorePrefab();
+        Cloning?.StorePrefab();
         UpdateHighestHealth();
 
         CollisionCenterOffset = transform.InverseTransformPoint(this.SolveEnemyBounds().center);
@@ -264,7 +264,7 @@ public class EnemyComponents : MonoBehaviour
 
         if (!Options.DontCreateEnemyPrefabComp.Value)
         {
-            PrefabStore = gameObject.AddComponent<EnemyPrefabStore>();
+            Cloning = gameObject.AddComponent<EnemyCloning>();
         }
     }
 

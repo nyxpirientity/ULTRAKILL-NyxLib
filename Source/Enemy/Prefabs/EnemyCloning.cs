@@ -7,158 +7,15 @@ using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib;
 
-public class EnemyPrefabStore : EnemyModifier
+public class EnemyCloning : EnemyModifier
 {
-    public static void RequestInstanceStoreCapacity(int requestedCapacity)
-    {
-        InstanceStoreCapacityModsAdditional = Math.Max(InstanceStoreCapacity, requestedCapacity);
-    }
-
-    public static int InstanceStoreCapacity => Mathf.Min(InstanceStoreCapacityModsAdditional, Options.EnemyPrefabInstanceStoreCapacityMax.Value);
-    public static int InstanceStoreCapacityModsAdditional { get; private set; } = 0;
-
-    public class InstanceStore : ScriptableObject
-    {
-        public void Initialize(GameObject prefab, Transform prefabParent, EnemyComponents prefabEadd, string debugName)
-        {
-            Prefab = prefab;
-            SpawnedInstanceParent = prefabParent;
-            PrefabEadd = prefabEadd;
-            _debugName = debugName;
-
-            Log.TraceExpectedInfo($"New instance store by the name of {debugName} being created with prefab {Prefab}");
-
-            if (Cheats.Enabled)
-            {
-                Assert.IsNotNull(Prefab);
-            }
-
-            RegistrationTracker = new RegistrationTracker(
-                registerAction: () =>
-                {
-                    Log.TraceExpectedInfo($"{_debugName}: Registering to prefab manager");
-
-                    if (Cheats.Enabled)
-                    {
-                        Assert.IsNotNull(Prefab);
-                    }
-
-                    RegistrationIdx = EnemyPrefabManager.RegisterInstanceStore(this);
-                    return true;
-                },
-                unregisterAction: () =>
-                {
-                    Log.TraceExpectedInfo($"{_debugName}: Unregistering from prefab manager");
-
-                    if (Cheats.Enabled)
-                    {
-                        Assert.IsNotNull(Prefab);
-                    }
-
-                    EnemyPrefabManager.UnregisterInstanceStore(RegistrationIdx);
-                    RegistrationIdx = -1;
-                    return true;
-                }
-            );
-        }
-
-        public void InstantiateAndStore()
-        {
-            if (Prefab == null)
-            {
-                RegistrationTracker.Unregister();
-                Log.Error($"{_debugName}: InstanceStore had instantiate and store called despite prefab being null, and thus destroyed.");
-                return;
-            }
-
-            if (IsFull)
-            {
-                return;
-            }
-
-            Assert.IsNotNull(PrefabHolder);
-
-            PrefabHolder.gameObject.SetActive(false);
-            var newGo = Instantiate(Prefab, PrefabHolder);
-
-            Log.TraceExpectedInfo($"{_debugName}: Instantiating and storing for prefab {Prefab}");
-
-            Instances.Push(newGo);
-
-            newGo.SetActive(false);
-        }
-
-        public GameObject Prefab = null;
-        public Transform PrefabHolder = null;
-
-        public Transform SpawnedInstanceParent = null;
-
-        public EnemyComponents PrefabEadd { get; private set; }
-
-        private string _debugName = "UNNAMED";
-        Stack<GameObject> Instances = new Stack<GameObject>();
-
-        public void RegisterStore(EnemyPrefabStore store)
-        {
-            RegisteredStores.Add(store);
-
-            if (RegisteredStores.Count == 1)
-            {
-                RegistrationTracker.Register();
-            }
-
-            Assert.IsNotNull(Prefab);
-        }
-
-        public void UnregisterStore(EnemyPrefabStore store)
-        {
-            RegisteredStores.Remove(store);
-
-            if (RegisteredStores.Count == 0)
-            {
-                RegistrationTracker.Unregister();
-            }
-        }
-
-        public GameObject GetNewInstance(bool overrideParent = false, Transform parent = null)
-        {
-            Assert.IsNotNull(Prefab);
-
-            GameObject instGo = null;
-
-            if (Instances.Count > 0)
-            {
-                instGo = Instances.Pop();
-            }
-
-            instGo ??= Instantiate(Prefab);
-
-            instGo.transform.parent = parent ?? SpawnedInstanceParent;
-
-            if (PrefabEadd.Eid.enemyType == global::EnemyType.Stalker) // TODO: this is necessary to make them not... ragdoll instead of explode. not sure what the best approach is to fixing right now
-            {
-                var instEnemy = instGo.GetComponent<EnemyComponents>();
-                instEnemy.PreDeath += (canceler, instakill) => { instGo.GetComponent<Stalker>().SandExplode(); };
-                instEnemy.PostDeath += (cancelInfo, instakill) => { instGo.GetComponent<EnemyComponents>().InstaDestroy(); };
-            }
-
-            return instGo;
-        }
-
-        HashSet<EnemyPrefabStore> RegisteredStores = new HashSet<EnemyPrefabStore>(32);
-        RegistrationTracker RegistrationTracker = null;
-        private int RegistrationIdx = -1;
-
-        public bool IsFull { get => Instances.Count >= InstanceStoreCapacity; }
-    }
-
-    public InstanceStore Instances { get => _instances; }
+    public EnemyCloneStore Store { get => _instances; }
     RegistrationTracker InstancesRegistrator = null;
     /* direct access to the prefab game object, not actually recommended to be used for instantiating prefab instances, prefer Instances.GetNewInstance() instead */
     public GameObject PrefabDirectGameObject => _prefab;
     public GameObject InstanceParent { get => _spawnedInstanceParent ?? null; }
     [SerializeField] private GameObject _prefabHolder = null;
-    [SerializeField] private ActivateNextWave _activateNextWave = null;
+    private ActivateNextWave _activateNextWave = null;
 
     public ActivateNextWave ActivateNextWave
     {
@@ -175,7 +32,7 @@ public class EnemyPrefabStore : EnemyModifier
         }
     }
 
-    public EnemyPrefabStore()
+    public EnemyCloning()
     {
         InstancesRegistrator = new RegistrationTracker(registerAction: () =>
         {
@@ -186,7 +43,7 @@ public class EnemyPrefabStore : EnemyModifier
 
             Log.TraceExpectedInfo($"{gameObject} (EnemyPrefabStore): Registering self to InstanceStore");
 
-            _instances.RegisterStore(this);
+            _instances.RegisterEnemy(this);
 
             return true;
         },
@@ -199,7 +56,7 @@ public class EnemyPrefabStore : EnemyModifier
 
             Log.TraceExpectedInfo($"{gameObject} (EnemyPrefabStore): Unregistering self to InstanceStore");
 
-            _instances.UnregisterStore(this);
+            _instances.UnregisterEnemy(this);
 
             return true;
         });
@@ -232,6 +89,27 @@ public class EnemyPrefabStore : EnemyModifier
     protected void Start()
     {
         InstancesRegistrator.Register();
+
+        _enemy.PostDeath += PostDeath;
+        if (!((Store.SpawnedInstanceParent?.gameObject?.activeInHierarchy).GetValueOrDefault(false)) && ActivateNextWave != null)
+        {
+            Store.SpawnedInstanceParent = ActivateNextWave.transform;
+        }
+    }
+
+    private void PostDeath(EventMethodCancelInfo cancelInfo, bool instakill)
+    {
+        if (cancelInfo.Cancelled)
+        {
+            return;
+        }
+
+        if (!Options.UnregisterEnemyFromCloneStoreOnDeath.Value)
+        {
+            return;
+        }
+
+        InstancesRegistrator.Unregister();
     }
 
     protected void OnEnable()
@@ -244,7 +122,7 @@ public class EnemyPrefabStore : EnemyModifier
         InstancesRegistrator.Unregister();
     }
 
-    [SerializeField] private InstanceStore _instances = null;
+    [SerializeField] private EnemyCloneStore _instances = null;
     [SerializeField] private GameObject _spawnedInstanceParent = null;
     [SerializeField] private GameObject _prefab = null;
     [SerializeField] private EnemyIdentifier _eid = null;
@@ -305,7 +183,7 @@ public class EnemyPrefabStore : EnemyModifier
 
         if (_prefabHolder == null)
         {
-            _prefabHolder = new GameObject();
+            _prefabHolder = new GameObject($"{name}'s nyxlib clone prefab holder");
             _prefabHolder.SetActive(false);
         }
 
@@ -329,8 +207,8 @@ public class EnemyPrefabStore : EnemyModifier
 
         if (_instances == null)
         {
-            _instances = ScriptableObject.CreateInstance<InstanceStore>();
-            _instances.Initialize(_prefab, ActivateNextWave?.transform, prefabEadd, $"InstanceStore For '{gameObject}'");
+            _instances = ScriptableObject.CreateInstance<EnemyCloneStore>();
+            _instances.Initialize(_prefab, ActivateNextWave?.transform, prefabEadd, $"EnemyCloneStore For '{gameObject}'");
 
             if (isActiveAndEnabled)
             {
@@ -341,7 +219,7 @@ public class EnemyPrefabStore : EnemyModifier
         _instances.Prefab = _prefab;
         _instances.PrefabHolder = _prefabHolder.transform;
         _instances.SpawnedInstanceParent = ActivateNextWave?.transform;
-        prefabEadd.PrefabStore.IsPrefab = true;
+        prefabEadd.Cloning.IsPrefab = true;
 
         prefabEid.activateOnDeath = new GameObject[0];
         prefabEid.drillers = new System.Collections.Generic.List<Harpoon>();
@@ -373,8 +251,8 @@ public class EnemyPrefabStore : EnemyModifier
             prefabEid.statue.musicRequested = false;
         }
 
-        prefabEadd.PrefabStore._instances = _instances;
-        prefabEadd.PrefabStore._prefab = _prefab;
+        prefabEadd.Cloning._instances = _instances;
+        prefabEadd.Cloning._prefab = _prefab;
 
         if (prefabEid.enemyType == global::EnemyType.Swordsmachine)
         {

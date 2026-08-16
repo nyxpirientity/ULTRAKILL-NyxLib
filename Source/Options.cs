@@ -59,6 +59,8 @@ public static class Options
     public static ConfigEntry<bool> DontCreateEnemyPrefabComp = null;
     public static ConfigEntry<bool> DontCreateEnemyRadianceComp = null;
 
+    public static ConfigEntry<bool> UnregisterEnemyFromCloneStoreOnDeath = null;
+
     public enum LevelQuickLoaderTypes
     {
         Default, Simple, Additive
@@ -122,6 +124,7 @@ public static class Options
         LogEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdates", false);
         LogEnemyRadianceUpdatesOnlyIfExternallyBuffed = Config.Bind($"{DebugCat}", "LogEnemyRadianceUpdatesOnlyIfExternallyBuffed", false);
         WarnOfEnemyRadianceUpdates = Config.Bind($"{DebugCat}", "WarnOfEnemyRadianceUpdates", false, "Logs method calls which modify enemy radiance when they happen relating to Nyxpiri.ULTRAKILL.EnemyRadiance, as warnings. Mostly intended for ensuring enemy radiance isn't tampering when it shouldn't be.");
+        UnregisterEnemyFromCloneStoreOnDeath = Config.Bind($"{DebugCat}", "UnregisterEnemyFromCloneStoreOnDeath", false, "");
 
         RadianceTier = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadianceTier", 1.0f);
         RadiantAllDisableExternalBaseRadiance = Config.Bind($"{CheatsCat}.{RadianceAllCat}", "RadiantAllDisableExternalBaseRadiance", true);
