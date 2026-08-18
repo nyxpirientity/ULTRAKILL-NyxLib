@@ -1,12 +1,26 @@
 # USER FACING/FRONT-END
-- remove a left-over log patch that got rid of a info log from the vanilla game (the TryIgniteAt log, not really helpful still but I didn't mean to leave it in this mod)
-- added a warning for when a certain bug in the vanilla game occurrs (because it confused me a couple of times into think it was something new and caused by me!)
-- added LevelQuickLoaderType option that users aren't really supposed to touch but they technically can, but like, leave it on default, Additive doesn't really work and even when it does it isn't much improved currently.
+- make radiant all enemies use enemy's base radiance as a... well, base (and many additional configuration options!)
 
 # BACK-END/INTERNAL/API
-- added AEnemyType to represent types in a way that can be dynamically added to rather than the base ULTRAKILL global::EnemyType enum
-- added EnemyPrefabDatabase which automatically fills with enemy prefabs from the sandbox spawn menu, for easier access to enemy game objects and spawning
-- added `NailTouchEnemy` events
-- asset pickers now iterate through every object of a certain type for each level load until they return true (then they of course should never iterate again)
-- Added `OverrideFullName` to `EnemyComponents`
-- cleaned up some stuff
+- improve timing of cheat registration events
+- Simplify `EnemyRadiance.Modifier` with a `CompositionType` enum instead of multiple bools
+- Add projectile asset prefabs
+- Overhauls `AEnemyType` (now `EnemyTypeData`) by making it a single class
+- Overhauls asset handling greatly, sorting things into their own singletons and files, and assigning tasks to specific classes rather than a single global Assets class
+- rename `ScenesEvents` to `SceneEvents` and make some event names more (I think) reasonable
+- rename `AEnemyType.ReadableName` to `EnemyTypeData.DisplayName`
+- rename `EnemyPrefabStore` to `EnemyCloning`, `EnemyPrefabStore.InstanceStore` to `EnemyCloneStore`, and `EnemyPrefabManager` to `EnemyCloneManager`
+- add `Gear` (player weapon prefabs) to `Assets`
+- add `ExplosionRoot` monobehaviour
+- add `ExplosionStartModifier`
+- add `Shaker3D`
+- add `Shaker1D`
+- add image and obj (mesh format) loader for external asset loading
+- add `DebugPrintMaterialProperties` method in new `AssetInspecting` class
+- add `includeFileInfo` parameter for `StackDebug`
+- add `Coincident`, `CoincidentProject`, and `Snapped` methods to `NyxMath`
+- add `VelocityTracker`
+- add `CollisionCenter` property to `EnemyComponents`
+- remove `ExplosionAdditions`
+- many stability adjustments to `EnemyPrefabStore`/`EnemyCloneStore` and friends
+
