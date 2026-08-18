@@ -66,7 +66,7 @@ public class NyxLib : BaseUnityPlugin
         Log.TraceExpectedInfo($"Start finished!");
     }
 
-    public void OnSceneWasLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode loadSceneMode) // Runs when a Scene has Loaded and is passed the Scene's Build Index and Name.
+    public void OnSceneWasLoaded(UnityEngine.SceneManagement.Scene scene, LoadSceneMode loadSceneMode)
     {
         Log.TraceExpectedInfo($"------------- New Scene Loaded '{SceneHelper.CurrentScene}' -------------");
         TryLog.Action(() => { SceneEvents.NotifySceneLoad(scene, SceneHelper.CurrentScene, scene.name); });
