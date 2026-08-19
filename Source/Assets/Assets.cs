@@ -34,5 +34,7 @@ public class AssetsRoot : MonoSingleton<AssetsRoot>
         gameObject.AddComponent<UIElements>();
         gameObject.AddComponent<Explosions>();
         gameObject.AddComponent<Materials>();
+        gameObject.AddComponent<Shaders>();
+        gameObject.AddComponent<Textures>();
     }
 }

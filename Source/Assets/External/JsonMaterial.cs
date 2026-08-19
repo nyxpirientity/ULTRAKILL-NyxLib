@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 
@@ -16,11 +17,41 @@ public static class JsonMaterial
 
         if (json == null)
         {
+            Log.Error($"Failed to parse json material due to json deserialize failure");
             return false;
         }
 
-        if (json.TryGetValue("Properties", out var genericProps) && genericProps is Dictionary<string, object> props)
+        if (json.TryGetValue("Keywords", out var genericKeywords))
         {
+            if (genericKeywords is not JObject keywords)
+            {
+                Log.Error($"genericKeywords was a {genericKeywords.GetType()}?");
+                return false;
+            }
+
+            foreach (var pair in keywords)
+            {
+                Log.Message($"{pair.Key} = {((bool?)pair.Value).GetValueOrDefault()}");
+
+                if (((bool?)pair.Value).GetValueOrDefault())
+                {
+                    material.EnableKeyword(pair.Key);
+                }
+                else
+                {
+                    material.DisableKeyword(pair.Key);
+                }
+            }
+        }
+
+        if (json.TryGetValue("Properties", out var genericProps))
+        {
+            if (genericProps is not JObject props)
+            {
+                Log.Error($"genericProps was a {genericProps.GetType()}?");
+                return false;
+            }
+
             var propToType = Materials.SolvePropertyToTypeDictionary(material);
 
             foreach (var pair in props)
@@ -37,16 +68,13 @@ public static class JsonMaterial
                 switch (propType)
                 {
                     case MaterialPropertyType.Float:
-                        if (!TryParseFloat(propValue.ToString(), out var floatVal))
-                        {
-                            continue;
-                        }
-
-                        material.SetFloat(propName, floatVal);
+                        material.SetFloat(propName, ((float?)propValue).GetValueOrDefault());
+                        Log.Message($"{propName} = {((float?)propValue).GetValueOrDefault()}");
                         break;
                     case MaterialPropertyType.Vector:
-                        if (propValue is not List<object> vecElems)
+                        if (propValue is not JArray vecElems)
                         {
+                            Log.Warning($"Failed to parse vector for material property '{propName}'");
                             continue;
                         }
 
@@ -54,28 +82,23 @@ public static class JsonMaterial
 
                         for (int i = 0; i < Math.Min(4, vecElems.Count); i++)
                         {
-                            if (vecElems[i] is float v1)
-                            {
-                                vecVal[i] = v1;
-                            }
-                            else if (vecElems[i] is double v2)
-                            {
-                                vecVal[i] = (float)v2;
-                            }
-                            else
-                            {
-                                Log.Warning($"material property '{propName}' is a vector but was set with something other than a float/double it seems");
-                                continue;
-                            }
+                            vecVal[i] = ((float?)vecElems[i]).GetValueOrDefault();
+                            Log.Message($"{propName}[{i}] = {vecVal[i]}");
                         }
+                        material.SetVector(propName, vecVal);
                         break;
                     case MaterialPropertyType.Texture:
                         material.SetTexture(propName, assets.GetAsset<TextureAsset>(propValue.ToString()).Texture);
                         break;
                     default:
+                        Log.Warning($"incompatible material property '{propName}'");
                         continue;
                 }
             }
+        }
+        else
+        {
+            Log.Warning($"No Properties entry in json material");
         }
 
         return true;

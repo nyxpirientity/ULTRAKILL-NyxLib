@@ -29,21 +29,28 @@ public class ExternalAssetManager(string path)
             awareAsset.AssetManager = this;
         }
 
-        asset.Path = $"{Path}/Path";
+        asset.Path = $"{Path}/{subPath}";
+        _assets[subPath] = asset;
 
         return asset;
     }
 
     public void Reload()
     {
-        foreach (var asset in _assets.Values)
+        var assets = _assets.Values;
+
+        foreach (var asset in assets)
         {
             asset.MarkUnloaded();
         }
 
-        foreach (var asset in _assets.Values)
+        foreach (var asset in assets)
         {
-            if (!asset.TryLoad())
+            if (asset.TryLoad())
+            {
+                Log.Message($"Reloaded asset {asset}");
+            }
+            else
             {
                 Log.Error($"Reload asset {asset} failed!");
             }
@@ -98,7 +105,10 @@ public class TextureAsset : ExternalAsset
     {
         get
         {
-            TryLoad();
+            if (!TryLoad())
+            {
+                Log.Error($"Loading Texture at '{Path}' failed");
+            }
 
             return _texture;
         }
@@ -244,7 +254,7 @@ public class MaterialAsset : ExternalAsset, IManagerAwareAsset
     {
         if (_material == null)
         {
-            _material = Assets.Materials.CreateMaterial(default, default, default, default, default, default, default, default);
+            _material = Materials.CreateLitMaterial();
         }
 
         if (_material == null)
@@ -261,7 +271,10 @@ public class MaterialAsset : ExternalAsset, IManagerAwareAsset
         try
         {
             var text = File.ReadAllText(Path);
-            JsonMaterial.ApplyTo(_material, AssetManager, text);
+            if (!JsonMaterial.ApplyTo(_material, AssetManager, text))
+            {
+                return false;
+            }
         }
         catch (System.Exception e)
         {
