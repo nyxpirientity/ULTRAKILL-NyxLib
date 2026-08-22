@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib.Assets;
 
@@ -16,6 +17,7 @@ public static class ObjLoader
         ObjSceneData scene = new ObjSceneData();
         ObjectData activeObj = null;
         List<int> faceIndicesTempStore = new List<int>();
+        SubMeshData activeSubMesh = null;
 
         for (string line = stringReader.ReadLine(); line != null; line = stringReader.ReadLine())
         {
@@ -29,6 +31,21 @@ public static class ObjLoader
             }
 
             var tokens = line.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+
+            Func<int, float> parseInt = (tokenIdx) =>
+            {
+                if (tokens.Length <= tokenIdx)
+                {
+                    throw new InvalidDataException(errStr("attempt to parse int entry, seemingly not enough tokens/parameters"));
+                }
+
+                if (!int.TryParse(tokens[tokenIdx], System.Globalization.NumberStyles.Integer, CultureInfo.InvariantCulture, out var val))
+                {
+                    throw new InvalidDataException(errStr($"failed to parse {tokens[tokenIdx]} as int"));
+                }
+
+                return val;
+            };
 
             Func<string, float> parseFloat = (str) =>
             {
@@ -93,7 +110,13 @@ public static class ObjLoader
                     throw new InvalidDataException(errStr("attempt to parse 'o' object entry, seemingly not enough tokens/parameters (missing name)"));
                 }
 
+                if (activeSubMesh != null && !((activeObj?.SubMeshes?.Contains(activeSubMesh)).GetValueOrDefault(true)) && activeSubMesh.NumIndices > 0)
+                {
+                    activeObj.SubMeshes.Add(activeSubMesh);
+                }
+
                 activeObj = new ObjectData(tokens[1]);
+                activeSubMesh = new() { Name = "DefaultMaterial" };
 
                 scene.Objects.Add(activeObj);
             }
@@ -155,12 +178,48 @@ public static class ObjLoader
                     throw new InvalidDataException(errStr($"attempted to parse 'f' face entry but face was not a triangle, please only use triangles in obj meshes (if using blender, that lets you triangulate in the *export* menu so you don't have to manually triangulate!)"));
                 }
 
+                activeSubMesh.NumIndices += 3;
                 activeObj.Faces.Add(faceData);
+            }
+            else if (tokens[0] == "usemtl")
+            {
+                if (tokens.Length <= 1)
+                {
+                    throw new InvalidCastException(errStr($"failed to parse 'usemtl' entry because not enough tokens to specify the material name."));
+                }
+
+                if (activeSubMesh != null && !activeObj.SubMeshes.Contains(activeSubMesh) && activeSubMesh.NumIndices > 0)
+                {
+                    activeObj.SubMeshes.Add(activeSubMesh);
+                }
+
+                var subMeshIdx = activeObj.SubMeshes.FindIndex((sm) => sm.Name == tokens[1]);
+
+                if (subMeshIdx == -1)
+                {
+                    activeSubMesh = new() { Name = tokens[1] };
+                }
+                else
+                {
+                    activeSubMesh = activeObj.SubMeshes[subMeshIdx];
+                }
+
+                activeSubMesh.StartIndex = activeObj.Faces.Count * 3;
+                activeSubMesh.NumIndices = 0;
+            }
+            else if (tokens[0] == "mtllib")
+            {
+                Log.ExpectedInfo($"ignoring mtllib 0th token");
             }
             else
             {
                 Log.Warning($"unknown 0th token '{tokens[0]}' in obj parse, line: {line}");
             }
+        }
+
+        if (activeSubMesh != null && !activeObj.SubMeshes.Contains(activeSubMesh) && activeSubMesh.NumIndices > 0)
+        {
+            activeObj.SubMeshes.Add(activeSubMesh);
         }
 
         List<Vector3> positions = new List<Vector3>();
@@ -170,26 +229,32 @@ public static class ObjLoader
 
         for (int i = 0; i < scene.Objects.Count; i++)
         {
+            var objData = scene.Objects[i];
+
+            Mesh mesh = null;
+
+            foreach (var pmesh in outMeshes)
+            {
+                if (pmesh.name == objData.Name)
+                {
+                    mesh = pmesh;
+                    break;
+                }
+            }
+
+            if (mesh == null)
+            {
+                mesh = new Mesh();
+                outMeshes.Add(mesh);
+            }
+
+            mesh.Clear();
+            mesh.name = objData.Name;
+
             positions.Clear();
             uvs.Clear();
             normals.Clear();
             indices.Clear();
-
-            if (outMeshes.Count <= i)
-            {
-                outMeshes.Add(new Mesh());
-            }
-
-            if (outMeshes[i] == null)
-            {
-                outMeshes[i] = new Mesh();
-            }
-
-            var mesh = outMeshes[i];
-
-            mesh.Clear();
-            var objData = scene.Objects[i];
-
             positions.Capacity = objData.PositionIndices.Count;
             uvs.Capacity = objData.UVIndices.Count;
             normals.Capacity = objData.NormalIndices.Count;
@@ -224,7 +289,18 @@ public static class ObjLoader
             mesh.normals = normals.ToArray();
             mesh.triangles = indices.ToArray();
 
-            mesh.name = objData.Name;
+            SubMeshDescriptor[] descs = new SubMeshDescriptor[objData.SubMeshes.Count];
+            for (int j = 0; j < objData.SubMeshes.Count; j++)
+            {
+                SubMeshData subMesh = objData.SubMeshes[j];
+                SubMeshDescriptor descriptor = new(subMesh.StartIndex, subMesh.NumIndices);
+                descs[j] = descriptor;
+            }
+
+            mesh.subMeshCount = descs.Length;
+            mesh.SetSubMeshes(descs);
+            mesh.UploadMeshData(false);
+            mesh.RecalculateBounds();
         }
     }
 
@@ -242,6 +318,7 @@ public static class ObjLoader
         public string Name;
 
         public List<FaceData> Faces = new List<FaceData>();
+        public List<SubMeshData> SubMeshes = new List<SubMeshData>();
 
         public List<int> PositionIndices = new List<int>();
         public List<int> NormalIndices = new List<int>();
@@ -251,6 +328,13 @@ public static class ObjLoader
         {
             Name = name;
         }
+    }
+
+    class SubMeshData
+    {
+        public string Name;
+        public int StartIndex = 0;
+        public int NumIndices = 0;
     }
 
     struct FaceData

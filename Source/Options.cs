@@ -95,6 +95,7 @@ public static class Options
     static public bool IncludeUnexpectedLogs { get => IncludeUnexpectedLogsEntry.Value; }
 
     public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
+    public static ConfigEntry<bool> RegisterImmortalityCheat { get; private set; } = null;
     public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
     public static ConfigEntry<bool> RegisterForceNextWaveCheat { get; private set; } = null;
     public static ConfigEntry<bool> RegisterOverrideCybergrindStartingWaveCheat { get; private set; } = null;
@@ -144,6 +145,7 @@ public static class Options
         EnemyPrefabInstanceStoreCapacityMax = Config.Bind("Performance", "EnemyPrefabInstanceStoreCapacityMax", 5);
 
         RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
+        RegisterImmortalityCheat = Config.Bind($"{CheatsCat}", "RegisterImmortalityCheat", false);
         RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);
         RegisterForceNextWaveCheat = Config.Bind($"{CheatsCat}", "RegisterForceNextWaveCheat", true);
         RegisterOverrideCybergrindStartingWaveCheat = Config.Bind($"{CheatsCat}", "RegisterOverrideCybergrindStartingWaveCheat", false);

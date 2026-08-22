@@ -17,6 +17,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Assets;
 public class Textures : MonoSingleton<Textures>
 {
     public static Texture CubeMapStudio06 => Instance._cubeMapStudio06;
+    public static Texture DitherTextureA => Instance._ditherTextureA;
 
     private void Awake()
     {
@@ -31,8 +32,11 @@ public class Textures : MonoSingleton<Textures>
         }
 
         var gunColorGetter = Gear.Piercer.DirectPrefab.GetComponentInChildren<GunColorGetter>();
-        _cubeMapStudio06 = gunColorGetter.coloredMaterials[0].GetTexture("_CubeTex");
+
+        _cubeMapStudio06 = gunColorGetter.coloredMaterials[0].GetTexture(MaterialProperties.Textures.CubeTex);
+        _ditherTextureA = gunColorGetter.coloredMaterials[0].GetTexture(MaterialProperties.Textures.DitherTexture);
     }
 
+    private Texture _ditherTextureA = null;
     private Texture _cubeMapStudio06 = null;
 }

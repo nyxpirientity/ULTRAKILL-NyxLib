@@ -95,6 +95,7 @@ public static class PlayerEvents
             {
                 ProcessedDamage = 0;
             }
+
             PlayerComponents player = newMovement.GetComponent<PlayerComponents>();
             PlayerEvents.PreHurt?.Invoke(_cancellationTracker.GetCanceler(), player, damage, ProcessedDamage, invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
 
@@ -104,12 +105,36 @@ public static class PlayerEvents
 
             if (newMovement.hp - ProcessedDamage <= 0 && mortal)
             {
-                PlayerEvents.PredictedDeath?.Invoke(_cancellationTracker.GetCanceler(), player, ProcessedDamage);
+                EventMethodCancellationTracker predictedDeathCancellationTracker = new();
+                PlayerEvents.PredictedDeath?.Invoke(predictedDeathCancellationTracker.GetCanceler(), player, ProcessedDamage);
+
+                if (predictedDeathCancellationTracker.Cancelled && !handlingCancelledPredictedDeath)
+                {
+                    _cancellationTracker.CancelMethod();
+                    handlingCancelledPredictedDeath = true;
+                    try
+                    {
+                        if (__instance.hp <= 1)
+                        {
+                            __instance.hp = 2;
+                        }
+
+                        __instance.GetHurt(Mathf.Min(damage, NewMovement.Instance.hp - 1), invincible, scoreLossMultiplier, explosion, instablack, hardDamageMultiplier, ignoreInvincibility);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Log.Error($"error in predicted death cancel process {e}");
+                        handlingCancelledPredictedDeath = false;
+                    }
+                    handlingCancelledPredictedDeath = false;
+                }
             }
 
             _cancellationTracker.TryInvokeReimplementation();
             return !_cancellationTracker.Cancelled;
         }
+
+        static bool handlingCancelledPredictedDeath = false;
 
         public static void Postfix(NewMovement __instance, int damage, bool invincible, float scoreLossMultiplier = 1f, bool explosion = false, bool instablack = false, float hardDamageMultiplier = 0.35f, bool ignoreInvincibility = false)
         {

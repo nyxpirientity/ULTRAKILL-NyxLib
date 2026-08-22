@@ -48,6 +48,7 @@ public static class Cheats
     }
 
     public const string RadiantAllEnemies = "nyxpiri.radiant-all-enemies";
+    public const string Immortality = "nyxpiri.immortality";
     public const string SandAllEnemies = "nyxpiri.sand-all-enemies";
     public const string OverrideCybergrindStartingWave = "nyxpiri.override-cybergrind-starting-wave";
     public const string DisableStops = "nyxpiri.disable-stops";
@@ -77,6 +78,15 @@ public static class Cheats
     {
         SceneEvents.OnSceneLoad += OnSceneWasLoaded;
         UpdateEvents.OnUpdate += LateUpdate;
+        PlayerEvents.PredictedDeath += PlayerPredictedDeath;
+    }
+
+    private static void PlayerPredictedDeath(EventMethodCanceler canceler, PlayerComponents player, int damage)
+    {
+        if (Cheats.IsCheatEnabled(Cheats.Immortality))
+        {
+            canceler.CancelMethod();
+        }
     }
 
     private static void LateUpdate()
@@ -197,6 +207,20 @@ public static class Cheats
                     OptionsManager.forceSand = true;
                 }
             ), "SELF SABOTAGE");
+        }
+
+        if (Options.RegisterImmortalityCheat.Value)
+        {
+            Cheats.Manager.RegisterCheat(new ToggleCheat(
+                "Immortality",
+                Cheats.Immortality,
+                onDisable: (cheat) =>
+                {
+                },
+                onEnable: (cheat, manager) =>
+                {
+                }
+            ), "I FORGOT");
         }
 
         /*Cheats.Manager.RegisterCheat(new ToggleCheat(

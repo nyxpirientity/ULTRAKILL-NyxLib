@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Nyxpiri.ULTRAKILL.NyxLib.Assets;
 using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
@@ -37,7 +38,7 @@ public class ExternalAssetManager(string path)
 
     public void Reload()
     {
-        var assets = _assets.Values;
+        var assets = _assets.Values.ToList();
 
         foreach (var asset in assets)
         {
@@ -196,6 +197,24 @@ public class ObjAsset : ExternalAsset
 
             return _meshes;
         }
+    }
+
+    public Mesh FindMesh(string meshName)
+    {
+        foreach (var mesh in Meshes)
+        {
+            if (mesh.name == meshName)
+            {
+                return mesh;
+            }
+        }
+
+        Log.Message($"ExternalAsset making a new {meshName}");
+        var newMesh = new Mesh();
+        newMesh.name = meshName;
+        _meshes.Add(newMesh);
+
+        return newMesh;
     }
 
     public override bool Load()

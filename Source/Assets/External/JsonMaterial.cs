@@ -31,8 +31,6 @@ public static class JsonMaterial
 
             foreach (var pair in keywords)
             {
-                Log.Message($"{pair.Key} = {((bool?)pair.Value).GetValueOrDefault()}");
-
                 if (((bool?)pair.Value).GetValueOrDefault())
                 {
                     material.EnableKeyword(pair.Key);
@@ -69,7 +67,6 @@ public static class JsonMaterial
                 {
                     case MaterialPropertyType.Float:
                         material.SetFloat(propName, ((float?)propValue).GetValueOrDefault());
-                        Log.Message($"{propName} = {((float?)propValue).GetValueOrDefault()}");
                         break;
                     case MaterialPropertyType.Vector:
                         if (propValue is not JArray vecElems)
@@ -83,7 +80,6 @@ public static class JsonMaterial
                         for (int i = 0; i < Math.Min(4, vecElems.Count); i++)
                         {
                             vecVal[i] = ((float?)vecElems[i]).GetValueOrDefault();
-                            Log.Message($"{propName}[{i}] = {vecVal[i]}");
                         }
                         material.SetVector(propName, vecVal);
                         break;

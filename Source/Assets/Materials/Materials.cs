@@ -21,6 +21,7 @@ public class Materials : MonoSingleton<Materials>
         var material = new Material(Shaders.StandardLit);
 
         material.SetTexture(MaterialProperties.Textures.CubeTex, Textures.CubeMapStudio06);
+        material.SetTexture(MaterialProperties.Textures.DitherTexture, Textures.DitherTextureA);
 
         return material;
     }
