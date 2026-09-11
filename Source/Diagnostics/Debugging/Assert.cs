@@ -16,7 +16,7 @@ public static class Assert
     {
         if (condition)
         {
-            throw new AssertionException($"Assertion Failed: Condition was false :c; {additionalMsg}", $"Assertion Failed: Condition was false :c; {additionalMsg}");
+            throw new AssertionException($"Assertion Failed: Condition was true :c; {additionalMsg}", $"Assertion Failed: Condition was false :c; {additionalMsg}");
         }
     }
 
