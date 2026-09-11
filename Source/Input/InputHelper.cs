@@ -59,7 +59,7 @@ public static class Input
         private PlayerInput _input = null;
     }
 
-    public static class InputActionMaps
+    public static class ActionMaps
     {
         public static InputActionMap Fist { get; private set; }
         public static InputActionMap UI { get; private set; }
@@ -82,7 +82,7 @@ public static class Input
         Manager = InputManager.Instance;
 
         input.Disable();
-        InputActionMaps.Initialize(input);
+        ActionMaps.Initialize(input);
         CreateActions?.Invoke(new ActionCreator(input));
         input.Enable();
     }
