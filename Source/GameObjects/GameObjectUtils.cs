@@ -15,6 +15,19 @@ public static class GameObjectUtils
         logFunc($"----- Debug Print for {go.name} end! -----");
     }
 
+    public static void DebugPrintEverything(this GameObject go, bool forceLog = true, bool includeComponents = true)
+    {
+        var roots = go.scene.GetRootGameObjects();
+        Action<string> logFunc = forceLog ? new Action<string>((string str) => { Log.Message(str); }) : (string str) => { Log.TraceExpectedInfo(str); };
+
+        logFunc($"----- Debug Print EVERYTHING for {go.name} start! -----");
+        foreach (var root in roots)
+        {
+            root.DebugPrintChildren(forceLog, includeComponents);
+        }
+        logFunc($"----- Debug Print for EVERYTHING {go.name} end! -----");
+    }
+
     private static void DebugPrintChildren(GameObject go, Action<string> logFunc, bool includeComponents, ulong depth)
     {
         string indent = "";
