@@ -23,8 +23,17 @@ public static class Input
         {
             _input = input;
         }
+        public InputAction CreateInputAction(string name, InputActionMap map, InputActionType type)
+        {
+            return CreateInputAction(name, map, type, null, null);
+        }
 
         public InputAction CreateInputAction(string name, InputActionMap map, InputActionType type, string defaultBindings)
+        {
+            return CreateInputAction(name, map, type, defaultBindings, string.IsNullOrEmpty(defaultBindings) ? null : ControlSchemes.KeyboardAndMouse);
+        }
+
+        public InputAction CreateInputAction(string name, InputActionMap map, InputActionType type, string defaultBindings, InputControlScheme? controlScheme)
         {
             string expectedControlLayout = type switch
             {
@@ -34,7 +43,7 @@ public static class Input
                 _ => throw new NotImplementedException(),
             };
 
-            InputAction action = map.AddAction(name, type, defaultBindings, null, null, _input.Actions.KeyboardMouseScheme.bindingGroup, expectedControlLayout);
+            InputAction action = map.AddAction(name, type, defaultBindings, null, null, controlScheme?.bindingGroup, expectedControlLayout);
 
             return action;
         }
@@ -74,6 +83,18 @@ public static class Input
             Movement = input.Actions.Movement.Get();
             Weapon = input.Actions.Weapon.Get();
             HUD = input.Actions.HUD.Get();
+        }
+    }
+
+    public static class ControlSchemes
+    {
+        public static InputControlScheme KeyboardAndMouse { get; private set; }
+        public static InputControlScheme Gamepad { get; private set; }
+
+        internal static void Initialize(PlayerInput input)
+        {
+            KeyboardAndMouse = input.Actions.KeyboardMouseScheme;
+            Gamepad = input.Actions.GamepadScheme;
         }
     }
 
