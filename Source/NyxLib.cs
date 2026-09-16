@@ -10,7 +10,7 @@ using Nyxpiri.ULTRAKILL.NyxLib.Assets;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib;
 
-[BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.3.0")]
+[BepInPlugin("nyxpiri.ultrakill.nyxlib", "NyxLib", "0.4.0")]
 [BepInProcess("ULTRAKILL.exe")]
 public class NyxLib : BaseUnityPlugin
 {
