@@ -91,11 +91,6 @@ public class EnemyCloning : EnemyModifier
         InstancesRegistrator.Register();
 
         _enemy.PostDeath += PostDeath;
-
-        if (!((Store.SpawnedInstanceParent.NullInvalid()?.gameObject.NullInvalid()?.activeInHierarchy).GetValueOrDefault(false)) && ActivateNextWave != null)
-        {
-            Store.SpawnedInstanceParent = ActivateNextWave.transform;
-        }
     }
 
     private void PostDeath(EventMethodCancelInfo cancelInfo, bool instakill)
@@ -152,6 +147,11 @@ public class EnemyCloning : EnemyModifier
         if (_prefab == null)
         {
             StorePrefab();
+        }
+
+        if (Store != null && !((Store.SpawnedInstanceParent.NullInvalid()?.gameObject.NullInvalid()?.activeInHierarchy).GetValueOrDefault(false)) && ActivateNextWave != null)
+        {
+            Store.SpawnedInstanceParent = ActivateNextWave.transform;
         }
     }
 
