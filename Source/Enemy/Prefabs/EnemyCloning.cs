@@ -91,7 +91,8 @@ public class EnemyCloning : EnemyModifier
         InstancesRegistrator.Register();
 
         _enemy.PostDeath += PostDeath;
-        if (!((Store.SpawnedInstanceParent?.gameObject?.activeInHierarchy).GetValueOrDefault(false)) && ActivateNextWave != null)
+
+        if (!((Store.SpawnedInstanceParent.NullInvalid()?.gameObject.NullInvalid()?.activeInHierarchy).GetValueOrDefault(false)) && ActivateNextWave != null)
         {
             Store.SpawnedInstanceParent = ActivateNextWave.transform;
         }
@@ -256,13 +257,15 @@ public class EnemyCloning : EnemyModifier
 
         if (prefabEid.enemyType == global::EnemyType.Swordsmachine)
         {
-            var swordsMachine = prefabEid.GetComponent<SwordsMachine>();
-            swordsMachine.secondPhasePosTarget = null;
-            swordsMachine.firstPhase = false;
-            swordsMachine.GetComponent<EnemyIdentifier>().spawnIn = true;
-            swordsMachine.inAction = false;
-            swordsMachine.inSemiAction = false;
-            swordsMachine.moveAtTarget = false;
+            if (prefabEid.TryGetComponent<SwordsMachine>(out var swordsMachine))
+            {
+                swordsMachine.secondPhasePosTarget = null;
+                swordsMachine.firstPhase = false;
+                swordsMachine.GetComponent<EnemyIdentifier>().spawnIn = true;
+                swordsMachine.inAction = false;
+                swordsMachine.inSemiAction = false;
+                swordsMachine.moveAtTarget = false;
+            }
         }
 
         IsStoringPrefab = false;
