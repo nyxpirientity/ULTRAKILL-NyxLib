@@ -1,3 +1,9 @@
+# VERSION 0.4.1
+Quick fix for some issues I noticed, and some very minor changes/additions I felt I should make.
+- Fix null reference exception which could happen if cheats were on, in regards to enemy cloning
+- Add option to disable/enable radiant all enemies cheat from being registered
+- Make sand all enemies cheat not be registered by default
+
 # VERSION 0.4.0
 This is an unusual release for NyxLib, as it's mainly being done to allow release of the V1Entity mod. Most features are actually introduced for the unreleased mod Altsenal, but V1Entity used one new feature (input API) so an update was necessary.
 
