@@ -96,6 +96,7 @@ public static class Options
 
     public static ConfigEntry<bool> RegisterHideCheatsStatusCheat { get; private set; } = null;
     public static ConfigEntry<bool> RegisterImmortalityCheat { get; private set; } = null;
+    public static ConfigEntry<bool> RegisterRadiantAllEnemiesCheat { get; private set; }
     public static ConfigEntry<bool> RegisterSandAllEnemiesCheat { get; private set; } = null;
     public static ConfigEntry<bool> RegisterForceNextWaveCheat { get; private set; } = null;
     public static ConfigEntry<bool> RegisterOverrideCybergrindStartingWaveCheat { get; private set; } = null;
@@ -146,7 +147,8 @@ public static class Options
 
         RegisterHideCheatsStatusCheat = Config.Bind($"{CheatsCat}", "RegisterHideCheatsStatusCheat", false);
         RegisterImmortalityCheat = Config.Bind($"{CheatsCat}", "RegisterImmortalityCheat", false);
-        RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", true);
+        RegisterRadiantAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterRadiantAllEnemiesCheat", true);
+        RegisterSandAllEnemiesCheat = Config.Bind($"{CheatsCat}", "RegisterSandAllEnemiesCheat", false);
         RegisterForceNextWaveCheat = Config.Bind($"{CheatsCat}", "RegisterForceNextWaveCheat", true);
         RegisterOverrideCybergrindStartingWaveCheat = Config.Bind($"{CheatsCat}", "RegisterOverrideCybergrindStartingWaveCheat", false);
         CybergrindStartingWaveOverride = Config.Bind($"{CheatsCat}", "CybergrindStartingWaveOverride", 0, "Overrides cybergrind starting wave to this number, only works if cheats are enabled and the OverrideCybergrindStartingWave cheat is active.");

@@ -182,16 +182,19 @@ public static class Cheats
             ), "CYBERGRIND");
         }
 
-        Cheats.Manager.RegisterCheat(new ToggleCheat(
-            "Radiant All Enemies",
-            Cheats.RadiantAllEnemies,
-            onDisable: (cheat) =>
-            {
-            },
-            onEnable: (cheat, manager) =>
-            {
-            }
-        ), "SELF SABOTAGE");
+        if (Options.RegisterRadiantAllEnemiesCheat.Value)
+        {
+            Cheats.Manager.RegisterCheat(new ToggleCheat(
+                "Radiant All Enemies",
+                Cheats.RadiantAllEnemies,
+                onDisable: (cheat) =>
+                {
+                },
+                onEnable: (cheat, manager) =>
+                {
+                }
+            ), "SELF SABOTAGE");
+        }
 
         if (Options.RegisterSandAllEnemiesCheat.Value)
         {
