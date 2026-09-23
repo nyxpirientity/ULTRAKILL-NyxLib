@@ -7,7 +7,7 @@ namespace Nyxpiri.ULTRAKILL.NyxLib;
 [Serializable]
 public struct BalanceFloat(BalanceEntryRef<float> reference)
 {
-    public float Value => UseBase || !_ref.IsValid ? BaseValue : (float)_ref.Value;
+    public readonly float Value => UseBase || !_ref.IsValid ? BaseValue : (float)_ref.Value;
 
     public bool UseBase = false;
     public float BaseValue = default;

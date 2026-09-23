@@ -17,6 +17,21 @@ public class StringQueue
         return Str[Index];
     }
 
+    public char? TryPop()
+    {
+        if (Index < Str.Length)
+        {
+            return Pop();
+        }
+
+        return null;
+    }
+
+    public void Skip(int count = 1)
+    {
+        Index += count;
+    }
+
     public char Pop()
     {
         char c = Str[Index];

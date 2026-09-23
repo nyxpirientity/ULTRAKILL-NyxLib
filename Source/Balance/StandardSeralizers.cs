@@ -9,6 +9,21 @@ public static class StandardSerializerSet
 {
     public static void AddStandardSerializers(this SerializerSet set)
     {
+        set.Add<int>(
+        serializer: (int val) =>
+        {
+            return val.ToString(CultureInfo.InvariantCulture).TrimEnd('0');
+        },
+        deserializer: (string data) =>
+        {
+            if (int.TryParse(data, System.Globalization.NumberStyles.Integer, CultureInfo.InvariantCulture, out var result))
+            {
+                return result;
+            }
+
+            throw new FormatException($"malformed integer format '{data}'");
+        }, description: "integer");
+
         set.Add<float>(
         serializer: (float val) =>
         {
@@ -22,7 +37,22 @@ public static class StandardSerializerSet
             }
 
             throw new FormatException($"malformed float format '{data}'");
-        });
+        }, description: "decimal");
+
+        set.Add<double>(
+        serializer: (double val) =>
+        {
+            return val.ToString(CultureInfo.InvariantCulture).TrimEnd('0');
+        },
+        deserializer: (string data) =>
+        {
+            if (double.TryParse(data, System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture, out var result))
+            {
+                return result;
+            }
+
+            throw new FormatException($"malformed double format '{data}'");
+        }, description: "decimal");
 
         set.Add<bool>(
         serializer: (bool val) =>
@@ -46,7 +76,8 @@ public static class StandardSerializerSet
                     return false;
             }
 
-            throw new ArgumentException();
-        });
+            throw new FormatException($"invalid boolean value: '{data}'");
+        }, description: "binary true/false"
+        );
     }
 }
