@@ -11,7 +11,6 @@ public class BalanceNamespace
     public BalanceNamespace() { }
     public BalanceNamespace(IReadOnlyCollection<string> entries)
     {
-        Log.Message($"{entries.Count}");
         foreach (var id in entries)
         {
             string[] splitId = id.Split('.');
