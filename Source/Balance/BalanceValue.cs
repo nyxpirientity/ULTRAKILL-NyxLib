@@ -25,3 +25,14 @@ public struct BalanceBool(BalanceEntryRef<bool> reference)
 
     [SerializeField] private readonly BalanceEntryRef _ref = reference.ToRawReference();
 }
+
+[Serializable]
+public struct BalanceInt(BalanceEntryRef<int> reference)
+{
+    public readonly int Value => UseBase || !_ref.IsValid ? BaseValue : (int)_ref.Value;
+
+    public bool UseBase = false;
+    public int BaseValue = default;
+
+    [SerializeField] private readonly BalanceEntryRef _ref = reference.ToRawReference();
+}
