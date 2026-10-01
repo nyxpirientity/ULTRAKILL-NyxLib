@@ -79,6 +79,37 @@ public static class NyxMath
         return Quaternion.Slerp(from, to, ((Math.Min(speed * delta, angularDist)) / angularDist));
     }
 
+    public static bool IsInLine(this Vector3 vec, Vector3 pointA, Vector3 pointB, float thickness)
+    {
+        var lineCenter = (pointA + pointB) * 0.5f;
+        var vecRel = lineCenter - vec;
+
+        return Vector3.Distance((Vector3.Project(vecRel, (pointA - pointB).normalized).LimitLength(Vector3.Distance(pointA, pointB) * 0.5f)), vecRel) < thickness;
+    }
+
+    public static bool IsInLine(this Vector2 vec, Vector2 pointA, Vector2 pointB, float thickness)
+    {
+        return IsInLine(vec, pointA, pointB, thickness);
+    }
+
+    public static Vector3 LimitDistance(this Vector3 from, Vector3 to, float maxDistance)
+    {
+        return (from - to).LimitLength(maxDistance) + to;
+    }
+
+    public static Vector3 LimitLength(this Vector3 vec, float maxLength = 1f)
+    {
+        float len = vec.magnitude;
+
+        if (len > 0.0f && maxLength < len)
+        {
+            vec /= len;
+            vec *= maxLength;
+        }
+
+        return vec;
+    }
+
     public static bool Coincident(this Vector3 a, Vector3 b, float threshold) => a.sqrMagnitude == 0.0f || b.sqrMagnitude == 0.0f ? (a == b || threshold >= 2.0f) : Vector3.Distance(a.normalized, b.normalized) < threshold;
 
     public static Vector3 CoincidentProject(this Vector3 a, Vector3 onto)

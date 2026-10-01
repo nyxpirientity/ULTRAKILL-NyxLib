@@ -27,7 +27,8 @@ public static class StandardSerializerSet
         set.Add<float>(
         serializer: (float val) =>
         {
-            return val.ToString(CultureInfo.InvariantCulture).TrimEnd('0');
+            string result = val.ToString(CultureInfo.InvariantCulture);
+            return result.Contains('.') ? result.TrimEnd('0') : result;
         },
         deserializer: (string data) =>
         {
@@ -42,7 +43,8 @@ public static class StandardSerializerSet
         set.Add<double>(
         serializer: (double val) =>
         {
-            return val.ToString(CultureInfo.InvariantCulture).TrimEnd('0');
+            string result = val.ToString(CultureInfo.InvariantCulture);
+            return result.Contains('.') ? result.TrimEnd('0') : result;
         },
         deserializer: (string data) =>
         {

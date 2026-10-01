@@ -51,7 +51,49 @@ public static class ImageLoader
 
         if (!TryLoadImage(texture, path))
         {
-            texture = new Texture2D(4, 4);
+            texture.Reinitialize(4, 4);
+            texture.SetPixels(new Color[4 * 4]
+            {
+                Color.black, Color.magenta, Color.black, Color.magenta,
+                Color.magenta, Color.black, Color.magenta, Color.black,
+                Color.black, Color.magenta, Color.black, Color.magenta,
+                Color.magenta, Color.black, Color.magenta, Color.black,
+            });
+
+            successfullyLoaded = false;
+            return;
+        }
+        else
+        {
+            successfullyLoaded = true;
+            return;
+        }
+    }
+
+    public static bool TryLoadImage(Texture2D texture, byte[] data) => ImageConversion.LoadImage(texture, data);
+
+    public static Texture2D TryLoadImage(byte[] data)
+    {
+        var texture = new Texture2D(1, 1);
+        texture.filterMode = FilterMode.Point;
+
+        if (!TryLoadImage(texture, data))
+        {
+            UnityEngine.Object.Destroy(texture);
+            return null;
+        }
+
+        return texture;
+    }
+
+    public static void LoadImageOrDefault(byte[] data, out Texture2D texture, out bool successfullyLoaded)
+    {
+        texture = new Texture2D(1, 1);
+        texture.filterMode = FilterMode.Point;
+
+        if (!TryLoadImage(texture, data))
+        {
+            texture.Reinitialize(4, 4);
             texture.SetPixels(new Color[4 * 4]
             {
                 Color.black, Color.magenta, Color.black, Color.magenta,

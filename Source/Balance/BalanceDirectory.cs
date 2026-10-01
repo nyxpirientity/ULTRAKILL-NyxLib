@@ -17,7 +17,7 @@ public class BalanceDirectory
         Path = path;
     }
 
-    public void Load()
+    public void Load(bool thenResave = false)
     {
         if (!Directory.Exists(Path))
         {
@@ -74,6 +74,12 @@ public class BalanceDirectory
             {
                 Log.Error($"exception thrown whilst parsing BalanceSheet! {e}");
                 continue;
+            }
+
+            if (thenResave)
+            {
+                string dataToSave = sheet.Serialize(Composite.EntryOrder, Composite.DefaultSheet.Values);
+                File.WriteAllText(filePath, dataToSave);
             }
 
             priority.Add(sheetId);
