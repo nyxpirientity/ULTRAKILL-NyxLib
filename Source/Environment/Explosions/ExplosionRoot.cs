@@ -195,6 +195,22 @@ public class ExplosionRoot : MonoBehaviour
         });
     }
 
+    public void AddEnemyDamage(float amount)
+    {
+        ForEachExplosion((e) =>
+        {
+            float originalDamage = e.damage * e.enemyDamageMultiplier;
+
+            if (originalDamage == 0.0f)
+            {
+                return;
+            }
+
+            float newDamage = originalDamage + amount;
+            e.enemyDamageMultiplier *= newDamage / originalDamage;
+        });
+    }
+
     public void ForEachExplosion(Action<Explosion> action)
     {
         foreach (var explosion in Explosions)
