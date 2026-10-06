@@ -199,7 +199,7 @@ public class ExplosionRoot : MonoBehaviour
     {
         ForEachExplosion((e) =>
         {
-            float originalDamage = e.damage * e.enemyDamageMultiplier;
+            float originalDamage = (e.damage / 10.0f) * e.enemyDamageMultiplier;
 
             if (originalDamage == 0.0f)
             {
@@ -221,7 +221,7 @@ public class ExplosionRoot : MonoBehaviour
 
     public void FindExplosions()
     {
-        _explosions = GetComponentsInChildren<Explosion>();
+        _explosions = GetComponentsInChildren<Explosion>(true);
     }
 
     [SerializeField] private Explosion[] _explosions = null;
