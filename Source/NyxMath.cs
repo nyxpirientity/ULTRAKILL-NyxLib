@@ -46,6 +46,8 @@ public static class NyxMath
         return a;
     }
 
+    public static Vector3 Divide(this Vector3 a, Vector3 b) => new Vector3(a.x / b.x, a.y / b.y, a.z / b.z);
+
     // ExpDecay functions courtesy of Freya Holmér https://www.youtube.com/watch?v=LSNQuFEDOyQ (preferred over Lerp for ease interps because it's much more framerate independent)
     public static float EaseInterpTo(this float a, float b, float decay, float delta)
     {

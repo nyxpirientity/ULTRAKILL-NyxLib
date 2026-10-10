@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib;
@@ -32,6 +33,7 @@ public class ExplosionRoot : MonoBehaviour
     public bool Halved { set => ForEachExplosion((e) => { e.halved = value; }); }
 
     public string HitterWeapon { set => ForEachExplosion((e) => { e.hitterWeapon = value; }); }
+    public GameObject SourceWeapon { set => ForEachExplosion((e) => { e.sourceWeapon = value; }); }
     public EnemyIdentifier OriginEid { set => ForEachExplosion((e) => { e.originEnemy = value; }); }
 
     public AffectedSubjects CanHit { set => ForEachExplosion((e) => { e.canHit = value; }); }
@@ -101,6 +103,18 @@ public class ExplosionRoot : MonoBehaviour
         return highestVal;
     }
 
+    public float GetMaxPushForce()
+    {
+        float highestVal = float.NegativeInfinity;
+
+        foreach (var explosion in Explosions)
+        {
+            highestVal = Math.Max(explosion.pushForceMultiplier, highestVal);
+        }
+
+        return highestVal;
+    }
+
     public void SetMaxEnemyDamageMultiplier(float maxVal)
     {
         if (Explosions.Count == 0)
@@ -147,6 +161,38 @@ public class ExplosionRoot : MonoBehaviour
         {
             explosion.playerDamageOverride = Mathf.RoundToInt(explosion.playerDamageOverride * scalar);
         }
+    }
+
+    public void SetPlayerDamageOverride(int playerDamageOverride)
+    {
+        SetPlayerDamageOverride(playerDamageOverride, (e) => !e.harmless);
+    }
+
+    public void SetPlayerDamageOverride(int playerDamageOverride, Func<Explosion, bool> filter)
+    {
+        ForEachExplosion((e) =>
+        {
+            if (!((filter?.Invoke(e)).GetValueOrDefault(true)))
+            {
+                return;
+            }
+
+            e.playerDamageOverride = playerDamageOverride;
+        });
+    }
+
+    public void SetMaxPushForce(float maxPushForce)
+    {
+        if (Explosions.Count == 0)
+        {
+            return;
+        }
+
+        float highestVal = GetMaxPushForce();
+
+        float scalar = maxPushForce / highestVal;
+
+        ScalePushForce(scalar);
     }
 
     public void ScaleSize(float scalar)
@@ -229,5 +275,31 @@ public class ExplosionRoot : MonoBehaviour
     private void Awake()
     {
         FindExplosions();
+    }
+
+    public void RemoveExplosions(Func<Explosion, bool> predicate)
+    {
+        List<Explosion> newExplosions = [];
+
+        foreach (Explosion explosion in Explosions)
+        {
+            if (predicate.Invoke(explosion))
+            {
+                if (explosion.gameObject != gameObject)
+                {
+                    GameObject.Destroy(explosion.gameObject);
+                }
+                else
+                {
+                    Explosion.Destroy(explosion);
+                }
+
+                continue;
+            }
+
+            newExplosions.Add(explosion);
+        }
+
+        _explosions = newExplosions.ToArray();
     }
 }

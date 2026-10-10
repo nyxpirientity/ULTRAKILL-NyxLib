@@ -97,6 +97,15 @@ public static class JsonMaterial
             Log.Warning($"No Properties entry in json material");
         }
 
+        if (material.IsKeywordEnabled(MaterialKeywords.Transparency))
+        {
+            material.renderQueue = 3000;
+        }
+        else if (material.renderQueue == 3000)
+        {
+            material.renderQueue = 0;
+        }
+
         return true;
     }
 
