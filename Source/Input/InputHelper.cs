@@ -1,9 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using BepInEx;
 using HarmonyLib;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Nyxpiri.ULTRAKILL.NyxLib;
+using Nyxpiri.ULTRAKILL.NyxLib.Diagnostics.Debug;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -44,6 +49,7 @@ public static class Input
             };
 
             InputAction action = map.AddAction(name, type, defaultBindings, null, null, controlScheme?.bindingGroup, expectedControlLayout);
+            Input.RegisterAction(action);
 
             return action;
         }
@@ -61,12 +67,21 @@ public static class Input
             string binding = $"<Keyboard>/{defaultBinding.ToString().ToLower()}";
 
             InputAction action = map.AddAction(name, InputActionType.Button, binding, null, null, _input.Actions.KeyboardMouseScheme.bindingGroup, expectedControlLayout);
+            Input.RegisterAction(action);
 
             return action;
         }
 
         private PlayerInput _input = null;
     }
+
+    private static void RegisterAction(InputAction action)
+    {
+        _actions.Add(action.name, action);
+    }
+
+    private static Dictionary<string, InputAction> _actions = [];
+    private static Dictionary<string, string> _rememberedActions = [];
 
     public static class ActionMaps
     {
@@ -104,9 +119,116 @@ public static class Input
 
         input.Disable();
         ActionMaps.Initialize(input);
+        ControlSchemes.Initialize(input);
         CreateActions?.Invoke(new ActionCreator(input));
         input.Enable();
     }
+
+    private static void LoadActions()
+    {
+        if (!File.Exists(BindingsFilePath))
+        {
+            return;
+        }
+
+        string jsonText = File.ReadAllText(BindingsFilePath);
+        JObject json = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(jsonText);
+
+        if (json == null)
+        {
+            Log.Warning($"Failed to read input bindings at {BindingsFilePath} due to first DeserializeObject failure");
+            return;
+        }
+
+        foreach (var entry in json)
+        {
+            var entryValue = entry.Value.Value<string>();
+
+            if (entryValue == null)
+            {
+                continue;
+            }
+
+            _rememberedActions.Add(entry.Key, entryValue);
+
+            if (!_actions.ContainsKey(entry.Key))
+            {
+                continue;
+            }
+
+            var action = _actions[entry.Key];
+
+            if (entryValue.IsNullOrWhiteSpace())
+            {
+                continue;
+            }
+
+            var bindings = JsonConvert.DeserializeObject<List<JsonBinding>>(entryValue);
+
+            if (bindings == null)
+            {
+                continue;
+            }
+
+            action.WipeAction(ControlSchemes.KeyboardAndMouse.bindingGroup);
+
+            foreach (var binding in bindings)
+            {
+                if (binding.isComposite)
+                {
+                    if (binding.parts.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var syntax = action.AddCompositeBinding(binding.path);
+
+                    foreach (var part in binding.parts)
+                    {
+                        syntax.With(part.Key, part.Value, ControlSchemes.KeyboardAndMouse.bindingGroup);
+                    }
+
+                    action.ChangeBinding(syntax.bindingIndex).WithGroup(ControlSchemes.KeyboardAndMouse.bindingGroup);
+                }
+                else
+                {
+                    action.AddBinding(binding.path, null, null, ControlSchemes.KeyboardAndMouse.bindingGroup);
+                }
+            }
+        }
+    }
+
+    private static void SaveActions()
+    {
+        using StreamWriter file = File.CreateText(BindingsFilePath);
+
+        JObject json = [];
+        HashSet<string> saved = [];
+
+        foreach (var action in _actions.Values)
+        {
+            Assert.IsNotNull(ControlSchemes.KeyboardAndMouse.bindingGroup);
+            string jsonData = JsonConvert.SerializeObject(JsonBinding.FromAction(action, ControlSchemes.KeyboardAndMouse.bindingGroup));
+            json.Add(action.name, jsonData);
+            saved.Add(action.name);
+        }
+
+        foreach (var action in _rememberedActions)
+        {
+            string actionName = action.Key;
+
+            if (saved.Contains(actionName))
+            {
+                continue;
+            }
+
+            json.Add(actionName, action.Value);
+        }
+
+        file.Write(json.ToString(Formatting.Indented));
+    }
+
+    public static string BindingsFilePath => Path.Combine(BepInEx.Paths.ConfigPath, "nyxlib_input_action_bindings.json");
 
     [HarmonyPatch(typeof(PlayerInput), "RebuildActions")]
     public static class PlayerInputAwakePatch
@@ -119,6 +241,50 @@ public static class Input
         public static void Postfix(PlayerInput __instance)
         {
             Reinit(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(PlayerInput), "Enable")]
+    public static class PlayerInputEnablePatch
+    {
+        public static bool Prefix(PlayerInput __instance)
+        {
+            return true;
+        }
+
+        public static void Postfix(PlayerInput __instance)
+        {
+            ControlSchemes.Initialize(__instance);
+            ActionMaps.Initialize(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(InputManager), "Awake")]
+    public static class InputManagerAwakePatch
+    {
+        public static bool Prefix(InputManager __instance)
+        {
+            return true;
+        }
+
+        public static void Postfix(InputManager __instance)
+        {
+            LoadActions();
+        }
+    }
+
+    [HarmonyPatch(typeof(InputManager), "SaveBindings")]
+    public static class InputManagerSaveBindingsPatch
+    {
+        public static bool Prefix(InputManager __instance)
+        {
+
+            return true;
+        }
+
+        public static void Postfix(InputManager __instance)
+        {
+            SaveActions();
         }
     }
 }
