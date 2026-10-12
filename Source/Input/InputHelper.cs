@@ -81,7 +81,7 @@ public static class Input
     }
 
     private static Dictionary<string, InputAction> _actions = [];
-    private static Dictionary<string, string> _rememberedActions = [];
+    private static Dictionary<string, List<JsonBinding>> _rememberedBindings = [];
 
     public static class ActionMaps
     {
@@ -132,7 +132,7 @@ public static class Input
         }
 
         string jsonText = File.ReadAllText(BindingsFilePath);
-        JObject json = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(jsonText);
+        Dictionary<string, List<JsonBinding>> json = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, List<JsonBinding>>>(jsonText);
 
         if (json == null)
         {
@@ -142,14 +142,14 @@ public static class Input
 
         foreach (var entry in json)
         {
-            var entryValue = entry.Value.Value<string>();
+            var bindings = entry.Value;
 
-            if (entryValue == null)
+            if (bindings == null)
             {
                 continue;
             }
 
-            _rememberedActions.Add(entry.Key, entryValue);
+            _rememberedBindings.Add(entry.Key, bindings);
 
             if (!_actions.ContainsKey(entry.Key))
             {
@@ -157,13 +157,6 @@ public static class Input
             }
 
             var action = _actions[entry.Key];
-
-            if (entryValue.IsNullOrWhiteSpace())
-            {
-                continue;
-            }
-
-            var bindings = JsonConvert.DeserializeObject<List<JsonBinding>>(entryValue);
 
             if (bindings == null)
             {
@@ -202,30 +195,29 @@ public static class Input
     {
         using StreamWriter file = File.CreateText(BindingsFilePath);
 
-        JObject json = [];
+        Dictionary<string, List<JsonBinding>> json = [];
         HashSet<string> saved = [];
 
         foreach (var action in _actions.Values)
         {
             Assert.IsNotNull(ControlSchemes.KeyboardAndMouse.bindingGroup);
-            string jsonData = JsonConvert.SerializeObject(JsonBinding.FromAction(action, ControlSchemes.KeyboardAndMouse.bindingGroup));
-            json.Add(action.name, jsonData);
+            json.Add(action.name, JsonBinding.FromAction(action, ControlSchemes.KeyboardAndMouse.bindingGroup));
             saved.Add(action.name);
         }
 
-        foreach (var action in _rememberedActions)
+        foreach (var bindings in _rememberedBindings)
         {
-            string actionName = action.Key;
+            string actionName = bindings.Key;
 
             if (saved.Contains(actionName))
             {
                 continue;
             }
 
-            json.Add(actionName, action.Value);
+            json.Add(actionName, bindings.Value);
         }
 
-        file.Write(json.ToString(Formatting.Indented));
+        file.Write(JsonConvert.SerializeObject(json, Formatting.Indented));
     }
 
     public static string BindingsFilePath => Path.Combine(BepInEx.Paths.ConfigPath, "nyxlib_input_action_bindings.json");
@@ -269,7 +261,14 @@ public static class Input
 
         public static void Postfix(InputManager __instance)
         {
-            LoadActions();
+            try
+            {
+                LoadActions();
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"LoadActions failed {e}");
+            }
         }
     }
 
@@ -284,7 +283,14 @@ public static class Input
 
         public static void Postfix(InputManager __instance)
         {
-            SaveActions();
+            try
+            {
+                SaveActions();
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"SaveActions failed {e}");
+            }
         }
     }
 }
