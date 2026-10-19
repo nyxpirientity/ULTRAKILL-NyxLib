@@ -12,7 +12,7 @@ public static class StandardSerializerSet
         set.Add<int>(
         serializer: (int val) =>
         {
-            return val.ToString(CultureInfo.InvariantCulture).TrimEnd('0');
+            return val.ToString(CultureInfo.InvariantCulture);
         },
         deserializer: (string data) =>
         {
