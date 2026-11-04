@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Nyxpiri.ULTRAKILL.NyxLib;
@@ -38,4 +40,37 @@ public struct FieldAccess<ObjectType, FieldType>
     {
         Fi.SetValue(objectType, value);
     }
+}
+
+public static class FieldAccessExtensions
+{
+    public static FieldInfo GetFieldInfoFA(Type type, string fieldName, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Instance | BindingFlags.Static)
+    {
+        if (!_fieldInfos.TryGetValue(type, out var infos))
+        {
+            infos = [];
+            _fieldInfos[type] = infos;
+        }
+
+        if (!infos.TryGetValue(fieldName, out var fi))
+        {
+            fi = type.GetField(fieldName, bindingFlags);
+            infos[fieldName] = fi;
+        }
+
+        return fi;
+    }
+
+    public static void SetFieldFA(this object target, string fieldName, object value, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Instance | BindingFlags.Static)
+    {
+        GetFieldInfoFA(target.GetType(), fieldName, bindingFlags).SetValue(target, value);
+    }
+
+    public static T GetFieldFA<T>(this object target, string fieldName, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Instance | BindingFlags.Static)
+    {
+        return (T)(GetFieldInfoFA(target.GetType(), fieldName, bindingFlags).GetValue(target));
+    }
+
+
+    private static Dictionary<Type, Dictionary<string, FieldInfo>> _fieldInfos = [];
 }

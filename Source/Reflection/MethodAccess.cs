@@ -7,10 +7,10 @@ namespace Nyxpiri.ULTRAKILL.NyxLib.Reflection;
 
 public static class MethodAccessExtensions
 {
-    public static ReturnType CallMethod<ReturnType>(this object instance, string methodName, object[] arguments = null, Type[] types = null) => (ReturnType)(CallMethod(instance.GetType(), instance, methodName, arguments, types));
-    public static object CallMethod(this object instance, string methodName, object[] arguments = null, Type[] types = null) => CallMethod(instance.GetType(), instance, methodName, arguments, types);
+    public static ReturnType CallMethodMA<ReturnType>(this object instance, string methodName, object[] arguments = null, Type[] types = null) => (ReturnType)(CallMethodMA(instance.GetType(), instance, methodName, arguments, types));
+    public static object CallMethodMA(this object instance, string methodName, object[] arguments = null, Type[] types = null) => CallMethodMA(instance.GetType(), instance, methodName, arguments, types);
 
-    public static object CallMethod(Type type, object instance, string methodName, object[] arguments = null, Type[] types = null)
+    public static object CallMethodMA(Type type, object instance, string methodName, object[] arguments = null, Type[] types = null)
     {
         if (!_methods.TryGetValue(type, out var typeMethods))
         {
