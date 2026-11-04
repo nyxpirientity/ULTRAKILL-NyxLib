@@ -156,21 +156,29 @@ public class AnimationMixer
         {
             MixedPlayback mixed = _playbacks[i];
 
-            if (!mixed.Playback.Advance(time))
+            if (mixed.Playback.Advance(time))
+            {
+                finished.Add(i);
+                totalWeight += Mathf.Min(Mathf.Epsilon, mixed.Weight);
+            }
+            else
             {
                 anyUnfinished = true;
                 totalWeight += mixed.Weight;
-                continue;
             }
-
-            finished.Add(i);
         }
 
         for (int i = 0; i < _playbacks.Count; i++)
         {
             var mixed = _playbacks[i];
+            float weight = mixed.Weight;
 
             if (finished.Contains(i))
+            {
+                weight = Mathf.Min(Mathf.Epsilon, mixed.Weight);
+            }
+
+            if (totalWeight == 0.0f)
             {
                 continue;
             }
@@ -200,7 +208,7 @@ public class AnimationMixer
                 }
 
                 pbFrame.Type = mixedFrame.Type;
-                pbFrame.Value = VariantAnimMath.Compose(pbFrame.Type, pbFrame.Value, VariantAnimMath.Scale(mixedFrame.Type, mixedFrame.Value, mixed.Weight / totalWeight));
+                pbFrame.Value = VariantAnimMath.Compose(pbFrame.Type, pbFrame.Value, VariantAnimMath.Scale(mixedFrame.Type, mixedFrame.Value, weight / totalWeight));
 
                 _currentFrames[track.Key] = pbFrame;
             }

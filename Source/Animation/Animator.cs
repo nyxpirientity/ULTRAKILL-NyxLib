@@ -10,6 +10,7 @@ public class AnimScriptAnimator : MonoBehaviour
     public IReadOnlyList<AnimatedTransform> Transforms => _transforms;
     [SerializeField] private List<AnimatedTransform> _transforms = new List<AnimatedTransform>();
     [SerializeField] private AnimationMixer _mixer = new AnimationMixer();
+    public float Speed = 1.0f;
 
     public void ClearTransforms()
     {
@@ -53,9 +54,9 @@ public class AnimScriptAnimator : MonoBehaviour
     {
     }
 
-    protected void LateUpdate()
+    public void Advance(float delta)
     {
-        _mixer.Advance(Time.deltaTime);
+        _mixer.Advance(delta);
 
         foreach (var animated in _transforms)
         {
@@ -94,6 +95,11 @@ public class AnimScriptAnimator : MonoBehaviour
         }
     }
 
+    protected void LateUpdate()
+    {
+        Advance(Time.deltaTime * Speed);
+    }
+
     public static string PositionTrackName(Transform tf)
     {
         return $"{tf.name}.position";
@@ -112,6 +118,17 @@ public class AnimScriptAnimator : MonoBehaviour
     [Serializable]
     public class AnimatedTransform
     {
+        public AnimatedTransform() { }
+
+        public AnimatedTransform(Transform tf)
+        {
+            Transform = tf;
+
+            BaseLocalPosition = Transform.localPosition;
+            BaseLocalRotation = Transform.localRotation;
+            BaseLocalScale = Transform.localScale;
+        }
+
         public Transform Transform = null;
 
         public Vector3 BaseLocalPosition = Vector3.zero;
