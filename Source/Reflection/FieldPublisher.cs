@@ -44,7 +44,7 @@ public struct FieldAccess<ObjectType, FieldType>
 
 public static class FieldAccessExtensions
 {
-    public static FieldInfo GetFieldInfoFA(Type type, string fieldName, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Instance | BindingFlags.Static)
+    public static FieldInfo GetFieldInfoFA(Type type, string fieldName, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
     {
         if (!_fieldInfos.TryGetValue(type, out var infos))
         {
@@ -61,14 +61,26 @@ public static class FieldAccessExtensions
         return fi;
     }
 
-    public static void SetFieldFA(this object target, string fieldName, object value, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Instance | BindingFlags.Static)
+    public static void SetFieldFA(this object target, string fieldName, object value, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
     {
-        GetFieldInfoFA(target.GetType(), fieldName, bindingFlags).SetValue(target, value);
+        Assert.IsNotNull(target);
+
+        var fi = GetFieldInfoFA(target.GetType(), fieldName, bindingFlags);
+
+        Assert.IsNotNull(fi);
+
+        fi.SetValue(target, value);
     }
 
-    public static T GetFieldFA<T>(this object target, string fieldName, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Instance | BindingFlags.Static)
+    public static T GetFieldFA<T>(this object target, string fieldName, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
     {
-        return (T)(GetFieldInfoFA(target.GetType(), fieldName, bindingFlags).GetValue(target));
+        Assert.IsNotNull(target);
+
+        var fi = (GetFieldInfoFA(target.GetType(), fieldName, bindingFlags));
+
+        Assert.IsNotNull(fi);
+
+        return (T)fi.GetValue(target);
     }
 
 
