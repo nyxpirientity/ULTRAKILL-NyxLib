@@ -94,6 +94,12 @@ public class BalanceDirectory
             List<string> filePriority = [];
             for (string line = priorityFile.ReadLine(); line != null; line = priorityFile.ReadLine())
             {
+                if (!Composite.Sheets.ContainsKey(line))
+                {
+                    Log.Warning($"Unknown Sheet ID '{line}' in priority list '{priorityFilePath}', ignoring");
+                    continue;
+                }
+
                 priority.RemoveAll((s) => s == line);
                 filePriority.RemoveAll((s) => s == line);
                 filePriority.Add(line);
@@ -110,11 +116,6 @@ public class BalanceDirectory
         foreach (var sheetId in priority)
         {
             priorityFileWriter.Write($"{sheetId}\n");
-
-            if (!Composite.Sheets.ContainsKey(sheetId))
-            {
-                Log.Warning($"Unknown Sheet ID '{sheetId}' in priority list '{priorityFilePath}', ignoring");
-            }
         }
 
         Composite.Priorities = priority;
