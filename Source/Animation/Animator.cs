@@ -39,6 +39,7 @@ public class AnimScriptAnimator : MonoBehaviour
     public void PlayAnimation(string name, Animation anim, float weight, AnimationEndMode endMode, float speed)
     {
         _mixer.PlayAnimation(name, anim, weight, endMode, speed);
+        Advance(0.0f);
     }
 
     public void StopAnimation(string name)
