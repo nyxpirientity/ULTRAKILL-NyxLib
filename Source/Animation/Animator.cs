@@ -95,7 +95,12 @@ public class AnimScriptAnimator : MonoBehaviour
         }
     }
 
-    protected void LateUpdate()
+    protected void OnEnable()
+    {
+        Advance(0.0f);
+    }
+
+    protected void Update()
     {
         Advance(Time.deltaTime * Speed);
     }
