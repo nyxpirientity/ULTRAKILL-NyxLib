@@ -53,7 +53,7 @@ public class ExplosionRoot : MonoBehaviour
             highestDamage = Math.Max(explosion.damage, highestDamage);
         }
 
-        float scalar = maxDamage / highestDamage;
+        float scalar = (float)maxDamage / (float)highestDamage;
 
         ScaleDamage(scalar);
     }
@@ -229,7 +229,7 @@ public class ExplosionRoot : MonoBehaviour
     {
         ForEachExplosion((e) =>
         {
-            e.damage = (int)((float)e.damage * scalar);
+            e.damage = Mathf.RoundToInt(((float)e.damage) * scalar);
         });
     }
 
