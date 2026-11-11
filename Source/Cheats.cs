@@ -43,7 +43,21 @@ public static class Cheats
 
         public static void Postfix(CheatsManager __instance)
         {
+        }
+    }
+
+    [HarmonyPatch(typeof(CheatBinds), "RestoreBinds")]
+    public static class CheatBindsRestoreBindsPatch
+    {
+        public static bool Prefix(CheatBinds __instance)
+        {
             TryRegisterCheats();
+            return true;
+        }
+
+        public static void Postfix(CheatBinds __instance)
+        {
+
         }
     }
 
